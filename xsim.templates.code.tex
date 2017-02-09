@@ -59,28 +59,15 @@
 % ----------------------------------------------------------------------------
 % for usage in templates:
 \NewDocumentCommand \IfExercisePropertySetTF {mmm}
-  { \xsim_if_property_set:nnn {\ExerciseID ! \ExerciseType ! #1} {#2} {#3} }
+  { \xsim_if_property_set:nnnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
 \NewDocumentCommand \GetExerciseProperty {m}
-  { \xsim_get_property:xxn { \ExerciseType } { \ExerciseID } {#1} }
+  { \xsim_get_property:xxn {\ExerciseType} {\ExerciseID} {#1} }
 
 \NewDocumentCommand \SaveExerciseProperty {mm}
-  { \xsim_save_property:xxnN { \ExerciseType } { \ExerciseID } {#1} #2 }
+  { \xsim_save_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
 \NewDocumentCommand \GlobalSaveExerciseProperty {mmmm}
-  { \xsim_gsave_property:xxnN { \ExerciseType } { \ExerciseID } {#1} #2 }
-  
-% ----------------------------------------------------------------------------
-\xsim_declare_template:nnn {test}
-  {
-    % Type: \ExerciseType ~
-    % ID: \ExerciseID
-    \subsection*
-      {
-        \GetExerciseProperty {name} ~
-        \GetExerciseProperty {counter}
-      }
-  }
-  {}
+  { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
 % ----------------------------------------------------------------------------  

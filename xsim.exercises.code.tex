@@ -116,7 +116,7 @@
       { \newcounter { \xsim_get_parameter:nn {#1} {counter} } }
   }
 
-\cs_new_protected:Npn \xsim_declare_new_exercise_type:nn #1#2
+\cs_new_protected:Npn \xsim_declare_exercise_type:nn #1#2
   {
     \xsim_define_exercise_type_variables:n {#1}
     \xsim_set_parameters:nn {#1} {#2}
@@ -160,26 +160,7 @@
       {}
   }
 
-% something like this should define a question/solution environment pair:
-\xsim_declare_new_exercise_type:nn {exercise}
-  {
-    exercise-env = question ,
-    solution-env = solution ,
-    exercise-name = \questionname ,
-    solution-name = \solutionname ,
-    exercise-template = test ,
-    solution-template = test ,
-    counter = question
-  }
-
-\xsim_declare_new_exercise_type:nn {problem}
-  {
-    exercise-env = problem ,
-    solution-env = answer ,
-    exercise-name = Problem ,
-    solution-name = Answer ,
-    exercise-template = test ,
-    solution-template = test
-  }
+\NewDocumentCommand \DeclareExerciseType {mm}
+  { \xsim_declare_exercise_type:nn {#1} {#2} }
 
 % ----------------------------------------------------------------------------

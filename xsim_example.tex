@@ -1,0 +1,62 @@
+\documentclass{article}
+\usepackage{xsim,lipsum}
+
+\DeclareExerciseType{question}{
+  exercise-env = question ,
+  solution-env = solution ,
+  exercise-name = Question ,
+  solution-name = Solution ,
+  exercise-template = subsection ,
+  solution-template = subsection
+}
+
+\DeclareExerciseType{exercise}{
+  exercise-env = exercise ,
+  solution-env = hint ,
+  exercise-name = Exercise ,
+  solution-name = Hint ,
+  exercise-template = subsection ,
+  solution-template = subsection ,
+  counter = question
+}
+
+\DeclareExerciseType{problem}{
+  exercise-env = problem ,
+  solution-env = answer ,
+  exercise-name = Problem ,
+  solution-name = Answer ,
+  exercise-template = subsection ,
+  solution-template = subsection
+}
+
+\DeclareExerciseTemplate{subsection}
+  {%
+    \subsection*{\GetExerciseProperty{name}~\GetExerciseProperty{counter}}
+    \IfExercisePropertySetTF{points}{\marginpar{\rule{2cm}{1pt}/\GetExerciseProperty{points}}}{}
+  }
+  {}
+
+\begin{document}
+
+\begin{question}[points=4,topic=geometry,tags={geometry,triangles},grade=7]
+  \lipsum[1]
+\end{question}
+
+\begin{question}[id=foo,points=5,topic=analysis,grade=11]
+  \lipsum[2]
+\end{question}
+
+\begin{problem}
+  \lipsum[3]
+\end{problem}
+
+\begin{exercise}
+  \lipsum[4]
+\end{exercise}
+
+\begin{question}
+  \lipsum[5]
+\end{question}
+
+\end{document}
+
