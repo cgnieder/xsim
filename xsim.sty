@@ -1,0 +1,175 @@
+% ----------------------------------------------------------------------------
+% the XSIM package
+% 
+%   eXercise Sheets IMproved
+% 
+% ----------------------------------------------------------------------------
+% Clemens Niederberger
+% Web:    https://github.com/cgnieder/xsim
+% E-Mail: contact@mychemistry.eu
+% ----------------------------------------------------------------------------
+% Copyright 2017 Clemens Niederberger
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Clemens Niederberger.
+% ----------------------------------------------------------------------------
+% If you have any ideas, questions, suggestions or bugs to report, please
+% feel free to contact me.
+% ----------------------------------------------------------------------------
+\RequirePackage {expl3,xparse}
+\ExplSyntaxOn
+
+\tl_const:Nn \c_xsim_date_tl                 {2017/02/09}
+\tl_const:Nn \c_xsim_version_major_number_tl {0}
+\tl_const:Nn \c_xsim_version_minor_number_tl {0}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {}
+\tl_const:Nx \c_xsim_version_number_tl
+  {
+    \c_xsim_version_major_number_tl .
+    \c_xsim_version_minor_number_tl
+  }
+\tl_const:Nx \c_xsim_version_tl
+  {
+    \c_xsim_version_number_tl
+    \c_xsim_version_subrelease_tl
+  }
+\tl_const:Nn \c_xsim_info_tl {eXercise ~ Sheets ~ IMproved}
+
+\ProvidesExplPackage
+  {xsim}
+  {\c_xsim_date_tl}
+  {\c_xsim_version_tl}
+  {\c_xsim_info_tl}
+
+% --------------------------------------------------------------------------
+% module mechanism:
+\tl_const:Nn \c__xsim_module_extension_tl {code.tex}
+\tl_const:Nn \c__xsim_module_prefix_tl    {xsim}
+
+\seq_new:N \g__xsim_loaded_modules_seq
+\prop_new:N \g__xsim_loaded_modules_prop
+
+\cs_new_protected:Npn \xsim_load_modules:n #1
+  { \clist_map_inline:nn {#1} { \xsim_load_module:n {##1} } }
+
+\cs_new_protected:Npn \xsim_load_module:n #1
+  {
+    \tl_set:Nx \l_tmpa_tl { \tl_trim_spaces:n {#1} }
+    \__xsim_load_module:V \l_tmpa_tl
+  }
+
+\cs_new_protected:Npn \__xsim_load_module:n #1
+  {
+    \xsim_if_module_loaded:nF {#1}
+      {
+        \xsim_if_module_exist:nTF {#1}
+          {
+            \__xsim_use_module_hook:nn {#1} {before}
+            \msg_log:nnn {xsim} {loading-module} {#1}
+            \@onefilewithoptions
+              {\c__xsim_module_prefix_tl.#1}[][]
+              \c__xsim_module_extension_tl
+            \__xsim_use_module_hook:nn {#1} {after}
+          }
+          { \msg_error:nnn {xsim} {module-missing} {#1} }
+      }
+  }
+\cs_generate_variant:Nn \__xsim_load_module:n { V }
+
+\prg_new_conditional:Npnn \xsim_if_module_loaded:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \g__xsim_loaded_modules_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_module_exist:n #1 {p,T,F,TF}
+  {
+    \file_if_exist:nTF
+      {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% --------------------------------------------------------------------------
+% module hooks:
+% #1: module
+% #2: code
+\cs_new_protected:Npn \xsim_after_module:nn #1#2
+  {
+    \xsim_if_module_loaded:nTF {#1}
+      {#2}
+      { \__xsim_add_to_module_hook:nnn {#1} {after} {#2} }
+  }
+
+% #1: module
+% #2: code
+\cs_new_protected:Npn \xsim_before_module:nn #1#2
+  {
+    \xsim_if_module_loaded:nF {#1}
+      { \__xsim_add_to_module_hook:nnn {#1} {before} {#2} }
+  }
+
+% #1: module
+% #2: hook name
+% #3: code
+\cs_new_protected:Npn \__xsim_add_to_module_hook:nnn #1#2#3
+  {
+    \xsim_if_module_loaded:nF {#1}
+      {
+        \tl_if_exist:cF {g__xsim_module_#1_#2_hook_tl}
+          { \tl_new:c {g__xsim_module_#1_#2_hook_tl} }
+        \tl_gput_right:cn {g__xsim_module_#1_#2_hook_tl} {#3}
+      }
+  }
+
+% #1: module
+% #2: hook name
+\cs_new_protected:Npn \__xsim_use_module_hook:nn #1#2
+  {
+    \tl_if_exist:cT {g__xsim_module_#1_#2_hook_tl}
+      {
+        \tl_use:c {g__xsim_module_#1_#2_hook_tl}
+        \tl_gclear:c {g__xsim_module_#1_#2_hook_tl}
+      }
+  }
+
+% --------------------------------------------------------------------------
+\cs_new_protected:Npn \__xsim_module:nn #1#2
+  {
+    \seq_gput_right:Nn \g__xsim_loaded_modules_seq {#1}
+    \prop_gput:Nnn \g__xsim_loaded_modules_prop {#1} {#2}
+    \ProvidesFile
+      {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+      [
+        \c_xsim_date_tl
+        \c_space_tl
+        v \c_xsim_version_tl
+        \c_space_tl
+        xsim~ module~ `#1'~ (#2)
+      ]
+    \ExplSyntaxOn
+  }
+
+% --------------------------------------------------------------------------
+% define a xsim module:
+% #1: name
+% #2: description
+\NewDocumentCommand \XSIMmodule {mm} { \__xsim_module:nn {#1} {#2} }
+
+% --------------------------------------------------------------------------
+\xsim_load_modules:n {base}
+
+\tex_endinput:D
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+HISTORY:
