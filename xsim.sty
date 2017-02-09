@@ -51,6 +51,24 @@
   {\c_xsim_info_tl}
 
 % --------------------------------------------------------------------------
+% messages:
+\msg_new:nnn {xsim} {module-missing}
+  {
+    You've~ requested~ the~ xsim~ module~ `#1'~ but~ it~ appears~ to~
+    be~ missing~ on~ your~ system.~ Maybe~ you've~ misspelled~ the~ name?~
+    Loading~ the~ module~ will~ abort~ \msg_line_context:
+  }
+
+\msg_new:nnn {xsim} {loading-module}
+  {
+    (xsim) \c_space_tl \c_space_tl \c_space_tl \c_space_tl
+    Loading~ module~ `#1'~ ...
+  }
+
+\msg_new:nnn {xsim} {wrong-module-name}
+  { The~ module~ file~ name~ is~ `#2'~ but~ it~ provides~ module~ `#1'. }
+
+% --------------------------------------------------------------------------
 % module mechanism:
 \tl_const:Nn \c__xsim_module_extension_tl {code.tex}
 \tl_const:Nn \c__xsim_module_prefix_tl    {xsim}
@@ -148,6 +166,16 @@
   {
     \seq_gput_right:Nn \g__xsim_loaded_modules_seq {#1}
     \prop_gput:Nnn \g__xsim_loaded_modules_prop {#1} {#2}
+    \str_if_eq_x:nnF
+      {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+      {\@currname.\@currext}
+      {
+        \msg_error:nnnxx {xsim} {wrong-module-name}
+          {#1}
+          {\@currname.\@currext}
+      }
+    % \tl_show:x {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+    % \tl_show:x {\@currname.\@currext}
     \ProvidesFile
       {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
       [
@@ -159,6 +187,8 @@
       ]
     \ExplSyntaxOn
   }
+\cs_generate_variant:Nn \tl_show:n {x}
+\cs_generate_variant:Nn \msg_error:nnnn {nnnx}
 
 % --------------------------------------------------------------------------
 % define a xsim module:
@@ -167,7 +197,7 @@
 \NewDocumentCommand \XSIMmodule {mm} { \__xsim_module:nn {#1} {#2} }
 
 % --------------------------------------------------------------------------
-\xsim_load_modules:n {base}
+\xsim_load_modules:n {definitions}
 
 \tex_endinput:D
 
