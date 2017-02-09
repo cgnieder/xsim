@@ -22,7 +22,7 @@ This work has the LPPL maintenance status `maintained'.
 
 The Current Maintainer of this work is Clemens Niederberger.
 --------------------------------------------------------------------------
-The exsheets bundle consists of the files
+The xsim bundle consists of the files
  - xsim.sty
  - xsim.base.code.tex
  - README
