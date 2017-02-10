@@ -6,8 +6,8 @@
   solution-env = solution ,
   exercise-name = Question ,
   solution-name = Solution ,
-  exercise-template = subsection ,
-  solution-template = subsection
+  exercise-template = subsection* ,
+  solution-template = subsection*
 }
 
 \DeclareExerciseType{exercise}{
@@ -15,8 +15,8 @@
   solution-env = hint ,
   exercise-name = Exercise ,
   solution-name = Hint ,
-  exercise-template = subsection ,
-  solution-template = subsection ,
+  exercise-template = subsection* ,
+  solution-template = subsection* ,
   counter = question
 }
 
@@ -29,46 +29,91 @@
   solution-template = tcolorbox
 }
 
-\DeclareExerciseTemplate{subsection}
+\DeclareExerciseProperty{subtitle}
+
+\DeclareExerciseTemplate{subsection*}
   {%
-    \subsection*{\GetExerciseProperty{name}~\GetExerciseProperty{counter}}
+    \subsection*{%
+      \GetExerciseProperty{name}~\GetExerciseProperty{counter}%
+      \IfExercisePropertySetTF{subtitle}{
+        {\normalfont\itshape\GetExerciseProperty{subtitle}}%
+      }{}%
+    }
     \IfExercisePropertySetTF{points}
-      {\marginpar{\rule{2cm}{1pt}/\GetExerciseProperty{points}}}
+      {\marginpar{\rule{1.5cm}{1pt}/\GetExerciseProperty{points}}}
       {}%
   }
   {}
 
 \DeclareExerciseTemplate{tcolorbox}
   {%
+    \vspace{\baselineskip}
     \tcolorbox[
       colback = red!5!white ,
       colframe = red!75!black ,
       title = \GetExerciseProperty{name}~\GetExerciseProperty{counter}
       \IfExercisePropertySetTF{points}{(\GetExerciseProperty{points})}{}]
   }
-  {\endtcolorbox}
+  {%
+    \endtcolorbox
+    \vspace{\baselineskip}
+  }
 
 \begin{document}
 
 \begin{question}[points=4,topic=geometry,tags={geometry,triangles},grade=7]
   \lipsum[1]
+\begin{verbatim}
+foo x^2 y^3
+\end{verbatim}
 \end{question}
+\begin{solution}
+  g
+\end{solution}
 
-\begin{question}[id=foo,points=5,topic=analysis,grade=11]
+% \end{document}
+
+\begin{question}[subtitle=Foo,points=5,topic=analysis,grade=11]
   \lipsum[2]
 \end{question}
+\begin{solution}
+\end{solution}
+
+% \end{document}
 
 \begin{problem}
   \lipsum[3]
 \end{problem}
+\begin{answer}
+\end{answer}
+
+% \end{document}
 
 \begin{exercise}
   \lipsum[4]
 \end{exercise}
+\begin{hint}
+\end{hint}
+
+% \end{document}
+
+\begin{problem}
+  \lipsum[3]
+\end{problem}
+\begin{answer}
+\end{answer}
 
 \begin{question}
   \lipsum[5]
 \end{question}
+\begin{solution}
+\end{solution}
+
+\begin{question}[print=false]
+  \lipsum[5]
+\end{question}
+\begin{solution}
+\end{solution}
 
 \end{document}
 

@@ -25,6 +25,10 @@ The Current Maintainer of this work is Clemens Niederberger.
 The xsim bundle consists of the files
  - xsim.sty
  - xsim.base.code.tex
+   xsim.exercises.code.tex
+   xsim.properties.code.tex
+   xsim.templates.code.tex
+   xsim.translations.code.tex
  - README
  - xsim_man.tex, xsim_man.pdf
 --------------------------------------------------------------------------

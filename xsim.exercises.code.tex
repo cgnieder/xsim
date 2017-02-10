@@ -28,6 +28,7 @@
 \XSIMmodule{exercises}{main exercises definitions}
 
 \xsim_load_modules:n {base,properties,templates}
+% \RequirePackage {environ}
 
 \seq_new:N \l__xsim_parameters_seq
 
@@ -129,36 +130,118 @@
     \NewDocumentEnvironment
       { \xsim_get_parameter:nn {#1} {exercise-env} } {O{}}
       {
-        \int_gincr:N \g_xsim_id_int
-        \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
-        \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
-          {
-            name = \xsim_get_parameter:nn {#1} {exercise-name} ,
-            counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
-            \exp_not:n {##1} ,
-            id = \int_use:N \g_xsim_id_int
-          }
-        \xsim_save_property:nxnN {#1} { \int_use:N \g_xsim_id_int } {id}
-          \ExerciseID
-        \tl_set:Nn \ExerciseType {#1}
-        \xsim_if_debug:T { \tl_show:N \ExerciseID }
-        % \xsim_get_parameter:nn {#1} {exercise-name} ~
-        % \xsim_get_parameter:nn {#1} {template}
-        % \xsim_get_property:nxn {#1} { \int_use:N \g_xsim_id_int } {counter}
-        \xsim_use_template:nx
-          {begin}
-          { \xsim_get_parameter:nn {#1} {exercise-template} }
+        \xsim_start_exercise:nn {#1} {##1}
+        \xsim_start_environment:nVn {#1} \ExerciseID {exercise}
       }
       {
+        \xsim_stop_environment:nVn {#1} \ExerciseID {exercise}
+        \xsim_if_debug:T { \prop_show:N \g__xsim_properties_prop }
+      }
+    % TODO: have separate properties for solutions!
+    \NewDocumentEnvironment
+      { \xsim_get_parameter:nn {#1} {solution-env} } {}
+      {
+        \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
+          { name = \xsim_get_parameter:nn {#1} {solution-name} }
+        \xsim_start_environment:nVn {#1} \ExerciseID {solution}
+      }
+      { \xsim_stop_environment:nVn {#1} \ExerciseID {solution} }
+  }
+
+\cs_new_protected:Npn \xsim_start_exercise:nn #1#2
+  {
+    \int_gincr:N \g_xsim_id_int
+    \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
+    \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
+      {
+        name = \xsim_get_parameter:nn {#1} {exercise-name} ,
+        counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
+        print = true ,
+        \exp_not:n {#2} ,
+        id = \int_use:N \g_xsim_id_int
+      }
+    \tl_gset:Nn \ExerciseID {}
+    \xsim_gsave_property:nxnN {#1} { \int_use:N \g_xsim_id_int } {id}
+      \ExerciseID
+    \tl_gset:Nn \ExerciseType {#1}
+    \xsim_if_debug:T { \tl_show:N \ExerciseID }
+  }
+
+\RequirePackage{filecontents}
+
+\cs_new_eq:NN \__xsim_file_contents:n \filec@ntents
+\cs_new_eq:NN \xsim_end_file_contents: \endfilecontents
+
+\group_begin:
+  \char_set_catcode_active:n {13}%
+  \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
+\group_end:
+
+\show \token_new:Nn
+\cs_generate_variant:Nn \use:nn {nx}
+
+\cs_new_protected:Npn \xsim_file_contents:n #1
+  { \use:nx { \__xsim_file_contents:n {#1} } { \c__xsim_active_eol_tl } }
+
+\cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
+  {
+    \group_begin:
+      \@tempswafalse
+      \xsim_file_contents:n {xsim-#1-#2-#3-body.tex}
+  }
+
+\cs_new_protected:Npn \xsim_save_environment_body_end:nnn #1#2#3
+  {
+      \xsim_end_file_contents:
+    \group_end:
+  }
+  
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
+  { \xsim_save_environment_body:nnn {#1} {#2} {#3} }
+\cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
+  {
+    \xsim_save_environment_body_end:nnn {#1} {#2} {#3}
+    \xsim_if_print:nnnT {#1} {#2} {#3}
+      {
+        \par
+        \xsim_use_template:nx
+          {begin}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \file_input:n {xsim-#1-#2-#3-body.tex}
         \xsim_use_template:nx
           {end}
-          { \xsim_get_parameter:nn {#1} {exercise-template} }
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \par
       }
-    \exp_args:Nx \NewDocumentEnvironment
-      { \xsim_get_parameter:nn {#1} {solution-env} } {O{}}
-      {}
-      {}
   }
+\cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
+
+\prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
+  {
+    \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_exercise_if_print:nnT {nV}
+
+\prg_new_protected_conditional:Npnn \xsim_solution_if_print:nn #1#2 {T,F,TF}
+  {
+    \bool_if:nTF { \c_false_bool }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_solution_if_print:nnT {nV}
+
+\cs_new_protected:Npn \xsim_if_print:nnnT #1#2#3#4
+  { \use:c {xsim_#3_if_print:nnT} {#1} {#2} {#4} }
 
 \NewDocumentCommand \DeclareExerciseType {mm}
   { \xsim_declare_exercise_type:nn {#1} {#2} }
