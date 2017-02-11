@@ -1,0 +1,161 @@
+% ----------------------------------------------------------------------------
+% the XSIM package - translations module
+% 
+%   eXercise Sheets IMproved
+% 
+% ----------------------------------------------------------------------------
+% Clemens Niederberger
+% Web:    https://github.com/cgnieder/xsim
+% E-Mail: contact@mychemistry.eu
+% ----------------------------------------------------------------------------
+% Copyright 2017 Clemens Niederberger
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Clemens Niederberger.
+% ----------------------------------------------------------------------------
+% If you have any ideas, questions, suggestions or bugs to report, please
+% feel free to contact me.
+% ----------------------------------------------------------------------------
+\XSIMmodule{translations}{language settings for XSIM}
+
+\RequirePackage{translations}
+
+\msg_new:nnn {xsim} {language-not-defined}
+  {
+    You~ chose~ the~ language~ `#1'~ which~ is~ not~ defined~ by~ xsim.~
+    `english'~ is~ used~ instead.~ If~ you~ just~ mistyped~ try~ again!~
+    Otherwise~ contact~ the~ author~ and~ he'll~ probably~ add~ your~ language.
+  }
+
+% --------------------------------------------------------------------------
+
+\bool_new:N      \l__xsim_language_auto_bool
+\bool_set_true:N \l__xsim_language_auto_bool
+% this token list will hold the chosen language for xsim; since the
+% language is either chosen automatically or by option it is only available at
+% begin document
+\tl_new:N  \l_xsim_language_tl
+\tl_set:Nn \l_xsim_language_tl {english}
+\tl_new:N  \l__xsim_current_language_tl
+
+\tl_const:Nn \c__xsim_keyword_prefix_tl {xsim-keyword-}
+
+% ----------------------------------------------------------------------------
+  
+\prop_new:N \g_xsim_translations_prop
+
+% translate the key #1
+\cs_new:Npn \xsim_translate:n #1
+  {
+    \bool_if:NTF \l__xsim_language_auto_bool
+      { \GetTranslation { \c__xsim_keyword_prefix_tl #1 } }
+      {
+        \GetTranslationFor
+          { \l_xsim_language_tl }
+          { \c__xsim_keyword_prefix_tl #1 }
+      }
+  }
+
+\AtBeginDocument{
+  \bool_if:NTF \l__xsim_language_auto_bool
+    {
+      \tl_set:Nx \l_xsim_language_tl
+        { \@trnslt@language{\@trnslt@current@language} }
+    }
+    {
+      \tl_set_eq:NN
+        \l_xsim_language_tl
+        \l__xsim_current_language_tl
+    }   
+}
+
+% ----------------------------------------------------------------------------
+% #1: keyword
+% #2: language
+% #3: translation
+\cs_new_protected:Npn \__xsim_declare_translation:nw #1#2=#3\q_stop
+  {
+    \tl_set:Nx \l__xsim_tmpa_tl { \tl_trim_spaces:n {#2} }
+    \tl_set:Nx \l__xsim_tmpb_tl { \tl_trim_spaces:n {#3} }
+    \xsim_declare_translation:VnV
+      \l__xsim_tmpa_tl
+      {#1}
+      \l__xsim_tmpb_tl
+  }
+
+% #1: language
+% #2: keyword
+% #3: translation
+\cs_new_protected:Npn \xsim_declare_translation:nnn #1#2#3
+  {
+    % \tl_show:n {#2(#1) ~=~#3}
+    % TODO: this should be \declaretranslation
+    \declaretranslation
+      {#1}
+      { \c__xsim_keyword_prefix_tl #2 }
+      {#3}
+    \prop_gput:Nnn \g_xsim_translations_prop {#2(#1)} {#3}
+  }
+\cs_generate_variant:Nn \xsim_declare_translation:nnn {V,VnV}
+
+% #1: key
+% #2: csv list: { <lang1> = <translation1> , <lang2> = <translation2> }
+\cs_new_protected:Npn \xsim_declare_translations:nn #1#2
+  {
+    \clist_map_inline:nn {#2}
+      { \__xsim_declare_translation:nw {#1} ##1 \q_stop }
+  }
+
+\cs_new:Npn \__xsim_parse_translate_list_entry:nnn #1#2#3 {}
+
+\cs_new_protected:Npn \__xsim_parse_translate_list_entry:www #1(#2)\q_mark#3\q_stop
+  { \__xsim_parse_translate_list_entry:nnn {#1} {#2} {#3} }
+
+\cs_new_protected:Npn \xsim_for_all_translations_do:n #1
+  {
+    \cs_set:Npn \__xsim_parse_translate_list_entry:nnn ##1##2##3 {#1}
+    \prop_map_inline:Nn \g_xsim_translations_prop
+      { \__xsim_parse_translate_list_entry:www ##1 \q_mark ##2 \q_stop }
+  }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExpandableDocumentCommand \XSIMtranslate {m}
+  { \xsim_translate:n {#1} }
+  
+\NewDocumentCommand \DeclareExerciseTranslations {mm}
+  { \xsim_declare_translations:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseTranslations
+  
+\NewDocumentCommand \DeclareExerciseTranslation {mmm}
+  { \xsim_declare_translation:nnn {#1} {#2} {#3} }
+\@onlypreamble \DeclareExerciseTranslation
+
+\NewDocumentCommand \ForAllChemTranslationsDo {+m}
+  { \xsim_for_all_translations_do:n {#1} }
+
+% ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim}
+  {
+    language .value_required:n = true ,
+    language .code:n =
+      \tl_if_eq:nnTF {#1} {auto}
+        { \bool_set_true:N \l__xsim_language_auto_bool }
+        {
+          \bool_set_false:N \l__xsim_language_auto_bool
+          \tl_set:Nn \l__xsim_current_language_tl {#1}
+        } ,
+    language .initial:n = auto
+  }
+
+% ----------------------------------------------------------------------------

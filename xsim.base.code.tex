@@ -34,6 +34,9 @@
 \cs_generate_variant:Nn \prop_gput:Nnn     {Nx,Nnx}
 \cs_generate_variant:Nn \prop_item:Nn      {c}
 \cs_generate_variant:Nn \prop_if_in:NnTF   {Nx}
+\cs_generate_variant:Nn \use:nn            {nx}
+\cs_generate_variant:Nn \file_input:n      {V}
+\cs_generate_variant:Nn \msg_error:nnnnn   {nnnxx}
 
 % --------------------------------------------------------------------------
 % temporary variables:
@@ -76,6 +79,6 @@
   }
 
 \bool_new:N \l__xsim_debug_bool
-\bool_set_true:N \l__xsim_debug_bool
+% \bool_set_true:N \l__xsim_debug_bool
 
 % --------------------------------------------------------------------------

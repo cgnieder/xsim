@@ -27,13 +27,16 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{definitions}{definition of user commands}
 
-\xsim_load_modules:n {base,exercises}
+\xsim_load_modules:n {base,exercises,translations}
+
+% ----------------------------------------------------------------------------
 
 \DeclareExerciseProperty* {id}
 \DeclareExerciseProperty  {print}
 \DeclareExerciseProperty  {name}
 \DeclareExerciseProperty  {counter}
 \DeclareExerciseProperty  {template}
+\DeclareExerciseProperty  {subtitle}
 \DeclareExerciseProperty  {points}
 \DeclareExerciseProperty  {bonus-points}
 \DeclareExerciseProperty  {tags}
@@ -41,5 +44,83 @@
 \DeclareExerciseProperty  {grade}
 \DeclareExerciseProperty  {difficulty}
 
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseType{question}{
+  exercise-env      = question ,
+  solution-env      = solution ,
+  exercise-name     = \XSIMtranslate {question} ,
+  solution-name     = \XSIMtranslate {solution} ,
+  exercise-template = subsection* ,
+  solution-template = subsection*
+}
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseTemplate{subsection*}
+  {
+    \subsection*
+      {
+        \GetExerciseProperty {name} \nobreakspace
+        \GetExerciseProperty {counter}
+        \IfExercisePropertySetTF{subtitle}
+          { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
+          {}
+    }
+    \IfExercisePropertySetTF {points}
+      { \marginpar { \rule {1.5cm} {1pt} / \GetExerciseProperty {points} } }
+      {}
+  }
+  {}
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseTranslations{exercise}{
+  Fallback = Exercise ,
+  English = Exercise ,
+  French = Exercice ,
+  German = \"Ubung ,
+  Italian = Esercizio ,
+  Spanish = Ejercicio ,
+  Catalan = Exercici ,
+  Turkish = Egzersiz ,
+  Croatian = Primjer ,
+  Hungarian = Gyakorol ,
+  Danish = Opgave ,
+  Norsk = Oppgave ,
+  Portuges = Exerc\'\i cio
+}
+
+\DeclareExerciseTranslations{question}{
+  Fallback  = Question ,
+  English   = Question ,
+  French    = Question ,
+  German    = Aufgabe ,
+  Italian   = Questione ,
+  Spanish   = Pregunta ,
+  Catalan   = Q\"uesti\'o ,
+  Turkish   = Soru ,
+  Croatian  = Zadatak ,
+  Hungarian = Feladat ,
+  Danish    = Opgave ,
+  Norsk     = Oppgave ,
+  Portuges  = Quest\~ao
+}
+
+\DeclareExerciseTranslations{solution}{
+  Fallback  = Solution ,
+  English   = Solution ,
+  French    = Solution ,
+  German    = L\"osung ,
+  Italian   = Soluzione ,
+  Spanish   = Soluci\'on ,
+  Catalan   = Soluci\'o ,
+  Turkish   = \c C\"oz\"um ,
+  Croatian  = Rje\v{s}enje ,
+  Hungarian = Megold\'as ,
+  Danish    = L\o sning ,
+  Norsk     = L\o sning ,
+  Portuges  = Solu\c c\~ao
+}
 
 % ----------------------------------------------------------------------------

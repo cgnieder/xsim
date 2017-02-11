@@ -27,10 +27,13 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{exercises}{main exercises definitions}
 
-\xsim_load_modules:n {base,properties,templates}
-% \RequirePackage {environ}
+\xsim_load_modules:n {base,properties,writefile,templates}
 
 \seq_new:N \l__xsim_parameters_seq
+\int_new:N \g_xsim_id_int
+\tl_new:N \l_xsim_current_id_tl
+
+% ----------------------------------------------------------------------------
 
 \cs_new_protected:Npn \xsim_declare_parameter:n #1
   {
@@ -102,14 +105,12 @@
 \xsim_declare_parameter:n {solution-template}
 \xsim_declare_parameter:n {counter}
 
-\cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
-  {
-    % \prop_new:c {l__xsim_#1_properties_prop}
-    \prop_new:c {l__xsim_#1_parameters_prop}
-  }
+% ----------------------------------------------------------------------------
+\tl_new:N \l_xsim_exercise_id_tl
+\tl_new:N \ExerciseID
 
-\int_new:N \g_xsim_id_int
-\tl_new:N \l_xsim_current_id_tl
+\cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
+  { \prop_new:c {l__xsim_#1_parameters_prop} }
 
 \cs_new_protected:Npn \xsim_define_counter:n #1
   {
@@ -131,10 +132,10 @@
       { \xsim_get_parameter:nn {#1} {exercise-env} } {O{}}
       {
         \xsim_start_exercise:nn {#1} {##1}
-        \xsim_start_environment:nVn {#1} \ExerciseID {exercise}
+        \xsim_start_environment:nVn {#1} \l_xsim_exercise_id_tl {exercise}
       }
       {
-        \xsim_stop_environment:nVn {#1} \ExerciseID {exercise}
+        \xsim_stop_environment:nVn {#1} \l_xsim_exercise_id_tl {exercise}
         \xsim_if_debug:T { \prop_show:N \g__xsim_properties_prop }
       }
     % TODO: have separate properties for solutions!
@@ -143,11 +144,52 @@
       {
         \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
           { name = \xsim_get_parameter:nn {#1} {solution-name} }
-        \xsim_start_environment:nVn {#1} \ExerciseID {solution}
+        \xsim_start_environment:nVn {#1} \l_xsim_exercise_id_tl {solution}
       }
-      { \xsim_stop_environment:nVn {#1} \ExerciseID {solution} }
+      { \xsim_stop_environment:nVn {#1} \l_xsim_exercise_id_tl {solution} }
   }
 
+\NewDocumentCommand \DeclareExerciseType {mm}
+  { \xsim_declare_exercise_type:nn {#1} {#2} }
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
+  {
+    \xsim_set_file_signature:nnn {#1} {#2} {#3}
+    \xsim_save_environment_body:nnn {#1} {#2} {#3}
+  }
+\cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
+  {
+    \xsim_save_environment_body_end:nnn {#1} {#2} {#3}
+    \xsim_if_debug:T
+      {
+        Environment~ body~ written~ to~
+        \texttt { \l_xsim_file_name_tl } \par
+      }
+    \xsim_if_print:nnnT {#1} {#2} {#3}
+      {
+        \par
+        \xsim_use_template:nx
+          {begin}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \file_input:V \l_xsim_file_name_tl
+        \xsim_use_template:nx
+          {end}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \par
+      }
+  }
+\cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
+
+% #1: type
+% #2: options
 \cs_new_protected:Npn \xsim_start_exercise:nn #1#2
   {
     \int_gincr:N \g_xsim_id_int
@@ -160,73 +202,23 @@
         \exp_not:n {#2} ,
         id = \int_use:N \g_xsim_id_int
       }
-    \tl_gset:Nn \ExerciseID {}
+    \tl_gclear:N \l_xsim_exercise_id_tl
+    \tl_gset_eq:NN \ExerciseID \l_xsim_exercise_id_tl
     \xsim_gsave_property:nxnN {#1} { \int_use:N \g_xsim_id_int } {id}
-      \ExerciseID
+      \l_xsim_exercise_id_tl
+    \tl_gset_eq:NN \ExerciseID \l_xsim_exercise_id_tl
     \tl_gset:Nn \ExerciseType {#1}
-    \xsim_if_debug:T { \tl_show:N \ExerciseID }
-  }
-
-\RequirePackage{filecontents}
-
-\cs_new_eq:NN \__xsim_file_contents:n \filec@ntents
-\cs_new_eq:NN \xsim_end_file_contents: \endfilecontents
-
-\group_begin:
-  \char_set_catcode_active:n {13}%
-  \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
-\group_end:
-
-\show \token_new:Nn
-\cs_generate_variant:Nn \use:nn {nx}
-
-\cs_new_protected:Npn \xsim_file_contents:n #1
-  { \use:nx { \__xsim_file_contents:n {#1} } { \c__xsim_active_eol_tl } }
-
-\cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
-  {
-    \group_begin:
-      \@tempswafalse
-      \xsim_file_contents:n {xsim-#1-#2-#3-body.tex}
-  }
-
-\cs_new_protected:Npn \xsim_save_environment_body_end:nnn #1#2#3
-  {
-      \xsim_end_file_contents:
-    \group_end:
+    \xsim_if_debug:T { \tl_show:N \l_xsim_exercise_id_tl }
   }
   
-% #1: type
-% #2: id
-% #3: exercise|solution
-\cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
-  { \xsim_save_environment_body:nnn {#1} {#2} {#3} }
-\cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
-
-% #1: type
-% #2: id
-% #3: exercise|solution
-\cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
-  {
-    \xsim_save_environment_body_end:nnn {#1} {#2} {#3}
-    \xsim_if_print:nnnT {#1} {#2} {#3}
-      {
-        \par
-        \xsim_use_template:nx
-          {begin}
-          { \xsim_get_parameter:nn {#1} {#3-template} }
-        \file_input:n {xsim-#1-#2-#3-body.tex}
-        \xsim_use_template:nx
-          {end}
-          { \xsim_get_parameter:nn {#1} {#3-template} }
-        \par
-      }
-  }
-\cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
-
+% ----------------------------------------------------------------------------
+% TODO: (think of properties, tags, ...)
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
   {
-    \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
+    \bool_if:nTF
+      {
+        \use:c {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
+      }
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -243,7 +235,9 @@
 \cs_new_protected:Npn \xsim_if_print:nnnT #1#2#3#4
   { \use:c {xsim_#3_if_print:nnT} {#1} {#2} {#4} }
 
-\NewDocumentCommand \DeclareExerciseType {mm}
-  { \xsim_declare_exercise_type:nn {#1} {#2} }
-
 % ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim}
+  { path .tl_set:N = \l__xsim_file_name_path_tl }
+
+% ----------------------------------------------------------------------------  

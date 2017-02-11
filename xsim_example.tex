@@ -1,15 +1,6 @@
 \documentclass{article}
 \usepackage{xsim,lipsum,tcolorbox}
 
-\DeclareExerciseType{question}{
-  exercise-env = question ,
-  solution-env = solution ,
-  exercise-name = Question ,
-  solution-name = Solution ,
-  exercise-template = subsection* ,
-  solution-template = subsection*
-}
-
 \DeclareExerciseType{exercise}{
   exercise-env = exercise ,
   solution-env = hint ,
@@ -28,22 +19,6 @@
   exercise-template = tcolorbox ,
   solution-template = tcolorbox
 }
-
-\DeclareExerciseProperty{subtitle}
-
-\DeclareExerciseTemplate{subsection*}
-  {%
-    \subsection*{%
-      \GetExerciseProperty{name}~\GetExerciseProperty{counter}%
-      \IfExercisePropertySetTF{subtitle}{
-        {\normalfont\itshape\GetExerciseProperty{subtitle}}%
-      }{}%
-    }
-    \IfExercisePropertySetTF{points}
-      {\marginpar{\rule{1.5cm}{1pt}/\GetExerciseProperty{points}}}
-      {}%
-  }
-  {}
 
 \DeclareExerciseTemplate{tcolorbox}
   {%

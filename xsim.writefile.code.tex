@@ -1,0 +1,75 @@
+% ----------------------------------------------------------------------------
+% the XSIM package - writefile module
+% 
+%   eXercise Sheets IMproved
+% 
+% ----------------------------------------------------------------------------
+% Clemens Niederberger
+% Web:    https://github.com/cgnieder/xsim
+% E-Mail: contact@mychemistry.eu
+% ----------------------------------------------------------------------------
+% Copyright 2017 Clemens Niederberger
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Clemens Niederberger.
+% ----------------------------------------------------------------------------
+% If you have any ideas, questions, suggestions or bugs to report, please
+% feel free to contact me.
+% ----------------------------------------------------------------------------
+\XSIMmodule{writefile}{functions for writing environment bodies to external files}
+\tl_new:N \l__xsim_file_name_signature_tl
+\tl_new:N \l__xsim_file_name_path_tl
+\tl_new:N \l_xsim_file_name_tl
+
+\RequirePackage{filecontents}
+
+\cs_new_protected:Npn \xsim_set_file_signature:nnn #1#2#3
+  { \tl_set:Nn \l__xsim_file_name_signature_tl {#1-#2-#3} }
+
+\tl_set:Nn \l_xsim_file_name_tl
+  {
+    \tl_if_blank:VF \l__xsim_file_name_path_tl
+      { \l__xsim_file_name_path_tl . }
+    \c_sys_jobname_str - \l__xsim_file_name_signature_tl -body.tex
+  }
+  
+\cs_new_eq:Nc \__xsim_file_contents:n  {filec@ntents}
+\cs_new_eq:Nc \xsim_end_file_contents: {endfilecontents}
+
+\group_begin:
+  \char_set_catcode_active:n {13}%
+  \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
+\group_end:
+
+\cs_new_protected:Npn \xsim_file_contents:n #1
+  {
+    % we need this to get the environment body correctly written to the
+    % external files if no optional argument is given to the environment;
+    % see http://tex.stackexchange.com/q/9035/5049 for a similar problem
+    \use:nx { \__xsim_file_contents:n {#1} } { \c__xsim_active_eol_tl }
+  }
+\cs_generate_variant:Nn \xsim_file_contents:n {V}
+
+\cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
+  {
+    \group_begin:
+      \cs_set_eq:cN {@latex@warning@no@line} \use_none:n
+      \use:c {@tempswafalse}
+      \xsim_file_contents:V \l_xsim_file_name_tl
+  }
+
+\cs_new_protected:Npn \xsim_save_environment_body_end:nnn #1#2#3
+  {
+      \xsim_end_file_contents:
+    \group_end:
+  }
+% ----------------------------------------------------------------------------
