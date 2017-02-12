@@ -28,3 +28,33 @@
 \XSIMmodule{solutions}{managing solutions}
 
 \xsim_load_modules:n {tags,properties}
+
+\bool_new:N \l__xsim_inside_solution_bool
+
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_solution_if_print:nn #1#2 {T,F,TF}
+  {
+    \bool_set_true:N \l____xsim_print_bool
+    \bool_if:cF {l__xsim_#1_solution_print_bool}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \xsim_if_tagged:nnF {#1} {#2}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \bool_if:NTF \l____xsim_print_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_solution_if_print:nnT {nV}
+
+% #1: type
+% #2: options
+\cs_new_protected:Npn \xsim_start_solution:nn #1#2
+  {
+    \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
+      { name = \xsim_get_parameter:nn {#1} {solution-name} }
+    \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
+    \bool_set_true:N \l__xsim_inside_solution_bool
+  }
+
+% ----------------------------------------------------------------------------
+\tex_endinput:D

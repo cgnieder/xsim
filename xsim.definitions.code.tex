@@ -92,7 +92,7 @@
   {
     \subsection*
       {
-        \GetExerciseProperty {name} \nobreakspace
+        \XSIMmixedcase { \GetExerciseProperty {name} } \nobreakspace
         \GetExerciseProperty {counter}
         \IfExercisePropertySetTF{subtitle}
           { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
@@ -102,10 +102,19 @@
       {
         \marginpar
           {
-            \rule {1.3cm} {1pt} / \(\GetExerciseProperty {points}
-            \IfExercisePropertySetTF {bonus-points}
-              { {}+{} \GetExerciseProperty {bonus-points} }
-              {} \)
+            \IfInsideSolutionTF
+              {
+                \( \GetExerciseProperty {points} \) \,
+                \ExerciseGoalName{points}
+                 {\XSIMtranslate{point}}
+                 {\XSIMtranslate{points}}
+              }
+              {
+                \rule {1.3cm} {1pt} / \(\GetExerciseProperty {points}
+                \IfExercisePropertySetTF {bonus-points}
+                  { {}+{} \GetExerciseProperty {bonus-points} }
+                  {} \)
+              }
           }
       }
       {}

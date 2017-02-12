@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------
-% the XSIM package - writefile module
+% the XSIM package - environments module
 % 
 %   eXercise Sheets IMproved
 % 
@@ -25,10 +25,12 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\XSIMmodule{writefile}{functions for writing environment bodies to external files}
+\XSIMmodule{environments}{environments that write their bodies to external files}
 \tl_new:N \l__xsim_file_name_signature_tl
 \tl_new:N \l__xsim_file_name_path_tl
 \tl_new:N \l_xsim_file_name_tl
+
+\xsim_load_modules:n {templates}
 
 \RequirePackage{filecontents}
 
@@ -72,4 +74,56 @@
       \xsim_end_file_contents:
     \group_end:
   }
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
+  {
+    \xsim_set_file_signature:nnn {#1} {#2} {#3}
+    \xsim_save_environment_body:nnn {#1} {#2} {#3}
+  }
+\cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
+
 % ----------------------------------------------------------------------------
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
+  {
+    \xsim_save_environment_body_end:nnn {#1} {#2} {#3}
+    \xsim_if_debug:T
+      {
+        Environment~ body~ written~ to~
+        \texttt { \l_xsim_file_name_tl } \par
+      }
+    \xsim_if_print:nnnT {#1} {#2} {#3}
+      {
+        \par
+        \xsim_use_template:nx
+          {begin}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \file_input:V \l_xsim_file_name_tl
+        \xsim_use_template:nx
+          {end}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \par
+      }
+  }
+\cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
+  
+% #1: type
+% #2: exercise|solution
+\cs_new_protected:Npn \xsim_new_environment:nn #1#2
+  {
+    \NewDocumentEnvironment
+      { \xsim_get_parameter:nn {#1} {#2-env} } {O{}}
+      {
+        \use:c {xsim_start_#2:nn} {#1} {##1}
+        \xsim_start_environment:nVn {#1} \l_xsim_exercise_id_tl {#2}
+      }
+      { \xsim_stop_environment:nVn {#1} \l_xsim_exercise_id_tl {#2} }
+  }
+
+% ----------------------------------------------------------------------------
+\tex_endinput:D

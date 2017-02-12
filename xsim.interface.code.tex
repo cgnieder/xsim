@@ -35,6 +35,11 @@
 
 % ----------------------------------------------------------------------------
 
+\DeclareExpandableDocumentCommand \IfInsideSolutionTF {mm}
+  { \bool_if:NTF \l__xsim_inside_solution_bool {#1} {#2} }
+
+% ----------------------------------------------------------------------------
+
 \NewDocumentCommand \DeclareExerciseProperty {sm}
   {
     \IfBooleanTF {#1}
@@ -48,8 +53,8 @@
 \NewDocumentCommand \IfExercisePropertySetTF {mmm}
   { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
-\NewDocumentCommand \GetExerciseProperty {m}
-  { \xsim_get_property:xxn {\ExerciseType} {\ExerciseID} {#1} }
+\DeclareExpandableDocumentCommand \GetExerciseProperty {m}
+  { \xsim_get_property:oon {\ExerciseType} {\ExerciseID} {#1} }
 
 \NewDocumentCommand \SaveExerciseProperty {mm}
   { \xsim_save_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
