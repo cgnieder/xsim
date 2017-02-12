@@ -100,5 +100,10 @@
 \NewDocumentCommand \ForAllExerciseTranslationsDo {+m}
   { \xsim_for_all_translations_do:n {#1} }
 
-% ----------------------------------------------------------------------------  
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \xsimsetup {m}
+  { \keys_set:nn {xsim} {#1} }
+
+% ----------------------------------------------------------------------------
 \tex_endinput:D

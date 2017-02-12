@@ -42,6 +42,12 @@
     \vspace{\baselineskip}
   }
 
+% \xsimsetup{
+%   tags = {geometry} ,
+%   ingore-untagged % if true untagged question will be printed regardless which
+%                   % tags  have been chose 
+% }
+
 \begin{document}
 
 Total: \printtotalpoints \par
@@ -67,7 +73,7 @@ foo x^2 y^3
 
 % \end{document}
 
-\begin{question}[subtitle=Foo,points=5,topic=analysis,grade=11]
+\begin{question}[subtitle=Foo,points=5,topic=analysis,tags={analysis,functions},grade=11]
   \lipsum[2]
 \end{question}
 \begin{solution}

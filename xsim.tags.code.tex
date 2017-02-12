@@ -29,5 +29,51 @@
 
 \xsim_load_modules:n {properties}
 
+\seq_new:N  \l__xsim_chosen_tags_seq
+\tl_new:N   \l__xsim_ignore_untagged_tl
+
+\keys_define:nn {xsim}
+  {
+    ingore-untagged .choices:nn = {true,false}
+      { \tl_set:Nn \l__xsim_ignore_untagged_tl {#1} } ,
+    ingore-untagged .default:n  = true ,
+    ignore-untagged .initial:n  = false ,
+    tags            .code:n     =
+      \seq_set_split:Nnn \l__xsim_chosen_tags_seq {,} {#1}
+  }
+
+\bool_new:N \l____xsim_tagged_bool
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_if_tagged:nn #1#2 {T,F,TF}
+  {
+    \bool_set_false:N \l____xsim_tagged_bool
+    \seq_if_empty:NTF \l__xsim_chosen_tags_seq
+      { \bool_set_true:N \l____xsim_tagged_bool }
+      {
+        \seq_set_split:Nnx \l__xsim_tmpa_seq {,}
+          { \xsim_get_property:nnn {#1} {#2} {tags} }
+        \seq_remove_all:Nn \l__xsim_tmpa_seq {}
+        \seq_if_empty:NTF \l__xsim_tmpa_seq
+          {
+            \use:c {bool_set_ \l__xsim_ignore_untagged_tl :N}
+              \l____xsim_tagged_bool
+          }
+          {
+            \seq_map_inline:Nn \l__xsim_tmpa_seq
+              {
+                \seq_if_in:NnTF \l__xsim_chosen_tags_seq {##1}
+                  {
+                    \bool_set_true:N \l____xsim_tagged_bool
+                    \seq_map_break:
+                  }
+              }
+          }
+      }
+    \bool_if:NTF \l____xsim_tagged_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
 % ----------------------------------------------------------------------------
 \tex_endinput:D

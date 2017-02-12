@@ -196,11 +196,9 @@
 \cs_new_protected:Npn \xsim_start_exercise:nn #1#2
   {
     \int_gincr:N \g_xsim_id_int
-    \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
     \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
       {
         name = \xsim_get_parameter:nn {#1} {exercise-name} ,
-        counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
         print = true ,
         \exp_not:n {#2} ,
         id = \int_use:N \g_xsim_id_int
@@ -212,17 +210,28 @@
     \tl_gset_eq:NN \ExerciseID \l_xsim_exercise_id_tl
     \tl_gset:Nn \ExerciseType {#1}
     \xsim_if_debug:T { \tl_show:N \l_xsim_exercise_id_tl }
-    \xsim_update_goals:nV {#1} \l_xsim_exercise_id_tl
+    \xsim_exercise_if_print:nVT {#1} \l_xsim_exercise_id_tl
+      {
+        \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
+        \xsim_set_properties:nnx {#1} { \int_use:N \g_xsim_id_int }
+          { counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } }
+        \xsim_update_goals:nV {#1} \l_xsim_exercise_id_tl
+      }
   }
   
 % ----------------------------------------------------------------------------
 % TODO: (think of properties, tags, ...)
+\bool_new:N \l____xsim_print_bool
+% #1: type
+% #2: id
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
   {
-    \bool_if:nTF
-      {
-        \use:c {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
-      }
+    \bool_set_true:N \l____xsim_print_bool
+    \bool_if:cF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \xsim_if_tagged:nnF {#1} {#2}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \bool_if:NTF \l____xsim_print_bool
       { \prg_return_true: }
       { \prg_return_false: }
   }
