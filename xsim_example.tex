@@ -8,7 +8,7 @@
   solution-name = Hint ,
   exercise-template = subsection* ,
   solution-template = subsection* ,
-  counter = question
+  counter = question % shares a counter with the `question' type
 }
 
 \DeclareExerciseType{problem}{
@@ -20,6 +20,9 @@
   solution-template = tcolorbox
 }
 
+\DeclareExerciseProperty{grade}
+\DeclareExerciseProperty{difficulty}
+
 \DeclareExerciseTemplate{tcolorbox}
   {%
     \vspace{\baselineskip}
@@ -29,7 +32,7 @@
       title = \GetExerciseProperty{name}~\GetExerciseProperty{counter}
       \IfExercisePropertySetTF{points}{%
         (\GetExerciseProperty{points}
-        \IfExerciseGoalTF{points}{=1}
+        \ExerciseGoalName{points}
           {\XSIMtranslate{point}}
           {\XSIMtranslate{points}})%
       }{}]
@@ -41,7 +44,18 @@
 
 \begin{document}
 
-\begin{question}[points=4,topic=geometry,tags={geometry,triangles},grade=7]
+Total: \printtotalpoints \par
+from questions: \printpoints{question} \par
+from exercises: \printpoints{exercise} \par
+from problems: \printpoints{problem} \par \bigskip
+
+Total bonus: \printtotalbonus \par
+from questions: \printbonus{question} \par
+from exercises: \printbonus{exercise} \par
+from problems: \printbonus{problem} \par
+
+
+\begin{question}[points=4,bonus-points=1,topic=geometry,tags={geometry,triangles},grade=7]
   \lipsum[1]
 \begin{verbatim}
 foo x^2 y^3

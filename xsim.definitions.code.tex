@@ -41,13 +41,39 @@
 \DeclareExerciseProperty  {bonus-points}
 \DeclareExerciseProperty  {tags}
 \DeclareExerciseProperty  {topic}
-\DeclareExerciseProperty  {grade}
-\DeclareExerciseProperty  {difficulty}
 
 % ----------------------------------------------------------------------------
 
 \DeclareExerciseGoal {points}
 \DeclareExerciseGoal {bonus-points}
+
+\NewDocumentCommand \printpoints {m}
+  {
+    \TotalExerciseTypeGoal {#1} {points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \printtotalpoints {}
+  {
+    \TotalExerciseGoal {points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \printbonus {m}
+  {
+    \TotalExerciseTypeGoal {#1} {bonus-points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \printtotalbonus {}
+  {
+    \TotalExerciseGoal {bonus-points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
 
 % ----------------------------------------------------------------------------
 
@@ -73,7 +99,15 @@
           {}
     }
     \IfExercisePropertySetTF {points}
-      { \marginpar { \rule {1.5cm} {1pt} / \GetExerciseProperty {points} } }
+      {
+        \marginpar
+          {
+            \rule {1.3cm} {1pt} / \(\GetExerciseProperty {points}
+            \IfExercisePropertySetTF {bonus-points}
+              { {}+{} \GetExerciseProperty {bonus-points} }
+              {} \)
+          }
+      }
       {}
   }
   {}
@@ -81,73 +115,38 @@
 % ----------------------------------------------------------------------------
 
 \DeclareExerciseTranslations{exercise}{
-  Fallback = Exercise ,
-  Catalan = Exercici ,
-  Danish = Opgave ,
-  English = Exercise ,
-  French = Exercice ,
-  German = \"Ubung ,
-  Italian = Esercizio ,
-  Norsk = Oppgave ,
-  Portuges = Exerc\'\i cio ,
-  Spanish = Ejercicio ,  
-  Turkish = Egzersiz
+  Fallback = exercise ,
+  English  = exercise ,
+  French   = exercice ,
+  German   = \"Ubung
 }
 
 \DeclareExerciseTranslations{question}{
-  Fallback  = Question ,
-  Catalan   = Q\"uesti\'o ,
-  Danish    = Opgave ,
-  English   = Question ,
-  French    = Question ,
-  German    = Aufgabe ,
-  Italian   = Questione ,
-  Norsk     = Oppgave ,
-  Portuges  = Quest\~ao ,
-  Spanish   = Pregunta ,
-  Turkish   = Soru
+  Fallback = question ,
+  English  = question ,
+  French   = question ,
+  German   = Aufgabe
 }
 
 \DeclareExerciseTranslations{solution}{
-  Fallback  = Solution ,
-  Catalan   = Soluci\'o ,
-  Danish    = L\o sning ,
-  English   = Solution ,
-  French    = Solution ,
-  German    = L\"osung ,
-  Italian   = Soluzione ,
-  Norsk     = L\o sning ,
-  Portuges  = Solu\c c\~ao ,
-  Spanish   = Soluci\'on ,
-  Turkish   = \c C\"oz\"um
+  Fallback = solution ,
+  English  = solution ,
+  French   = solution ,
+  German   = L\"osung
 }
 
 \DeclareExerciseTranslations{point}{
-  Fallback = Point ,
-  Catalan = Punt ,
-  Danish = Punkt ,
-  English = Point ,
-  French = Point ,
-  German = Punkt ,
-  Italian = Punto ,
-  Norsk = Poeng ,
-  Portuges = Punto ,
-  Spanish = Punto ,
-  Turkish = Nokta
+  Fallback = point ,
+  English  = point ,
+  French   = point ,
+  German   = Punkt
 }
 
 \DeclareExerciseTranslations{points}{
-  Fallback = Points ,
-  Catalan = Punts ,
-  Danish = Punkter ,
-  English = Points ,
-  French = Points ,
-  German = Punkte ,
-  Italian = Punti ,
-  Norsk = Poeng ,
-  Portuges = Puntos ,
-  Spanish = Puntos ,
-  Turkish = Nokta
+  Fallback = points ,
+  English  = points ,
+  French   = points ,
+  German   = Punkte
 }
 
 % ----------------------------------------------------------------------------

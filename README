@@ -28,7 +28,9 @@ The xsim bundle consists of the files
    xsim.definitions.code.tex
    xsim.exercises.code.tex
    xsim.goals.code.tex
+   xsim.interface.code.tex
    xsim.properties.code.tex
+   xsim.solutions.code.tex
    xsim.tags.code.tex
    xsim.templates.code.tex
    xsim.translations.code.tex

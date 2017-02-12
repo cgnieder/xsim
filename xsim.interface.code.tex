@@ -30,14 +30,10 @@
 \NewDocumentCommand \DeclareExerciseTemplate {m+m+m}
   { \xsim_declare_template:nnn {#1} {#2} {#3} }
 
-\DeclareExpandableDocumentCommand \IfExercisePropertyTF {mmm}
-  { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
-
-\NewDocumentCommand \DeclareExerciseGoal {m}
-  { \xsim_declare_exercise_goal:n {#1} }
-
 \NewDocumentCommand \DeclareExerciseType {mm}
   { \xsim_declare_exercise_type:nn {#1} {#2} }
+
+% ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseProperty {sm}
   {
@@ -46,19 +42,8 @@
       { \xsim_declare_property:nn { \c_false_bool } {#2} }
   }
 
-\DeclareExpandableDocumentCommand \XSIMtranslate {m}
-  { \xsim_translate:n {#1} }
-  
-\NewDocumentCommand \DeclareExerciseTranslations {mm}
-  { \xsim_declare_translations:nn {#1} {#2} }
-\@onlypreamble \DeclareExerciseTranslations
-  
-\NewDocumentCommand \DeclareExerciseTranslation {mmm}
-  { \xsim_declare_translation:nnn {#1} {#2} {#3} }
-\@onlypreamble \DeclareExerciseTranslation
-
-\NewDocumentCommand \ForAllChemTranslationsDo {+m}
-  { \xsim_for_all_translations_do:n {#1} }
+\DeclareExpandableDocumentCommand \IfExercisePropertyTF {mmm}
+  { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
 
 \NewDocumentCommand \IfExercisePropertySetTF {mmm}
   { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
@@ -72,6 +57,11 @@
 \NewDocumentCommand \GlobalSaveExerciseProperty {mmmm}
   { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseGoal {m}
+  { \xsim_declare_exercise_goal:n {#1} }
+
 \NewDocumentCommand \IfExerciseGoalTF {mmmm}
   {
     \xsim_if_goal_value:xxnnTF
@@ -79,6 +69,36 @@
       {#2}
       {#3} {#4}
   }
+
+\NewDocumentCommand \ExerciseGoalName {mmm}
+  {
+    \xsim_if_goal_value:xxnnTF
+      {\ExerciseType} {\ExerciseID} {#1}
+      {=1}
+      {#2} {#3}
+  }
+
+\NewDocumentCommand \TotalExerciseTypeGoal {mmmm}
+  { \xsim_print_goal_sum:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \TotalExerciseGoal {mmm}
+  { \xsim_print_total_goal_sum:nnn {#1} {#2} {#3} }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExpandableDocumentCommand \XSIMtranslate {m}
+  { \xsim_translate:n {#1} }
+  
+\NewDocumentCommand \DeclareExerciseTranslations {mm}
+  { \xsim_declare_translations:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseTranslations
+  
+\NewDocumentCommand \DeclareExerciseTranslation {mmm}
+  { \xsim_declare_translation:nnn {#1} {#2} {#3} }
+\@onlypreamble \DeclareExerciseTranslation
+
+\NewDocumentCommand \ForAllExerciseTranslationsDo {+m}
+  { \xsim_for_all_translations_do:n {#1} }
 
 % ----------------------------------------------------------------------------  
 \tex_endinput:D

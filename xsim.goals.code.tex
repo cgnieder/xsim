@@ -39,10 +39,16 @@
         \xsim_declare_property:nn { \c_false_bool } {#1}
         \seq_put_right:Nn \l__xsim_goals_seq {#1}
         \fp_gzero_new:c {g__xsim_goal_#1_fp}
+        \fp_if_exist:cF {g__xsim_total_goal_#1_fp}
+          { \fp_new:c {g__xsim_total_goal_#1_fp} }
         \AtBeginDocument
           {
             \xsim_foreach_exercise_type:n
-              { \fp_gzero_new:c {g__xsim_##1_goal_#1_fp} }
+              {
+                \fp_gzero_new:c {g__xsim_##1_goal_#1_fp}
+                \fp_if_exist:cF {g__xsim_total_##1_goal_#1_fp}
+                  { \fp_new:c {g__xsim_total_##1_goal_#1_fp} }
+              }
           }
       }
   }
@@ -89,6 +95,57 @@
       { \prg_return_false: }
   }
 \cs_generate_variant:Nn \xsim_if_goal_value:nnnnTF {xx}
+
+% #1: exercise type
+% #2: goal
+% #3: sum == 1
+% #4: sum != 1
+\cs_new:Npn \xsim_print_goal_sum:nnnn #1#2#3#4
+  {
+    \fp_to_decimal:c {g__xsim_total_#1_goal_#2_fp}
+    \fp_compare:nTF { \use:c {g__xsim_total_#1_goal_#2_fp} = 1 } {#3} {#4}
+  }
+
+% #1: goal
+% #2: sum == 1
+% #3: sum != 1
+\cs_new:Npn \xsim_print_total_goal_sum:nnn #1#2#3
+  {
+    \fp_to_decimal:c {g__xsim_total_goal_#1_fp}
+    \fp_compare:nTF { \use:c {g__xsim_total_goal_#1_fp} = 1 } {#2} {#3}
+  }
+
+\cs_new_protected:Npn \XSIMgoal #1#2#3
+  { \fp_gset:cn {g__xsim_total_#1_goal_#2_fp} {#3} }
+
+\cs_new_protected:Npn \XSIMtotalgoal #1#2
+  { \fp_gset:cn {g__xsim_total_goal_#1_fp} {#2} }
+
+\AtBeginDocument
+  {
+    \xsim_write_to_aux:n
+      {
+        \providecommand\XSIMgoal[2]{} ^^J
+        \providecommand\XSIMtotalgoal[3]{}
+      }
+  }
+  
+\AtEndDocument
+  {
+    \seq_map_inline:Nn \l__xsim_goals_seq
+      {
+        \xsim_foreach_exercise_type:n
+          {
+            \xsim_write_to_aux:x
+              {
+                \XSIMgoal {##1} {#1}
+                  { \fp_to_decimal:c {g__xsim_##1_goal_#1_fp} }
+              }
+          }
+        \xsim_write_to_aux:x
+          { \XSIMtotalgoal {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
+      }
+  }
 
 % ----------------------------------------------------------------------------
 \tex_endinput:D

@@ -71,6 +71,12 @@
 
 % --------------------------------------------------------------------------
 
+\cs_new_protected:Npn \xsim_write_to_aux:n #1
+  { \iow_now:Nn \@auxout {#1} }
+\cs_generate_variant:Nn \xsim_write_to_aux:n {x}
+
+% --------------------------------------------------------------------------
+
 \prg_new_conditional:Npnn \xsim_if_debug: {p,T,F,TF}
   {
     \bool_if:NTF \l__xsim_debug_bool
