@@ -129,22 +129,6 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExpandableDocumentCommand \XSIMtranslate {m}
-  { \xsim_translate:n {#1} }
-  
-\NewDocumentCommand \DeclareExerciseTranslations {mm}
-  { \xsim_declare_translations:nn {#1} {#2} }
-\@onlypreamble \DeclareExerciseTranslations
-  
-\NewDocumentCommand \DeclareExerciseTranslation {mmm}
-  { \xsim_declare_translation:nnn {#1} {#2} {#3} }
-\@onlypreamble \DeclareExerciseTranslation
-
-\NewDocumentCommand \ForAllChemTranslationsDo {+m}
-  { \xsim_for_all_translations_do:n {#1} }
-
-% ----------------------------------------------------------------------------
-
 \keys_define:nn {xsim}
   {
     language .value_required:n = true ,
@@ -159,3 +143,4 @@
   }
 
 % ----------------------------------------------------------------------------
+\tex_endinput:D

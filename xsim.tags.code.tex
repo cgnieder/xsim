@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------
-% the XSIM package - templates module
+% the XSIM package - tags module
 % 
 %   eXercise Sheets IMproved
 % 
@@ -25,30 +25,9 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\XSIMmodule{templates}{properties of exercises}
+\XSIMmodule{tags}{tagging of exercises}
 
-\xsim_load_modules:n {base,properties,goals}
+\xsim_load_modules:n {properties}
 
-% verse-type templates
-\prop_new:N \l__xsim_begin_template_prop
-\prop_new:N \l__xsim_end_template_prop
-
-% #1: template name
-% #2: begin code
-% #3: end code
-\cs_new_protected:Npn \xsim_declare_template:nnn #1#2#3
-  {
-    \prop_put:Nnn \l__xsim_begin_template_prop {#1} {#2}
-    \prop_put:Nnn \l__xsim_end_template_prop {#1} {#3}
-  }
-
-\cs_new_protected:Npn \xsim_use_template:nn #1#2
-  {
-    \prop_item:cn {l__xsim_#1_template_prop} {#2}
-    \cs_set_eq:NN \expandcode \use:x
-    % \tl_show:n {#2}
-  }
-\cs_generate_variant:Nn \xsim_use_template:nn {nx}
-
-% ----------------------------------------------------------------------------  
+% ----------------------------------------------------------------------------
 \tex_endinput:D

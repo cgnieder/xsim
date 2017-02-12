@@ -1,0 +1,84 @@
+% ----------------------------------------------------------------------------
+% the XSIM package - interface module
+% 
+%   eXercise Sheets IMproved
+% 
+% ----------------------------------------------------------------------------
+% Clemens Niederberger
+% Web:    https://github.com/cgnieder/xsim
+% E-Mail: contact@mychemistry.eu
+% ----------------------------------------------------------------------------
+% Copyright 2017 Clemens Niederberger
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Clemens Niederberger.
+% ----------------------------------------------------------------------------
+% If you have any ideas, questions, suggestions or bugs to report, please
+% feel free to contact me.
+% ----------------------------------------------------------------------------
+\XSIMmodule{interface}{user interface}
+
+\NewDocumentCommand \DeclareExerciseTemplate {m+m+m}
+  { \xsim_declare_template:nnn {#1} {#2} {#3} }
+
+\DeclareExpandableDocumentCommand \IfExercisePropertyTF {mmm}
+  { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
+
+\NewDocumentCommand \DeclareExerciseGoal {m}
+  { \xsim_declare_exercise_goal:n {#1} }
+
+\NewDocumentCommand \DeclareExerciseType {mm}
+  { \xsim_declare_exercise_type:nn {#1} {#2} }
+
+\NewDocumentCommand \DeclareExerciseProperty {sm}
+  {
+    \IfBooleanTF {#1}
+      { \xsim_declare_property:nn { \c_true_bool } {#2} }
+      { \xsim_declare_property:nn { \c_false_bool } {#2} }
+  }
+
+\DeclareExpandableDocumentCommand \XSIMtranslate {m}
+  { \xsim_translate:n {#1} }
+  
+\NewDocumentCommand \DeclareExerciseTranslations {mm}
+  { \xsim_declare_translations:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseTranslations
+  
+\NewDocumentCommand \DeclareExerciseTranslation {mmm}
+  { \xsim_declare_translation:nnn {#1} {#2} {#3} }
+\@onlypreamble \DeclareExerciseTranslation
+
+\NewDocumentCommand \ForAllChemTranslationsDo {+m}
+  { \xsim_for_all_translations_do:n {#1} }
+
+\NewDocumentCommand \IfExercisePropertySetTF {mmm}
+  { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
+
+\NewDocumentCommand \GetExerciseProperty {m}
+  { \xsim_get_property:xxn {\ExerciseType} {\ExerciseID} {#1} }
+
+\NewDocumentCommand \SaveExerciseProperty {mm}
+  { \xsim_save_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
+
+\NewDocumentCommand \GlobalSaveExerciseProperty {mmmm}
+  { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
+
+\NewDocumentCommand \IfExerciseGoalTF {mmmm}
+  {
+    \xsim_if_goal_value:xxnnTF
+      {\ExerciseType} {\ExerciseID} {#1}
+      {#2}
+      {#3} {#4}
+  }
+
+% ----------------------------------------------------------------------------  
+\tex_endinput:D

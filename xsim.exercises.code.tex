@@ -27,7 +27,7 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{exercises}{main exercises definitions}
 
-\xsim_load_modules:n {base,properties,writefile,templates}
+\xsim_load_modules:n {base,properties,writefile,templates,tags,goals}
 
 \seq_new:N \l__xsim_parameters_seq
 \int_new:N \g_xsim_id_int
@@ -109,6 +109,11 @@
 \tl_new:N \l_xsim_exercise_id_tl
 \tl_new:N \ExerciseID
 
+\seq_new:N \l__xsim_exercise_types_seq
+
+\cs_new_protected:Npn \xsim_foreach_exercise_type:n
+  { \seq_map_inline:Nn \l__xsim_exercise_types_seq }
+
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
   { \prop_new:c {l__xsim_#1_parameters_prop} }
 
@@ -121,6 +126,7 @@
 \cs_new_protected:Npn \xsim_declare_exercise_type:nn #1#2
   {
     \xsim_define_exercise_type_variables:n {#1}
+    \seq_put_right:Nn \l__xsim_exercise_types_seq {#1}
     \xsim_set_parameters:nn {#1} {#2}
     \xsim_if_parameter:nnF {#1} {counter}
       {
@@ -148,9 +154,6 @@
       }
       { \xsim_stop_environment:nVn {#1} \l_xsim_exercise_id_tl {solution} }
   }
-
-\NewDocumentCommand \DeclareExerciseType {mm}
-  { \xsim_declare_exercise_type:nn {#1} {#2} }
 
 % #1: type
 % #2: id
@@ -209,6 +212,7 @@
     \tl_gset_eq:NN \ExerciseID \l_xsim_exercise_id_tl
     \tl_gset:Nn \ExerciseType {#1}
     \xsim_if_debug:T { \tl_show:N \l_xsim_exercise_id_tl }
+    \xsim_update_goals:nV {#1} \l_xsim_exercise_id_tl
   }
   
 % ----------------------------------------------------------------------------
@@ -241,3 +245,4 @@
   { path .tl_set:N = \l__xsim_file_name_path_tl }
 
 % ----------------------------------------------------------------------------  
+\tex_endinput:D

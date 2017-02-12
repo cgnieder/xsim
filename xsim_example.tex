@@ -27,7 +27,12 @@
       colback = red!5!white ,
       colframe = red!75!black ,
       title = \GetExerciseProperty{name}~\GetExerciseProperty{counter}
-      \IfExercisePropertySetTF{points}{(\GetExerciseProperty{points})}{}]
+      \IfExercisePropertySetTF{points}{%
+        (\GetExerciseProperty{points}
+        \IfExerciseGoalTF{points}{=1}
+          {\XSIMtranslate{point}}
+          {\XSIMtranslate{points}})%
+      }{}]
   }
   {%
     \endtcolorbox
@@ -72,7 +77,13 @@ foo x^2 y^3
 
 % \end{document}
 
-\begin{problem}
+\begin{problem}[points=2]
+  \lipsum[3]
+\end{problem}
+\begin{answer}
+\end{answer}
+
+\begin{problem}[points=1]
   \lipsum[3]
 \end{problem}
 \begin{answer}
@@ -89,6 +100,15 @@ foo x^2 y^3
 \end{question}
 \begin{solution}
 \end{solution}
+
+\end{document}
+
+\ExplSyntaxOn
+\seq_show:N \l__xsim_goals_seq
+\fp_show:N \g__xsim_goal_points_fp
+\fp_show:N \g__xsim_question_goal_points_fp
+\fp_show:c {g__xsim_goal_bonus-points_fp}
+\ExplSyntaxOff
 
 \end{document}
 

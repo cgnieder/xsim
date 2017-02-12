@@ -27,7 +27,7 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{definitions}{definition of user commands}
 
-\xsim_load_modules:n {base,exercises,translations}
+\xsim_load_modules:n {base,exercises,translations,interface}
 
 % ----------------------------------------------------------------------------
 
@@ -43,6 +43,11 @@
 \DeclareExerciseProperty  {topic}
 \DeclareExerciseProperty  {grade}
 \DeclareExerciseProperty  {difficulty}
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseGoal {points}
+\DeclareExerciseGoal {bonus-points}
 
 % ----------------------------------------------------------------------------
 
@@ -77,50 +82,73 @@
 
 \DeclareExerciseTranslations{exercise}{
   Fallback = Exercise ,
+  Catalan = Exercici ,
+  Danish = Opgave ,
   English = Exercise ,
   French = Exercice ,
   German = \"Ubung ,
   Italian = Esercizio ,
-  Spanish = Ejercicio ,
-  Catalan = Exercici ,
-  Turkish = Egzersiz ,
-  Croatian = Primjer ,
-  Hungarian = Gyakorol ,
-  Danish = Opgave ,
   Norsk = Oppgave ,
-  Portuges = Exerc\'\i cio
+  Portuges = Exerc\'\i cio ,
+  Spanish = Ejercicio ,  
+  Turkish = Egzersiz
 }
 
 \DeclareExerciseTranslations{question}{
   Fallback  = Question ,
+  Catalan   = Q\"uesti\'o ,
+  Danish    = Opgave ,
   English   = Question ,
   French    = Question ,
   German    = Aufgabe ,
   Italian   = Questione ,
-  Spanish   = Pregunta ,
-  Catalan   = Q\"uesti\'o ,
-  Turkish   = Soru ,
-  Croatian  = Zadatak ,
-  Hungarian = Feladat ,
-  Danish    = Opgave ,
   Norsk     = Oppgave ,
-  Portuges  = Quest\~ao
+  Portuges  = Quest\~ao ,
+  Spanish   = Pregunta ,
+  Turkish   = Soru
 }
 
 \DeclareExerciseTranslations{solution}{
   Fallback  = Solution ,
+  Catalan   = Soluci\'o ,
+  Danish    = L\o sning ,
   English   = Solution ,
   French    = Solution ,
   German    = L\"osung ,
   Italian   = Soluzione ,
-  Spanish   = Soluci\'on ,
-  Catalan   = Soluci\'o ,
-  Turkish   = \c C\"oz\"um ,
-  Croatian  = Rje\v{s}enje ,
-  Hungarian = Megold\'as ,
-  Danish    = L\o sning ,
   Norsk     = L\o sning ,
-  Portuges  = Solu\c c\~ao
+  Portuges  = Solu\c c\~ao ,
+  Spanish   = Soluci\'on ,
+  Turkish   = \c C\"oz\"um
+}
+
+\DeclareExerciseTranslations{point}{
+  Fallback = Point ,
+  Catalan = Punt ,
+  Danish = Punkt ,
+  English = Point ,
+  French = Point ,
+  German = Punkt ,
+  Italian = Punto ,
+  Norsk = Poeng ,
+  Portuges = Punto ,
+  Spanish = Punto ,
+  Turkish = Nokta
+}
+
+\DeclareExerciseTranslations{points}{
+  Fallback = Points ,
+  Catalan = Punts ,
+  Danish = Punkter ,
+  English = Points ,
+  French = Points ,
+  German = Punkte ,
+  Italian = Punti ,
+  Norsk = Poeng ,
+  Portuges = Puntos ,
+  Spanish = Puntos ,
+  Turkish = Nokta
 }
 
 % ----------------------------------------------------------------------------
+\tex_endinput:D
