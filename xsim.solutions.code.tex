@@ -40,7 +40,7 @@
       { \bool_set_false:N \l____xsim_print_bool }
     \xsim_if_tagged:nnF {#1} {#2}
       { \bool_set_false:N \l____xsim_print_bool }
-    \xsim_if_in_list:nnF {print} {#1-#2}
+    \xsim_if_in_list:nnF {print} {#2}
       { \bool_set_false:N \l____xsim_print_bool }
     \bool_if:NTF \l____xsim_print_bool
       { \prg_return_true: }
@@ -100,14 +100,8 @@
     \group_begin:
       \tl_set:Nn \ExerciseType {#1}
       \xsim_use_template:nn {heading} {section*}
-      \int_zero:N \l__xsim_tmpa_int
-      \int_do_until:nn { \l__xsim_tmpa_int = \g_xsim_max_id_int }
-        {
-          \int_incr:N \l__xsim_tmpa_int
-          \tl_set:Nx \l__xsim_tmpa_tl { \int_use:N \l__xsim_tmpa_int }
-          \xsim_if_in_list:nxT {print} { #1 -\l__xsim_tmpa_tl }
-            { \xsim_insert_solution:nV {#1} \l__xsim_tmpa_tl }
-        }
+      \xsim_foreach_exercise:n
+        { \xsim_insert_solution:nn {#1} {##1} }
     \group_end:
   }
 

@@ -167,8 +167,20 @@
 \xsim_declare_parameter:n {counter}
 
 % ----------------------------------------------------------------------------
-\cs_new_protected:Npn \xsim_foreach_exercise_type:n
-  { \seq_map_inline:Nn \g__xsim_types_seq }
+% inside the argument `#1' refers to the type
+\cs_new_protected:Npn \xsim_foreach_exercise_type:n #1
+  { \seq_map_inline:Nn \g__xsim_types_seq {#1} }
+
+% inside the argument `#1' refers to the id
+\cs_new_protected:Npn \xsim_foreach_exercise:n #1
+  {
+    \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int }
+      { \xsim_if_in_list:nnT {print} {##1} {#1} }
+  }
+
+\cs_new_protected:Npn \xsim_foreach_exercise_per_type:nn #1#2
+  {
+  }
 
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
   { \prop_new:c {l__xsim_#1_parameters_prop} }
@@ -214,7 +226,8 @@
         name = \xsim_get_parameter:nn {#1} {exercise-name} ,
         print = true ,
         \exp_not:n {#2} ,
-        id = \int_use:N \g_xsim_id_int
+        id = \int_use:N \g_xsim_id_int ,
+        type = #1
       }
     \tl_gclear:N \g_xsim_exercise_id_tl
     \tl_gset_eq:NN \ExerciseID \g_xsim_exercise_id_tl
@@ -225,7 +238,7 @@
     \xsim_if_debug:T { \tl_show:N \g_xsim_exercise_id_tl }
     \xsim_exercise_if_print:nVT {#1} \g_xsim_exercise_id_tl
       {
-        \xsim_add_to_list:nx {print} { #1 - \g_xsim_exercise_id_tl }
+        \xsim_add_to_list:nx {print} { \g_xsim_exercise_id_tl }
         \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
         \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
           { counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } }
