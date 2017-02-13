@@ -40,7 +40,7 @@
       { \bool_set_false:N \l____xsim_print_bool }
     \xsim_if_tagged:nnF {#1} {#2}
       { \bool_set_false:N \l____xsim_print_bool }
-    \xsim_if_in_list:nnF {print} {#2}
+    \xsim_if_in_list:nnF {print} {#1-#2}
       { \bool_set_false:N \l____xsim_print_bool }
     \bool_if:NTF \l____xsim_print_bool
       { \prg_return_true: }
@@ -101,7 +101,7 @@
       \tl_set:Nn \ExerciseType {#1}
       \xsim_use_template:nn {heading} {section*}
       \xsim_foreach_exercise:n
-        { \xsim_insert_solution:nn {#1} {##1} }
+        { \xsim_insert_solution:nn {#1} {####1} }
     \group_end:
   }
 

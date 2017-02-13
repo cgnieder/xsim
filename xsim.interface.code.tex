@@ -114,6 +114,27 @@
   { \xsim_for_all_translations_do:n {#1} }
 
 % ----------------------------------------------------------------------------
+
+\NewDocumentCommand \blank {som}
+  {
+    \group_begin:
+      \IfNoValueF {#2} { \keys_set:nn {xsim/blank} {#2} }
+      \mode_if_vertical:TF
+        {
+          \IfBooleanF {#1} { \noindent }
+          \xsim_blank:n {#3}
+          \IfBooleanF {#1}
+            {
+              \bool_if:NT \l__xsim_blank_linespread_bool
+                { \linespread { \l__xsim_blank_linespread_tl } \selectfont }
+              \par
+            }
+        }
+        { \xsim_blank:n {#3} }
+    \group_end:
+  }
+  
+% ----------------------------------------------------------------------------
 % this is temporary!
 \NewDocumentCommand \printsolutionstype {m}
   { \xsim_print_type_solutions:n {#1} }
