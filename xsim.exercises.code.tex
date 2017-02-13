@@ -149,6 +149,7 @@
 % #2: parameter
 \cs_new:Npn \xsim_get_parameter:nn #1#2
   { \prop_item:cn {l__xsim_#1_parameters_prop} {#2} }
+\cs_generate_variant:Nn \xsim_get_parameter:nn {o}
 
 \prg_new_conditional:Npnn \xsim_if_parameter:nn #1#2 {p,T,F,TF}
   {

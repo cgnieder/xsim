@@ -30,6 +30,9 @@
 \NewDocumentCommand \DeclareExerciseTemplate {m+m+m}
   { \xsim_declare_template:nnn {#1} {#2} {#3} }
 
+\NewDocumentCommand \DeclareExerciseHeadingTemplate {m+m}
+  { \xsim_declare_heading_template:nn {#1} {#2} }
+
 \NewDocumentCommand \DeclareExerciseType {mm}
   { \xsim_declare_exercise_type:nn {#1} {#2} }
 
@@ -62,6 +65,11 @@
 \NewDocumentCommand \GlobalSaveExerciseProperty {mmmm}
   { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
+% ----------------------------------------------------------------------------
+  
+\DeclareExpandableDocumentCommand \GetExerciseParameter {m}
+  { \xsim_get_parameter:on {\ExerciseType} {#1} }
+  
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseGoal {m}

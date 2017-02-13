@@ -32,6 +32,7 @@
 % verse-type templates
 \prop_new:N \l__xsim_begin_template_prop
 \prop_new:N \l__xsim_end_template_prop
+\prop_new:N \l__xsim_heading_template_prop
 
 % #1: template name
 % #2: begin code
@@ -42,12 +43,22 @@
     \prop_put:Nnn \l__xsim_end_template_prop {#1} {#3}
   }
 
-% #1: begin|end
-% #2: template name
-\cs_new_protected:Npn \xsim_use_template:nn #1#2
+% #1: template name
+% #2:  code
+\cs_new_protected:Npn \xsim_declare_heading_template:nn #1#2
+  { \prop_put:Nnn \l__xsim_heading_template_prop {#1} {#2} }
+
+\cs_new_protected:Npn \xsim_setup_template_definitions:
   {
     \cs_set_eq:NN \XSIMexpandcode \use:x
     \cs_set:Npn \XSIMmixedcase ##1 { \tl_mixed_case:f {##1} }
+  }
+
+% #1: begin|end|heading
+% #2: template name
+\cs_new_protected:Npn \xsim_use_template:nn #1#2
+  {
+    \xsim_setup_template_definitions:
     \prop_item:cn {l__xsim_#1_template_prop} {#2}
   }
 \cs_generate_variant:Nn \xsim_use_template:nn {nx}

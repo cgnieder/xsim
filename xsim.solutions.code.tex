@@ -70,48 +70,52 @@
 % ----------------------------------------------------------------------------
 
 % #1: type
-\cs_new_protected:Npn \xsim_print_type_solutions:n #1
+% #2: id
+\cs_new_protected:Npn \xsim_insert_solution:nn #1#2
   {
-    \int_zero:N \l__xsim_tmpa_int
-    \int_do_until:nn { \l__xsim_tmpa_int = \g_xsim_max_id_int }
+    \xsim_set_file_signature:nnn {#1} {#2} {solution}
+    \file_if_exist:VT \l_xsim_file_name_tl
       {
-        \int_incr:N \l__xsim_tmpa_int
-        \tl_set:Nx \l__xsim_tmpa_tl { \int_use:N \l__xsim_tmpa_int }
-        \xsim_if_in_list:nxT {print} { #1 -\l__xsim_tmpa_tl }
-          {
-            \xsim_set_file_signature:nVn
-              {#1}
-              \l__xsim_tmpa_tl
-              {solution}
-            \file_if_exist:VT \l_xsim_file_name_tl
-              {
-                \group_begin:
-                \xsim_start_solution:nn {#1} {}
-                \tl_set_eq:NN \ExerciseID \l__xsim_tmpa_tl
-                \tl_set:Nn \ExerciseType {#1}
-                \par
-                \xsim_use_template:nx
-                  {begin}
-                  { \xsim_get_parameter:nn {#1} {solution-template} }
-                \file_input:V \l_xsim_file_name_tl
-                \xsim_use_template:nx
-                  {end}
-                  { \xsim_get_parameter:nn {#1} {solution-template} }
-                \par
-                \group_end:
-              }
-          }
+        \group_begin:
+          \xsim_start_solution:nn {#1} {}
+          \tl_set:Nn \ExerciseID {#2}
+          \par
+          \xsim_use_template:nx
+            {begin}
+            { \xsim_get_parameter:nn {#1} {solution-template} }
+            \file_input:V \l_xsim_file_name_tl
+          \xsim_use_template:nx
+            {end}
+            { \xsim_get_parameter:nn {#1} {solution-template} }
+          \par
+        \group_end:
       }
   }
+\cs_generate_variant:Nn \xsim_insert_solution:nn {nV}
+  
+% TODO: add options (template choice, ... )
+% #1: type
+\cs_new_protected:Npn \xsim_print_type_solutions:n #1
+  {
+    \group_begin:
+      \tl_set:Nn \ExerciseType {#1}
+      \xsim_use_template:nn {heading} {section*}
+      \int_zero:N \l__xsim_tmpa_int
+      \int_do_until:nn { \l__xsim_tmpa_int = \g_xsim_max_id_int }
+        {
+          \int_incr:N \l__xsim_tmpa_int
+          \tl_set:Nx \l__xsim_tmpa_tl { \int_use:N \l__xsim_tmpa_int }
+          \xsim_if_in_list:nxT {print} { #1 -\l__xsim_tmpa_tl }
+            { \xsim_insert_solution:nV {#1} \l__xsim_tmpa_tl }
+        }
+    \group_end:
+  }
 
-% TODO: add interface for headings
+% TODO: add options (print subheadings, sort per type,...)
 \cs_new_protected:Npn \xsim_print_all_solutions:
   {
     \xsim_foreach_exercise_type:n
-      {
-        \section* {Solutions~ to~ the~ ##1s}
-        \xsim_print_type_solutions:n {##1}
-      }
+      { \xsim_print_type_solutions:n {##1} }
   }
 
 % ----------------------------------------------------------------------------
