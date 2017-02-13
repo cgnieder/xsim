@@ -36,7 +36,7 @@
 % ----------------------------------------------------------------------------
 
 \DeclareExpandableDocumentCommand \IfInsideSolutionTF {mm}
-  { \bool_if:NTF \l__xsim_inside_solution_bool {#1} {#2} }
+  { \xsim_if_inside_solution:TF {#1} {#2} }
 
 % ----------------------------------------------------------------------------
 
@@ -104,6 +104,14 @@
 
 \NewDocumentCommand \ForAllExerciseTranslationsDo {+m}
   { \xsim_for_all_translations_do:n {#1} }
+
+% ----------------------------------------------------------------------------
+% this is temporary!
+\NewDocumentCommand \printsolutionstype {m}
+  { \xsim_print_type_solutions:n {#1} }
+
+\NewDocumentCommand \printsolutions {}
+  { \xsim_print_all_solutions: }
 
 % ----------------------------------------------------------------------------
 

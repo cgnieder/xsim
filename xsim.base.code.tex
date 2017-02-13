@@ -30,12 +30,14 @@
 % --------------------------------------------------------------------------
 % variants of kernel functions:
 \cs_generate_variant:Nn \seq_set_split:Nnn {Nnx}
+\cs_generate_variant:Nn \seq_gset_split:Nnn {c}
 \cs_generate_variant:Nn \prop_put:Nnn      {cxx}
 \cs_generate_variant:Nn \prop_gput:Nnn     {Nx,Nnx}
 \cs_generate_variant:Nn \prop_item:Nn      {c}
 \cs_generate_variant:Nn \prop_if_in:NnTF   {Nx}
 \cs_generate_variant:Nn \use:nn            {nx}
-\cs_generate_variant:Nn \file_input:n      {V}
+\cs_generate_variant:Nn \file_input:n      {V,x}
+\cs_generate_variant:Nn \file_if_exist:nT  {V,x}
 \cs_generate_variant:Nn \msg_error:nnnnn   {nnnxx}
 \cs_generate_variant:Nn \keys_define:nn    {nx}
 \cs_generate_variant:Nn \keys_set:nn       {xn}

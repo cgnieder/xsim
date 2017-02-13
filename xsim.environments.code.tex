@@ -34,8 +34,12 @@
 
 \RequirePackage{filecontents}
 
+% #1: type
+% #2: id
+% #3: exercise|solution
 \cs_new_protected:Npn \xsim_set_file_signature:nnn #1#2#3
   { \tl_set:Nn \l__xsim_file_name_signature_tl {#1-#2-#3} }
+\cs_generate_variant:Nn \xsim_set_file_signature:nnn {nx,nV}
 
 \tl_set:Nn \l_xsim_file_name_tl
   {
@@ -61,7 +65,7 @@
   }
 \cs_generate_variant:Nn \xsim_file_contents:n {V}
 
-\cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
+\cs_new_protected:Npn \xsim_save_environment_body:
   {
     \group_begin:
       \cs_set_eq:cN {@latex@warning@no@line} \use_none:n
@@ -69,7 +73,7 @@
       \xsim_file_contents:V \l_xsim_file_name_tl
   }
 
-\cs_new_protected:Npn \xsim_save_environment_body_end:nnn #1#2#3
+\cs_new_protected:Npn \xsim_save_environment_body_end:
   {
       \xsim_end_file_contents:
     \group_end:
@@ -81,7 +85,7 @@
 \cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
   {
     \xsim_set_file_signature:nnn {#1} {#2} {#3}
-    \xsim_save_environment_body:nnn {#1} {#2} {#3}
+    \xsim_save_environment_body:
   }
 \cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
 
@@ -91,7 +95,7 @@
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
   {
-    \xsim_save_environment_body_end:nnn {#1} {#2} {#3}
+    \xsim_save_environment_body_end:
     \xsim_if_debug:T
       {
         Environment~ body~ written~ to~
@@ -120,9 +124,12 @@
       { \xsim_get_parameter:nn {#1} {#2-env} } {O{}}
       {
         \use:c {xsim_start_#2:nn} {#1} {##1}
-        \xsim_start_environment:nVn {#1} \l_xsim_exercise_id_tl {#2}
+        \xsim_start_environment:nVn {#1} \g_xsim_exercise_id_tl {#2}
       }
-      { \xsim_stop_environment:nVn {#1} \l_xsim_exercise_id_tl {#2} }
+      {
+        \xsim_stop_environment:nVn {#1} \g_xsim_exercise_id_tl {#2}
+        \use:c {xsim_stop_#2:n} {#1}
+      }
   }
 
 % ----------------------------------------------------------------------------
