@@ -26,13 +26,36 @@
 % feel free to contact me.
 % ----------------------------------------------------------------------------
 \XSIMmodule{environments}{environments that write their bodies to external files}
-\tl_new:N \l__xsim_file_name_signature_tl
-\tl_new:N \l__xsim_file_name_path_tl
-\tl_new:N \l_xsim_file_name_tl
 
 \xsim_load_modules:n {templates}
 
-\RequirePackage{filecontents}
+\tl_new:N \l__xsim_file_name_signature_tl
+\tl_new:N \l__xsim_file_name_path_tl
+\tl_new:N \l_xsim_file_name_tl
+\group_begin:
+  \char_set_catcode_active:n {13}%
+  \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
+\group_end:
+
+\group_begin:
+\char_set_catcode_other:n {37}
+\tl_const:Nn \c__xsim_percent_char_tl {%}
+\group_end:
+
+\tl_const:Nx \c__xsim_backslash_char_tl { \cs_to_str:N \\ }
+
+\tl_new:N \l__xsim_comment_line_tl
+\tl_set:Nn \l__xsim_comment_line_tl
+  { \c__xsim_percent_char_tl \c__xsim_percent_char_tl \c_space_tl }
+
+\cs_new:Npn \__xsim_comment_line:n #1
+  { \l__xsim_comment_line_tl #1 ^^J }
+
+\iow_new:N \l__file_contents_iow
+
+\bool_new:N \l__xsim_options_given_bool
+
+% ----------------------------------------------------------------------------
 
 % #1: type
 % #2: id
@@ -47,37 +70,114 @@
       { \l__xsim_file_name_path_tl . }
     \c_sys_jobname_str - \l__xsim_file_name_signature_tl -body.tex
   }
-  
-\cs_new_eq:Nc \__xsim_file_contents:n  {filec@ntents}
-\cs_new_eq:Nc \xsim_end_file_contents: {endfilecontents}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: file name
+\cs_new:Npn \xsim_file_info:nnnn #1#2#3#4
+  {
+    \__xsim_comment_line:n {}
+    \__xsim_comment_line:n {file~ `#4'}
+    \__xsim_comment_line:n {}
+    \__xsim_comment_line:n {#3~ type~ `#1',~ ID~ `#2'}
+    \__xsim_comment_line:n {}
+    \__xsim_comment_line:n {generated~ by~ the~ `\@currenvir'~ environment}
+    \__xsim_comment_line:n {of~ the~ `xsim'~ package}
+    \__xsim_comment_line:n {
+      from~ source~ `\c_sys_jobname_str'~ on~
+      \int_use:N \c_sys_year_int /
+      \int_use:N \c_sys_month_int /
+      \int_use:N \c_sys_day_int
+    }
+    \l__xsim_comment_line_tl
+  }
+
+% ----------------------------------------------------------------------------
 
 \group_begin:
-  \char_set_catcode_active:n {13}%
-  \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
+% make ^^M active:
+\char_set_catcode_active:n {13} %
+%
+% the following is inspired by the definition of the `filecontents'
+% environment:
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: file name
+\cs_new_protected:Npn \xsim_file_contents_start:nnnn #1#2#3#4 %
+  { %
+    \group_begin: %
+    \iow_open:Nn \l__file_contents_iow {#4} %
+    \iow_now:Nx \l__file_contents_iow %
+      { \xsim_file_info:nnnn {#1} {#2} {#3} {#4} } %
+    \seq_map_inline:Nn \l_char_special_seq %
+      { \char_set_catcode_other:N ##1 } %
+    \int_step_inline:nnnn {128} {1} {255} %
+      { \char_set_catcode_letter:n {##1} } %
+    \tl_set:Nx \l__xsim_tmpa_tl %
+      { \c__xsim_backslash_char_tl end \cs_to_str:N \{ \@currenvir \cs_to_str:N \} } %
+    \cs_set:Npx \__xsim_tmpa:www %
+      { %
+        \cs_set:cpn {__xsim_tmpa:www} %
+          ####1 \l__xsim_tmpa_tl %
+          ####2 \l__xsim_tmpa_tl %
+          ####3 \exp_not:N \q_stop: %
+      } %
+    \__xsim_tmpa:www %
+      { %
+        \tl_if_blank:nTF {##3} %
+          { \iow_now:Nn \l__file_contents_iow {##1} } %
+          { %
+            \cs_set:Npx \__xsim_M:w { \exp_not:N \end {\@currenvir} } %
+            \char_set_active_eq:nN {13} \__xsim_M:w %
+            \tl_if_blank:nF {##1} %
+              { \iow_now:Nn \l__file_contents_iow {##1} }% last line is ##1 \end{\@currenvir}
+            % \tl_if_blank:nF {##2} %
+            %   {}% ##2 is placed after \end{\@currenvir}
+          } %
+        ^^M %
+      } %
+      \char_set_catcode_active:n {13} %
+    \cs_set:Npx \__xsim_M:w ##1 ^^M %
+      { %
+        \exp_not:N \__xsim_tmpa:www ##1 %
+        \l__xsim_tmpa_tl %
+        \l__xsim_tmpa_tl %
+        \exp_not:N \q_stop: %
+      } %
+    \char_set_active_eq:nN {13} \__xsim_M:w %
+  } %
 \group_end:
 
-\cs_new_protected:Npn \xsim_file_contents:n #1
-  {
-    % we need this to get the environment body correctly written to the
-    % external files if no optional argument is given to the environment;
-    % see http://tex.stackexchange.com/q/9035/5049 for a similar problem
-    \use:nx { \__xsim_file_contents:n {#1} } { \c__xsim_active_eol_tl }
-  }
-\cs_generate_variant:Nn \xsim_file_contents:n {V}
+\cs_new_protected:Npn \xsim_file_contents_stop:
+  { \iow_close:N \l__file_contents_iow \group_end: }
 
-\cs_new_protected:Npn \xsim_save_environment_body:
+  
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: file name
+\cs_new_protected:Npn \xsim_file_contents:nnnn #1#2#3#4
+  { \xsim_file_contents_start:nnnn {#1} {#2} {#3} {#4} }
+\cs_generate_variant:Nn \xsim_file_contents:nnnn {nnnV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
   {
-    \group_begin:
-      \cs_set_eq:cN {@latex@warning@no@line} \use_none:n
-      \use:c {@tempswafalse}
-      \xsim_file_contents:V \l_xsim_file_name_tl
+    % we need to insert an active ^^M if no options are given
+    % see http://tex.stackexchange.com/q/9035/5049 reasons
+    \use:nx
+      { \xsim_file_contents:nnnV {#1} {#2} {#3} \l_xsim_file_name_tl }
+      { \bool_if:NF \l__xsim_options_given_bool { \c__xsim_active_eol_tl } }
   }
 
 \cs_new_protected:Npn \xsim_save_environment_body_end:
-  {
-      \xsim_end_file_contents:
-    \group_end:
-  }
+  { \xsim_file_contents_stop: }
+
+% ----------------------------------------------------------------------------
 
 % #1: type
 % #2: id
@@ -85,11 +185,10 @@
 \cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
   {
     \xsim_set_file_signature:nnn {#1} {#2} {#3}
-    \xsim_save_environment_body:
+    \xsim_save_environment_body:nnn {#1} {#2} {#3}
   }
 \cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
 
-% ----------------------------------------------------------------------------
 % #1: type
 % #2: id
 % #3: exercise|solution
@@ -115,15 +214,25 @@
       }
   }
 \cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
-  
+
+% ----------------------------------------------------------------------------
+
 % #1: type
 % #2: exercise|solution
 \cs_new_protected:Npn \xsim_new_environment:nn #1#2
   {
     \NewDocumentEnvironment
-      { \xsim_get_parameter:nn {#1} {#2-env} } {O{}}
+      { \xsim_get_parameter:nn {#1} {#2-env} } {o}
       {
-        \use:c {xsim_start_#2:nn} {#1} {##1}
+        \IfNoValueTF {##1}
+          {
+            \bool_set_false:N \l__xsim_options_given_bool
+            \use:c {xsim_start_#2:nn} {#1} {}
+          }
+          {
+            \bool_set_true:N \l__xsim_options_given_bool
+            \use:c {xsim_start_#2:nn} {#1} {##1}
+          }
         \xsim_start_environment:nVn {#1} \g_xsim_exercise_id_tl {#2}
       }
       {
