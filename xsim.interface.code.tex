@@ -38,7 +38,7 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExpandableDocumentCommand \IfInsideSolutionTF {mm}
+\DeclareExpandableDocumentCommand \IfInsideSolutionTF {+m+m}
   { \xsim_if_inside_solution:TF {#1} {#2} }
 
 % ----------------------------------------------------------------------------
@@ -50,10 +50,10 @@
       { \xsim_declare_property:nn { \c_false_bool } {#2} }
   }
 
-\DeclareExpandableDocumentCommand \IfExercisePropertyTF {mmm}
+\DeclareExpandableDocumentCommand \IfExercisePropertyTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
 
-\NewDocumentCommand \IfExercisePropertySetTF {mmm}
+\NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
   { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
 \DeclareExpandableDocumentCommand \GetExerciseProperty {m}
@@ -75,7 +75,7 @@
 \NewDocumentCommand \DeclareExerciseGoal {m}
   { \xsim_declare_exercise_goal:n {#1} }
 
-\NewDocumentCommand \IfExerciseGoalTF {mmmm}
+\NewDocumentCommand \IfExerciseGoalTF {mm+m+m}
   {
     \xsim_if_goal_value:xxnnTF
       {\ExerciseType} {\ExerciseID} {#1}
@@ -96,6 +96,17 @@
 
 \NewDocumentCommand \TotalExerciseGoal {mmm}
   { \xsim_print_total_goal_sum:nnn {#1} {#2} {#3} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \ForeachExerciseTag {+m}
+  { \xsim_foreach_exercise_tag:oon {\ExerciseType} {\ExerciseID} {#1} }
+
+\NewDocumentCommand \ExerciseTagsUse {m}
+  { \xsim_exercise_tags_use:oon {\ExerciseType} {\ExerciseID} {#1} }
+
+\NewDocumentCommand \ExerciseTagsUseX {mmm}
+  { \xsim_exercise_tags_use:oonnn {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
 % ----------------------------------------------------------------------------
 
@@ -133,7 +144,14 @@
         { \xsim_blank:n {#3} }
     \group_end:
   }
-  
+
+\NewDocumentCommand \examspace { sm }
+  {
+    \IfBooleanTF {#1}
+      { \xsim_examspace:nn { \c_true_bool } {#2} }
+      { \xsim_examspace:nn { \c_false_bool } {#2} }
+  }
+
 % ----------------------------------------------------------------------------
 % this is temporary!
 \NewDocumentCommand \printsolutionstype {m}

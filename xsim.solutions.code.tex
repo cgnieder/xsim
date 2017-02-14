@@ -31,6 +31,13 @@
 
 \bool_new:N \l__xsim_inside_solution_bool
 
+\prg_new_conditional:Npnn \xsim_if_inside_solution: {p,T,F,TF}
+  {
+    \bool_if:NTF \l__xsim_inside_solution_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
 % #1: type
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_solution_if_print:nn #1#2 {T,F,TF}
@@ -59,13 +66,6 @@
   }
 
 \cs_new_protected:Npn \xsim_stop_solution:n #1 {}
-
-\prg_new_conditional:Npnn \xsim_if_inside_solution: {p,T,F,TF}
-  {
-    \bool_if:NTF \l__xsim_inside_solution_bool
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
 
 % ----------------------------------------------------------------------------
 
@@ -98,10 +98,19 @@
 \cs_new_protected:Npn \xsim_print_type_solutions:n #1
   {
     \group_begin:
-      \tl_set:Nn \ExerciseType {#1}
-      \xsim_use_template:nn {heading} {section*}
+      \bool_set_false:N \l__xsim_tmpa_bool
       \xsim_foreach_exercise:n
-        { \xsim_insert_solution:nn {#1} {####1} }
+        {
+          \xsim_if_in_list:nnT {print} {#1-####1}
+            { \bool_set_true:N \l__xsim_tmpa_bool }
+        }
+      \tl_set:Nn \ExerciseType {#1}
+      \bool_if:NT \l__xsim_tmpa_bool
+        {
+          \xsim_use_template:nn {heading} {section*}
+          \xsim_foreach_exercise:n
+            { \xsim_insert_solution:nn {#1} {####1} }
+        }
     \group_end:
   }
 

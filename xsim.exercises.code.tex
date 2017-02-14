@@ -71,6 +71,15 @@
 
 % #1: name
 % #2: entry
+\cs_new_protected:Npn \xsim_remove_from_list:nn #1#2
+  {
+    \prop_gremove:cn {g__xsim_#1_prop} {#2}
+    \seq_gremove_all:cn {g__xsim_#1_seq} {#2}
+  }
+\cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
+
+% #1: name
+% #2: entry
 \prg_new_conditional:Npnn \xsim_if_in_list:nn #1#2 {p,T,F,TF}
   {
     \prop_if_in:cnTF {g__xsim_#1_prop} {#2}
@@ -238,7 +247,7 @@
     \tl_gset_eq:NN \ExerciseID \g_xsim_exercise_id_tl
     \tl_gset:Nn \ExerciseType {#1}
     \xsim_if_debug:T { \tl_show:N \g_xsim_exercise_id_tl }
-    \xsim_exercise_if_print:nVT {#1} \g_xsim_exercise_id_tl
+    \xsim_exercise_if_print:nVTF {#1} \g_xsim_exercise_id_tl
       {
         \xsim_add_to_list:nx {print} { #1 - \g_xsim_exercise_id_tl }
         \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
@@ -246,6 +255,7 @@
           { counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } }
         \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
       }
+      { \xsim_remove_from_list:nx {print} { #1 - \g_xsim_exercise_id_tl } }
   }
 
 \cs_new_protected:Npn \xsim_stop_exercise:n #1 {}

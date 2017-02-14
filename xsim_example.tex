@@ -23,12 +23,28 @@
 \DeclareExerciseProperty{grade}
 \DeclareExerciseProperty{difficulty}
 
+\tcbuselibrary{breakable}
 \DeclareExerciseTemplate{tcolorbox}
   {%
+    \newcommand*\writehere{%
+      \IfInsideSolutionTF{}{%
+        \tcblower
+        \emph{Your answer:}
+        \vspace*{4cm}
+      }%
+    }
     \vspace{\baselineskip}
     \tcolorbox[
       colback = red!5!white ,
       colframe = red!75!black ,
+      colbacktitle = yellow!50!red ,
+      coltitle = red!25!black ,
+      fonttitle = \bfseries ,
+      subtitle style = {
+        boxrule = 0.4pt ,
+        colback = yellow!50!red!25!white
+      } ,
+      breakable ,
       title = \GetExerciseProperty{name}~\GetExerciseProperty{counter}
       \IfExercisePropertySetTF{points}{%
         (\GetExerciseProperty{points}
@@ -36,6 +52,11 @@
           {\XSIMtranslate{point}}
           {\XSIMtranslate{points}})%
       }{}]
+    \IfInsideSolutionTF{}{%
+      \IfExercisePropertySetTF{tags}{%
+        Tags: \ExerciseTagsUse{, } \par
+      }{}%
+    }%
   }
   {%
     \endtcolorbox
@@ -43,9 +64,9 @@
   }
 
 % \xsimsetup{
-%   tags = {geometry} ,
+%   tags = {analysis} ,
 %   ingore-untagged % if true untagged question will be printed regardless which
-%                   % tags  have been chose 
+%                   % tags have been chosen
 % }
 
 \begin{document}
@@ -82,8 +103,9 @@ foo x^2 y^3
 
 % \end{document}
 
-\begin{problem}
+\begin{problem}[tags={analysis,functions}]
   \lipsum[3]
+  \writehere
 \end{problem}
 \begin{answer}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
@@ -102,6 +124,7 @@ foo x^2 y^3
 
 \begin{problem}[points=2]
   \lipsum[3]
+  \writehere
 \end{problem}
 \begin{answer}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.

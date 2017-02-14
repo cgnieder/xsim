@@ -39,38 +39,26 @@
 \box_new:N \l__xsim_blank_box
 
 % the \blank{<words>} command
-\RequirePackage {ulem} \normalem
 
-\cs_new:Npn \xsim_write_blank:n #1 {#1}
-\cs_set_eq:NN \xsim_write_blank:n \uline
+\cs_new_protected:Npn \xsim_write_blank:n {}
 
-\keys_define:nn { xsim / blank }
+\keys_define:nn {xsim/blank}
   {
-    style          .choice: ,
-    style / line   .code:n =
-      \cs_set_eq:NN \xsim_write_blank:n \uline ,
-    style / wave   .code:n =
-      \cs_set_eq:NN \xsim_write_blank:n \uwave ,
-    style / dline  .code:n =
-      \cs_set_eq:NN \xsim_write_blank:n \uuline ,
-    style / dotted .code:n =
-      \cs_set_eq:NN \xsim_write_blank:n \dotuline ,
-    style / dashed .code:n =
-      \cs_set_eq:NN \xsim_write_blank:n \dashuline ,
-    scale          .tl_set:N = \l__xsim_blank_scale_tl ,
-    width          .code:n =
+    style               .code:n    =
+      \cs_set_protected:Npn \xsim_write_blank:n {#1} ,
+    style               .initial:n = \underline ,
+    scale               .tl_set:N  = \l__xsim_blank_scale_tl ,
+    width               .code:n    =
       {
         \bool_set_true:N \l__xsim_blank_width_bool
         \dim_set:Nn \l__xsim_blank_dim {#1}
       } ,
-    linespread     .code:n =
+    linespread          .code:n    =
       \bool_set_true:N \l__xsim_blank_linespread_bool
       \tl_set:Nn \l__xsim_blank_linespread_tl {#1} ,
-    line-increment .dim_set:N =
-      \l__xsim_blank_line_increment_dim ,
-    line-increment .initial:n = 1pt ,
-    line-minimum-length .dim_set:N =
-      \l__xsim_blank_line_minimum_length_dim ,
+    line-increment      .dim_set:N = \l__xsim_blank_line_increment_dim ,
+    line-increment      .initial:n = 1pt ,
+    line-minimum-length .dim_set:N = \l__xsim_blank_line_minimum_length_dim ,
     line-minimum-length .initial:n = 2em
   }
 
@@ -80,19 +68,16 @@
     \mode_if_math:TF
       { \hbox_set:Nn \l__xsim_blank_box { $ \m@th \mathpalette{}{#1} $ } }
       { \hbox_set:Nn \l__xsim_blank_box {#1} }
-    \bool_if:NTF \l__xsim_inside_solution_bool
+    \xsim_if_inside_solution:TF
       { \xsim_write_blank:n {#1} }
       {
         \bool_if:NTF \l__xsim_blank_width_bool
-          { \__xsim_blank_skip:N \l__xsim_blank_dim }
-          {
-            \__xsim_blank_skip:n
-              { \box_wd:N \l__xsim_blank_box }
-          }
+          { \__xsim_blank_skip:V \l__xsim_blank_dim }
+          { \__xsim_blank_skip:n { \box_wd:N \l__xsim_blank_box } }
       }
   }
   
-\cs_new_protected:Npn \__xsim_blank_skip:N #1
+\cs_new_protected:Npn \__xsim_blank_skip:n #1
   {
     \bool_if:NTF \l__xsim_blank_width_bool
       { \dim_set:Nn \l__xsim_tmpa_dim {#1} }
@@ -123,7 +108,7 @@
       }
       { \xsim_write_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
   }
-\cs_generate_variant:Nn \__xsim_blank_skip:N { n }
+\cs_generate_variant:Nn \__xsim_blank_skip:n { V }
 
 % ----------------------------------------------------------------------------
 \tex_endinput:D
