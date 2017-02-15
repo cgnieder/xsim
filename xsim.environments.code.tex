@@ -29,9 +29,13 @@
 
 \xsim_load_modules:n {templates}
 
-\tl_new:N \l__xsim_file_name_signature_tl
-\tl_new:N \l__xsim_file_name_path_tl
-\tl_new:N \l_xsim_file_name_tl
+\tl_new:N   \l__xsim_file_name_signature_tl
+\tl_new:N   \l__xsim_file_name_path_tl
+\tl_new:N   \l_xsim_file_name_tl
+\tl_new:N   \l_xsim_file_info_tl
+\iow_new:N  \l__file_contents_iow
+\bool_new:N \l__xsim_options_given_bool
+
 \group_begin:
   \char_set_catcode_active:n {13}%
   \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
@@ -43,19 +47,25 @@
 \group_end:
 
 \tl_const:Nx \c__xsim_backslash_char_tl { \cs_to_str:N \\ }
-
-\tl_new:N \l__xsim_comment_line_tl
-\tl_set:Nn \l__xsim_comment_line_tl
-  { \c__xsim_percent_char_tl \c__xsim_percent_char_tl \c_space_tl }
-
-\cs_new:Npn \__xsim_comment_line:n #1
-  { \l__xsim_comment_line_tl #1 ^^J }
-
-\iow_new:N \l__file_contents_iow
-
-\bool_new:N \l__xsim_options_given_bool
+\tl_const:Nn \c_xsim_comment_line_tl { \c__xsim_percent_char_tl }
+\tl_const:Nn \c_xsim_comment_line_fill_tl { \prg_replicate:nn {76} {-} }
+\tl_const:Nn \c_xsim_comment_line_indent_tl
+  { \c_space_tl \c_space_tl \c_space_tl \c_space_tl }
 
 % ----------------------------------------------------------------------------
+
+\cs_new:Npn \xsim_comment_line_and_feed:n #1
+  { \xsim_comment_line:n {#1} ^^J }
+
+\cs_new:Npn \xsim_comment_line:n #1
+  {
+    \c_xsim_comment_line_tl
+    \tl_if_blank:nF {#1} { \c_space_tl }
+    #1
+  }
+
+\cs_new:Npn \xsim_two_digits:n #1
+  { \int_compare:nT { #1 < 10 } {0} \int_eval:n {#1} }
 
 % #1: type
 % #2: id
@@ -75,23 +85,39 @@
 % #2: id
 % #3: exercise|solution
 % #4: file name
-\cs_new:Npn \xsim_file_info:nnnn #1#2#3#4
+\cs_new_protected:Npn \xsim_file_info:nnnn #1#2#3#4
   {
-    \__xsim_comment_line:n {}
-    \__xsim_comment_line:n {file~ `#4'}
-    \__xsim_comment_line:n {}
-    \__xsim_comment_line:n {#3~ type~ `#1',~ ID~ `#2'}
-    \__xsim_comment_line:n {}
-    \__xsim_comment_line:n {generated~ by~ the~ `\@currenvir'~ environment}
-    \__xsim_comment_line:n {of~ the~ `xsim'~ package}
-    \__xsim_comment_line:n {
-      from~ source~ `\c_sys_jobname_str'~ on~
-      \int_use:N \c_sys_year_int /
-      \int_use:N \c_sys_month_int /
-      \int_use:N \c_sys_day_int
-    }
-    \l__xsim_comment_line_tl
+    \tl_set:Nn \l_xsim_file_info_tl
+      {
+        \xsim_comment_line_and_feed:n { \c_xsim_comment_line_fill_tl }
+        \xsim_comment_line_and_feed:n {file~ `#4'}
+        \xsim_comment_line_and_feed:n {}
+        \xsim_comment_line_and_feed:n
+          {
+            \c_xsim_comment_line_indent_tl
+            #3~ of~ type~ `#1'~ with~ ID~ `#2'
+          }
+        \xsim_comment_line_and_feed:n {}
+        \xsim_comment_line_and_feed:n
+          {generated~ by~ the~ `\@currenvir'~ environment~ of~ the}
+        \xsim_comment_line_and_feed:n
+          {
+            \c_xsim_comment_line_indent_tl
+            `xsim'~ package~ v \c_xsim_version_tl
+            \c_space_tl (\c_xsim_date_tl)
+          }
+        \xsim_comment_line_and_feed:n
+          {
+            from~ source~ `\c_sys_jobname_str'~ on~
+            \int_use:N \c_sys_year_int /
+            \xsim_two_digits:n { \c_sys_month_int } /
+            \xsim_two_digits:n { \c_sys_day_int } ~
+            \msg_line_context:
+          }
+        \xsim_comment_line:n { \c_xsim_comment_line_fill_tl }
+      }
   }
+\cs_generate_variant:Nn \xsim_file_info:nnnn {nnnV}
 
 % ----------------------------------------------------------------------------
 
@@ -105,12 +131,11 @@
 % #2: id
 % #3: exercise|solution
 % #4: file name
-\cs_new_protected:Npn \xsim_file_contents_start:nnnn #1#2#3#4 %
+\cs_new_protected:Npn \xsim_file_write_start:n #1 %
   { %
     \group_begin: %
-    \iow_open:Nn \l__file_contents_iow {#4} %
-    \iow_now:Nx \l__file_contents_iow %
-      { \xsim_file_info:nnnn {#1} {#2} {#3} {#4} } %
+    \iow_open:Nn \l__file_contents_iow {#1} %
+    \iow_now:Nx \l__file_contents_iow { \l_xsim_file_info_tl } %
     \seq_map_inline:Nn \l_char_special_seq %
       { \char_set_catcode_other:N ##1 } %
     \int_step_inline:nnnn {128} {1} {255} %
@@ -149,33 +174,30 @@
     \char_set_active_eq:nN {13} \__xsim_M:w %
   } %
 \group_end:
+\cs_generate_variant:Nn \xsim_file_write_start:n {V}
 
-\cs_new_protected:Npn \xsim_file_contents_stop:
-  { \iow_close:N \l__file_contents_iow \group_end: }
-
-  
-% #1: type
-% #2: id
-% #3: exercise|solution
-% #4: file name
-\cs_new_protected:Npn \xsim_file_contents:nnnn #1#2#3#4
-  { \xsim_file_contents_start:nnnn {#1} {#2} {#3} {#4} }
-\cs_generate_variant:Nn \xsim_file_contents:nnnn {nnnV}
+\cs_new_protected:Npn \xsim_file_write_stop:
+  {
+    \iow_close:N \l__file_contents_iow
+    \group_end:
+  }
 
 % #1: type
 % #2: id
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
   {
+    \xsim_set_file_signature:nnn {#1} {#2} {#3}
+    \xsim_file_info:nnnV {#1} {#2} {#3} \l_xsim_file_name_tl
     % we need to insert an active ^^M if no options are given
     % see http://tex.stackexchange.com/q/9035/5049 reasons
     \use:nx
-      { \xsim_file_contents:nnnV {#1} {#2} {#3} \l_xsim_file_name_tl }
+      { \xsim_file_write_start:V \l_xsim_file_name_tl }
       { \bool_if:NF \l__xsim_options_given_bool { \c__xsim_active_eol_tl } }
   }
 
 \cs_new_protected:Npn \xsim_save_environment_body_end:
-  { \xsim_file_contents_stop: }
+  { \xsim_file_write_stop: }
 
 % ----------------------------------------------------------------------------
 
@@ -183,10 +205,7 @@
 % #2: id
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_start_environment:nnn #1#2#3
-  {
-    \xsim_set_file_signature:nnn {#1} {#2} {#3}
-    \xsim_save_environment_body:nnn {#1} {#2} {#3}
-  }
+  { \xsim_save_environment_body:nnn {#1} {#2} {#3} }
 \cs_generate_variant:Nn \xsim_start_environment:nnn {nV}
 
 % #1: type
@@ -201,19 +220,32 @@
         \texttt { \l_xsim_file_name_tl } \par
       }
     \xsim_if_print:nnnT {#1} {#2} {#3}
-      {
-        \par
-        \xsim_use_template:nx
-          {begin}
-          { \xsim_get_parameter:nn {#1} {#3-template} }
-        \file_input:V \l_xsim_file_name_tl
-        \xsim_use_template:nx
-          {end}
-          { \xsim_get_parameter:nn {#1} {#3-template} }
-        \par
-      }
+      { \xsim_typeset_environment:nnn {#1} {#2} {#3} }
   }
 \cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_typeset_environment:nnn #1#2#3
+  {
+    \use:x
+      {
+        \exp_not:N \par
+        \exp_not:v {l__xsim_#1_#3_pre_hook_tl}
+        \xsim_use_template:nn
+          {begin}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \exp_not:v {l__xsim_#1_#3_begin_hook_tl}
+        \file_input:n { \exp_not:V \l_xsim_file_name_tl }
+        \exp_not:v {l__xsim_#1_#3_end_hook_tl}
+        \xsim_use_template:nn
+          {end}
+          { \xsim_get_parameter:nn {#1} {#3-template} }
+        \exp_not:v {l__xsim_#1_#3_post_hook_tl}
+        \exp_not:N \par
+      }
+  }
 
 % ----------------------------------------------------------------------------
 
@@ -221,6 +253,17 @@
 % #2: exercise|solution
 \cs_new_protected:Npn \xsim_new_environment:nn #1#2
   {
+    \keys_define:nx {xsim}
+      {
+        \xsim_get_parameter:nn {#1} {#2-env}/pre-hook .tl_set:N =
+          \exp_not:c {l__xsim_#1_#2_pre_hook_tl} ,
+        \xsim_get_parameter:nn {#1} {#2-env}/begin-hook .tl_set:N =
+          \exp_not:c {l__xsim_#1_#2_begin_hook_tl} ,
+        \xsim_get_parameter:nn {#1} {#2-env}/end-hook .tl_set:N =
+          \exp_not:c {l__xsim_#1_#2_end_hook_tl} ,
+        \xsim_get_parameter:nn {#1} {#2-env}/post-hook .tl_set:N =
+          \exp_not:c {l__xsim_#1_#2_post_hook_tl}
+      }
     \NewDocumentEnvironment
       { \xsim_get_parameter:nn {#1} {#2-env} } {o}
       {

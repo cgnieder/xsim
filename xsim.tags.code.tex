@@ -29,20 +29,8 @@
 
 \xsim_load_modules:n {properties}
 
-\seq_new:N  \l__xsim_chosen_tags_seq
-\bool_new:N \l__xsim_ignore_untagged_bool
+\seq_new:N \l__xsim_tag_types_seq
 \bool_new:N \l____xsim_tagged_bool
-
-\keys_define:nn {xsim}
-  {
-    ingore-untagged .bool_set:N = \l__xsim_ignore_untagged_bool ,
-    % .choices:nn = {true,false}
-      % { \tl_set:Nn \l__xsim_ignore_untagged_tl {#1} } ,
-%     ingore-untagged .default:n  = true ,
-    ignore-untagged .initial:n  = false ,
-    tags            .code:n     =
-      \xsim_set_seq_from_clist:Nn \l__xsim_chosen_tags_seq {#1}
-  }
 
 \cs_new_protected:Npn \xsim_set_seq_from_clist:Nn #1#2
   {
@@ -50,76 +38,120 @@
     \clist_map_inline:nn {#2}
       { \tl_if_blank:nF {##1} { \seq_put_right:Nn #1 {##1} } }
   }
-\cs_generate_variant:Nn \xsim_set_seq_from_clist:Nn {Nx}
+\cs_generate_variant:Nn \xsim_set_seq_from_clist:Nn {c,Nx}
 
-% #1: type
-% #2: id
-\prg_new_protected_conditional:Npnn \xsim_if_tagged:nn #1#2 {T,F,TF}
+% #1: name
+\cs_new_protected:Npn \xsim_new_tag_type:n #1
   {
-    \bool_set_false:N \l____xsim_tagged_bool
-    \seq_if_empty:NTF \l__xsim_chosen_tags_seq
-      { \bool_set_true:N \l____xsim_tagged_bool }
+    \seq_put_right:Nn \l__xsim_tag_types_seq {#1}
+    \seq_remove_duplicates:N \l__xsim_tag_types_seq
+    \seq_new:c  {l__xsim_chosen_tags_#1_seq}
+    \bool_new:c {l__xsim_ignore_untagged_#1_bool}
+    \bool_new:c {l____xsim_tagged_#1_bool}
+    \keys_define:nn {xsim}
+      {
+        #1/ingore-untagged .bool_set:c = {l__xsim_ignore_untagged_#1_bool} ,
+        #1/ignore-untagged .initial:n  = true ,
+        #1                 .code:n     =
+          \xsim_set_seq_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
+      }
+    \xsim_declare_property:nn { \c_false_bool } {#1}
+  }
+
+% #1: exercise type
+% #2: id
+% #3: tag type
+\prg_new_protected_conditional:Npnn \xsim_if_tagged:nnn #1#2#3 {T,F,TF}
+  {
+    \bool_set_false:c {l____xsim_tagged_#3_bool}
+    % \seq_show:c {l__xsim_chosen_tags_#3_seq}
+    \seq_if_empty:cTF {l__xsim_chosen_tags_#3_seq}
+      { \bool_set_true:c {l____xsim_tagged_#3_bool} }
       {
         \xsim_set_seq_from_clist:Nx
           \l__xsim_tmpa_seq
-          { \xsim_get_property:nnn {#1} {#2} {tags} }
+          { \xsim_get_property:nnn {#1} {#2} {#3} }
         \seq_if_empty:NTF \l__xsim_tmpa_seq
           {
-            \bool_set_eq:NN
-              \l____xsim_tagged_bool
-              \l__xsim_ignore_untagged_bool
+            \bool_set_eq:cc
+              {l____xsim_tagged_#3_bool}
+              {l__xsim_ignore_untagged_#3_bool}
           }
           {
             \seq_map_inline:Nn \l__xsim_tmpa_seq
               {
-                \seq_if_in:NnTF \l__xsim_chosen_tags_seq {##1}
+                \seq_if_in:cnTF {l__xsim_chosen_tags_#3_seq} {##1}
                   {
-                    \bool_set_true:N \l____xsim_tagged_bool
+                    \bool_set_true:c {l____xsim_tagged_#3_bool}
                     \seq_map_break:
                   }
               }
           }
       }
+%     \bool_show:c {l____xsim_tagged_#3_bool}
+    \bool_if:cTF {l____xsim_tagged_#3_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: exercise type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_if_tagged:nn #1#2 {T,F,TF}
+  {
+    \bool_set_true:N \l____xsim_tagged_bool
+    \seq_map_inline:Nn \l__xsim_tag_types_seq
+      {
+        \xsim_if_tagged:nnnF {#1} {#2} {##1}
+          {
+            \bool_set_false:N \l____xsim_tagged_bool
+            \seq_map_break:
+          }
+      }
+%     \bool_show:N \l____xsim_tagged_bool
     \bool_if:NTF \l____xsim_tagged_bool
       { \prg_return_true: }
       { \prg_return_false: }
   }
 
-% #1: type
-% #2: id
-% #3: code
-\cs_new_protected:Npn \xsim_foreach_exercise_tag:nnn #1#2#3
-  {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
-      { \xsim_get_property:nnn {#1} {#2} {tags} }
-    \seq_map_inline:Nn \l__xsim_tmpa_seq {#3}
-  }
-\cs_generate_variant:Nn \xsim_foreach_exercise_tag:nnn {oo}
 
-% #1: type
+% #1: exercise type
 % #2: id
-% #3: sep
-\cs_new_protected:Npn \xsim_exercise_tags_use:nnn #1#2#3
+% #3: tag type
+% #4: code
+\cs_new_protected:Npn \xsim_foreach_exercise_tag:nnnn #1#2#3#4
   {
     \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
-      { \xsim_get_property:nnn {#1} {#2} {tags} }
-    \seq_use:Nn \l__xsim_tmpa_seq {#3}
+      { \xsim_get_property:nnn {#1} {#2} {#3} }
+    \seq_map_inline:Nn \l__xsim_tmpa_seq {#4}
   }
-\cs_generate_variant:Nn \xsim_exercise_tags_use:nnn {oo}
+\cs_generate_variant:Nn \xsim_foreach_exercise_tag:nnnn {oo}
 
-% #1: type
+% #1: exercise type
 % #2: id
-% #3: sep between two
-% #4: sep between more than two
-% #5: sep between last two
-\cs_new_protected:Npn \xsim_exercise_tags_use:nnnnn #1#2#3#4#5
+% #3: tag type
+% #4: sep
+\cs_new_protected:Npn \xsim_exercise_tags_use:nnnn #1#2#3#4
   {
     \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
-      { \xsim_get_property:nnn {#1} {#2} {tags} }
-    \seq_use:Nn \l__xsim_tmpa_seq {#3}
+      { \xsim_get_property:nnn {#1} {#2} {#3} }
+    \seq_use:Nn \l__xsim_tmpa_seq {#4}
   }
-\cs_generate_variant:Nn \xsim_exercise_tags_use:nnn   {oo}
-\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnnn {oo}
+\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnn {oo}
+
+% #1: exercise type
+% #2: id
+% #3: tag type
+% #4: sep between two
+% #5: sep between more than two
+% #6: sep between last two
+\cs_new_protected:Npn \xsim_exercise_tags_use:nnnnnn #1#2#3#4#5#6
+  {
+    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+      { \xsim_get_property:nnn {#1} {#2} {#3} }
+    \seq_use:Nnnn \l__xsim_tmpa_seq {#4} {#5} {#6}
+  }
+\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnn   {oo}
+\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnnnn {oo}
 
 % ----------------------------------------------------------------------------
 \tex_endinput:D

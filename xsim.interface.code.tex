@@ -99,14 +99,18 @@
 
 % ----------------------------------------------------------------------------
 
+\NewDocumentCommand \NewExerciseTagging {m}
+  { \xsim_new_tag_type:n {#1} }
+
+% based upon the predefind tagging class `tags':
 \NewDocumentCommand \ForeachExerciseTag {+m}
-  { \xsim_foreach_exercise_tag:oon {\ExerciseType} {\ExerciseID} {#1} }
+  { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {tags} {#1} }
 
 \NewDocumentCommand \ExerciseTagsUse {m}
-  { \xsim_exercise_tags_use:oon {\ExerciseType} {\ExerciseID} {#1} }
+  { \xsim_exercise_tags_use:oonn {\ExerciseType} {\ExerciseID} {tags} {#1} }
 
 \NewDocumentCommand \ExerciseTagsUseX {mmm}
-  { \xsim_exercise_tags_use:oonnn {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
+  { \xsim_exercise_tags_use:oonnnn {\ExerciseType} {\ExerciseID} {tags} {#1} {#2} {#3} }
 
 % ----------------------------------------------------------------------------
 

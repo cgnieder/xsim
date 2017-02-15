@@ -66,11 +66,12 @@
     \vspace{\baselineskip}
   }
 
-% \xsimsetup{
-%   tags = {analysis} ,
-%   ingore-untagged % if true untagged question will be printed regardless which
-%                   % tags have been chosen
-% }
+\xsimsetup{
+  % tags = {geometry} ,
+  % topics = {geometry}
+  % tags/ingore-untagged % if true untagged question will be printed regardless
+  %                      % which tags have been chosen
+}
 
 \begin{document}
 
@@ -84,19 +85,22 @@ from questions: \printbonus{question} \par
 from exercises: \printbonus{exercise} \par
 from problems: \printbonus{problem} \par
 
-\begin{question}[points=4,bonus-points=1,topic=geometry,tags={geometry,triangles},grade=7]
+\begin{question}[points=4,bonus-points=1,topics=geometry,tags={geometry,triangles},grade=7]
   \lipsum[1]
 \begin{verbatim}
-foo x^2 y^3
+foo x^2 y^3 \gna
 \end{verbatim}
 \end{question}
 \begin{solution}[print]
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
+\begin{verbatim}
+foo x^2 y^3 \gna
+\end{verbatim}
 \end{solution}
 
 % \end{document}
 
-\begin{question}[subtitle=Foo,points=5,topic=analysis,tags={analysis,functions},grade=11]
+\begin{question}[subtitle=Foo,points=5,topics=analysis,tags={analysis,functions},grade=11]
   \lipsum[2]
 \end{question}
 \begin{solution}

@@ -39,68 +39,6 @@
 
 % ----------------------------------------------------------------------------
 
-% #1: name
-\cs_new_protected:Npn \xsim_new_list:n #1
-  {
-    \prop_new:c {g__xsim_#1_prop}
-    \seq_new:c {g__xsim_#1_seq}
-    \cs_new_protected:cpn {XSIM#1} ##1
-      {
-        \seq_gset_split:cnn {g__xsim_#1_seq} {|} {##1}
-        \prop_gclear:c {g__xsim_#1_prop}
-        \seq_map_inline:cn {g__xsim_#1_seq}
-          { \prop_gput:cnn {g__xsim_#1_prop} {####1} {} }
-      }
-    \AtBeginDocument
-      {
-        \xsim_write_to_aux:x
-          { \exp_not:N \providecommand \exp_not:c {XSIM#1} [1] {} }
-      }
-  }
-
-% #1: name
-% #2: entry
-\cs_new_protected:Npn \xsim_add_to_list:nn #1#2
-  {
-    \prop_gput:cnn {g__xsim_#1_prop} {#2} {}
-    \seq_if_in:cnT {g__xsim_#1_seq} {#2}
-      { \seq_gremove_all:cn {g__xsim_#1_seq} {#2} }
-    \seq_gput_right:cn {g__xsim_#1_seq} {#2}
-  }
-\cs_generate_variant:Nn \xsim_add_to_list:nn {nx}
-
-% #1: name
-% #2: entry
-\cs_new_protected:Npn \xsim_remove_from_list:nn #1#2
-  {
-    \prop_gremove:cn {g__xsim_#1_prop} {#2}
-    \seq_gremove_all:cn {g__xsim_#1_seq} {#2}
-  }
-\cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
-
-% #1: name
-% #2: entry
-\prg_new_conditional:Npnn \xsim_if_in_list:nn #1#2 {p,T,F,TF}
-  {
-    \prop_if_in:cnTF {g__xsim_#1_prop} {#2}
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
-\cs_generate_variant:Nn \xsim_if_in_list:nnT {nx}
-
-% #1: name
-\cs_new_protected:Npn \xsim_update_list:n #1
-  {
-    \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_#1_seq}
-    \seq_gclear:c {g__xsim_#1_seq}
-    \seq_map_inline:Nn \l__xsim_tmpa_seq
-      { \seq_gput_right:cn {g__xsim_#1_seq} {##1} }
-    \xsim_write_to_aux:x
-      { \exp_not:c {XSIM#1} { \seq_use:cn {g__xsim_#1_seq} {|} } }
-  }
-
-% ----------------------------------------------------------------------------
-
 \xsim_new_list:n {types}
 \xsim_new_list:n {print}
   
