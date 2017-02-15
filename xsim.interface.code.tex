@@ -50,6 +50,9 @@
       { \xsim_declare_property:nn { \c_false_bool } {#2} }
   }
 
+\NewDocumentCommand \DeclareExercisePropertyAlias {mm}
+  { \xsim_make_property_alias:nn {#1} {#2} }
+
 \DeclareExpandableDocumentCommand \IfExercisePropertyTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
 

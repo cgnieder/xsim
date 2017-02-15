@@ -184,6 +184,7 @@
       \g_xsim_exercise_id_tl
     \tl_gset_eq:NN \ExerciseID \g_xsim_exercise_id_tl
     \tl_gset:Nn \ExerciseType {#1}
+    \xsim_property_set_alias:nVn {#1} \g_xsim_exercise_id_tl {ID}
     \xsim_if_debug:T { \tl_show:N \g_xsim_exercise_id_tl }
     \xsim_exercise_if_print:nVTF {#1} \g_xsim_exercise_id_tl
       {

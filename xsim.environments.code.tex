@@ -134,8 +134,8 @@
 \cs_new_protected:Npn \xsim_file_write_start:n #1 %
   { %
     \group_begin: %
-    \iow_open:Nn \l__file_contents_iow {#1} %
-    \iow_now:Nx \l__file_contents_iow { \l_xsim_file_info_tl } %
+        \iow_open:Nn \l__file_contents_iow {#1} %
+        \iow_now:Nx \l__file_contents_iow { \l_xsim_file_info_tl } %
     \seq_map_inline:Nn \l_char_special_seq %
       { \char_set_catcode_other:N ##1 } %
     \int_step_inline:nnnn {128} {1} {255} %
@@ -178,7 +178,7 @@
 
 \cs_new_protected:Npn \xsim_file_write_stop:
   {
-    \iow_close:N \l__file_contents_iow
+      \iow_close:N \l__file_contents_iow
     \group_end:
   }
 

@@ -191,8 +191,11 @@
 % ----------------------------------------------------------------------------
 
 \bool_new:N \l__xsim_rerun_bool
-\tl_const:Nn \c__xsim_rerun_message_tl
-  {Rerun~ to~ get~ `xsim'~ exercise~ properties~ synchronized}
+\msg_new:nnn {xsim} {rerun}
+  {
+    Exercise~ properties~ may~ have~ changed.~ Rerun~ to~ get~ them~
+    synchronized.
+  }
 
 \cs_new_protected:Npn \xsim_rerun:
   { \bool_set_true:N \l__xsim_rerun_bool }
@@ -200,7 +203,7 @@
 \cs_new_protected:Npn \xsim_do_rerun:
   {
     \bool_if:NT \l__xsim_rerun_bool
-      { \@latex@warning@no@line {\c__xsim_rerun_message_tl} }
+      { \msg_warning:nn {xsim} {rerun} }
   }
 
 % --------------------------------------------------------------------------
