@@ -28,7 +28,7 @@
 \RequirePackage {expl3,xparse}
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2017/02/15}
+\tl_const:Nn \c_xsim_date_tl                 {2017/02/18}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
 \tl_const:Nn \c_xsim_version_minor_number_tl {0}
 \tl_const:Nn \c_xsim_version_subrelease_tl   {}
@@ -200,11 +200,15 @@
 \cs_new_protected:Npn \xsim_rerun:
   { \bool_set_true:N \l__xsim_rerun_bool }
 
-\cs_new_protected:Npn \xsim_do_rerun:
+\prg_new_conditional:Npnn \xsim_if_rerun: {p,T,F,TF}
   {
-    \bool_if:NT \l__xsim_rerun_bool
-      { \msg_warning:nn {xsim} {rerun} }
+    \bool_if:NTF \l__xsim_rerun_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
   }
+  
+\cs_new_protected:Npn \xsim_do_rerun:
+  { \xsim_if_rerun:T { \msg_warning:nn {xsim} {rerun} } }
 
 % --------------------------------------------------------------------------
 % define a xsim module:

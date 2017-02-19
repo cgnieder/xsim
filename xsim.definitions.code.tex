@@ -29,6 +29,8 @@
 
 \xsim_load_modules:n {base,exercises,blanks,translations,interface}
 
+\RequirePackage{array,booktabs}
+
 % ----------------------------------------------------------------------------
 
 \DeclareExerciseProperty* {id}
@@ -96,20 +98,19 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseTemplate{subsection*}
+\DeclareExerciseEnvironmentTemplate{subsection*}
   {
     \subsection*
       {
-        \XSIMmixedcase { \GetExerciseProperty {name} } \nobreakspace
+        \XSIMmixedcase { \GetExerciseName } \nobreakspace
         \GetExerciseProperty {counter}
-        \IfInsideSolutionTF {}
+        \IfInsideSolutionF
           {
-            \IfExercisePropertySetTF{subtitle}
+            \IfExercisePropertySetT{subtitle}
               { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
-              {}
           }
     }
-    \IfExercisePropertySetTF {points}
+    \IfExercisePropertySetT {points}
       {
         \marginpar
           {
@@ -121,14 +122,15 @@
                  {\XSIMtranslate{points}}
               }
               {
-                \rule {1.3cm} {1pt} / \(\GetExerciseProperty {points}
-                \IfExercisePropertySetTF {bonus-points}
-                  { {}+{} \GetExerciseProperty {bonus-points} }
-                  {} \)
+                \rule {1.3cm} {1pt} /
+                \(
+                  \GetExerciseProperty {points}
+                  \IfExercisePropertySetT {bonus-points}
+                    { {}+{} \GetExerciseProperty {bonus-points} }
+                \)
               }
           }
       }
-      {}
   }
   {}
 
@@ -141,7 +143,142 @@
         \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
          to~ the~ \XSIMmixedcase { \ExerciseType s}
       }
-    
+  }
+
+\DeclareExerciseHeadingTemplate {subsection*}
+  {
+    \subsection*
+      {
+        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+         to~ the~ \XSIMmixedcase { \ExerciseType s}
+      }
+  }
+
+\DeclareExerciseHeadingTemplate {section}
+  {
+    \section
+      {
+        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+         to~ the~ \XSIMmixedcase { \ExerciseType s}
+      }
+  }
+
+\DeclareExerciseHeadingTemplate {subsection}
+  {
+    \subsection
+      {
+        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+         to~ the~ \XSIMmixedcase { \ExerciseType s}
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseTableTemplate {horizontal}
+  {
+    \XSIMputright \ExerciseTableCode
+      {
+        \toprule
+        \XSIMifblankTF {\ExerciseType}
+          {}
+          { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
+        &
+      }
+    \ForEachExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          {
+            \XSIMifblankTF { \ExerciseType }
+              {
+                \XSIMputright \ExerciseTableCode
+                  {
+                    \XSIMmixedcase
+                      { \ExerciseParameterGet {#1} {exercise-name} ~ }
+                  }
+              }
+              {}
+            \XSIMputright \ExerciseTableCode { #3 & }
+          }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode
+      { Total \\ \midrule \XSIMmixedcase { \XSIMtranslate {point} }s & }
+    \ForEachExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          { \XSIMputright \ExerciseTableCode { \XSIMifblankTF {#5} {0} {#5} & } }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode
+      {
+        \XSIMifblankTF {\ExerciseType}
+          { \TotalExerciseGoal {points} {} {} }
+          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} }
+        \\ \midrule
+        \XSIMmixedcase { \XSIMtranslate {reached} } &
+      }
+    \ForEachExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          { \XSIMputright \ExerciseTableCode {&} }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode { \\ \bottomrule }
+    \def\numberofcolumns{
+      \XSIMifblankTF {\ExerciseType}
+        {\g_xsim_max_id_int}
+        {\csname numberof \ExerciseType s\endcsname}
+      }
+    \begin {tabular} {l*{\numberofcolumns}{c}c}
+      \ExerciseTableCode
+    \end {tabular}
+  }
+
+% TODO: update vertical analoguous to the horizontal template
+
+\DeclareExerciseTableTemplate {vertical}
+  {
+    \XSIMputright \ExerciseTableCode
+      {
+        \toprule
+        \XSIMifblankTF {\ExerciseType}
+          {}
+          { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
+        &
+        \XSIMmixedcase { \XSIMtranslate {point} } s &
+        \XSIMmixedcase { \XSIMtranslate {reached} } \\
+        \midrule
+      }
+    \ForEachExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          {
+            \XSIMifblankTF { \ExerciseType }
+              {
+                \XSIMputright \ExerciseTableCode
+                  {
+                    \XSIMmixedcase
+                      { \ExerciseParameterGet {#1} {exercise-name} ~ }
+                  }
+              }
+              {}
+            \XSIMputright \ExerciseTableCode
+              { #3 & \XSIMifblankTF {#5} {0} {#5} & \\ }
+          }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode
+      {
+        \midrule
+        Total &
+        \XSIMifblankTF {\ExerciseType}
+          { \TotalExerciseGoal {points} {} {} }
+          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} } &
+        \\ \bottomrule
+      }
+    \begin {tabular} {ccc}
+      \ExerciseTableCode
+    \end {tabular}
   }
 
 % ----------------------------------------------------------------------------
@@ -179,6 +316,13 @@
   English  = points ,
   French   = points ,
   German   = Punkte
+}
+
+\DeclareExerciseTranslations{reached}{
+  Fallback = reached ,
+  English  = reached ,
+  French   = atteint ,
+  German   = erreicht
 }
 
 % ----------------------------------------------------------------------------

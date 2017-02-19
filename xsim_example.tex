@@ -27,7 +27,7 @@
 \DeclareExerciseProperty{difficulty}
 
 \tcbuselibrary{breakable}
-\DeclareExerciseTemplate{tcolorbox}
+\DeclareExerciseEnvironmentTemplate{tcolorbox}
   {%
     \newcommand*\writehere{%
       \IfInsideSolutionTF{}{%
@@ -48,17 +48,17 @@
         colback = yellow!50!red!25!white
       } ,
       breakable ,
-      title = \GetExerciseProperty{name}~\GetExerciseProperty{counter}
-      \IfExercisePropertySetTF{points}{%
+      title = \GetExerciseName~\GetExerciseProperty{counter}
+      \IfExercisePropertySetT{points}{%
         (\GetExerciseProperty{points}
         \ExerciseGoalName{points}
           {\XSIMtranslate{point}}
           {\XSIMtranslate{points}})%
-      }{}]
-    \IfInsideSolutionTF{}{%
-      \IfExercisePropertySetTF{tags}{%
-        Tags: \ExerciseTagsUse{, } \par
-      }{}%
+      }]
+    \IfInsideSolutionF{%
+      \IfExercisePropertySetT{tags}{%
+        Tags: \ExerciseTagsUse{tags}{, } \par
+      }%
     }%
   }
   {%
@@ -85,6 +85,7 @@ from questions: \printbonus{question} \par
 from exercises: \printbonus{exercise} \par
 from problems: \printbonus{problem} \par
 
+% 1
 \begin{question}[points=4,bonus-points=1,topics=geometry,tags={geometry,triangles},grade=7]
   \lipsum[1]
 \begin{verbatim}
@@ -98,8 +99,7 @@ foo x^2 y^3 \gna
 \end{verbatim}
 \end{solution}
 
-% \end{document}
-
+% 2
 \begin{question}[subtitle=Foo,points=5,topics=analysis,tags={analysis,functions},grade=11]
   \lipsum[2]
 \end{question}
@@ -107,8 +107,7 @@ foo x^2 y^3 \gna
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{solution}
 
-% \end{document}
-
+% 3
 \begin{problem}[tags={analysis,functions}]
   \lipsum[3]
   \writehere
@@ -117,8 +116,7 @@ foo x^2 y^3 \gna
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{answer}
 
-% \end{document}
-
+% 4
 \begin{exercise}
   \lipsum[4]
 \end{exercise}
@@ -126,8 +124,7 @@ foo x^2 y^3 \gna
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{hint}
 
-% \end{document}
-
+% 5
 \begin{problem}[points=2]
   \lipsum[3]
   \writehere
@@ -136,6 +133,7 @@ foo x^2 y^3 \gna
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{answer}
 
+% 6
 \begin{problem}[points=1]
   \lipsum[3]
 \end{problem}
@@ -143,13 +141,23 @@ foo x^2 y^3 \gna
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{answer}
 
-\begin{question}
+% 7
+\begin{question}[ID=test]
   \lipsum[5]
+
+  \verb+\ExerciseID+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id}
+  
+  \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
 \end{question}
 \begin{solution}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{solution}
 
+% 8
 \begin{question}[print=false]
   \lipsum[5]
 \end{question}
@@ -160,5 +168,39 @@ foo x^2 y^3 \gna
 % \printsolutionstype{question}
 
 \printsolutions
+
+\ForEachExerciseByType{id: #2, type: #1\par}
+
+\bigskip
+
+\ForEachExerciseByID{id: #2, type: #1\par}
+
+\bigskip
+
+\ForEachExerciseByType{%
+  \ExercisePropertyIfSetT{#1}{#2}{points}
+    { \XSIMmixedcase{#1} #3: #5~points\par }%
+}
+
+\bigskip
+
+Number of questions: \numberofquestions \par
+Number of exercises: \numberofexercises \par
+Number of problems: \numberofproblems
+
+\bigskip
+
+\gradingtable[horizontal]{question} \par \bigskip
+
+\gradingtable[horizontal]{problem} \par \bigskip
+
+\gradingtable[horizontal]{} \par \bigskip
+
+% vertical
+\gradingtable{question} \par \bigskip
+
+\gradingtable{problem} \par \bigskip
+
+\gradingtable{}
 
 \end{document}

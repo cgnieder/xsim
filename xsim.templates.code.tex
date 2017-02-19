@@ -27,40 +27,119 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{templates}{properties of exercises}
 
-\xsim_load_modules:n {base,properties,goals}
+\xsim_load_modules:n {base}
 
-% verse-type templates
-\prop_new:N \l__xsim_begin_template_prop
-\prop_new:N \l__xsim_end_template_prop
-\prop_new:N \l__xsim_heading_template_prop
+% #1: template type
+\cs_new_protected:Npn \xsim_new_template_type:n #1
+  { \prop_new:c {l__xsim_#1_template_prop} }
+
+% #1: template type
+% #2: template name
+% #3: code
+\cs_new_protected:Npn \__xsim_add_template:nnn #1#2#3
+  {
+    \tl_new:c {l__xsim_template_#1_#2_setup_tl}
+    \prop_put:cnn {l__xsim_#1_template_prop} {#2} {#3}
+  }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_get_template:nn #1#2
+  { \prop_item:cn {l__xsim_#1_template_prop} {#2} }
+
+% ----------------------------------------------------------------------------
+
+% environment templates (types `begin' and `end'):
+\xsim_new_template_type:n {begin}
+\xsim_new_template_type:n {end}
 
 % #1: template name
 % #2: begin code
 % #3: end code
-\cs_new_protected:Npn \xsim_declare_template:nnn #1#2#3
+\cs_new_protected:Npn \xsim_declare_environment_template:nnn #1#2#3
   {
-    \prop_put:Nnn \l__xsim_begin_template_prop {#1} {#2}
-    \prop_put:Nnn \l__xsim_end_template_prop {#1} {#3}
+    \__xsim_add_template:nnn {begin} {#1}
+      {
+        \__xsim_start_template:nn {begin} {#1}
+        \__xsim_start_template:nn {end} {#1}
+        #2
+      }
+    \__xsim_add_template:nnn {end} {#1}
+      {
+        #3
+        \__xsim_stop_template:nn {end} {#1}
+        \__xsim_stop_template:nn {begin} {#1}
+      }
   }
+
+% ----------------------------------------------------------------------------
+
+% heading templates for the solution list (type `heading'):
+\xsim_new_template_type:n {heading}
 
 % #1: template name
 % #2: code
 \cs_new_protected:Npn \xsim_declare_heading_template:nn #1#2
-  { \prop_put:Nnn \l__xsim_heading_template_prop {#1} {#2} }
-
-\cs_new_protected:Npn \xsim_setup_template_definitions:
   {
-    \cs_set_eq:NN \XSIMexpandcode \use:x
-    \cs_set:Npn   \XSIMmixedcase ##1 { \tl_mixed_case:f {##1} }
+    \__xsim_add_template:nnn {heading} {#1}
+      {
+        \__xsim_start_template:nn {heading} {#1}
+        #2
+        \__xsim_stop_template:nn {heading} {#1}
+      }
   }
 
-% #1: begin|end|heading
+% ----------------------------------------------------------------------------
+
+% grading table templates (type `table'):
+\xsim_new_template_type:n {table}
+
+% #1: template name
+% #2: code
+\cs_new_protected:Npn \xsim_declare_table_template:nn #1#2
+  {
+    \__xsim_add_template:nnn {table} {#1}
+      {
+        \__xsim_start_template:nn {table} {#1}
+        #2
+        \__xsim_stop_template:nn {table} {#1}
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+% using templates:
+% setup up the next usage of `template name':
+% #1: template type
+% #2: template name
+% #3: setup code
+\cs_new_protected:Npn \xsim_setup_template:nnn #1#2#3
+  { \tl_set:cn {l__xsim_template_#1_#2_setup_tl} {#3} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_setup_template:nn #1#2
+  { \tl_use:c {l__xsim_template_#1_#2_setup_tl} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_clear_template_setup:nn #1#2
+  { \tl_clear:c {l__xsim_template_#1_#2_setup_tl} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_start_template:nn #1#2
+  { \group_begin: \__xsim_setup_template:nn {#1} {#2} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_stop_template:nn #1#2
+  { \group_end: \__xsim_clear_template_setup:nn {#1} {#2} }
+  
+% #1: template type
 % #2: template name
 \cs_new_protected:Npn \xsim_use_template:nn #1#2
-  {
-    \xsim_setup_template_definitions:
-    \prop_item:cn {l__xsim_#1_template_prop} {#2}
-  }
+  { \__xsim_get_template:nn {#1} {#2} }
 \cs_generate_variant:Nn \xsim_use_template:nn {nx}
 
 % ----------------------------------------------------------------------------  

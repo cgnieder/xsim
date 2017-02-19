@@ -27,11 +27,16 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{interface}{user interface}
 
-\NewDocumentCommand \DeclareExerciseTemplate {m+m+m}
-  { \xsim_declare_template:nnn {#1} {#2} {#3} }
+\NewDocumentCommand \DeclareExerciseEnvironmentTemplate {m+m+m}
+  { \xsim_declare_environment_template:nnn {#1} {#2} {#3} }
 
 \NewDocumentCommand \DeclareExerciseHeadingTemplate {m+m}
   { \xsim_declare_heading_template:nn {#1} {#2} }
+
+\NewDocumentCommand \DeclareExerciseTableTemplate {m+m}
+  { \xsim_declare_table_template:nn {#1} {#2} }
+
+% ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseType {mm}
   { \xsim_declare_exercise_type:nn {#1} {#2} }
@@ -40,6 +45,12 @@
 
 \DeclareExpandableDocumentCommand \IfInsideSolutionTF {+m+m}
   { \xsim_if_inside_solution:TF {#1} {#2} }
+
+\DeclareExpandableDocumentCommand \IfInsideSolutionT {+m}
+  { \IfInsideSolutionTF {#1} {} }
+
+\DeclareExpandableDocumentCommand \IfInsideSolutionF {+m}
+  { \IfInsideSolutionTF {} {#1} }
 
 % ----------------------------------------------------------------------------
 
@@ -53,26 +64,99 @@
 \NewDocumentCommand \DeclareExercisePropertyAlias {mm}
   { \xsim_make_property_alias:nn {#1} {#2} }
 
-\DeclareExpandableDocumentCommand \IfExercisePropertyTF {+m+m+m}
+\DeclareExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
+
+\DeclareExpandableDocumentCommand \IfExercisePropertyExistT {+m+m}
+  { \IfExercisePropertyExistTF {#1} {#2} {} }
+
+\DeclareExpandableDocumentCommand \IfExercisePropertyExistF {+m+m}
+  { \IfExercisePropertyExistTF {#1} {} {#2} }
 
 \NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
   { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
+\NewDocumentCommand \IfExercisePropertySetT {m+m}
+  { \IfExercisePropertySetTF {#1} {#2} {} }
+
+\NewDocumentCommand \IfExercisePropertySetF {m+m}
+  { \IfExercisePropertySetTF {#1} {} {#2} }
+
 \DeclareExpandableDocumentCommand \GetExerciseProperty {m}
   { \xsim_get_property:oon {\ExerciseType} {\ExerciseID} {#1} }
+
+\DeclareExpandableDocumentCommand \GetExerciseAliasProperty {m}
+  {
+    \xsim_get_property:oof
+      {\ExerciseType}
+      {\ExerciseID}
+      { \xsim_property_alias:n {#1} }
+  }
 
 \NewDocumentCommand \SaveExerciseProperty {mm}
   { \xsim_save_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
-\NewDocumentCommand \GlobalSaveExerciseProperty {mmmm}
+\NewDocumentCommand \GlobalSaveExerciseProperty {mm}
   { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
 % ----------------------------------------------------------------------------
   
 \DeclareExpandableDocumentCommand \GetExerciseParameter {m}
   { \xsim_get_parameter:on {\ExerciseType} {#1} }
-  
+
+\DeclareExpandableDocumentCommand \GetExerciseName {}
+  {
+    \IfInsideSolutionTF
+      { \GetExerciseParameter {solution-name} }
+      { \GetExerciseParameter {exercise-name} }
+  }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \ExercisePropertyIfSetTF {mmm+m+m}
+  { \xsim_if_property_set:nnnTF {#1} {#2} {#3} {#4} {#5} }
+
+\NewDocumentCommand \ExercisePropertyIfSetT {mmm+m}
+  { \ExercisePropertyIfSetTF {#1} {#2} {#3} {#4} {} }
+
+\NewDocumentCommand \ExercisePropertyIfSetF {mmm+m}
+  { \ExercisePropertyIfSetTF {#1} {#2} {#3} {} {#4} }
+
+\DeclareExpandableDocumentCommand \ExercisePropertyGet {mmm}
+  { \xsim_get_property:nnn {#1} {#2} {#3} }
+
+\DeclareExpandableDocumentCommand \ExercisePropertyGetAlias {mm}
+  { \xsim_get_property:nnf {#1} {#2} { \xsim_property_alias:n {#1} } }
+
+\NewDocumentCommand \ExercisePropertySave {mmmm}
+  { \xsim_save_property:nnnN {#1} {#2} {#3} #4 }
+
+\NewDocumentCommand \ExercisePropertyGlobalSave {mmmm}
+  { \xsim_gsave_property:nnnN {#1} {#2} {#3} #4 }
+
+\DeclareExpandableDocumentCommand \ExerciseParameterGet {mm}
+  { \xsim_get_parameter:nn {#1} {#2} }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExpandableDocumentCommand \XSIMtranslate {m}
+  { \xsim_translate:n {#1} }
+
+\NewDocumentCommand \XSIMexpandcode {+m}
+  { \use:x {#1} }
+
+\DeclareExpandableDocumentCommand \XSIMmixedcase {m}
+  { \tl_mixed_case:f {#1} }
+
+\NewDocumentCommand \XSIMputright {mm}
+  { \g@addto@macro #1 {#2} }
+
+\DeclareExpandableDocumentCommand \XSIMifeqTF {+m+m+m+m}
+  { \tl_if_eq:ffTF {#1} {#2} {#3} {#4} }
+
+\DeclareExpandableDocumentCommand \XSIMifblankTF {+m+m+m}
+  { \tl_if_blank:fTF {#1} {#2} {#3} }
+
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseGoal {m}
@@ -86,13 +170,14 @@
       {#3} {#4}
   }
 
+\NewDocumentCommand \IfExerciseGoalT {mm+m}
+  { \IfExerciseGoalTF {#1} {#2} {#3} {} }
+
+\NewDocumentCommand \IfExerciseGoalF {mm+m}
+  { \IfExerciseGoalTF {#1} {#2} {} {#3} }
+
 \NewDocumentCommand \ExerciseGoalName {mmm}
-  {
-    \xsim_if_goal_value:xxnnTF
-      {\ExerciseType} {\ExerciseID} {#1}
-      {=1}
-      {#2} {#3}
-  }
+  { \IfExerciseGoalTF {#1} {=1} {#2} {#3} }
 
 \NewDocumentCommand \TotalExerciseTypeGoal {mmmm}
   { \xsim_print_goal_sum:nnnn {#1} {#2} {#3} {#4} }
@@ -105,21 +190,33 @@
 \NewDocumentCommand \NewExerciseTagging {m}
   { \xsim_new_tag_type:n {#1} }
 
-% based upon the predefind tagging class `tags':
-\NewDocumentCommand \ForeachExerciseTag {+m}
-  { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {tags} {#1} }
+\NewDocumentCommand \ForeachExerciseTag {m+m}
+  { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
-\NewDocumentCommand \ExerciseTagsUse {m}
-  { \xsim_exercise_tags_use:oonn {\ExerciseType} {\ExerciseID} {tags} {#1} }
+\NewDocumentCommand \ExerciseTagsUse {mm}
+  { \xsim_exercise_tags_use:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
-\NewDocumentCommand \ExerciseTagsUseX {mmm}
-  { \xsim_exercise_tags_use:oonnnn {\ExerciseType} {\ExerciseID} {tags} {#1} {#2} {#3} }
+\NewDocumentCommand \ExerciseTagsUseX {mmmm}
+  {
+    \xsim_exercise_tags_use:oonnnn
+      {\ExerciseType}
+      {\ExerciseID}
+      {#1}
+      {#2}
+      {#3}
+      {#4}
+  }
 
 % ----------------------------------------------------------------------------
 
-\DeclareExpandableDocumentCommand \XSIMtranslate {m}
-  { \xsim_translate:n {#1} }
-  
+\NewDocumentCommand \ForEachExerciseByType {+m}
+  { \xsim_foreach_exercise_type_id:n {#1} }
+
+\NewDocumentCommand \ForEachExerciseByID {+m}
+  { \xsim_foreach_exercise_id_type:n {#1} }
+
+% ----------------------------------------------------------------------------
+
 \NewDocumentCommand \DeclareExerciseTranslations {mm}
   { \xsim_declare_translations:nn {#1} {#2} }
 \@onlypreamble \DeclareExerciseTranslations
@@ -160,7 +257,23 @@
   }
 
 % ----------------------------------------------------------------------------
-% this is temporary!
+
+\NewDocumentCommand \gradingtable {O{vertical}m}
+  {
+    \xsim_setup_template:nnn {table} {#1}
+      {
+        \providecommand* \ExerciseTableCode {}
+        \providecommand* \ExerciseTableType [1] {}
+        \renewcommand* \ExerciseType {#2}
+        \renewcommand* \ExerciseTableCode {}
+        \renewcommand* \ExerciseTableType [1]
+          { \XSIMifblankTF { \ExerciseType } {##1} { \ExerciseType } }
+      }
+    \xsim_use_template:nn {table} {#1}
+  }
+
+% ----------------------------------------------------------------------------
+
 \NewDocumentCommand \printsolutionstype {m}
   { \xsim_print_type_solutions:n {#1} }
 

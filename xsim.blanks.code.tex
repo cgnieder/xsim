@@ -27,20 +27,16 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{blanks}{basic functionality of the package}
 
-\bool_new:N       \l__xsim_blank_width_bool
-\bool_new:N       \l__xsim_blank_linespread_bool
-\tl_new:N  \l__xsim_blank_linespread_tl
-\tl_set:Nn \l__xsim_blank_linespread_tl { 1 }
-\tl_new:N  \l__xsim_blank_scale_tl
-\tl_set:Nn \l__xsim_blank_scale_tl { 1 }
+\bool_new:N \l__xsim_blank_width_bool
+\bool_new:N \l__xsim_blank_linespread_bool
+\tl_new:N   \l__xsim_blank_linespread_tl
+\tl_new:N   \l__xsim_blank_scale_tl
 \dim_new:N  \l__xsim_blank_dim
 \dim_new:N  \l__xsim_blank_line_increment_dim
 \dim_new:N  \l__xsim_blank_line_minimum_length_dim
-\box_new:N \l__xsim_blank_box
+\box_new:N  \l__xsim_blank_box
 
-% the \blank{<words>} command
-
-\cs_new_protected:Npn \xsim_write_blank:n {}
+\cs_new_protected:Npn \xsim_write_blank:n #1 {#1}
 
 \keys_define:nn {xsim/blank}
   {
@@ -48,6 +44,7 @@
       \cs_set_protected:Npn \xsim_write_blank:n {#1} ,
     style               .initial:n = \underline ,
     scale               .tl_set:N  = \l__xsim_blank_scale_tl ,
+    scale               .initial:n = 1 ,
     width               .code:n    =
       {
         \bool_set_true:N \l__xsim_blank_width_bool
@@ -56,6 +53,7 @@
     linespread          .code:n    =
       \bool_set_true:N \l__xsim_blank_linespread_bool
       \tl_set:Nn \l__xsim_blank_linespread_tl {#1} ,
+    linespread          .initial:n = 1 ,
     line-increment      .dim_set:N = \l__xsim_blank_line_increment_dim ,
     line-increment      .initial:n = 1pt ,
     line-minimum-length .dim_set:N = \l__xsim_blank_line_minimum_length_dim ,

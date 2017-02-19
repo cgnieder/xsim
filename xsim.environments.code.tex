@@ -29,12 +29,54 @@
 
 \xsim_load_modules:n {templates}
 
+\RequirePackage{pdftexcmds}
+
 \tl_new:N   \l__xsim_file_name_signature_tl
 \tl_new:N   \l__xsim_file_name_path_tl
 \tl_new:N   \l_xsim_file_name_tl
 \tl_new:N   \l_xsim_file_info_tl
 \iow_new:N  \l__file_contents_iow
 \bool_new:N \l__xsim_options_given_bool
+\prop_new:N \g__xsim_mdfivesum_prop
+
+% ----------------------------------------------------------------------------
+
+% #1: file
+\cs_new:Npn \xsim_get_mdfivesum:n #1
+  { \pdf@filemdfivesum {#1} }
+
+\xsim_new_list:n {mdfivesum}
+
+\cs_new_protected:Npn \xsim_record_mdfivesum:n #1
+  {
+    \xsim_add_to_list:nx {mdfivesum}
+      { #1:\xsim_get_mdfivesum:n {#1} }
+    \prop_gput:Nxn \g__xsim_mdfivesum_prop
+      { #1:\xsim_get_mdfivesum:n {#1} }
+      {}
+  }
+\cs_generate_variant:Nn \xsim_record_mdfivesum:n {V}
+
+\AtEndDocument
+  {
+    \xsim_foreach_list_entry:nn {mdfivesum}
+      {
+        \prop_if_in:NnF \g__xsim_mdfivesum_prop {#1}
+          { \xsim_remove_from_list:nn {mdfivesum} {#1} }
+      }
+    \xsim_update_list:n {mdfivesum}
+  }
+
+\prg_new_protected_conditional:Npnn \xsim_if_mdfivesum_changed:n #1 {T,F,TF}
+  {
+    \xsim_if_in_list:nxTF {mdfivesum}
+      { #1:\xsim_get_mdfivesum:n {#1} }
+      { \prg_return_false: }
+      { \prg_return_true: }
+  }
+% \cs_generate_variant:Nn \xsim_if_mdfivesum_changed:n {V}
+
+% ----------------------------------------------------------------------------
 
 \group_begin:
   \char_set_catcode_active:n {13}%
@@ -189,6 +231,7 @@
   {
     \xsim_set_file_signature:nnn {#1} {#2} {#3}
     \xsim_file_info:nnnV {#1} {#2} {#3} \l_xsim_file_name_tl
+    % \xsim_record_mdfivesum:V \l_xsim_file_name_tl
     % we need to insert an active ^^M if no options are given
     % see http://tex.stackexchange.com/q/9035/5049 reasons
     \use:nx

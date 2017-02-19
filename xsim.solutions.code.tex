@@ -59,8 +59,6 @@
 % #2: options
 \cs_new_protected:Npn \xsim_start_solution:nn #1#2
   {
-    \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
-      { name = \xsim_get_parameter:nn {#1} {solution-name} }
     \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
     \bool_set_true:N \l__xsim_inside_solution_bool
   }
@@ -99,17 +97,17 @@
   {
     \group_begin:
       \bool_set_false:N \l__xsim_tmpa_bool
-      \xsim_foreach_exercise:n
+      \xsim_foreach_exercise_type_id:n
         {
-          \xsim_if_in_list:nnT {print} {#1-####1}
+          \xsim_if_in_list:nnT {print} {#1-##2}
             { \bool_set_true:N \l__xsim_tmpa_bool }
         }
       \tl_set:Nn \ExerciseType {#1}
       \bool_if:NT \l__xsim_tmpa_bool
         {
           \xsim_use_template:nn {heading} {section*}
-          \xsim_foreach_exercise:n
-            { \xsim_insert_solution:nn {#1} {####1} }
+          \xsim_foreach_exercise_type_id:n
+            { \xsim_insert_solution:nn {#1} {##2} }
         }
     \group_end:
   }

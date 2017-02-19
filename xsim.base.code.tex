@@ -42,6 +42,8 @@
 \cs_generate_variant:Nn \keys_define:nn     {nx}
 \cs_generate_variant:Nn \keys_set:nn        {xn}
 \cs_generate_variant:Nn \tl_mixed_case:n    {f}
+\cs_generate_variant:Nn \tl_if_eq:nnTF      {ff}
+\cs_generate_variant:Nn \tl_if_blank:nTF    {f}
 \cs_generate_variant:Nn \iow_now:Nn         {NV}
 
 % --------------------------------------------------------------------------
@@ -91,42 +93,63 @@
   }
 
 \bool_new:N \l__xsim_debug_bool
-% \bool_set_true:N \l__xsim_debug_bool
+
+\keys_define:nn {xsim}
+  { debug .bool_set:N = \l__xsim_debug_bool }
 
 % ----------------------------------------------------------------------------
 
+% #1: macro name
+% #2: 0 to 9 times `n' (= number of arguments of internal item)
+% #3: code; may contain a suiting \__xsim_loop_item:<nnn>
+\cs_new_protected:Npn \xsim_define_loop_macro:Nnn #1#2#3
+  {
+    \cs_new_protected:Npn #1 ##1
+      { \cs_set:cn {__xsim_loop_item:#2} {##1} #3 }
+  }
+
+% ----------------------------------------------------------------------------
+% list for recording values that need to be written to the aux file and
+% updated at begin document
+
+% define list:
 % #1: name
 \cs_new_protected:Npn \xsim_new_list:n #1
   {
-    \prop_new:c {g__xsim_#1_prop}
-    \seq_new:c {g__xsim_#1_seq}
-    \seq_new:c {g__xsim_recorded_#1_seq}
+    \prop_new:c {g__xsim_list_#1_prop}
+    \seq_new:c {g__xsim_list_#1_seq}
+    \seq_new:c {g__xsim_list_recorded_#1_seq}
     \cs_new_protected:cpn {XSIM#1} ##1
       {
-        \seq_gset_split:cnn {g__xsim_#1_seq} {|} {##1}
-        \prop_gclear:c {g__xsim_#1_prop}
-        \seq_map_inline:cn {g__xsim_#1_seq}
-          { \prop_gput:cnn {g__xsim_#1_prop} {####1} {} }
+        \prop_gclear:c {g__xsim_list_#1_prop}
+        \tl_if_blank:nF {##1}
+          {
+            \seq_gset_split:cnn {g__xsim_list_#1_seq} {|} {##1}
+            \seq_map_inline:cn {g__xsim_list_#1_seq}
+              { \prop_gput:cnn {g__xsim_list_#1_prop} {####1} {} }
+          }
       }
     \AtBeginDocument
       {
         \xsim_write_to_aux:x
-          { \exp_not:N \providecommand \exp_not:c {XSIM#1} [1] {} }
-        \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_#1_seq}
-        \seq_gclear:c {g__xsim_recorded_#1_seq}
+          { \token_to_str:N \providecommand \token_to_str:N \XSIM#1 [1] {} }
+        \seq_gclear:c {g__xsim_list_recorded_#1_seq}
+        \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
         \seq_map_inline:Nn \l__xsim_tmpa_seq
-          { \seq_gput_right:cn {g__xsim_recorded_#1_seq} {##1} }
+          { \seq_gput_right:cn {g__xsim_list_recorded_#1_seq} {##1} }
+        \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
       }
   }
 
+% add to or remove from list:
 % #1: name
 % #2: entry
 \cs_new_protected:Npn \xsim_add_to_list:nn #1#2
   {
-    \prop_gput:cnn {g__xsim_#1_prop} {#2} {}
-    \seq_if_in:cnT {g__xsim_#1_seq} {#2}
-      { \seq_gremove_all:cn {g__xsim_#1_seq} {#2} }
-    \seq_gput_right:cn {g__xsim_#1_seq} {#2}
+    \prop_gput:cnn {g__xsim_list_#1_prop} {#2} {}
+    \seq_if_in:cnT {g__xsim_list_#1_seq} {#2}
+      { \seq_gremove_all:cn {g__xsim_list_#1_seq} {#2} }
+    \seq_gput_right:cn {g__xsim_list_#1_seq} {#2}
   }
 \cs_generate_variant:Nn \xsim_add_to_list:nn {nx}
 
@@ -134,30 +157,46 @@
 % #2: entry
 \cs_new_protected:Npn \xsim_remove_from_list:nn #1#2
   {
-    \prop_gremove:cn {g__xsim_#1_prop} {#2}
-    \seq_gremove_all:cn {g__xsim_#1_seq} {#2}
+    \prop_gremove:cn {g__xsim_list_#1_prop} {#2}
+    \seq_gremove_all:cn {g__xsim_list_#1_seq} {#2}
+    \seq_gremove_all:cn {g__xsim_recorded_list_#1_seq} {#2}
   }
 \cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
 
+% check if in list:
 % #1: name
 % #2: entry
 \prg_new_conditional:Npnn \xsim_if_in_list:nn #1#2 {p,T,F,TF}
   {
-    \prop_if_in:cnTF {g__xsim_#1_prop} {#2}
+    \prop_if_in:cnTF {g__xsim_list_#1_prop} {#2}
       { \prg_return_true: }
       { \prg_return_false: }
   }
-\cs_generate_variant:Nn \xsim_if_in_list:nnT {nx}
+\cs_generate_variant:Nn \xsim_if_in_list:nnTF {nx}
+\cs_generate_variant:Nn \xsim_if_in_list:nnT  {nx}
 
+% update list -- should be used inside \AtEndDocument:
 % #1: name
 \cs_new_protected:Npn \xsim_update_list:n #1
   {
-    \tl_set:Nx \l__xsim_tmpa_tl { \seq_use:cn {g__xsim_#1_seq} {} }
-    \tl_set:Nx \l__xsim_tmpb_tl { \seq_use:cn {g__xsim_recorded_#1_seq} {} }
-    \tl_if_eq:NNF \l__xsim_tmpa_tl \l__xsim_tmpb_tl { \xsim_rerun: }
+    \tl_set:Nx \l__xsim_tmpa_tl
+      { \seq_use:cn {g__xsim_list_#1_seq} {} }
+    \tl_set:Nx \l__xsim_tmpb_tl
+      { \seq_use:cn {g__xsim_list_recorded_#1_seq} {} }
+    \tl_if_eq:NNF \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+      { \xsim_rerun: }
     \xsim_write_to_aux:x
-      { \exp_not:c {XSIM#1} { \seq_use:cn {g__xsim_#1_seq} {|} } }
+      {
+        \exp_not:c {XSIM#1}
+         { \seq_use:cn {g__xsim_list_#1_seq} {|} }
+      }
   }
+
+% loop over list:
+% #1: name
+% #2: code
+\cs_new_protected:Npn \xsim_foreach_list_entry:nn #1#2
+  { \seq_map_inline:cn {g__xsim_list_recorded_#1_seq} {#2} }
 
 % --------------------------------------------------------------------------
 \tex_endinput:D

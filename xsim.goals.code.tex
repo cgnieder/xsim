@@ -130,10 +130,10 @@
 
 \AtBeginDocument
   {
-    \xsim_write_to_aux:n
+    \xsim_write_to_aux:x
       {
-        \providecommand\XSIMgoal[2]{} ^^J
-        \providecommand\XSIMtotalgoal[3]{}
+        \token_to_str:N \providecommand \token_to_str:N \XSIMgoal [2] {} ^^J
+        \token_to_str:N \providecommand \token_to_str:N \XSIMtotalgoal [3] {}
       }
     \seq_map_inline:Nn \l__xsim_goals_seq
       {
