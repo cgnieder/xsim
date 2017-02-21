@@ -52,6 +52,15 @@
 \DeclareExpandableDocumentCommand \IfInsideSolutionF {+m}
   { \IfInsideSolutionTF {} {#1} }
 
+% \NewDocumentCommand \IfSolutionPrintTF {+m+m}
+%   { \xsim_solution_if_print:ooTF {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+% \NewDocumentCommand \IfSolutionPrintT {+m}
+%   { \IfSolutionPrintTF {#1} }
+
+% \NewDocumentCommand \IfSolutionPrintF {+m}
+%   { \IfSolutionPrintTF {} {#1} }
+
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseProperty {sm}
@@ -104,6 +113,12 @@
 \DeclareExpandableDocumentCommand \GetExerciseParameter {m}
   { \xsim_get_parameter:on {\ExerciseType} {#1} }
 
+\NewDocumentCommand \SetExerciseParameter {mmm}
+  { \xsim_set_parameter:nnn {#1} {#2} {#3} }
+
+\NewDocumentCommand \SetExerciseParameters {mm}
+  { \xsim_set_parameters:nn {#1} {#2} }
+  
 \DeclareExpandableDocumentCommand \GetExerciseName {}
   {
     \IfInsideSolutionTF
@@ -274,11 +289,11 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \printsolutionstype {m}
-  { \xsim_print_type_solutions:n {#1} }
+\NewDocumentCommand \printsolutionstype {O{}m}
+  { \xsim_print_type_solutions:nn {#1} {#2} }
 
-\NewDocumentCommand \printsolutions {}
-  { \xsim_print_all_solutions: }
+\NewDocumentCommand \printsolutions {O{}}
+  { \xsim_print_all_solutions:n {#1} }
 
 % ----------------------------------------------------------------------------
 

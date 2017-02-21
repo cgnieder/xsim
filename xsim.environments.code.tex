@@ -29,92 +29,47 @@
 
 \xsim_load_modules:n {templates}
 
-\RequirePackage{pdftexcmds}
-
 \tl_new:N   \l__xsim_file_name_signature_tl
 \tl_new:N   \l__xsim_file_name_path_tl
 \tl_new:N   \l_xsim_file_name_tl
-\tl_new:N   \l_xsim_file_info_tl
+\tl_new:N   \l__xsim_file_info_tl
 \iow_new:N  \l__file_contents_iow
 \bool_new:N \l__xsim_options_given_bool
-\prop_new:N \g__xsim_mdfivesum_prop
-
-% ----------------------------------------------------------------------------
-
-% #1: file
-\cs_new:Npn \xsim_get_mdfivesum:n #1
-  { \pdf@filemdfivesum {#1} }
-
-\xsim_new_list:n {mdfivesum}
-
-\cs_new_protected:Npn \xsim_record_mdfivesum:n #1
-  {
-    \xsim_add_to_list:nx {mdfivesum}
-      { #1:\xsim_get_mdfivesum:n {#1} }
-    \prop_gput:Nxn \g__xsim_mdfivesum_prop
-      { #1:\xsim_get_mdfivesum:n {#1} }
-      {}
-  }
-\cs_generate_variant:Nn \xsim_record_mdfivesum:n {V}
-
-\AtEndDocument
-  {
-    \xsim_foreach_list_entry:nn {mdfivesum}
-      {
-        \prop_if_in:NnF \g__xsim_mdfivesum_prop {#1}
-          { \xsim_remove_from_list:nn {mdfivesum} {#1} }
-      }
-    \xsim_update_list:n {mdfivesum}
-  }
-
-\prg_new_protected_conditional:Npnn \xsim_if_mdfivesum_changed:n #1 {T,F,TF}
-  {
-    \xsim_if_in_list:nxTF {mdfivesum}
-      { #1:\xsim_get_mdfivesum:n {#1} }
-      { \prg_return_false: }
-      { \prg_return_true: }
-  }
-% \cs_generate_variant:Nn \xsim_if_mdfivesum_changed:n {V}
 
 % ----------------------------------------------------------------------------
 
 \group_begin:
-  \char_set_catcode_active:n {13}%
-  \tl_const:Nn \c__xsim_active_eol_tl {^^M}%
-\group_end:
-
-\group_begin:
-\char_set_catcode_other:n {37}
-\tl_const:Nn \c__xsim_percent_char_tl {%}
+  \char_set_catcode_other:n {37}
+  \tl_const:Nn \c__xsim_percent_char_tl {%}
 \group_end:
 
 \tl_const:Nx \c__xsim_backslash_char_tl { \cs_to_str:N \\ }
-\tl_const:Nn \c_xsim_comment_line_tl { \c__xsim_percent_char_tl }
-\tl_const:Nn \c_xsim_comment_line_fill_tl { \prg_replicate:nn {76} {-} }
-\tl_const:Nn \c_xsim_comment_line_indent_tl
+\tl_const:Nn \c__xsim_comment_line_tl { \c__xsim_percent_char_tl }
+\tl_const:Nn \c__xsim_comment_line_fill_tl { \prg_replicate:nn {76} {-} }
+\tl_const:Nn \c__xsim_comment_line_indent_tl
   { \c_space_tl \c_space_tl \c_space_tl \c_space_tl }
 
 % ----------------------------------------------------------------------------
 
-\cs_new:Npn \xsim_comment_line_and_feed:n #1
-  { \xsim_comment_line:n {#1} ^^J }
+\cs_new:Npn \__xsim_comment_line_and_feed:n #1
+  { \__xsim_comment_line:n {#1} ^^J }
 
-\cs_new:Npn \xsim_comment_line:n #1
+\cs_new:Npn \__xsim_comment_line:n #1
   {
-    \c_xsim_comment_line_tl
+    \c__xsim_comment_line_tl
     \tl_if_blank:nF {#1} { \c_space_tl }
     #1
   }
 
-\cs_new:Npn \xsim_two_digits:n #1
+\cs_new:Npn \__xsim_two_digits:n #1
   { \int_compare:nT { #1 < 10 } {0} \int_eval:n {#1} }
 
 % #1: type
 % #2: id
 % #3: exercise|solution
-\cs_new_protected:Npn \xsim_set_file_signature:nnn #1#2#3
+\cs_new_protected:Npn \__xsim_set_file_signature:nnn #1#2#3
   { \tl_set:Nn \l__xsim_file_name_signature_tl {#1-#2-#3} }
-\cs_generate_variant:Nn \xsim_set_file_signature:nnn {nx,nV}
+\cs_generate_variant:Nn \__xsim_set_file_signature:nnn {nx,nV}
 
 \tl_set:Nn \l_xsim_file_name_tl
   {
@@ -127,85 +82,107 @@
 % #2: id
 % #3: exercise|solution
 % #4: file name
-\cs_new_protected:Npn \xsim_file_info:nnnn #1#2#3#4
+\cs_new_protected:Npn \__xsim_file_info:nnnn #1#2#3#4
   {
-    \tl_set:Nn \l_xsim_file_info_tl
+    \tl_set:Nn \l__xsim_file_info_tl
       {
-        \xsim_comment_line_and_feed:n { \c_xsim_comment_line_fill_tl }
-        \xsim_comment_line_and_feed:n {file~ `#4'}
-        \xsim_comment_line_and_feed:n {}
-        \xsim_comment_line_and_feed:n
+        \__xsim_comment_line_and_feed:n { \c__xsim_comment_line_fill_tl }
+        \__xsim_comment_line_and_feed:n {file~ `#4'}
+        \__xsim_comment_line_and_feed:n {}
+        \__xsim_comment_line_and_feed:n
           {
-            \c_xsim_comment_line_indent_tl
-            #3~ of~ type~ `#1'~ with~ ID~ `#2'
+            \c__xsim_comment_line_indent_tl
+            #3~ of~ type~ `#1'~ with~ id~ `#2'
           }
-        \xsim_comment_line_and_feed:n {}
-        \xsim_comment_line_and_feed:n
+        \__xsim_comment_line_and_feed:n {}
+        \__xsim_comment_line_and_feed:n
           {generated~ by~ the~ `\@currenvir'~ environment~ of~ the}
-        \xsim_comment_line_and_feed:n
+        \__xsim_comment_line_and_feed:n
           {
-            \c_xsim_comment_line_indent_tl
+            \c__xsim_comment_line_indent_tl
             `xsim'~ package~ v \c_xsim_version_tl
             \c_space_tl (\c_xsim_date_tl)
           }
-        \xsim_comment_line_and_feed:n
+        \__xsim_comment_line_and_feed:n
           {
             from~ source~ `\c_sys_jobname_str'~ on~
             \int_use:N \c_sys_year_int /
-            \xsim_two_digits:n { \c_sys_month_int } /
-            \xsim_two_digits:n { \c_sys_day_int } ~
+            \__xsim_two_digits:n { \c_sys_month_int } /
+            \__xsim_two_digits:n { \c_sys_day_int } ~
             \msg_line_context:
           }
-        \xsim_comment_line:n { \c_xsim_comment_line_fill_tl }
+        \__xsim_comment_line:n { \c__xsim_comment_line_fill_tl }
       }
   }
-\cs_generate_variant:Nn \xsim_file_info:nnnn {nnnV}
+\cs_generate_variant:Nn \__xsim_file_info:nnnn {nnnV}
 
 % ----------------------------------------------------------------------------
 
+% the `final' option will prevent writing to files:
+% #1: write stream
+% #2: file name
+\cs_new_protected:Npn \__xsim_open_stream:Nn #1#2
+  { \xsim_if_final:F { \iow_open:Nn #1 {#2} } }
+
+% #1: write stream
+\cs_new_protected:Npn \__xsim_close_stream:N #1
+  { \xsim_if_final:F { \iow_close:N #1 } }
+
+% #1: write stream
+% #1: contents
+\cs_new_protected:Npn \__xsim_write_to_stream:Nn #1#2
+  { \xsim_if_final:F { \iow_now:Nn #1 {#2} } }
+\cs_generate_variant:Nn \__xsim_write_to_stream:Nn {Nx}
+
+\cs_new:Npn \__xsim_tab: { \c_space_tl \c_space_tl }
+\cs_new:Npn \__xsim_par: { ^^J ^^J }
+
 \group_begin:
-% make ^^M active:
-\char_set_catcode_active:n {13} %
+\char_set_catcode_active:n {13} % ^^M (carriage return, endlinechar)
+\char_set_catcode_active:n {12} % ^^L (form feed)
+\char_set_catcode_active:n {9}  % ^^I (horizontal tab)
+%
+\tl_const:Nn \c__xsim_active_eol_tl {^^M} %
 %
 % the following is inspired by the definition of the `filecontents'
 % environment:
 % #1: type
-% #2: id
-% #3: exercise|solution
-% #4: file name
 \cs_new_protected:Npn \xsim_file_write_start:n #1 %
   { %
     \group_begin: %
-        \iow_open:Nn \l__file_contents_iow {#1} %
-        \iow_now:Nx \l__file_contents_iow { \l_xsim_file_info_tl } %
+    \xsim_if_final:TF %
+      { \xsim_verbose:x { Not~ (re-)writing~ file~ `#1'. } } %
+      { \xsim_verbose:x { (Re-)writing~ file~ `#1'. } } %
+    \__xsim_open_stream:Nn \l__file_contents_iow {#1} %
+    \__xsim_write_to_stream:Nx \l__file_contents_iow { \l__xsim_file_info_tl } %
     \seq_map_inline:Nn \l_char_special_seq %
       { \char_set_catcode_other:N ##1 } %
     \int_step_inline:nnnn {128} {1} {255} %
       { \char_set_catcode_letter:n {##1} } %
     \tl_set:Nx \l__xsim_tmpa_tl %
       { \c__xsim_backslash_char_tl end \cs_to_str:N \{ \@currenvir \cs_to_str:N \} } %
-    \cs_set:Npx \__xsim_tmpa:www %
+    \use:x %
       { %
         \cs_set:cpn {__xsim_tmpa:www} %
           ####1 \l__xsim_tmpa_tl %
           ####2 \l__xsim_tmpa_tl %
           ####3 \exp_not:N \q_stop: %
       } %
-    \__xsim_tmpa:www %
-      { %
-        \tl_if_blank:nTF {##3} %
-          { \iow_now:Nn \l__file_contents_iow {##1} } %
-          { %
-            \cs_set:Npx \__xsim_M:w { \exp_not:N \end {\@currenvir} } %
-            \char_set_active_eq:nN {13} \__xsim_M:w %
-            \tl_if_blank:nF {##1} %
-              { \iow_now:Nn \l__file_contents_iow {##1} }% last line is ##1 \end{\@currenvir}
-            % \tl_if_blank:nF {##2} %
-            %   {}% ##2 is placed after \end{\@currenvir}
-          } %
-        ^^M %
-      } %
-      \char_set_catcode_active:n {13} %
+        { %
+          \tl_if_blank:nTF {##3} %
+            { \__xsim_write_to_stream:Nn \l__file_contents_iow {##1} } %
+            { %
+              \cs_set:Npx \__xsim_M:w { \exp_not:N \end {\@currenvir} } %
+              \char_set_active_eq:nN {13} \__xsim_M:w %
+              % the last line is `##1 \end{\@currenvir} ##2':
+              \tl_if_blank:nF {##1} %
+                { \__xsim_write_to_stream:Nn \l__file_contents_iow {##1} }%
+              % \tl_if_blank:nF {##2} %
+              %   {}%
+            } %
+          ^^M %
+        } %
+    % \cs_show:N \__xsim_tmpa:www %
     \cs_set:Npx \__xsim_M:w ##1 ^^M %
       { %
         \exp_not:N \__xsim_tmpa:www ##1 %
@@ -213,14 +190,19 @@
         \l__xsim_tmpa_tl %
         \exp_not:N \q_stop: %
       } %
+    \char_set_catcode_active:n {13} %
+    \char_set_catcode_active:n {12} %
+    \char_set_catcode_active:n {9} %
     \char_set_active_eq:nN {13} \__xsim_M:w %
+    \char_set_active_eq:nN {12} \__xsim_par: %
+    \char_set_active_eq:nN {9}  \__xsim_tab: %
   } %
 \group_end:
 \cs_generate_variant:Nn \xsim_file_write_start:n {V}
 
 \cs_new_protected:Npn \xsim_file_write_stop:
   {
-      \iow_close:N \l__file_contents_iow
+    \__xsim_close_stream:N \l__file_contents_iow
     \group_end:
   }
 
@@ -229,9 +211,8 @@
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
   {
-    \xsim_set_file_signature:nnn {#1} {#2} {#3}
-    \xsim_file_info:nnnV {#1} {#2} {#3} \l_xsim_file_name_tl
-    % \xsim_record_mdfivesum:V \l_xsim_file_name_tl
+    \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+    \__xsim_file_info:nnnV {#1} {#2} {#3} \l_xsim_file_name_tl
     % we need to insert an active ^^M if no options are given
     % see http://tex.stackexchange.com/q/9035/5049 reasons
     \use:nx
@@ -257,13 +238,9 @@
 \cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
   {
     \xsim_save_environment_body_end:
-    \xsim_if_debug:T
-      {
-        Environment~ body~ written~ to~
-        \texttt { \l_xsim_file_name_tl } \par
-      }
-    \xsim_if_print:nnnT {#1} {#2} {#3}
+    \xsim_if_print:nnnTF {#1} {#2} {#3}
       { \xsim_typeset_environment:nnn {#1} {#2} {#3} }
+      { \use:c {l__xsim_#1_#3_print_false_hook_tl} }
   }
 \cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
 
@@ -272,6 +249,8 @@
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_typeset_environment:nnn #1#2#3
   {
+    \xsim_verbose:n
+      { Writing~ #3~ environment~ type~ `#1'~ id~ `#2'. }
     \use:x
       {
         \exp_not:N \par
@@ -280,7 +259,12 @@
           {begin}
           { \xsim_get_parameter:nn {#1} {#3-template} }
         \exp_not:v {l__xsim_#1_#3_begin_hook_tl}
-        \file_input:n { \exp_not:V \l_xsim_file_name_tl }
+        \file_if_exist:nTF { \exp_not:V \l_xsim_file_name_tl }
+          { \file_input:n { \exp_not:V \l_xsim_file_name_tl } }
+          {
+            \xsim_verbose:n
+              { File~ `\l_xsim_file_name_tl'~ doesn't~ exist. }
+          }
         \exp_not:v {l__xsim_#1_#3_end_hook_tl}
         \xsim_use_template:nn
           {end}
@@ -296,6 +280,12 @@
 % #2: exercise|solution
 \cs_new_protected:Npn \xsim_new_environment:nn #1#2
   {
+    \xsim_verbose:n { Defining~ #2~ environment~ type~ `#1'. }
+    \tl_new:c {l__xsim_#1_#2_pre_hook_tl}
+    \tl_new:c {l__xsim_#1_#2_begin_hook_tl}
+    \tl_new:c {l__xsim_#1_#2_end_hook_tl}
+    \tl_new:c {l__xsim_#1_#2_post_hook_tl}
+    \tl_new:c {l__xsim_#1_#2_print_false_hook_tl}
     \keys_define:nx {xsim}
       {
         \xsim_get_parameter:nn {#1} {#2-env}/pre-hook .tl_set:N =
@@ -305,7 +295,9 @@
         \xsim_get_parameter:nn {#1} {#2-env}/end-hook .tl_set:N =
           \exp_not:c {l__xsim_#1_#2_end_hook_tl} ,
         \xsim_get_parameter:nn {#1} {#2-env}/post-hook .tl_set:N =
-          \exp_not:c {l__xsim_#1_#2_post_hook_tl}
+          \exp_not:c {l__xsim_#1_#2_post_hook_tl} ,
+        \xsim_get_parameter:nn {#1} {#2-env}/print-false-hook .tl_set:N =
+          \exp_not:c {l__xsim_#1_#2_print_false_hook_tl}
       }
     \NewDocumentEnvironment
       { \xsim_get_parameter:nn {#1} {#2-env} } {o}

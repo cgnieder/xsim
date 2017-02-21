@@ -97,8 +97,8 @@
 % #3: translation
 \cs_new_protected:Npn \xsim_declare_translation:nnn #1#2#3
   {
-    % \tl_show:n {#2(#1) ~=~#3}
-    % TODO: this should be \declaretranslation
+    \xsim_verbose:n
+      { Declaring~ `#1'~ tranlation~ of~ `#2':~ `#3'. }
     \declaretranslation
       {#1}
       { \c__xsim_keyword_prefix_tl #2 }

@@ -38,6 +38,7 @@
 \cs_generate_variant:Nn \use:nn             {nx}
 \cs_generate_variant:Nn \file_input:n       {V,x}
 \cs_generate_variant:Nn \file_if_exist:nT   {V,x}
+\cs_generate_variant:Nn \file_if_exist:nTF  {V}
 \cs_generate_variant:Nn \msg_error:nnnnn    {nnnxx}
 \cs_generate_variant:Nn \keys_define:nn     {nx}
 \cs_generate_variant:Nn \keys_set:nn        {xn}
@@ -83,20 +84,6 @@
   { \iow_now:Nn \@auxout {#1} }
 \cs_generate_variant:Nn \xsim_write_to_aux:n {x}
 
-% --------------------------------------------------------------------------
-
-\prg_new_conditional:Npnn \xsim_if_debug: {p,T,F,TF}
-  {
-    \bool_if:NTF \l__xsim_debug_bool
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
-
-\bool_new:N \l__xsim_debug_bool
-
-\keys_define:nn {xsim}
-  { debug .bool_set:N = \l__xsim_debug_bool }
-
 % ----------------------------------------------------------------------------
 
 % #1: macro name
@@ -104,6 +91,7 @@
 % #3: code; may contain a suiting \__xsim_loop_item:<nnn>
 \cs_new_protected:Npn \xsim_define_loop_macro:Nnn #1#2#3
   {
+    \xsim_verbose:n { Defining~ loop~ macro~ #1 }
     \cs_new_protected:Npn #1 ##1
       { \cs_set:cn {__xsim_loop_item:#2} {##1} #3 }
   }
@@ -116,6 +104,7 @@
 % #1: name
 \cs_new_protected:Npn \xsim_new_list:n #1
   {
+    \xsim_verbose:n { Defining~ new~ auxfile~ list~ `#1'. }
     \prop_new:c {g__xsim_list_#1_prop}
     \seq_new:c {g__xsim_list_#1_seq}
     \seq_new:c {g__xsim_list_recorded_#1_seq}
@@ -146,6 +135,7 @@
 % #2: entry
 \cs_new_protected:Npn \xsim_add_to_list:nn #1#2
   {
+    \xsim_verbose:n { Adding~ `#2'~ to~ list~ `#1'. }
     \prop_gput:cnn {g__xsim_list_#1_prop} {#2} {}
     \seq_if_in:cnT {g__xsim_list_#1_seq} {#2}
       { \seq_gremove_all:cn {g__xsim_list_#1_seq} {#2} }
@@ -157,9 +147,13 @@
 % #2: entry
 \cs_new_protected:Npn \xsim_remove_from_list:nn #1#2
   {
-    \prop_gremove:cn {g__xsim_list_#1_prop} {#2}
-    \seq_gremove_all:cn {g__xsim_list_#1_seq} {#2}
-    \seq_gremove_all:cn {g__xsim_recorded_list_#1_seq} {#2}
+    \xsim_verbose:n { Removing~ `#2'~ to~ list~ `#1'. }
+    \prop_if_in:cnT {g__xsim_list_#1_prop} {#2}
+      { \prop_gremove:cn {g__xsim_list_#1_prop} {#2} }
+    \seq_if_in:cnT {g__xsim_list_#1_seq} {#2}
+      { \seq_gremove_all:cn {g__xsim_list_#1_seq} {#2} }
+    \seq_if_in:cnT {g__xsim_recorded_list_#1_seq} {#2}
+      { \seq_gremove_all:cn {g__xsim_recorded_list_#1_seq} {#2} }
   }
 \cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
 
@@ -179,6 +173,7 @@
 % #1: name
 \cs_new_protected:Npn \xsim_update_list:n #1
   {
+    \xsim_verbose:n { Updating~ list~ `#1'. }
     \tl_set:Nx \l__xsim_tmpa_tl
       { \seq_use:cn {g__xsim_list_#1_seq} {} }
     \tl_set:Nx \l__xsim_tmpb_tl

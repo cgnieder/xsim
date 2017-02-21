@@ -87,7 +87,7 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseType{question}{
+\DeclareExerciseType {question} {
   exercise-env      = question ,
   solution-env      = solution ,
   exercise-name     = \XSIMtranslate {question} ,
@@ -98,7 +98,7 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseEnvironmentTemplate{subsection*}
+\DeclareExerciseEnvironmentTemplate {subsection*}
   {
     \subsection*
       {
@@ -106,7 +106,7 @@
         \GetExerciseProperty {counter}
         \IfInsideSolutionF
           {
-            \IfExercisePropertySetT{subtitle}
+            \IfExercisePropertySetT {subtitle}
               { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
           }
     }
@@ -116,10 +116,14 @@
           {
             \IfInsideSolutionTF
               {
-                \( \GetExerciseProperty {points} \) \,
-                \ExerciseGoalName{points}
-                 {\XSIMtranslate{point}}
-                 {\XSIMtranslate{points}}
+                \(
+                  \GetExerciseProperty {points}
+                  \IfExercisePropertySetT {bonus-points}
+                    { {}+{} \GetExerciseProperty {bonus-points} }
+                \) \,
+                \ExerciseGoalName {points}
+                  { \XSIMtranslate {point} }
+                  { \XSIMtranslate {points} }
               }
               {
                 \rule {1.3cm} {1pt} /
@@ -283,42 +287,42 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseTranslations{exercise}{
+\DeclareExerciseTranslations {exercise} {
   Fallback = exercise ,
   English  = exercise ,
   French   = exercice ,
   German   = \"Ubung
 }
 
-\DeclareExerciseTranslations{question}{
+\DeclareExerciseTranslations {question} {
   Fallback = question ,
   English  = question ,
   French   = question ,
   German   = Aufgabe
 }
 
-\DeclareExerciseTranslations{solution}{
+\DeclareExerciseTranslations {solution} {
   Fallback = solution ,
   English  = solution ,
   French   = solution ,
   German   = L\"osung
 }
 
-\DeclareExerciseTranslations{point}{
+\DeclareExerciseTranslations {point} {
   Fallback = point ,
   English  = point ,
   French   = point ,
   German   = Punkt
 }
 
-\DeclareExerciseTranslations{points}{
+\DeclareExerciseTranslations {points} {
   Fallback = points ,
   English  = points ,
   French   = points ,
   German   = Punkte
 }
 
-\DeclareExerciseTranslations{reached}{
+\DeclareExerciseTranslations {reached} {
   Fallback = reached ,
   English  = reached ,
   French   = atteint ,

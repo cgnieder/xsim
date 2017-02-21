@@ -36,6 +36,7 @@
   {
     \xsim_if_goal_exists:nF {#1}
       {
+        \xsim_verbose:n { Declaring~ new~ goal~ `#1'. }
         \xsim_declare_property:nn { \c_false_bool } {#1}
         \seq_put_right:Nn \l__xsim_goals_seq {#1}
         \fp_gzero_new:c {g__xsim_goal_#1_fp}
@@ -98,13 +99,24 @@
   }
 \cs_generate_variant:Nn \xsim_if_goal_value:nnnnTF {xx}
 
+% a function which can be used to modify how the numbers of a goal are
+% printed:
+\cs_new_protected:Npn \__xsim_print_goal:n #1 {#1}
+\cs_generate_variant:Nn \__xsim_print_goal:n {x}
+
+\keys_define:nn {xsim}
+  {
+    goal-print .code:n =
+      \cs_set_protected:Npn \__xsim_print_goal:n ##1 {#1}
+  }
+
 % #1: exercise type
 % #2: goal
 % #3: sum == 1
 % #4: sum != 1
 \cs_new:Npn \xsim_print_goal_sum:nnnn #1#2#3#4
   {
-    \fp_to_decimal:c {g__xsim_total_#1_goal_#2_fp}
+    \__xsim_print_goal:x { \fp_to_decimal:c {g__xsim_total_#1_goal_#2_fp} }
     \fp_compare:nTF { \use:c {g__xsim_total_#1_goal_#2_fp} = 1 } {#3} {#4}
   }
 
@@ -113,7 +125,7 @@
 % #3: sum != 1
 \cs_new:Npn \xsim_print_total_goal_sum:nnn #1#2#3
   {
-    \fp_to_decimal:c {g__xsim_total_goal_#1_fp}
+    \__xsim_print_goal:x { \fp_to_decimal:c {g__xsim_total_goal_#1_fp} }
     \fp_compare:nTF { \use:c {g__xsim_total_goal_#1_fp} = 1 } {#2} {#3}
   }
 

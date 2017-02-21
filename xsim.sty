@@ -51,6 +51,60 @@
   {\c_xsim_info_tl}
 
 % --------------------------------------------------------------------------
+
+% options, information
+  
+\bool_new:N \g_xsim_final_bool
+\bool_new:N \g_xsim_verbose_bool
+\bool_new:N \g__xsim_rerun_bool
+
+\keys_define:nn {xsim}
+  {
+    final .bool_gset:N = \g_xsim_final_bool ,
+    verbose .bool_gset:N = \g_xsim_verbose_bool
+  }
+
+\DeclareOption {final}
+  { \bool_gset_true:N \g_xsim_final_bool }
+
+\DeclareOption {verbose}
+  { \bool_gset_true:N \g_xsim_verbose_bool }
+
+\ProcessOptions \scan_stop:
+
+\prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+  {
+    \bool_if:NTF \g_xsim_final_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
+  {
+    \bool_if:NTF \g_xsim_verbose_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_rerun: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_rerun_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new_protected:Npn \xsim_verbose:n #1
+  { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
+\cs_generate_variant:Nn \xsim_verbose:n {x}
+
+\cs_new_protected:Npn \xsim_rerun:
+  { \bool_gset_true:N \g__xsim_rerun_bool }
+  
+\cs_new_protected:Npn \xsim_do_rerun:
+  { \xsim_if_rerun:T { \msg_warning:nn {xsim} {rerun} } }
+
+% --------------------------------------------------------------------------
+
 % messages:
 \msg_new:nnn {xsim} {module-missing}
   {
@@ -60,15 +114,21 @@
   }
 
 \msg_new:nnn {xsim} {loading-module}
-  {
-    (xsim) \c_space_tl \c_space_tl \c_space_tl \c_space_tl
-    Loading~ module~ `#1'~ ...
-  }
+  { Loading~ module~ `#1'~ ... }
 
 \msg_new:nnn {xsim} {wrong-module-name}
   { The~ module~ file~ name~ is~ `#2'~ but~ it~ provides~ module~ `#1'. }
 
+\msg_new:nnn {xsim} {rerun}
+  {
+    Exercise~ properties~ may~ have~ changed.~ Rerun~ to~ get~ them~
+    synchronized.
+  }
+
+\msg_new:nnn {xsim} {verbose} { #1 }  
+
 % --------------------------------------------------------------------------
+
 % module mechanism:
 \tl_const:Nn \c__xsim_module_extension_tl {code.tex}
 \tl_const:Nn \c__xsim_module_prefix_tl    {xsim}
@@ -92,7 +152,7 @@
         \xsim_if_module_exist:nTF {#1}
           {
             \__xsim_use_module_hook:nn {#1} {before}
-            \msg_log:nnn {xsim} {loading-module} {#1}
+            \msg_info:nnn {xsim} {loading-module} {#1}
             \@onefilewithoptions
               {\c__xsim_module_prefix_tl.#1}[][]
               \c__xsim_module_extension_tl
@@ -187,28 +247,6 @@
   }
 \cs_generate_variant:Nn \tl_show:n {x}
 \cs_generate_variant:Nn \msg_error:nnnn {nnnx}
-
-% ----------------------------------------------------------------------------
-
-\bool_new:N \l__xsim_rerun_bool
-\msg_new:nnn {xsim} {rerun}
-  {
-    Exercise~ properties~ may~ have~ changed.~ Rerun~ to~ get~ them~
-    synchronized.
-  }
-
-\cs_new_protected:Npn \xsim_rerun:
-  { \bool_set_true:N \l__xsim_rerun_bool }
-
-\prg_new_conditional:Npnn \xsim_if_rerun: {p,T,F,TF}
-  {
-    \bool_if:NTF \l__xsim_rerun_bool
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
-  
-\cs_new_protected:Npn \xsim_do_rerun:
-  { \xsim_if_rerun:T { \msg_warning:nn {xsim} {rerun} } }
 
 % --------------------------------------------------------------------------
 % define a xsim module:
