@@ -251,6 +251,17 @@
 
 % ----------------------------------------------------------------------------
 
+\NewDocumentCommand \collectexercisetype {mm}
+  { \xsim_start_collection:nn {#1} {#2} }
+
+\NewDocumentCommand \collectexercisetypestop {m}
+  { \xsim_stop_collection:n {#1} }
+
+\NewDocumentCommand \printcollection {m}
+  { \xsim_print_collection:n {#1} }
+
+% ----------------------------------------------------------------------------
+
 \NewDocumentCommand \blank {som}
   {
     \group_begin:

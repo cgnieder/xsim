@@ -274,6 +274,7 @@
       }
       { \xsim_remove_from_list:nx {use} { #1 - \g_xsim_exercise_id_tl } }
     % TODO: collections
+    \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
   }
 
 \cs_new_protected:Npn \xsim_stop_exercise:n #1 {}
@@ -287,9 +288,9 @@
     \bool_set_true:N \l____xsim_print_bool
     \bool_if:cF {l__xsim_#1_exercise_print_bool}
       { \bool_set_false:N \l____xsim_print_bool }
-    \bool_if:cF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
-      { \bool_set_false:N \l____xsim_print_bool }
     \xsim_if_tagged:nnF {#1} {#2}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \bool_if:cF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
       { \bool_set_false:N \l____xsim_print_bool }
     \bool_if:NTF \l____xsim_print_bool
       { \prg_return_true: }
@@ -308,7 +309,11 @@
         \bool_if:cTF {l__xsim_#1_exercise_use_bool}
           {
             \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use} _bool}
-              { \prg_return_true: }
+              {
+                \xsim_if_tagged:nnTF {#1} {#2}
+                  { \prg_return_true: }
+                  { \prg_return_false: }
+              }
               { \prg_return_false: }
           }
           { \prg_return_false: }

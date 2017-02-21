@@ -33,15 +33,53 @@
 \prop_new:N \g__xsim_collected_exercises_prop
 \bool_new:N \l____xsim_active_bool
 
+\msg_new:nnn {xsim} {collection-exists}
+  {
+    The~ collection~ `#1'~ you're~ trying~ to~ define~ \msg_line_context:
+    \c_space_tl already~ exists.
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+\cs_new_protected:Npn \xsim_new_collection:n #1
+  {
+    \xsim_if_collection_exists:nTF {#1}
+      { \msg_error:nnn {xsim} {collection-exists} {#1} }
+      {
+        \xsim_verbose:n { Declaring~ new~ collection~ `#1'. }
+        \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_false_bool }
+      }
+  }
+
+% #1: collection name
+\prg_new_conditional:Npnn \xsim_if_collection_exists:n #1 {T,F,TF}
+  {
+    \prop_if_in:NnTF \g__xsim_collections_prop {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\xsim_new_collection:n {all~ exercises}
+
+\cs_new_protected:Npn \xsim_foreach_collection:n #1
+  { \prop_map_inline:Nn \g__xsim_collections_prop {#1} }
+
 % ----------------------------------------------------------------------------
 
 % #1: collection name
 \cs_new_protected:Npn \xsim_activate_collection:n #1
-  { \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_true_bool } }
+  {
+    \xsim_verbose:n { Activating~ collection~ `#1'. }
+    \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_true_bool }
+  }
 
 % #1: collection name
 \cs_new_protected:Npn \xsim_deactivate_collection:n #1
-  { \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_false_bool } }
+  {
+    \xsim_verbose:n { Deactivating~ collection~ `#1'. }
+    \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_false_bool }
+  }
 
 % start collection for an exercise type:
 % #1: collection name
@@ -49,6 +87,8 @@
 \cs_new_protected:Npn \xsim_start_collection:nn #1#2
   {
     \group_begin:
+    \xsim_if_collection_exists:nF {#1}
+      { \xsim_new_collection:n {#1} }
     \xsim_activate_collection:n {#1}
     \keys_set:nn {xsim} { #2/print = false }
   }
@@ -78,19 +118,51 @@
 % #3: id
 \cs_new_protected:Npn \xsim_add_to_collection:nnn #1#2#3
   {
-    \prop_gput:Nnn \g__xsim_collected_exercises_prop {#1-#2-#3} {}
-    % this should maybe be done when printing the collected exercises:
-    % \xsim_add_to_list:nn {print} {#2-#3}
+    \xsim_verbose:n
+      { Adding~ exercise~ type~ `#2'~ id~ `#3'~ to~ collection~ `#1'. } 
+    \prop_gput:Nnn \g__xsim_collected_exercises_prop {#1::#2::#3} {}
   }
+
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_update_collections:nn #1#2
+  {
+    \xsim_if_insert_mode:F
+      {
+        \xsim_add_to_collection:nnn {all~ exercises} {#1} {#2}
+        \xsim_foreach_collection:n
+          {
+            \xsim_if_collection_active:nT {##1}
+              { \xsim_add_to_collection:nnn {##1} {#1} {#2} }
+          }
+      }
+  }
+\cs_generate_variant:Nn \xsim_update_collections:nn {nV}
 
 % #1: collection name
 % #2: type
 % #3: id
 \prg_new_conditional:Npnn \xsim_if_in_collection:nnn #1#2#3 {T,F,TF}
   {
-    \prop_if_in:NnTF \g__xsim_collected_exercises_prop {#1-#2-#3}
+    \prop_if_in:NnTF \g__xsim_collected_exercises_prop {#1::#2::#3}
       { \prg_return_true: }
       { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+\cs_new_protected:Npn \xsim_print_collection:n #1
+  {
+    \xsim_if_collection_active:nTF {#1}
+      { \ERROR } % TODO
+      {
+        \xsim_foreach_exercise_type_id:nn {use}
+          {
+            \xsim_if_in_collection:nnnT {#1} {##1} {##2}
+              { \xsim_insert:nnnn {##1} {##2} {} {exercise} }
+          }
+      }
   }
 
 % ----------------------------------------------------------------------------
@@ -101,7 +173,10 @@
     \prop_if_in:NnTF \g__xsim_collections_prop {#1}
       {
         \bool_if:nTF
-          { \prop_item:Nn \g__xsim_collections_prop {#1} }
+          {
+            !\str_if_eq_x_p:nn {#1} {all~ exercises} &&
+            \prop_item:Nn \g__xsim_collections_prop {#1}
+          }
           { \prg_return_true: }
           { \prg_return_false: }
       }
@@ -113,8 +188,7 @@
     \bool_set_false:N \l____xsim_active_bool
     \prop_map_inline:Nn \g__xsim_collections_prop
       {
-        \bool_if:nT
-          { !\str_if_eq_x_p:nn {##1} {global} && ##2 }
+        \xsim_if_collection_active:nT {##1}
           {
             \bool_set_true:N \l____xsim_active_bool
             \prop_map_break:
@@ -127,8 +201,8 @@
 
 % ----------------------------------------------------------------------------
 
-\AtBeginDocument { \xsim_activate_collection:n   {global} }
-\AtEndDocument   { \xsim_deactivate_collection:n {global} }
+\AtBeginDocument { \xsim_activate_collection:n   {all~ exercises} }
+\AtEndDocument   { \xsim_deactivate_collection:n {all~ exercises} }
   
 % ----------------------------------------------------------------------------
 \tex_endinput:D

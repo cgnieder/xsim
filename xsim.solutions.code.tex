@@ -67,38 +67,6 @@
 
 % ----------------------------------------------------------------------------
 
-% #1: type
-% #2: id
-% #3: options
-\cs_new_protected:Npn \xsim_insert_solution:nnn #1#2#3
-  {
-    \__xsim_set_file_signature:nnn {#1} {#2} {solution}
-    \file_if_exist:VTF \l_xsim_file_name_tl
-      {
-        \xsim_verbose:n
-          { Inserting~ solution~ to~ exercise~ type~ `#1'~ id~ `#2'. }
-        \group_begin:
-          \xsim_start_solution:nn {#1} {#3}
-          \tl_set:Nn \ExerciseType {#1}
-          \tl_set:Nn \ExerciseID {#2}
-          \par
-          \xsim_use_template:nx
-            {begin}
-            { \xsim_get_parameter:nn {#1} {solution-template} }
-            \file_input:V \l_xsim_file_name_tl
-          \xsim_use_template:nx
-            {end}
-            { \xsim_get_parameter:nn {#1} {solution-template} }
-          \par
-        \group_end:
-      }
-      {
-        \xsim_verbose:n
-          { File~ `\l_xsim_file_name_tl'~ doesn't~ exist. }
-      }
-  }
-\cs_generate_variant:Nn \xsim_insert_solution:nnn {nV}
-
 \bool_new:N \l__xsim_printsolutions_headings_bool
 \tl_new:N   \l__xsim_printsolutions_headings_template_tl
 
@@ -149,7 +117,7 @@
           % boolean #1 always true:
           % \xsim_foreach_exercise_type_id:n
           \xsim_foreach_exercise_type_id:nn {use}
-            { \xsim_insert_solution:nnn {#3} {##2} {#2} }
+            { \xsim_insert:nnnn {#3} {##2} {#2} {solution} }
         }
     \group_end:
   }
