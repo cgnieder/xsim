@@ -45,6 +45,7 @@
 
 \xsim_new_list:n {types}
 \xsim_new_list:n {print}
+\xsim_new_list:n {use}
   
 \cs_new_protected:Npn \xsim_declare_parameter:n #1
   {
@@ -139,9 +140,10 @@
 
 % #1: type
 % #2: id
-\cs_new:Npn \__xsim_deliver_exercise_details:nn #1#2
+% #3: print|use
+\cs_new:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
   {
-    \xsim_if_in_list:nnT {print} {#1-#2}
+    \xsim_if_in_list:nnT {#3} {#1-#2}
       {
         \__xsim_loop_item:nnxxxx
           {#1}
@@ -153,25 +155,27 @@
        }
   }
 
-\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_type_id:n
+% #1: print|use
+% #2: loop code
+\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_type_id:nn
   {nnnnnn}
   {
     \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {nnxxxx}
     \xsim_foreach_exercise_type:n
       {
         \xsim_foreach_exercise_id:n
-          { \__xsim_deliver_exercise_details:nn {##1} {####1} }
+          { \__xsim_deliver_exercise_details:nnn {##1} {####1} {#1} }
       }
   }
 
-\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_id_type:n
+\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_id_type:nn
   {nnnnnn}
   {
     \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {nnxxxx}
     \xsim_foreach_exercise_id:n
       {
         \xsim_foreach_exercise_type:n
-          { \__xsim_deliver_exercise_details:nn {####1} {##1} }
+          { \__xsim_deliver_exercise_details:nnn {####1} {##1} {#1} }
       }
   }
 
@@ -207,6 +211,7 @@
         \xsim_define_counter:n {#1}
         \bool_new:c {l__xsim_#1_solution_print_bool}
         \bool_new:c {l__xsim_#1_exercise_print_bool}
+        \bool_new:c {l__xsim_#1_exercise_use_bool}
         \keys_define:nx {xsim}
           {
             \xsim_get_parameter:nn {#1} {solution-env} / print
@@ -216,7 +221,11 @@
             \xsim_get_parameter:nn {#1} {exercise-env} / print
               .bool_set:N = \exp_not:c {l__xsim_#1_exercise_print_bool} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / print
-              .initial:n  = true
+              .initial:n  = true ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / use
+              .bool_set:N = \exp_not:c {l__xsim_#1_exercise_use_bool} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / use
+              .initial:n  = true ,
           }
         \xsim_new_environment:nn {#1} {exercise}
         \xsim_new_environment:nn {#1} {solution}
@@ -234,6 +243,7 @@
       {
         name = \xsim_get_parameter:nn {#1} {exercise-name} ,
         print = true ,
+        use = true ,
         \exp_not:n {#2} ,
         id = \int_use:N \g_xsim_id_int
       }
@@ -248,15 +258,22 @@
         ` \g_xsim_exercise_id_tl '.
       }
     \xsim_exercise_if_print:nVTF {#1} \g_xsim_exercise_id_tl
+      { \xsim_add_to_list:nx {print} { #1 - \g_xsim_exercise_id_tl } }
+      { \xsim_remove_from_list:nx {print} { #1 - \g_xsim_exercise_id_tl } }
+    \xsim_exercise_if_use:nVTF {#1} \g_xsim_exercise_id_tl
       {
-        \xsim_add_to_list:nx {print} { #1 - \g_xsim_exercise_id_tl }
+        \xsim_add_to_list:nx {use} { #1 - \g_xsim_exercise_id_tl }
         \stepcounter { \xsim_get_parameter:nn {#1} {number} }
         \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
         \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
-          { counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } }
+          {
+            counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
+            use = true
+          }
         \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
       }
-      { \xsim_remove_from_list:nx {print} { #1 - \g_xsim_exercise_id_tl } }
+      { \xsim_remove_from_list:nx {use} { #1 - \g_xsim_exercise_id_tl } }
+    % TODO: collections
   }
 
 \cs_new_protected:Npn \xsim_stop_exercise:n #1 {}
@@ -280,6 +297,25 @@
   }
 \cs_generate_variant:Nn \xsim_exercise_if_print:nnT  {nV}
 \cs_generate_variant:Nn \xsim_exercise_if_print:nnTF {nV}
+
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
+  {
+    \xsim_exercise_if_print:nnTF {#1} {#2}
+      { \prg_return_true: }
+      {
+        \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+          {
+            \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use} _bool}
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+          { \prg_return_false: }
+      }
+  }
+\cs_generate_variant:Nn \xsim_exercise_if_use:nnT  {nV}
+\cs_generate_variant:Nn \xsim_exercise_if_use:nnTF {nV}
 
 % #1: type
 % #2: id
@@ -326,6 +362,7 @@
 \AtEndDocument
   {
     \xsim_update_list:n {print}
+    \xsim_update_list:n {use}
     \xsim_update_list:n {types}
     \xsim_write_to_aux:x { \XSIMid { \int_use:N \g_xsim_id_int } }
     \xsim_foreach_exercise_type:n

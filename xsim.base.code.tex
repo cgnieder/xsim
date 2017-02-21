@@ -92,8 +92,8 @@
 \cs_new_protected:Npn \xsim_define_loop_macro:Nnn #1#2#3
   {
     \xsim_verbose:n { Defining~ loop~ macro~ #1 }
-    \cs_new_protected:Npn #1 ##1
-      { \cs_set:cn {__xsim_loop_item:#2} {##1} #3 }
+    \cs_new_protected:Npn #1 ##1##2
+      { \cs_set:cn {__xsim_loop_item:#2} {##2} #3 }
   }
 
 % ----------------------------------------------------------------------------

@@ -42,6 +42,7 @@
 \DeclareExerciseProperty  {points}
 \DeclareExerciseProperty  {bonus-points}
 \DeclareExerciseProperty  {print}
+\DeclareExerciseProperty  {use}
 
 \DeclareExercisePropertyAlias {ID} {id}
 
@@ -188,7 +189,7 @@
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
       }
-    \ForEachExerciseByType
+    \ForEachUsedExerciseByType
       {
         \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
           {
@@ -207,7 +208,7 @@
       }
     \XSIMputright \ExerciseTableCode
       { Total \\ \midrule \XSIMmixedcase { \XSIMtranslate {point} }s & }
-    \ForEachExerciseByType
+    \ForEachUsedExerciseByType
       {
         \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
           { \XSIMputright \ExerciseTableCode { \XSIMifblankTF {#5} {0} {#5} & } }
@@ -221,7 +222,7 @@
         \\ \midrule
         \XSIMmixedcase { \XSIMtranslate {reached} } &
       }
-    \ForEachExerciseByType
+    \ForEachUsedExerciseByType
       {
         \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
           { \XSIMputright \ExerciseTableCode {&} }
@@ -253,7 +254,7 @@
         \XSIMmixedcase { \XSIMtranslate {reached} } \\
         \midrule
       }
-    \ForEachExerciseByType
+    \ForEachUsedExerciseByType
       {
         \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
           {

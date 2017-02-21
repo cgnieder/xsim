@@ -29,32 +29,79 @@
 
 \xsim_load_modules:n {base}
 
-\prop_new:N \l__xsim_collections_prop
+\prop_new:N \g__xsim_collections_prop
+\prop_new:N \g__xsim_collected_exercises_prop
 \bool_new:N \l____xsim_active_bool
+
+% ----------------------------------------------------------------------------
 
 % #1: collection name
 \cs_new_protected:Npn \xsim_activate_collection:n #1
-  { \prop_put:Nnn \l__xsim_collections_prop {#1} { \c_true_bool } }
+  { \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_true_bool } }
 
 % #1: collection name
 \cs_new_protected:Npn \xsim_deactivate_collection:n #1
-  { \prop_put:Nnn \l__xsim_collections_prop {#1} { \c_false_bool } }
+  { \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_false_bool } }
 
+% start collection for an exercise type:
+% #1: collection name
+% #2: type
+\cs_new_protected:Npn \xsim_start_collection:nn #1#2
+  {
+    \group_begin:
+    \xsim_activate_collection:n {#1}
+    \keys_set:nn {xsim} { #2/print = false }
+  }
+
+% start collection for all exercise types:
 % #1: collection name
 \cs_new_protected:Npn \xsim_start_collection:n #1
-  { \xsim_activate_collection:n {#1} }
+  {
+    \group_begin:
+    \xsim_activate_collection:n {#1}
+    \xsim_foreach_exercise_type:n
+      { \keys_set:nn {xsim} { ##1/print = false } }
+  }
 
+% stop collection:
 % #1: collection name
 \cs_new_protected:Npn \xsim_stop_collection:n #1
-  { \xsim_deactivate_collection:n {#1} }
+  {
+    \group_end:
+    \xsim_deactivate_collection:n {#1}
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+% #2: type
+% #3: id
+\cs_new_protected:Npn \xsim_add_to_collection:nnn #1#2#3
+  {
+    \prop_gput:Nnn \g__xsim_collected_exercises_prop {#1-#2-#3} {}
+    % this should maybe be done when printing the collected exercises:
+    % \xsim_add_to_list:nn {print} {#2-#3}
+  }
+
+% #1: collection name
+% #2: type
+% #3: id
+\prg_new_conditional:Npnn \xsim_if_in_collection:nnn #1#2#3 {T,F,TF}
+  {
+    \prop_if_in:NnTF \g__xsim_collected_exercises_prop {#1-#2-#3}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
 
 % #1: collection name
 \prg_new_conditional:Npnn \xsim_if_collection_active:n #1 {T,F,TF}
   {
-    \prop_if_in:NnTF \l__xsim_collections_prop {#1}
+    \prop_if_in:NnTF \g__xsim_collections_prop {#1}
       {
         \bool_if:nTF
-          { \prop_item:Nn \l__xsim_collections_prop {#1} }
+          { \prop_item:Nn \g__xsim_collections_prop {#1} }
           { \prg_return_true: }
           { \prg_return_false: }
       }
@@ -64,9 +111,10 @@
 \prg_new_protected_conditional:Npnn \xsim_if_collections_active: {T,F,TF}
   {
     \bool_set_false:N \l____xsim_active_bool
-    \prop_map_inline:Nn \l__xsim_collections_prop
+    \prop_map_inline:Nn \g__xsim_collections_prop
       {
-        \bool_if:nT {##2}
+        \bool_if:nT
+          { !\str_if_eq_x_p:nn {##1} {global} && ##2 }
           {
             \bool_set_true:N \l____xsim_active_bool
             \prop_map_break:
@@ -77,5 +125,10 @@
       { \prg_return_false: }
   }
 
+% ----------------------------------------------------------------------------
+
+\AtBeginDocument { \xsim_activate_collection:n   {global} }
+\AtEndDocument   { \xsim_deactivate_collection:n {global} }
+  
 % ----------------------------------------------------------------------------
 \tex_endinput:D

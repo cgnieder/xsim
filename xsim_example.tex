@@ -158,7 +158,7 @@ foo x^2 y^3 \gna
 \end{solution}
 
 % 8
-\begin{question}[print=false]
+\begin{question}[print=false,use=false]
   \lipsum[5]
 \end{question}
 \begin{solution}
@@ -167,25 +167,25 @@ foo x^2 y^3 \gna
 
 % \printsolutionstype{question}
 
-\printsolutions
+\printsolutions*
 
 \section{Statistics}
 
-\ForEachExerciseByType{%
+\ForEachUsedExerciseByType{%
   \noindent\XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name}}~#3: \\
   \hspace*{2em}id: #2, type: #1, subtitle: #4, points: #5, bonus: #6\par \medskip
 }
 
 \bigskip
 
-\ForEachExerciseByID{%
+\ForEachUsedExerciseByID{%
   \noindent\XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name}}~#3: \\
   \hspace*{2em}id: #2, type: #1, subtitle: #4, points: #5, bonus: #6\par \medskip
 }
 
 \bigskip
 
-\ForEachExerciseByType{%
+\ForEachUsedExerciseByType{%
   \ExercisePropertyIfSetT{#1}{#2}{points}
     { \XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name}}~#3: #5~points\par }%
 }
