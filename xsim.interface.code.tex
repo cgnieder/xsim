@@ -251,10 +251,13 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \collectexercisetype {mm}
+\NewDocumentCommand \collectexercisestype {mm}
   { \xsim_start_collection:nn {#1} {#2} }
 
-\NewDocumentCommand \collectexercisetypestop {m}
+\NewDocumentCommand \collectexercises {m}
+  { \xsim_start_collection:n {#1} }
+
+\NewDocumentCommand \collectexercisesstop {m}
   { \xsim_stop_collection:n {#1} }
 
 \NewDocumentCommand \printcollection {m}

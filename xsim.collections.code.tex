@@ -39,6 +39,12 @@
     \c_space_tl already~ exists.
   }
 
+\msg_new:nnn {xsim} {collection-active}
+  {
+    You~ can't~ print~ collection~ `#1'~ while~ it~ is~ still~ active~
+    \msg_line_context:
+  }
+
 % ----------------------------------------------------------------------------
 
 % #1: collection name
@@ -155,7 +161,7 @@
 \cs_new_protected:Npn \xsim_print_collection:n #1
   {
     \xsim_if_collection_active:nTF {#1}
-      { \ERROR } % TODO
+      { \msg_error:nnn {xsim} {collection-active} {#1} }
       {
         \xsim_foreach_exercise_type_id:nn {use}
           {
