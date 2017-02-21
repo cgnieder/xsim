@@ -169,17 +169,25 @@ foo x^2 y^3 \gna
 
 \printsolutions
 
-\ForEachExerciseByType{id: #2, type: #1\par}
+\section{Statistics}
+
+\ForEachExerciseByType{%
+  \noindent\XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name}}~#3: \\
+  \hspace*{2em}id: #2, type: #1, subtitle: #4, points: #5, bonus: #6\par \medskip
+}
 
 \bigskip
 
-\ForEachExerciseByID{id: #2, type: #1\par}
+\ForEachExerciseByID{%
+  \noindent\XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name}}~#3: \\
+  \hspace*{2em}id: #2, type: #1, subtitle: #4, points: #5, bonus: #6\par \medskip
+}
 
 \bigskip
 
 \ForEachExerciseByType{%
   \ExercisePropertyIfSetT{#1}{#2}{points}
-    { \XSIMmixedcase{#1} #3: #5~points\par }%
+    { \XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name}}~#3: #5~points\par }%
 }
 
 \bigskip
@@ -188,7 +196,7 @@ Number of questions: \numberofquestions \par
 Number of exercises: \numberofexercises \par
 Number of problems: \numberofproblems
 
-\bigskip
+\section{Grading tables}
 
 \gradingtable[horizontal]{question} \par \bigskip
 

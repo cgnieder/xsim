@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/02/18 v0.0
+XSIM 2017/02/21 v0.0
 
   eXercise Sheets IMproved
 
@@ -26,6 +26,7 @@ The xsim bundle consists of the files
  - xsim.sty
  - xsim.base.code.tex
    xsim.blanks.code.tex
+   xsim.colections.code.tex
    xsim.definitions.code.tex
    xsim.environments.code.tex
    xsim.exercises.code.tex

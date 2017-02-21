@@ -71,7 +71,7 @@
 % #2: id
 \cs_new_protected:Npn \xsim_insert_solution:nn #1#2
   {
-    \xsim_set_file_signature:nnn {#1} {#2} {solution}
+    \__xsim_set_file_signature:nnn {#1} {#2} {solution}
     \file_if_exist:VTF \l_xsim_file_name_tl
       {
         \xsim_verbose:n

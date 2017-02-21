@@ -27,7 +27,11 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{exercises}{main exercises definitions}
 
-\xsim_load_modules:n {base,properties,environments,templates,solutions,tags,goals}
+\xsim_load_modules:n
+  {
+    base, properties, environments, templates, solutions, tags, goals,
+    collections
+  }
 
 \seq_new:N  \l__xsim_parameters_seq
 \int_new:N  \g_xsim_id_int
@@ -133,6 +137,8 @@
 \cs_new_protected:Npn \xsim_foreach_exercise_id:n #1
   { \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int } {#1} }
 
+% #1: type
+% #2: id
 \cs_new:Npn \__xsim_deliver_exercise_details:nn #1#2
   {
     \xsim_if_in_list:nnT {print} {#1-#2}
@@ -161,10 +167,11 @@
 \xsim_define_loop_macro:Nnn \xsim_foreach_exercise_id_type:n
   {nnnnnn}
   {
+    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {nnxxxx}
     \xsim_foreach_exercise_id:n
       {
         \xsim_foreach_exercise_type:n
-          { \__xsim_deliver_exercise_details:nn {##1} {####1} }
+          { \__xsim_deliver_exercise_details:nn {####1} {##1} }
       }
   }
 
