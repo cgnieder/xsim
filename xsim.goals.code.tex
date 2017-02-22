@@ -132,21 +132,16 @@
 % #1: exercise type
 % #2: goal
 % #3: value
-\cs_new_protected:Npn \XSIMgoal #1#2#3
+\xsim_new_aux_cs:cpn {goal} #1#2#3
   { \fp_gset:cn {g__xsim_total_#1_goal_#2_fp} {#3} }
 
 % #1: goal
 % #2: value
-\cs_new_protected:Npn \XSIMtotalgoal #1#2
+\xsim_new_aux_cs:cpn {totalgoal} #1#2
   { \fp_gset:cn {g__xsim_total_goal_#1_fp} {#2} }
 
 \AtBeginDocument
   {
-    \xsim_write_to_aux:x
-      {
-        \token_to_str:N \providecommand \token_to_str:N \XSIMgoal [2] {} ^^J
-        \token_to_str:N \providecommand \token_to_str:N \XSIMtotalgoal [3] {}
-      }
     \seq_map_inline:Nn \l__xsim_goals_seq
       {
         \fp_gset_eq:cc
@@ -161,19 +156,16 @@
       {
         \xsim_foreach_exercise_type:n
           {
-            \xsim_write_to_aux:x
-              {
-                \XSIMgoal {##1} {#1}
-                  { \fp_to_decimal:c {g__xsim_##1_goal_#1_fp} }
-              }
+            \xsim_add_cs_to_aux:nn {goal}
+              { {##1} {#1} { \fp_to_decimal:c {g__xsim_##1_goal_#1_fp} } }
           }
         \tl_set:Nx \l__xsim_tmpa_tl
           { \fp_to_decimal:c {g__xsim_total_goal_#1_fp} }
         \tl_set:Nx \l__xsim_tmpb_tl
           { \fp_to_decimal:c {g__xsim_total_goal_recorded_#1_fp} }
         \tl_if_eq:NNF \l__xsim_tmpa_tl \l__xsim_tmpb_tl { \xsim_rerun: }
-        \xsim_write_to_aux:x
-          { \XSIMtotalgoal {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
+        \xsim_add_cs_to_aux:nn {totalgoal}
+          { {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
       }
   }
 

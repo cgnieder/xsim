@@ -251,6 +251,9 @@
 
 % ----------------------------------------------------------------------------
 
+\NewDocumentCommand \NewExerciseCollection {m}
+  { \xsim_new_collection:n {#1} }
+  
 \NewDocumentCommand \collectexercisestype {mm}
   { \xsim_start_collection:nn {#1} {#2} }
 
