@@ -25,3 +25,185 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
+\documentclass[load-preamble+]{cnltx-doc}
+\usepackage[utf8]{inputenc}
+\usepackage{xsim}
+
+\setcnltx{
+  package  = {xsim},
+%  info     = {comprehensive support for typesetting chemistry documents},
+  url      = https://github.com/cgnieder/xsim ,
+  authors  = Clemens Niederberger ,
+  email    = contact@mychemistry.eu ,
+  abstract = {%
+    \centering
+    \par
+  } ,
+  quote-format = \small\biolinumLF ,
+  add-cmds = {
+    blank ,
+    collectexercises ,
+    collectexercisestype ,
+    collectexercisesstop
+    DeclareExerciseEnvironmentTemplate ,
+    DeclareExerciseGoal ,
+    DeclareExerciseHeadingTemplate ,
+    DeclareExerciseProperty ,
+    DeclareExercisePropertyAlias ,
+    DeclareExerciseTableTemplate ,
+    DeclareExerciseTranslation ,
+    DeclareExerciseTranslations ,
+    DeclareExerciseType ,
+    ExerciseID ,
+    ExerciseGoalName ,
+    ExerciseParameterGet ,
+    ExercisePropertyGet ,
+    ExercisePropertyGetAlias ,
+    ExercisePropertyGlobalSave ,
+    ExercisePropertyIfSetF ,
+    ExercisePropertyIfSetT ,
+    ExercisePropertyIfSetTF ,
+    ExercisePropertySave ,
+    ExercisyType ,
+    ForeachExerciseTag ,
+    ForEachExerciseTranslation ,
+    ForEachPrintedExerciseByType ,
+    ForEachPrintedExerciseByID ,
+    ForEachUsedExerciseByType ,
+    ForEachUsedExerciseByID ,
+    GetExerciseAliasProperty ,
+    GetExerciseName ,
+    GetExerciseParameter ,
+    GetExerciseProperty ,
+    GlobalSaveExerciseProperty ,
+    gradingtable ,
+    IfExerciseGoalF ,
+    IfExerciseGoalF ,
+    IfExerciseGoalTF ,
+    IfExercisePropertyExistF ,
+    IfExercisePropertyExistT ,
+    IfExercisePropertyExistTF ,
+    IfExercisePropertySetF ,
+    IfExercisePropertySetT ,
+    IfExercisePropertySetTF ,
+    IfInsideSolutionF ,
+    IfInsideSolutionT ,
+    IfInsideSolutionTF ,
+    NewExerciseCollection ,
+    NewExerciseTagging ,
+    printcollection ,
+    printsolutions ,
+    printsolutionstype ,
+    SaveExerciseProperty ,
+    SetExerciseParameter ,
+    SetExerciseParameters ,
+    TotalExerciseGoal ,
+    TotalExerciseTypeGoal ,
+    UseExerciseTags ,
+    UseExerciseTagsX ,
+    XSIMexpandcode ,
+    XSIMifblankT ,
+    XSIMifblankF ,
+    XSIMifblankTF ,
+    XSIMifeqF ,
+    XSIMifeqT ,
+    XSIMifeqTF ,
+    XSIMmixedcase ,
+    XSIMputright ,
+    xsimsetup ,
+    XSIMtranslate
+  } ,
+  add-envs = { question , solution } ,
+  add-silent-cmds = {
+  } ,
+  index-setup = { othercode = \footnotesize , level = \section } ,
+  makeindex-setup = { columns = 2 , columnsep = 1em }
+}
+
+\expandafter\def\csname libertine@figurestyle\endcsname{LF}
+\usepackage[libertine]{newtxmath}
+\expandafter\def\csname libertine@figurestyle\endcsname{OsF}
+
+\usepackage[biblatex]{embrac}
+\ChangeEmph{[}[,.02em]{]}[.055em,-.08em]
+\ChangeEmph{(}[-.01em,.04em]{)}[.04em,-.05em]
+
+\begin{document}
+
+\section{Licence, Requirements and \textsc{README}}
+\license
+
+\xsim\ loads the packages \pkg{expl3}~\cite{bnd:l3kernel},
+\pkg{xparse}~\cite{bnd:l3packages}, \pkg{etoolbox}~\cite{pkg:etoolbox},
+\pkg{booktabs}~\cite{pkg:booktabs} and
+\pkg{translations}~\cite{pkg:translations}.
+
+\section{Motivation and Background}
+
+It has been quite a while since I first published
+\pkg{exsheets}~\cite{pkg:exsheets} in Juni 2012.  Since then it has gained a
+user base and a little bit of popularity as the number of questions on tex.sx
+shows (98~at the time of writing).  User questions, bug reports and feature
+requests improved it over the time.  Still it has a version number starting
+with a zero which in my versioning system means I still consider it
+experimental.
+
+This is due to several facts.  It lacks a few features which I consider
+essential for a full version~1.  For one thing it is not possible to have
+several kinds of exercises numbered independently.  Using verbatim material
+such as listings inside questions and solutions is not possible and the
+current workaround isn't that ideal either.  One request which dates back
+quite a while now was to have different types of points to questions\ldots
+
+All of those aren't easy to add due to the way \pkg{exsheets} is implemented
+right now. As a consequence I wanted to re-implement \pkg{exsheets} for a long
+time.  This is what lead to \xsim.  Internally the package works completely
+different. It will be the official successor of \pkg{exsheets} which is now
+considered obsolete and will only receive bugfix releases any more.
+
+\section{Exercises and Solutions}
+
+\begin{environments}
+  \environment{question}[\oarg{properties}]
+    Input and typeset an exercise.
+  \environment{solution}[\oarg{options}]
+    Input and typeset the solution to the exercise of the previous
+    \env{question} environment.
+\end{environments}
+
+\begin{example}
+  \begin{question}
+    A first example for a question.
+  \end{question}
+  \begin{solution}
+    A first example for a solution.
+  \end{solution}
+\end{example}
+
+\section{New Exercise Types}
+
+\section{Exercise Properties}
+
+\section{Exercise Goals}
+
+\section{Exercise Tags}
+
+\section{Collecting Exercises}
+
+\section{Printing Solutions}
+
+\section{Styling the Exercises -- Templates}
+
+\section{Exercise Translations}
+
+\section{Other Commands}
+
+% \blank
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

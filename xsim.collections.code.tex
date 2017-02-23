@@ -96,25 +96,28 @@
   }
 
 % start collection for an exercise type:
-% #1: collection name
-% #2: type
-\cs_new_protected:Npn \xsim_start_collection:nn #1#2
+% #1: options
+% #2: collection name
+% #3: type
+\cs_new_protected:Npn \xsim_start_collection:nnn #1#2#3
   {
     \group_begin:
-    \xsim_if_collection_exists:nF {#1}
-      { \msg_error:nnn {xsim} {unknown-collection} {#1} }
-    \xsim_activate_collection:n {#1}
-    \keys_set:nn {xsim} { #2/print = false }
+    \xsim_if_collection_exists:nF {#2}
+      { \msg_error:nnn {xsim} {unknown-collection} {#2} }
+    \xsim_activate_collection:n {#2}
+    \xsim_setup:n { #1 , #3/print = false }
   }
 
 % start collection for all exercise types:
-% #1: collection name
-\cs_new_protected:Npn \xsim_start_collection:n #1
+% #1: options
+% #2: collection name
+\cs_new_protected:Npn \xsim_start_collection:nn #1#2
   {
     \group_begin:
-    \xsim_activate_collection:n {#1}
+    \xsim_activate_collection:n {#2}
+    \xsim_setup:n {#1}
     \xsim_foreach_exercise_type:n
-      { \keys_set:nn {xsim} { ##1/print = false } }
+      { \xsim_setup:n { ##1/print = false } }
   }
 
 % stop collection:

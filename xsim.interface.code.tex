@@ -164,13 +164,25 @@
   { \tl_mixed_case:f {#1} }
 
 \NewDocumentCommand \XSIMputright {mm}
-  { \g@addto@macro #1 {#2} }
+  { \tl_put_right:Nn #1 {#2} }
 
 \DeclareExpandableDocumentCommand \XSIMifeqTF {+m+m+m+m}
   { \tl_if_eq:ffTF {#1} {#2} {#3} {#4} }
 
+\DeclareExpandableDocumentCommand \XSIMifeqT {+m+m+m}
+  { \XSIMifeqTF {#1} {#2} {#3} {} }
+
+\DeclareExpandableDocumentCommand \XSIMifeqF {+m+m+m}
+  { \XSIMifeqTF {#1} {#2} {} {#3} }
+
 \DeclareExpandableDocumentCommand \XSIMifblankTF {+m+m+m}
   { \tl_if_blank:fTF {#1} {#2} {#3} }
+
+\DeclareExpandableDocumentCommand \XSIMifblankT {+m+m}
+  { \XSIMifblankTF {#1} {#2} {} }
+
+\DeclareExpandableDocumentCommand \XSIMifblankF {+m+m}
+  { \XSIMifblankTF {#1} {} {#2} {} }
 
 % ----------------------------------------------------------------------------
 
@@ -205,13 +217,13 @@
 \NewDocumentCommand \NewExerciseTagging {m}
   { \xsim_new_tag_type:n {#1} }
 
-\NewDocumentCommand \ForeachExerciseTag {m+m}
+\NewDocumentCommand \ForEachExerciseTag {m+m}
   { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
-\NewDocumentCommand \ExerciseTagsUse {mm}
+\NewDocumentCommand \UseExerciseTags {mm}
   { \xsim_exercise_tags_use:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
-\NewDocumentCommand \ExerciseTagsUseX {mmmm}
+\NewDocumentCommand \UseExerciseTagsX {mmmm}
   {
     \xsim_exercise_tags_use:oonnnn
       {\ExerciseType}
@@ -246,7 +258,7 @@
   { \xsim_declare_translation:nnn {#1} {#2} {#3} }
 \@onlypreamble \DeclareExerciseTranslation
 
-\NewDocumentCommand \ForAllExerciseTranslationsDo {+m}
+\NewDocumentCommand \ForEachExerciseTranslation {+m}
   { \xsim_for_all_translations_do:n {#1} }
 
 % ----------------------------------------------------------------------------
@@ -254,11 +266,11 @@
 \NewDocumentCommand \NewExerciseCollection {m}
   { \xsim_new_collection:n {#1} }
   
-\NewDocumentCommand \collectexercisestype {mm}
-  { \xsim_start_collection:nn {#1} {#2} }
+\NewDocumentCommand \collectexercisestype {O{}mm}
+  { \xsim_start_collection:nnn {#1} {#2} {#3} }
 
-\NewDocumentCommand \collectexercises {m}
-  { \xsim_start_collection:n {#1} }
+\NewDocumentCommand \collectexercises {O{}m}
+  { \xsim_start_collection:nn {#1} {#2} }
 
 \NewDocumentCommand \collectexercisesstop {m}
   { \xsim_stop_collection:n {#1} }
@@ -329,7 +341,7 @@
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \xsimsetup {m}
-  { \keys_set:nn {xsim} {#1} }
+  { \xsim_setup:n {#1} }
 
 % ----------------------------------------------------------------------------
 \tex_endinput:D
