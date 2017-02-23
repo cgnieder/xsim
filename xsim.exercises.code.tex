@@ -258,7 +258,7 @@
           { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
         \xsim_set_properties:nxx {#1} { \int_use:N \g_xsim_id_int }
           {
-            name = \xsim_get_parameter:nn {#1} {exercise-name} ,
+            % name = \xsim_get_parameter:nn {#1} {exercise-name} ,
             print = true ,
             use = true ,
             \exp_not:n {#2} ,
@@ -389,11 +389,6 @@
           { { \arabic { \xsim_get_parameter:nn {#1} {number} } } }
       }
   }
-
-% ----------------------------------------------------------------------------
-
-\keys_define:nn {xsim}
-  { path .tl_set:N = \l__xsim_file_name_path_tl }
 
 % ----------------------------------------------------------------------------  
 \tex_endinput:D

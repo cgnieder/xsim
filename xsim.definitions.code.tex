@@ -35,9 +35,7 @@
 
 \DeclareExerciseProperty* {id}
 \DeclareExerciseProperty* {ID}
-\DeclareExerciseProperty  {name}
 \DeclareExerciseProperty  {counter}
-\DeclareExerciseProperty  {template}
 \DeclareExerciseProperty  {subtitle}
 \DeclareExerciseProperty  {points}
 \DeclareExerciseProperty  {bonus-points}
@@ -48,8 +46,8 @@
 
 % ----------------------------------------------------------------------------
 
-\NewExerciseTagging {tags}
-\NewExerciseTagging {topics}
+\DeclareExerciseTagging {tags}
+\DeclareExerciseTagging {topics}
 
 \xsimsetup{tags/ingore-untagged=false}
 
@@ -88,10 +86,10 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseType {question} {
-  exercise-env      = question ,
+\DeclareExerciseType {exercise} {
+  exercise-env      = exercise ,
   solution-env      = solution ,
-  exercise-name     = \XSIMtranslate {question} ,
+  exercise-name     = \XSIMtranslate {exercise} ,
   solution-name     = \XSIMtranslate {solution} ,
   exercise-template = subsection* ,
   solution-template = subsection*

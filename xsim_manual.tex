@@ -29,6 +29,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage{xsim}
 
+\xsimsetup{
+  path = exercises
+}
+
 \setcnltx{
   package  = {xsim},
 %  info     = {comprehensive support for typesetting chemistry documents},
@@ -45,12 +49,14 @@
     collectexercises ,
     collectexercisestype ,
     collectexercisesstop
+    DeclareExerciseCollection ,
     DeclareExerciseEnvironmentTemplate ,
     DeclareExerciseGoal ,
     DeclareExerciseHeadingTemplate ,
     DeclareExerciseProperty ,
     DeclareExercisePropertyAlias ,
     DeclareExerciseTableTemplate ,
+    DeclareExerciseTagging ,
     DeclareExerciseTranslation ,
     DeclareExerciseTranslations ,
     DeclareExerciseType ,
@@ -89,8 +95,6 @@
     IfInsideSolutionF ,
     IfInsideSolutionT ,
     IfInsideSolutionTF ,
-    NewExerciseCollection ,
-    NewExerciseTagging ,
     printcollection ,
     printsolutions ,
     printsolutionstype ,
@@ -113,7 +117,7 @@
     xsimsetup ,
     XSIMtranslate
   } ,
-  add-envs = { question , solution } ,
+  add-envs = { exercise , solution } ,
   add-silent-cmds = {
   } ,
   index-setup = { othercode = \footnotesize , level = \section } ,
@@ -127,6 +131,178 @@
 \usepackage[biblatex]{embrac}
 \ChangeEmph{[}[,.02em]{]}[.055em,-.08em]
 \ChangeEmph{(}[-.01em,.04em]{)}[.04em,-.05em]
+
+\makeatletter
+\colorlet{property}{orange}
+\newidxcmd\property{\code{\textcolor{property}{#1}}}[ (property)]
+\newrobustcmd*\prop{\@ifstar{\cnltx@prop@star}{\cnltx@prop@nostar}}
+
+\newrobustcmd*\cnltx@prop@star{%
+  \cnltx@ifdash
+    {\cnltx@prop@aux*\meta}
+    {\cnltx@prop@aux*\marg}%
+}
+\newrobustcmd*\cnltx@prop@nostar{%
+  \cnltx@ifdash
+    {\cnltx@prop@aux{}\meta}
+    {\cnltx@prop@aux{}\marg}%
+}
+\newcommand*\cnltx@prop@aux[4]{%
+  \code{\property#1{#3}\cnltx@isvalue#2{#4}}%
+}
+
+\newrobustcmd*\propis{%
+  \@ifstar
+    {\cnltx@propis*}
+    {\cnltx@propis{}}%
+}
+\newrobustcmd*\cnltx@propis[1]{%
+  \cnltx@ifdash
+    {\cnltx@prop@aux{#1}\@firstofone}
+    {\cnltx@prop@aux{#1}\Marg}%
+}
+\newrobustcmd*\choiceprop{%
+  \@ifstar
+    {\cnltx@choiceprop@star}
+    {\cnltx@choiceprop@nostar}%
+}
+\def\cnltx@choiceprop@star#1#2{%
+  \code{\property*{#1}\cnltx@isvalue\choices{#2}}}
+\def\cnltx@choiceprop@nostar#1#2{%
+  \code{\property{#1}\cnltx@isvalue\choices{#2}}}
+\newcommand*\boolprop{%
+  \@ifstar
+    {\cnltx@boolprop@star}
+    {\cnltx@boolprop@nostar}%
+}
+\def\cnltx@boolprop@star#1{\choiceprop*{#1}{\default{true},false}}
+\def\cnltx@boolprop@nostar#1{\choiceprop{#1}{\default{true},false}}
+
+\newenvironment{properties}
+  {%
+    \def\propert{\@cnltx@option@item\property}%
+    \def\propval{\@cnltx@option@item\prop}%
+    \def\proplit{\@cnltx@option@item\propis}%
+    \def\propchoice{\@cnltx@option@item\choiceprop}%
+    \def\propbool{\@cnltx@option@item\boolprop}%
+    \cnltxlist
+  }
+  {\endcnltxlist}
+
+\colorlet{parameter}{blue}
+\newidxcmd\parameter{\code{\textcolor{parameter}{#1}}}[ (parameter)]
+\newrobustcmd*\para{\@ifstar{\cnltx@para@star}{\cnltx@para@nostar}}
+
+\newrobustcmd*\cnltx@para@star{%
+  \cnltx@ifdash
+    {\cnltx@para@aux*\meta}
+    {\cnltx@para@aux*\marg}%
+}
+\newrobustcmd*\cnltx@para@nostar{%
+  \cnltx@ifdash
+    {\cnltx@para@aux{}\meta}
+    {\cnltx@para@aux{}\marg}%
+}
+\newcommand*\cnltx@para@aux[4]{%
+  \code{\parameter#1{#3}\cnltx@isvalue#2{#4}}%
+}
+
+\newrobustcmd*\parais{%
+  \@ifstar
+    {\cnltx@parais*}
+    {\cnltx@parais{}}%
+}
+\newrobustcmd*\cnltx@parais[1]{%
+  \cnltx@ifdash
+    {\cnltx@para@aux{#1}\@firstofone}
+    {\cnltx@para@aux{#1}\Marg}%
+}
+\newrobustcmd*\choicepara{%
+  \@ifstar
+    {\cnltx@choicepara@star}
+    {\cnltx@choicepara@nostar}%
+}
+\def\cnltx@choicepara@star#1#2{%
+  \code{\parameter*{#1}\cnltx@isvalue\choices{#2}}}
+\def\cnltx@choicepara@nostar#1#2{%
+  \code{\parameter{#1}\cnltx@isvalue\choices{#2}}}
+\newcommand*\boolpara{%
+  \@ifstar
+    {\cnltx@boolpara@star}
+    {\cnltx@boolpara@nostar}%
+}
+\def\cnltx@boolpara@star#1{\choicepara*{#1}{\default{true},false}}
+\def\cnltx@boolpara@nostar#1{\choicepara{#1}{\default{true},false}}
+
+\newenvironment{parameters}
+  {%
+    \def\param{\@cnltx@option@item\parameter}%
+    \def\paraval{\@cnltx@option@item\para}%
+    \def\paralit{\@cnltx@option@item\parais}%
+    \def\parachoice{\@cnltx@option@item\choicepara}%
+    \def\parabool{\@cnltx@option@item\boolpara}%
+    \cnltxlist
+  }
+  {\endcnltxlist}
+
+\makeatother
+
+\usepackage{acro}
+
+\DeclareAcronym{prop}{
+  short = property ,
+  long  = \emph{Properties} are options of exercises which are individual for
+    each exercise and can be retrieved and used in exercise templates. ,
+  short-plural-form = properties
+}
+
+\DeclareAcronym{para}{
+  short = parameter ,
+  long  = \emph{Parameters} are options of exercise types which are the same
+    for each exercise of a type and can be retrieved and used in exercise
+    templates.
+}
+
+\DeclareAcronym{goal}{
+  short = goal ,
+  long  = \emph{Goals} are a certain type of \acsp*{prop} with a numerical
+    value the sum of which is available throughout the document.
+}
+
+\DeclareAcronym{tag}{
+  short = tag ,
+  long  = \emph{Tags} are a certain type of \acsp*{prop} with a csv list as
+    value which can be used for selective usage of exercises.
+}
+
+\DeclareAcronym{coll}{
+  short = collection ,
+  long  = A \emph{collection} bundles a number of exercises of one type or all
+    types of exercises within certain barriers in the document.  Those
+    exercise collections can be printed at any place in the document
+    \emph{after} the collection is complete.
+}
+
+\DeclareAcronym{tmpl}{
+  short = template ,
+  long  = {\emph{Templates} are generic code frameworks which are used for
+    typesetting \xsim's objects such as exercises, solutions, or grading
+    tables.}
+}
+
+\ExplSyntaxOn
+\NewAcroCommand \Acs
+  {
+    \acro_first_upper:
+    \acro_short:n {#1}
+  }
+\NewAcroCommand \Acsp
+  {
+    \acro_first_upper:
+    \acro_plural:
+    \acro_short:n {#1}
+  }
+\ExplSyntaxOff
 
 \begin{document}
 
@@ -151,9 +327,9 @@ experimental.
 This is due to several facts.  It lacks a few features which I consider
 essential for a full version~1.  For one thing it is not possible to have
 several kinds of exercises numbered independently.  Using verbatim material
-such as listings inside questions and solutions is not possible and the
+such as listings inside exercises and solutions is not possible and the
 current workaround isn't that ideal either.  One request which dates back
-quite a while now was to have different types of points to questions\ldots
+quite a while now was to have different types of points to exercises\ldots
 
 All of those aren't easy to add due to the way \pkg{exsheets} is implemented
 right now. As a consequence I wanted to re-implement \pkg{exsheets} for a long
@@ -161,38 +337,224 @@ time.  This is what lead to \xsim.  Internally the package works completely
 different. It will be the official successor of \pkg{exsheets} which is now
 considered obsolete and will only receive bugfix releases any more.
 
+\section{Package Options}
+\xsim\ has two package options:
+\begin{options}
+  \opt{verbose}
+    Writes extensive information about what \xsim\ is doing into the log
+    file.
+  \opt{final}
+    If used the exercise and solution environments will not rewrite the
+    environment body files.
+\end{options}
+
+Those options are used the usual way as package option
+\begin{sourcecode}
+  \usepackage[verbose]{xsim}
+\end{sourcecode}
+or as global option
+\begin{sourcecode}
+  \documentclass[verbose]{article}
+\end{sourcecode}
+or via the setup command:
+\begin{commands}
+  \command{xsimsetup}[\marg{options}]
+    Set up \xsim's two package options and all other options described at
+    other places in the manual.
+\end{commands}
+
+\section{Nomenclature}
+
+Throughout this manual certain terms are used.  This section explains their
+meaning in this manual.
+
+\acuseall
+\printacronyms[heading=none]
+
 \section{Exercises and Solutions}
 
+\subsection{The Environments}
+
 \begin{environments}
-  \environment{question}[\oarg{properties}]
-    Input and typeset an exercise.
+  \environment{exercise}[\oarg{\acsp*{prop}}]
+    Input and typeset an exercise.  See section~\ref{sec:exercise-properties}
+    for details on exercise \acsp*{prop}.
   \environment{solution}[\oarg{options}]
     Input and typeset the solution to the exercise of the previous
-    \env{question} environment.
+    \env{exercise} environment.  See section~\ref{sec:printing-solutions} for
+    details on options of solutions.
 \end{environments}
 
 \begin{example}
-  \begin{question}
-    A first example for a question.
-  \end{question}
+  \begin{exercise}
+    A first example for an exercise.
+  \end{exercise}
   \begin{solution}
     A first example for a solution.
   \end{solution}
 \end{example}
 
-\section{New Exercise Types}
+As can be seen in the example a solution is not printed with the default
+setup.  This can be changed using the follwong option.
+\begin{options}
+  \keybool{print}\Module{solution}\Default{false}
+    Set if solutions are printed or or not.
+\end{options}
 
-\section{Exercise Properties}
+The option (belonging to the module \module*{solution}) can either be set
+locally as option to the \env{solution} environment
+\begin{sourcecode}
+  \begin{solution}[print=true]
+    A first example for a solution.
+  \end{solution}
+\end{sourcecode}
+or with the setup command for all following solutions:
+\begin{sourcecode}
+  \xsimsetup{
+    solution/print = true
+  }
+\end{sourcecode}
 
-\section{Exercise Goals}
+There is an completely analoguous option for the \env{exercise} environment:
+\begin{options}
+  \keybool{print}\Module{exercise}\Default{true}
+    Set if exercises are printed or or not.
+\end{options}
 
-\section{Exercise Tags}
+\section{How They Work}
+Both enviroments write the contents of their bodies verbatim to external files
+following a certain naming structure:
+\begin{itemize}
+  \item
+  \code{\meta{jobname}-\meta{type}-\meta{id}-\meta{exercise}|\meta{solution}-body.tex} 
+\end{itemize}
+For example both enviroments from the first example have been written to files
+named
+\begin{itemize}
+  \item \verbcode+xsim_manual-exercise-1-exercise-body.tex+ and
+  \item \verbcode+xsim_manual-exercise-1-solution-body.tex+, respectively.
+\end{itemize}
+Details on the \meta{type} of an exercise will be given in
+section~\ref{sec:new-exercise-types}. The \meta{id} of an exercise is a
+positive integer unique to each exercise environment regardless if the
+exercise is being printed or used at all.
+
+These external files are input when the respective exercise or solution is
+printed.  An advantage of using external files is that \emph{verbatim material
+  is allowed} inside the environments.
+
+Each of those files contains some information about itself and where and why
+it was generated\footnote{In this example the sourcecode line number is
+  misleading as the example where the file was generated itself was an
+  external file where the \env{exercise} environment indeed \emph{was} on
+  line~1.}:
+
+\inputsourcecode{exercises/xsim_manual-exercise-1-exercise-body.tex}
+
+Arguably one downside of this approach is that your project folder will be
+cluttered with files.  In order to deal with this somehow \xsim\ offers the
+following option:
+\begin{options}
+  \keyval{path}{path name}\Default
+    With this option a subfolder or path within the main project folder can be
+    given.  Exercises will be written to and included from this path.
+    \emph{The path must exist on your system before you can use it!} This
+    document uses \keyis{path}{exercises}.
+\end{options}
+
+\section{New Exercise Types}\label{sec:new-exercise-types}
+
+It is easy to define new exercise enviroments together with a corresponding
+solution environment using the following command:
+\begin{commands}
+  \command{DeclareExerciseType}[\marg{type}\marg{parameters}]
+    Declare a new exercise type analoguous to the \env{exercise} and
+    \env{solution} environments.
+\end{commands}
+
+The existing environment pair has been defined as follows:
+\begin{sourcecode}
+  \DeclareExerciseType{exercise}{
+    exercise-env      = exercise ,
+    solution-env      = solution ,
+    exercise-name     = \XSIMtranslate{exercise} ,
+    solution-name     = \XSIMtranslate{solution} ,
+    exercise-template = subsection* ,
+    solution-template = subsection*
+  }
+\end{sourcecode}
+
+The above already is an example for almost all parameters that can (and often
+must) be set.  Here is the complete list:
+\begin{parameters}
+  \paraval{exercise-env}{exercise environment name}
+    The name for the environment used for the exercises of type \meta{type}.
+    \emph{This parameter must be set.}
+  \paraval{solution-env}{solution environment name}
+    The name for the environment used for the solutions of type \meta{type}.
+    \emph{This parameter must be set.}
+  \paraval{exercise-name}{exercise name}
+    The name of the exercises of type \meta{type} -- used for typesetting.
+    \emph{This parameter must be set.}
+  \paraval{solution-name}{solution name}
+    The name of the solutions of type \meta{type} -- used for typesetting.
+    \emph{This parameter must be set.}
+  \paraval{exercise-template}{exercise template}
+    The template used for typesetting the exercises of type \meta{type}.
+    \emph{This parameter must be set.} See section~\ref{sec:styl-exerc-templ}
+    for details on templates.
+  \paraval{solution-template}{solution template}
+    The template used for typesetting the exercises of type \meta{type}.
+    \emph{This parameter must be set.} See section~\ref{sec:styl-exerc-templ}
+    for details on templates.
+  \paraval{counter}{counter name}
+    The counter used for the exercises of type \meta{type}.  If not explicitly
+    set the counter with the same name as \parameter{exercise-env} is used.
+    Otherwise the specified counter is used.  This enables to have different
+    types of exercises sharing a common counter.
+\end{parameters}
+
+\section{Exercise Properties}\label{sec:exercise-properties}
+
+\subsection{Predefined Properties}
+
+Exercise like the \env{exercise} environment and possibly others defined with
+\cs{DeclareExerciseType} have a number of predefined \acsp*{prop}:
+\begin{properties}
+  \propert{id} holds the internal id of an exercise.
+  \propert{ID} holds the user id of an exercise if defined.  Otherwise it is equal
+    to \property{id}.
+  \propert{counter} holds the counter value of an exercise.
+  \propert{subtitle} holds the subtitle of an exercise.
+  \propval{points}{number}
+    holds the reachable points of an exercise.
+  \propval{bonus-points}{number}
+    holds the reachable bonus-points of an exercise.
+  \propbool{print}
+    holds the print boolean of an exercise.
+  \propbool{use}
+    holds the usage boolean of an exercise.
+  \propval{tags}{csv list of tags}
+  \propval{topics}{csv list of topics}
+\end{properties}
+
+Some of these \acsp*{prop} are fixed and cannot be set by the user.  Those
+include \property{id} and \property{counter}.  The others can be set using the
+optional argument of the exercise environment.
+
+\subsection{A Special Kind of Property: Exercise Goals}
+
+\subsection{A Special Kind of Property: Exercise Tags}
+
+\subsection{Declaring Own Properties}
+
+\section{Difference between Printing and Using an Exercise}
 
 \section{Collecting Exercises}
 
-\section{Printing Solutions}
+\section{Printing Solutions}\label{sec:printing-solutions}
 
-\section{Styling the Exercises -- Templates}
+\section{Styling the Exercises -- Templates}\label{sec:styl-exerc-templ}
 
 \section{Exercise Translations}
 

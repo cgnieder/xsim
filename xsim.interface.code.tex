@@ -29,17 +29,21 @@
 
 \NewDocumentCommand \DeclareExerciseEnvironmentTemplate {m+m+m}
   { \xsim_declare_environment_template:nnn {#1} {#2} {#3} }
+\@onlypreamble \DeclareExerciseEnvironmentTemplate
 
 \NewDocumentCommand \DeclareExerciseHeadingTemplate {m+m}
   { \xsim_declare_heading_template:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseHeadingTemplate
 
 \NewDocumentCommand \DeclareExerciseTableTemplate {m+m}
   { \xsim_declare_table_template:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseTableTemplate
 
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseType {mm}
   { \xsim_declare_exercise_type:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseType
 
 % ----------------------------------------------------------------------------
 
@@ -69,9 +73,11 @@
       { \xsim_declare_property:nn { \c_true_bool } {#2} }
       { \xsim_declare_property:nn { \c_false_bool } {#2} }
   }
+\@onlypreamble \DeclareExerciseProperty
 
 \NewDocumentCommand \DeclareExercisePropertyAlias {mm}
   { \xsim_make_property_alias:nn {#1} {#2} }
+\@onlypreamble \DeclareExercisePropertyAlias
 
 \DeclareExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
@@ -118,7 +124,7 @@
 
 \NewDocumentCommand \SetExerciseParameters {mm}
   { \xsim_set_parameters:nn {#1} {#2} }
-  
+
 \DeclareExpandableDocumentCommand \GetExerciseName {}
   {
     \IfInsideSolutionTF
@@ -188,6 +194,7 @@
 
 \NewDocumentCommand \DeclareExerciseGoal {m}
   { \xsim_declare_exercise_goal:n {#1} }
+\@onlypreamble \DeclareExerciseGoal
 
 \NewDocumentCommand \IfExerciseGoalTF {mm+m+m}
   {
@@ -214,8 +221,9 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \NewExerciseTagging {m}
+\NewDocumentCommand \DeclareExerciseTagging {m}
   { \xsim_new_tag_type:n {#1} }
+\@onlypreamble \DeclareExerciseTagging
 
 \NewDocumentCommand \ForEachExerciseTag {m+m}
   { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
@@ -263,9 +271,10 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \NewExerciseCollection {m}
+\NewDocumentCommand \DeclareExerciseCollection {m}
   { \xsim_new_collection:n {#1} }
-  
+\@onlypreamble \DeclareExerciseCollection
+
 \NewDocumentCommand \collectexercisestype {O{}mm}
   { \xsim_start_collection:nnn {#1} {#2} {#3} }
 

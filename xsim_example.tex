@@ -4,14 +4,14 @@
 % \end{filecontents}
 \usepackage{xsim,lipsum,tcolorbox}
 
-\DeclareExerciseType{exercise}{
+\DeclareExerciseType{question}{
   exercise-env = exercise ,
   solution-env = hint ,
   exercise-name = Exercise ,
   solution-name = Hint ,
   exercise-template = subsection* ,
   solution-template = subsection* ,
-  counter = question % shares a counter with the `question' type
+  counter = exercise % shares a counter with the `exercise' type
 }
 
 \DeclareExerciseType{problem}{
@@ -57,7 +57,7 @@
       }]
     \IfInsideSolutionF{%
       \IfExercisePropertySetT{tags}{%
-        Tags: \ExerciseTagsUse{tags}{, } \par
+        Tags: \UseExerciseTags{tags}{, } \par
       }%
     }%
   }
@@ -69,7 +69,7 @@
 \xsimsetup{
   % tags = {geometry} ,
   % topics = {geometry}
-  % tags/ingore-untagged % if true untagged question will be printed regardless
+  % tags/ingore-untagged % if true untagged exercise will be printed regardless
   %                      % which tags have been chosen
 }
 
@@ -86,12 +86,12 @@ from exercises: \printbonus{exercise} \par
 from problems: \printbonus{problem} \par
 
 % 1
-\begin{question}[points=4,bonus-points=1,topics=geometry,tags={geometry,triangles},grade=7]
+\begin{exercise}[points=4,bonus-points=1,topics=geometry,tags={geometry,triangles},grade=7]
   \lipsum[1]
 \begin{verbatim}
 foo x^2 y^3 \gna
 \end{verbatim}
-\end{question}
+\end{exercise}
 \begin{solution}[print]
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \begin{verbatim}
@@ -100,9 +100,9 @@ foo x^2 y^3 \gna
 \end{solution}
 
 % 2
-\begin{question}[subtitle=Foo,points=5,topics=analysis,tags={analysis,functions},grade=11]
+\begin{exercise}[subtitle=Foo,points=5,topics=analysis,tags={analysis,functions},grade=11]
   \lipsum[2]
-\end{question}
+\end{exercise}
 \begin{solution}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{solution}
@@ -117,9 +117,9 @@ foo x^2 y^3 \gna
 \end{answer}
 
 % 4
-\begin{exercise}
+\begin{question}
   \lipsum[4]
-\end{exercise}
+\end{question}
 \begin{hint}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{hint}
@@ -142,7 +142,7 @@ foo x^2 y^3 \gna
 \end{answer}
 
 % 7
-\begin{question}[ID=test]
+\begin{exercise}[ID=test]
   \lipsum[5]
 
   \verb+\ExerciseID+: \GetExerciseAliasProperty{ID}
@@ -152,20 +152,20 @@ foo x^2 y^3 \gna
   \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID}
   
   \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
-\end{question}
+\end{exercise}
 \begin{solution}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{solution}
 
 % 8
-\begin{question}[print=false,use=false]
+\begin{exercise}[print=false,use=false]
   \lipsum[5]
-\end{question}
+\end{exercise}
 \begin{solution}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
 \end{solution}
 
-% \printsolutionstype{question}
+% \printsolutionstype{exercise}
 
 \printsolutions*
 
@@ -198,14 +198,14 @@ Number of problems: \numberofproblems
 
 \section{Grading tables}
 
-\gradingtable[horizontal]{question} \par \bigskip
+\gradingtable[horizontal]{exercise} \par \bigskip
 
 \gradingtable[horizontal]{problem} \par \bigskip
 
 \gradingtable[horizontal]{} \par \bigskip
 
 % vertical
-\gradingtable{question} \par \bigskip
+\gradingtable{exercise} \par \bigskip
 
 \gradingtable{problem} \par \bigskip
 
