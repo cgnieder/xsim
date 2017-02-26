@@ -5,9 +5,9 @@
 \usepackage{xsim,lipsum,tcolorbox}
 
 \DeclareExerciseType{question}{
-  exercise-env = exercise ,
+  exercise-env = question ,
   solution-env = hint ,
-  exercise-name = Exercise ,
+  exercise-name = Question ,
   solution-name = Hint ,
   exercise-template = subsection* ,
   solution-template = subsection* ,
@@ -119,6 +119,14 @@ foo x^2 y^3 \gna
 % 4
 \begin{question}
   \lipsum[4]
+  
+  \verb+\ExerciseID+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id}
+  
+  \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
 \end{question}
 \begin{hint}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.
@@ -127,6 +135,14 @@ foo x^2 y^3 \gna
 % 5
 \begin{problem}[points=2]
   \lipsum[3]
+  
+  \verb+\ExerciseID+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id}
+  
+  \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
   \writehere
 \end{problem}
 \begin{answer}
@@ -136,6 +152,14 @@ foo x^2 y^3 \gna
 % 6
 \begin{problem}[points=1]
   \lipsum[3]
+
+  \verb+\ExerciseID+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id}
+  
+  \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID}
+  
+  \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
 \end{problem}
 \begin{answer}
   This is the solution to \ExerciseType\ \GetExerciseProperty{counter}.

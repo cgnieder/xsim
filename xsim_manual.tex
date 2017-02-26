@@ -44,6 +44,7 @@
     \par
   } ,
   quote-format = \small\biolinumLF ,
+  add-silent-cmds = {lipsum} ,
   add-cmds = {
     blank ,
     collectexercises ,
@@ -127,6 +128,12 @@
 \expandafter\def\csname libertine@figurestyle\endcsname{LF}
 \usepackage[libertine]{newtxmath}
 \expandafter\def\csname libertine@figurestyle\endcsname{OsF}
+
+\newcommand*\eTeX{%
+  \texorpdfstring
+    {\mbox{$\epsilon$-\TeX}}
+    {e-TeX}%
+}
 
 \usepackage[biblatex]{embrac}
 \ChangeEmph{[}[,.02em]{]}[.055em,-.08em]
@@ -304,6 +311,8 @@
   }
 \ExplSyntaxOff
 
+\usepackage{lipsum}
+
 \begin{document}
 
 \section{Licence, Requirements and \textsc{README}}
@@ -337,7 +346,7 @@ time.  This is what lead to \xsim.  Internally the package works completely
 different. It will be the official successor of \pkg{exsheets} which is now
 considered obsolete and will only receive bugfix releases any more.
 
-\section{Package Options}
+\section{Package Options}\label{sec:package-options}
 \xsim\ has two package options:
 \begin{options}
   \opt{verbose}
@@ -363,13 +372,42 @@ or via the setup command:
     other places in the manual.
 \end{commands}
 
-\section{Nomenclature}
+\section{How to Read the Manual}\label{sec:how-read-manual}
+
+\subsection{Nomenclature}
 
 Throughout this manual certain terms are used.  This section explains their
 meaning in this manual.
 
 \acuseall
 \printacronyms[heading=none]
+
+\subsection{Setting Options}
+Apart from the package options already described in
+section~\ref{sec:package-options} \xsim\ has further options. Those can be
+\enquote{toplevel} options or options belonging to a module.
+\begin{options}
+  \keyval*{toplevel}{value}
+    A toplevel option.
+  \keyval*{sublebel}{value}\Module*{module}
+    A sublevel option belonging to the module \module*{module}
+\end{options}
+Both kinds of options are set with \cs{xsimsetup}:
+\begin{sourcecode}
+  \xsimsetup{
+    toplevel = {value} ,
+    module/sublevel = {value}
+  }
+\end{sourcecode}
+
+\subsection{Command descriptions}
+
+Some commands do have a \expandablesymbol\ symbol printed next to their
+names.  This indicates that the command is expandable, \ie, it is usable in an
+\cs*{edef} or \cs*{write} context and will expand according to its
+description.  All other commands are engine protected, \ie, in the sense of
+\eTeX's \cs*{protected}.
+
 
 \section{Exercises and Solutions}
 
@@ -385,7 +423,7 @@ meaning in this manual.
     details on options of solutions.
 \end{environments}
 
-\begin{example}
+\begin{example}[outside]
   \begin{exercise}
     A first example for an exercise.
   \end{exercise}
@@ -521,34 +559,154 @@ must) be set.  Here is the complete list:
 Exercise like the \env{exercise} environment and possibly others defined with
 \cs{DeclareExerciseType} have a number of predefined \acsp*{prop}:
 \begin{properties}
-  \propert{id} holds the internal id of an exercise.
-  \propert{ID} holds the user id of an exercise if defined.  Otherwise it is equal
-    to \property{id}.
-  \propert{counter} holds the counter value of an exercise.
-  \propert{subtitle} holds the subtitle of an exercise.
+  \propval{id}{integer}
+    Holds the internal id of an exercise.  \emph{Cannot be set by the user}.
+  \propval{ID}{text}
+    Holds the user id of an exercise if defined.  Otherwise it is equal to
+    \property{id}.
+  \propval{counter}{integer}
+    Holds the counter value of an exercise.  \emph{Cannot be set by the
+      user}.
+  \propval{subtitle}{text}
+    Holds the subtitle of an exercise.
   \propval{points}{number}
-    holds the reachable points of an exercise.
+    Holds the reachable points of an exercise.
   \propval{bonus-points}{number}
-    holds the reachable bonus-points of an exercise.
+    Holds the reachable bonus-points of an exercise.
   \propbool{print}
-    holds the print boolean of an exercise.
+    Holds the print boolean of an exercise.
   \propbool{use}
-    holds the usage boolean of an exercise.
+    Holds the usage boolean of an exercise.
   \propval{tags}{csv list of tags}
+    Holds the list of tags the exercise should be associated with.
   \propval{topics}{csv list of topics}
+    Holds the list of topics the exercise should be associated with.
 \end{properties}
 
 Some of these \acsp*{prop} are fixed and cannot be set by the user.  Those
 include \property{id} and \property{counter}.  The others can be set using the
 optional argument of the exercise environment.
 
-\subsection{A Special Kind of Property: Exercise Goals}
-
-\subsection{A Special Kind of Property: Exercise Tags}
+\begin{example}[outside]
+  \begin{exercise}[points={4.5},subtitle={This is a subtitle}]
+    An exercise where some properties have been set.
+  \end{exercise}
+\end{example}
 
 \subsection{Declaring Own Properties}
 
-\section{Difference between Printing and Using an Exercise}
+\xsim\ offers the possibility to declare additional exercise properties:
+\begin{commands}
+  \command{DeclareExerciseProperty}[\sarg\marg{property}]
+    Declares the property \meta{property}.  If used with the optional star a
+    unique property is defined which means that each exercise must have a
+    property value distinct from all other exercises.
+  \command{DeclareExercisePropertyAlias}[\marg{property 1}\marg{property 2}]
+    Declares \meta{property 1} to be an alias of \meta{property 2}.  This
+    means that each time \meta{property 2} is set \meta{property 1} will be
+    set to the same value \emph{unless} it has been set already.  As an
+    example: property \property{ID} is an alias of property \property{id}.
+\end{commands}
+
+This is better demonstrated with an example:
+\begin{example}[outside]
+  \begin{exercise}
+    \lipsum[4] % from package `lipsum'
+    \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id} \par
+    \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID} \par
+    \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
+  \end{exercise}
+  \begin{exercise}[ID=foo-bar]
+    \lipsum[4]
+    \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id} \par
+    \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID} \par
+    \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
+  \end{exercise}
+\end{example}
+
+\subsection{A Special Kind of Property: Exercise Goals}
+
+Exercise goals are a generic concept in \xsim\ for exercise properties like
+\property{points} or \property{bonus-points}.  Those are properties which can
+(only) get a decimal number as value the sum of which is calculated and
+available (after a compilation) throughout the document.
+\begin{commands}
+  \command{DeclareExerciseGoal}[\marg{goal}]
+    Declare a new exercise goal named \meta{goal} and also a property called
+    \meta{goal}.
+  \command{TotalExerciseTypeGoal}[\marg{type}\marg{goal}\marg{singular}\marg{plural}]
+    Get the sum of goal \meta{goal} for all exercises of type \meta{type}.
+    \meta{singular} andf \meta{plural} are placed after the sum in the input
+    stream depending on whether the sum equals~$1$ or not.
+  \command{TotalExerciseGoal}[\marg{goal}\marg{singular}\marg{plural}]
+    Get the sum of goal \meta{goal} for all exercises. \meta{singular} andf
+    \meta{plural} are placed after the sum in the input stream depending on
+    whether the sum equals~$1$ or not.
+  \command{printpoints}[\marg{type}]
+    Print the sum of points for all exercises of type \meta{type} followed by
+    an appropriate translation of the words \enquote{point} or
+    \enquote{points}, respectivaly\footnote{See section~\ref{sec:exerc-transl}
+      for details on the definition and usage of language dependent words.}.
+    Defined in terms of \cs{TotalExerciseTypeGoal}.
+  \command{printtotalpoints}
+    Print the sum of points for all exercises followed by an appropriate
+    translation of the words \enquote{point} or \enquote{points},
+    respectivaly.  Defined in terms of \cs{TotalExerciseGoal}.
+  \command{printbonus}[\marg{type}]
+    Print the sum of bonus points for all exercises of type \meta{type}
+    followed by an appropriate translation of the words \enquote{point} or
+    \enquote{points}, respectivaly.  Defined in terms of
+    \cs{TotalExerciseTypeGoal}.
+  \command{printtotalbonus}
+    Print the sum of bonus points for all exercises followed by an appropriate
+    translation of the words \enquote{point} or \enquote{points},
+    respectivaly.  Defined in terms of \cs{TotalExerciseGoal}.
+\end{commands}
+
+The two existing goals are defined with
+\begin{sourcecode}
+  \DeclareExerciseGoal{points}
+  \DeclareExerciseGoal{bonus-points}
+\end{sourcecode}
+
+\subsection{A Special Kind of Property: Exercise Tags}
+
+Exercise tags are a generic concept in \xsim\ for exercise properties like
+\property{tags} or \property{topics}.  Those are properties which can (only)
+get a csv list of strings as value.  Those strings can be used to selectively
+use exercises.  See section~\ref{sec:diff-betw-print} for details on
+\emph{usage} of exercises and the difference to \emph{printing} an exercise
+and how to use exercise tags for selection.
+\begin{commands}
+  \command{DeclareExerciseTagging}{tag}
+    This defines an exercise tagging group name \meta{tag}.  It also defines a
+    property named \meta{tag}.  In addition to options are defines: and option
+    named \code{\meta{tag}} which can be used for selection and an boolean
+    option \code{\meta{tag}/ignore-untagged}.
+\end{commands}
+The two existing tagging groups have been defined and preset with the
+following code:
+\begin{sourcecode}
+  \DeclareExerciseTagging{tags}
+  \DeclareExerciseTagging{topics}
+  \xsimsetup{tags/ingore-untagged=false}
+\end{sourcecode}
+this means that these options are available:
+\begin{options}
+  \keyval{tags}{csv list of tags}
+    Choose the set of tags whose associated exercises should be printed.
+  \keyval{topics}{csv list of topics}
+    Choose the set of tags whose associated exercises should be printed.
+  \keybool{ignore-tagging}\Module{tags}\Default{false}
+    If set to true exercises with no tags will be printed even if tags have
+    been chosen with the option \option{tags}.
+  \keybool{ignore-tagging}\Module{topics}\Default{true}
+    If set to true exercises with no topics will be printed even if tags have
+    been chosen with the option \option{tags}.
+\end{options}
+
+
+\section{Difference between Printing and Using an Exercise}\label{sec:diff-betw-print}
 
 \section{Collecting Exercises}
 
@@ -556,7 +714,41 @@ optional argument of the exercise environment.
 
 \section{Styling the Exercises -- Templates}\label{sec:styl-exerc-templ}
 
-\section{Exercise Translations}
+\subsection{Getting Goal Related Properties}
+
+\begin{commands}
+  % goals
+  \command{ExerciseGoalName}[\marg{goal}\marg{singular}\marg{plural}]
+  \command{IfExerciseGoalTF}[\marg{goal}\marg{relation and value}\marg{true}\marg{false}]
+  \command{IfExerciseGoalT}[\marg{goal}\marg{relation and value}\marg{true}]
+  \command{IfExerciseGoalF}[\marg{goal}\marg{relation and value}\marg{false}]
+  % properties
+  \expandable\command{IfExercisePropertyExistTF}
+  \expandable\command{IfExercisePropertyExistT}
+  \expandable\command{IfExercisePropertyExistF}
+  \command{IfExercisePropertySetTF}
+  \command{IfExercisePropertySetT}
+  \command{IfExercisePropertySetF}
+  \expandable\command{GetExerciseProperty}
+  \expandable\command{GetExerciseAliasProperty}
+  \command{SaveExerciseProperty}
+  \command{GlobalSaveExerciseProperty}
+  \command{ExercisePropertyIfSetTF}
+  \command{ExercisePropertyIfSetT}
+  \command{ExercisePropertyIfSetF}
+  \expandable\command{ExercisePropertyGet}
+  \expandable\command{ExercisePropertyGetAlias}
+  \command{ExercisePropertySave}
+  \command{ExercisePropertyGlobalSave}
+  % parameters
+  \expandable\command{GetExerciseParameter}
+  \command{SetExerciseParameter}
+  \command{SetExerciseParameters}
+  \expandable\command{GetExerciseName}
+  \expandable\command{ExerciseParameterGet}
+\end{commands}
+
+\section{Exercise Translations}\label{sec:exerc-transl}
 
 \section{Other Commands}
 
