@@ -321,7 +321,9 @@
 \xsim\ loads the packages \pkg{expl3}~\cite{bnd:l3kernel},
 \pkg{xparse}~\cite{bnd:l3packages}, \pkg{etoolbox}~\cite{pkg:etoolbox},
 \pkg{booktabs}~\cite{pkg:booktabs} and
-\pkg{translations}~\cite{pkg:translations}.
+\pkg{translations}~\cite{pkg:translations}.  All of these packages are present
+on a modern and up to date \TeX\ distribution such as \TeX~Live or MiK\TeX\ so
+no further action should be needed.
 
 \section{Motivation and Background}
 
@@ -329,8 +331,8 @@ It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in Juni 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
 shows (98~at the time of writing).  User questions, bug reports and feature
-requests improved it over the time.  Still it has a version number starting
-with a zero which in my versioning system means I still consider it
+requests improved it over the time.  It still has a version number starting
+with a zero, though, which in my versioning system means I still consider it
 experimental.
 
 This is due to several facts.  It lacks a few features which I consider
@@ -623,6 +625,9 @@ This is better demonstrated with an example:
     \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
   \end{exercise}
 \end{example}
+
+The power of properties will get more clear when reading
+section~\ref{sec:styl-exerc-templ} about templates.
 
 \subsection{A Special Kind of Property: Exercise Goals}
 

@@ -232,9 +232,12 @@
         {\g_xsim_max_id_int}
         {\csname numberof \ExerciseType s\endcsname}
       }
-    \begin {tabular} {l*{\numberofcolumns}{c}c}
-      \ExerciseTableCode
-    \end {tabular}
+    \XSIMifeqF{\numberofcolumns}{0}
+      {
+        \begin {tabular} {l*{\numberofcolumns}{c}c}
+          \ExerciseTableCode
+        \end {tabular}
+      }
   }
 
 % TODO: update vertical analoguous to the horizontal template
