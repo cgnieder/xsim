@@ -49,7 +49,7 @@
     blank ,
     collectexercises ,
     collectexercisestype ,
-    collectexercisesstop
+    collectexercisesstop ,
     DeclareExerciseCollection ,
     DeclareExerciseEnvironmentTemplate ,
     DeclareExerciseGoal ,
@@ -311,10 +311,11 @@
   }
 \ExplSyntaxOff
 
+\newcommand\environ[1]{\beginenv*\Marg{\env{exercise}}}
+
+\DeclareExerciseCollection{foo}
+
 \usepackage{lipsum}
-
-\newcommand\environ[1]{\beginenv\Marg{\env{exercise}}}
-
 \usepackage{varioref}
 
 \begin{document}
@@ -414,7 +415,6 @@ names.  This indicates that the command is expandable, \ie, it is usable in an
 description.  All other commands are engine protected, \ie, in the sense of
 \eTeX's \cs*{protected}.
 
-
 \section{Exercises and Solutions}
 
 \subsection{The Environments}
@@ -429,7 +429,7 @@ description.  All other commands are engine protected, \ie, in the sense of
     details on options of solutions.
 \end{environments}
 
-\begin{example}[outside]
+\begin{example}
   \begin{exercise}
     A first example for an exercise.
   \end{exercise}
@@ -466,39 +466,39 @@ There is an completely analoguous option for the \env{exercise} environment:
 \end{options}
 See also section~\vref{sec:using-printing}.
 
-\section{How They Work}
+\section{How the Exercise Environments Work}
 Both enviroments write the contents of their bodies verbatim to external files
 following a certain naming structure:
 \begin{itemize}
   \item
-  \code{\meta{jobname}-\meta{type}-\meta{id}-\meta{exercise}|\meta{solution}-body.tex} 
+  \code{\meta{jobname}-\meta{type}-\meta{id}-exercise|solution-body.tex} 
 \end{itemize}
-For example both enviroments from the first example have been written to files
-named
+The name starts with the name of the job (which is the name of the document
+itself) followed by type and id of the corresponding exercise and then
+followed by the environment type.  For example both enviroments from the first
+example have been written to files named
 \begin{itemize}
   \item \verbcode+xsim_manual-exercise-1-exercise-body.tex+ and
   \item \verbcode+xsim_manual-exercise-1-solution-body.tex+, respectively.
 \end{itemize}
 Details on the \meta{type} of an exercise will be given in
-section~\vref{sec:new-exercise-types}. The \meta{id} of an exercise is a
-positive integer unique to each exercise environment regardless if the
-exercise is being printed or used at all.
+section~\vref{sec:new-exercise-types}.  \emph{The \meta{id} of an exercise is
+  a positive integer unique to each exercise environment regardless if the
+  exercise is being printed or used at all.}
 
 These external files are input when the respective exercise or solution is
 printed.  An advantage of using external files is that \emph{verbatim material
-  is allowed} inside the environments.
-
-Each of those files contains some information about itself and where and why
-it was generated\footnote{In this example the sourcecode line number is
-  misleading as the example where the file was generated itself was an
-  external file where the \env{exercise} environment indeed \emph{was} on
-  line~1.}:
+  is allowed} inside the environments.  Each of those files contains some
+information about itself and where and why it was generated\footnote{In this
+  example the sourcecode line number is misleading as the example where the
+  file was generated itself was an external file where the \env{exercise}
+  environment indeed \emph{was} on line~1.}:
 
 \inputsourcecode{exercises/xsim_manual-exercise-1-exercise-body.tex}
 
-Arguably one downside of this approach is that your project folder will be
-cluttered with files.  In order to deal with this somehow \xsim\ offers the
-following option:
+Arguably one downside of the approach using external files for each exercise
+and its solution is that your project folder will be cluttered with files.  In
+order to deal with this somehow \xsim\ offers the following option:
 \begin{options}
   \keyval{path}{path name}\Default
     With this option a subfolder or path within the main project folder can be
@@ -509,7 +509,7 @@ following option:
 
 \section{New Exercise Types}\label{sec:new-exercise-types}
 
-It is easy to define new exercise enviroments together with a corresponding
+It is easy to define new exercise environments together with a corresponding
 solution environment using the following command:
 \begin{commands}
   \command{DeclareExerciseType}[\marg{type}\marg{parameters}]
@@ -610,8 +610,8 @@ Some of these \acsp*{prop} are fixed and cannot be set by the user.  Those
 include \property{id} and \property{counter}.  The others can be set using the
 optional argument of the exercise environment.
 
-\begin{example}[outside]
-  \begin{exercise}[points={4.5},subtitle={This is a subtitle}]
+\begin{example}
+  \begin{exercise}[subtitle={This is a subtitle}]
     An exercise where some properties have been set.
   \end{exercise}
 \end{example}
@@ -632,7 +632,7 @@ optional argument of the exercise environment.
 \end{commands}
 
 This is better demonstrated with an example:
-\begin{example}[outside]
+\begin{example}
   \begin{exercise}
     \lipsum[4] % from package `lipsum'
     \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id} \par
@@ -733,8 +733,9 @@ this means that these options are available:
 
 \section{Using and Printing an Exercise}\label{sec:using-printing}
 
-When an exercise is started with \environ{exercise} then different things
-happen depending on different settings.
+When an exercise is started with \environ{exercise} (or other environments
+defined through \cs{DeclareExerciseType}) then different things happen
+depending on different settings:
 \begin{itemize}
   \item If the \emph{insert mode} is active nothing happens, see
     section~\vref{sec:collecting-exercises} for details on this.
@@ -767,7 +768,7 @@ happen depending on different settings.
 The schematic structure of an exercise is shown in
 figure~\vref{fig:schematic-structure}.
 
-\begin{figure}[bhp]
+\begin{figure}
   \centering
   \begin{tikzpicture}
     \node[draw,minimum width=.7\linewidth] at (0,0)  {pre hook};
@@ -803,6 +804,59 @@ For each exercise type there are the following options (here using the
 \end{options}
 
 \section{Collecting Exercises}\label{sec:collecting-exercises}
+
+\xsim\ knows the concept of \enquote{exercise collections}.  A collection must
+be declared in the preamble.  Using a pair of commands explained below
+exercises between those commands are added to the corresponding collection but
+not printed.  After a collection is completed the collection can be printed as
+often as needed.
+\begin{commands}
+  \command{DeclareExerciseCollection}[\marg{collection name}]
+    Define a new collection \meta{collection name} in the document preamble.
+  \command{collectexercisestype}[\marg{collection name}\marg{exercise type}]
+    Opens the collection \meta{collection name} which now collects all
+    exercises of type \meta{exercise type} until the collection is closed with
+    \cs{collectexercisesstop}.  Collections of other types are not collected.
+  \command{collectexercises}[\marg{collection name}]
+    Opens the collection \meta{collection name} which now collects all
+    exercises until the collection is closed with \cs{collectexercisesstop}.
+  \command{collectexercisesstop}[\marg{collection name}]
+    Closes the collection \meta{collection name}.
+  \command{printcollection}[\marg{collection name}]
+    Prints the collection \meta{collection name}, \ie, all exercises collected
+    earlier.  This command cannot be used before the corresponding collection
+    has been closed correctly.
+\end{commands}
+
+The usage should be clear:
+\begin{example}[outside]
+  \collectexercises{foo}
+  \begin{exercise}
+    This exercise is added to the collection `foo'.
+  \end{exercise}
+  \collectexercisesstop{foo}
+\end{example}
+Once the collection is closed it can be printed:
+\begin{example}
+  \printcollection{foo}
+\end{example}
+
+You can open several collections at the same:
+\begin{sourcecode}
+  \collectexercises{foo}
+  \collectexercisestype{bar}{exercises}
+    ...
+  \collectexercisesstop{bar}
+  \collectexercisesstop{foo}
+\end{sourcecode}
+Exercises will be added to each open collection.
+
+There is one generic collection called \enquote{\code{all exercises}}.  As the
+name already suggests it will hold all exercises.  So if you say
+\begin{sourcecode}
+  \printcollection{all exercises}
+\end{sourcecode}
+all exercises up to this point in the document will be printed.
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 

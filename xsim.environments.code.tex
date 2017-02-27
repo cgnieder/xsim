@@ -138,7 +138,18 @@
 % #1: write stream
 % #2: file name
 \cs_new_protected:Npn \__xsim_open_stream:Nn #1#2
-  { \xsim_if_final:F { \iow_open:Nn #1 {#2} } }
+  {
+    \file_if_exist:nTF {#2}
+      { \xsim_if_final:F { \iow_open:Nn #1 {#2} } }
+      {
+        % \g_xsim_final_bool is a global variable; however, if it is true and
+        % the exercise file doesn't exist, yet, we need to set it locally to
+        % false in order to ensure that the file is correctly written and the
+        % stream closed afterwards
+        \bool_set_false:N \g_xsim_final_bool
+        \iow_open:Nn #1 {#2}
+      }
+  }
 
 % #1: write stream
 \cs_new_protected:Npn \__xsim_close_stream:N #1
