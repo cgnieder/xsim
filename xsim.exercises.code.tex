@@ -34,6 +34,7 @@
   }
 
 \seq_new:N  \l__xsim_parameters_seq
+\seq_new:N  \l__xsim_fixed_parameters_seq
 \seq_new:N  \g__xsim_exercises_seq
 \int_new:N  \g_xsim_id_int
 \int_new:N  \g_xsim_max_id_int
@@ -44,15 +45,30 @@
 
 % ----------------------------------------------------------------------------
 
+\msg_new:nnn {xsim} {parameter-fixed}
+  {
+    You~ tried~ to~ set~ parameter~ `#2'~ for~ type~ `#1'~ \msg_line_context:
+    . ~ However,~ parameter~ `#2'~ is~ a~ fixed~ parameter~ that~ already~
+    has~ been~ set~ for~ type~ `#1'.~ Its~ value~ can't~ be~ changed!
+  }
+
+% ----------------------------------------------------------------------------
+
 \xsim_new_list:n {types}
 \xsim_new_list:n {print}
 \xsim_new_list:n {use}
-  
-\cs_new_protected:Npn \xsim_declare_parameter:n #1
+
+% #1: boolean if fixed parameter
+% #2: parameter name
+\cs_new_protected:Npn \xsim_declare_parameter:nn #1#2
   {
-    \xsim_verbose:n { Declaring~ parameter~ `#1'. }
-    \xsim_if_parameter_exist:nF {#1}
-      { \seq_put_right:Nn \l__xsim_parameters_seq {#1} }
+    \xsim_verbose:n { Declaring~ parameter~ `#2'. }
+    \xsim_if_parameter_exist:nF {#2}
+      {
+        \seq_put_right:Nn \l__xsim_parameters_seq {#2}
+        \bool_if:cT {c_#1_bool}
+          { \seq_put_right:Nn \l__xsim_fixed_parameters_seq {#2} }
+      }
   }
 
 \cs_new_protected:Npn \xsim_remove_parameter:n #1
@@ -68,8 +84,14 @@
       { \prg_return_true: }
       { \prg_return_false: }
   }
-
 \cs_generate_variant:Nn \xsim_if_parameter_exist:nT {x}
+
+\prg_new_conditional:Npnn \xsim_if_parameter_fixed:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_fixed_parameters_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
 
 % #1: type
 % #2: csv list of parameters
@@ -102,9 +124,28 @@
   {
     \xsim_if_parameter_exist:nT {#2}
       {
-        \xsim_verbose:n
-          { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
-        \prop_put:cnn {l__xsim_#1_type_parameters_prop} {#2} {#3}
+        \xsim_if_parameter_fixed:nTF {#1}
+          {
+            \xsim_if_parameter:nnTF {#1} {#2}
+              {
+                \msg_warning:nnnn {xsim} {parameter-fixed} {#1} {#2}
+                \xsim_verbose:n
+                  {
+                    Not~ setting~ already~ set~ and~ fixed~ parameter~ `#2'~
+                    for~ type~ `#1'.
+                  }
+              }
+              {
+                \xsim_verbose:n
+                  { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
+                \prop_put:cnn {l__xsim_#1_type_parameters_prop} {#2} {#3}
+              }
+          }
+          {
+            \xsim_verbose:n
+              { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
+            \prop_put:cnn {l__xsim_#1_type_parameters_prop} {#2} {#3}
+          }
       }
   }
 \cs_generate_variant:Nn \xsim_set_parameter:nnn {nnx,nxx}
@@ -122,14 +163,14 @@
       { \prg_return_false: }
   }
 
-\xsim_declare_parameter:n {exercise-env}
-\xsim_declare_parameter:n {solution-env}
-\xsim_declare_parameter:n {exercise-name}
-\xsim_declare_parameter:n {solution-name}
-\xsim_declare_parameter:n {exercise-template}
-\xsim_declare_parameter:n {solution-template}
-\xsim_declare_parameter:n {counter}
-\xsim_declare_parameter:n {number}
+\xsim_declare_parameter:nn {true}  {exercise-env}
+\xsim_declare_parameter:nn {true}  {solution-env}
+\xsim_declare_parameter:nn {false} {exercise-name}
+\xsim_declare_parameter:nn {false} {solution-name}
+\xsim_declare_parameter:nn {false} {exercise-template}
+\xsim_declare_parameter:nn {false} {solution-template}
+\xsim_declare_parameter:nn {false} {counter}
+\xsim_declare_parameter:nn {true}  {number}
 
 % ----------------------------------------------------------------------------
 % inside the argument `#1' refers to the type

@@ -313,6 +313,10 @@
 
 \usepackage{lipsum}
 
+\newcommand\environ[1]{\beginenv\Marg{\env{exercise}}}
+
+\usepackage{varioref}
+
 \begin{document}
 
 \section{Licence, Requirements and \textsc{README}}
@@ -386,7 +390,7 @@ meaning in this manual.
 
 \subsection{Setting Options}
 Apart from the package options already described in
-section~\ref{sec:package-options} \xsim\ has further options. Those can be
+section~\vref{sec:package-options} \xsim\ has further options. Those can be
 \enquote{toplevel} options or options belonging to a module.
 \begin{options}
   \keyval*{toplevel}{value}
@@ -417,11 +421,11 @@ description.  All other commands are engine protected, \ie, in the sense of
 
 \begin{environments}
   \environment{exercise}[\oarg{\acsp*{prop}}]
-    Input and typeset an exercise.  See section~\ref{sec:exercise-properties}
+    Input and typeset an exercise.  See section~\vref{sec:exercise-properties}
     for details on exercise \acsp*{prop}.
   \environment{solution}[\oarg{options}]
     Input and typeset the solution to the exercise of the previous
-    \env{exercise} environment.  See section~\ref{sec:printing-solutions} for
+    \env{exercise} environment.  See section~\vref{sec:printing-solutions} for
     details on options of solutions.
 \end{environments}
 
@@ -435,7 +439,7 @@ description.  All other commands are engine protected, \ie, in the sense of
 \end{example}
 
 As can be seen in the example a solution is not printed with the default
-setup.  This can be changed using the follwong option.
+setup.  This can be changed using the following option.
 \begin{options}
   \keybool{print}\Module{solution}\Default{false}
     Set if solutions are printed or or not.
@@ -460,6 +464,7 @@ There is an completely analoguous option for the \env{exercise} environment:
   \keybool{print}\Module{exercise}\Default{true}
     Set if exercises are printed or or not.
 \end{options}
+See also section~\vref{sec:using-printing}.
 
 \section{How They Work}
 Both enviroments write the contents of their bodies verbatim to external files
@@ -475,7 +480,7 @@ named
   \item \verbcode+xsim_manual-exercise-1-solution-body.tex+, respectively.
 \end{itemize}
 Details on the \meta{type} of an exercise will be given in
-section~\ref{sec:new-exercise-types}. The \meta{id} of an exercise is a
+section~\vref{sec:new-exercise-types}. The \meta{id} of an exercise is a
 positive integer unique to each exercise environment regardless if the
 exercise is being printed or used at all.
 
@@ -541,11 +546,11 @@ must) be set.  Here is the complete list:
     \emph{This parameter must be set.}
   \paraval{exercise-template}{exercise template}
     The template used for typesetting the exercises of type \meta{type}.
-    \emph{This parameter must be set.} See section~\ref{sec:styl-exerc-templ}
+    \emph{This parameter must be set.} See section~\vref{sec:styl-exerc-templ}
     for details on templates.
   \paraval{solution-template}{solution template}
     The template used for typesetting the exercises of type \meta{type}.
-    \emph{This parameter must be set.} See section~\ref{sec:styl-exerc-templ}
+    \emph{This parameter must be set.} See section~\vref{sec:styl-exerc-templ}
     for details on templates.
   \paraval{counter}{counter name}
     The counter used for the exercises of type \meta{type}.  If not explicitly
@@ -553,6 +558,22 @@ must) be set.  Here is the complete list:
     Otherwise the specified counter is used.  This enables to have different
     types of exercises sharing a common counter.
 \end{parameters}
+
+It is possible to change some parameters after an exercise type has been
+defined.  Those include \parameter{exercise-name}, \parameter{solution-name},
+\parameter{exercise-template}, \parameter{solution-template}, and
+\parameter{counter}:
+\begin{commands}
+  \command{SetExerciseParameter}[\marg{type}\marg{parameter}\marg{value}]
+    Usable to set a single parameter to a new value.
+  \command{SetExerciseParameters}[\marg{type}\marg{parameters}]
+    Set several parameters at once. \meta{parameters} is a csv list of
+    key/value pairs.
+\end{commands}
+If you try to set and already set but fixed parameter like
+\parameter{exercise-env} a warning will be written to the log file.  If you
+set \parameter{counter} to another value you must make sure that the new value
+is a valid and defined counter.
 
 \section{Exercise Properties}\label{sec:exercise-properties}
 
@@ -627,7 +648,7 @@ This is better demonstrated with an example:
 \end{example}
 
 The power of properties will get more clear when reading
-section~\ref{sec:styl-exerc-templ} about templates.
+section~\vref{sec:styl-exerc-templ} about templates.
 
 \subsection{A Special Kind of Property: Exercise Goals}
 
@@ -650,7 +671,7 @@ available (after a compilation) throughout the document.
   \command{printpoints}[\marg{type}]
     Print the sum of points for all exercises of type \meta{type} followed by
     an appropriate translation of the words \enquote{point} or
-    \enquote{points}, respectivaly\footnote{See section~\ref{sec:exerc-transl}
+    \enquote{points}, respectively\footnote{See section~\vref{sec:exerc-transl}
       for details on the definition and usage of language dependent words.}.
     Defined in terms of \cs{TotalExerciseTypeGoal}.
   \command{printtotalpoints}
@@ -679,7 +700,7 @@ The two existing goals are defined with
 Exercise tags are a generic concept in \xsim\ for exercise properties like
 \property{tags} or \property{topics}.  Those are properties which can (only)
 get a csv list of strings as value.  Those strings can be used to selectively
-use exercises.  See section~\ref{sec:diff-betw-print} for details on
+use exercises.  See section~\vref{sec:using-printing} for details on
 \emph{usage} of exercises and the difference to \emph{printing} an exercise
 and how to use exercise tags for selection.
 \begin{commands}
@@ -710,10 +731,78 @@ this means that these options are available:
     been chosen with the option \option{tags}.
 \end{options}
 
+\section{Using and Printing an Exercise}\label{sec:using-printing}
 
-\section{Difference between Printing and Using an Exercise}\label{sec:diff-betw-print}
+When an exercise is started with \environ{exercise} then different things
+happen depending on different settings.
+\begin{itemize}
+  \item If the \emph{insert mode} is active nothing happens, see
+    section~\vref{sec:collecting-exercises} for details on this.
+  \item Else the id integer is incremented.
+  \item If the exercise is \emph{used} the corresponding counter is stepped
+    and the exercise is added to the \enquote{use list}.  The properties
+    \property{counter} and \property{use} are updated accordingly.
+  \item If an exercise is printed then it is also used. An exercise that isn't
+    used cannot be printed.  Being printed means two things: being added to
+    the \enquote{print list} and being typeset at the position where the
+    exercise is placed in the source file.  If an exercise is \emph{not
+      printed but used} it means that the counter will be stepped.  This can
+    be useful for creating an exercise sheet only containing the solutions for
+    some exercises.
+  \item If an exercise is printed certain hooks and template code is inserted
+    around the environment body.
+\end{itemize}
 
-\section{Collecting Exercises}
+\begin{example}[outside]
+  \begin{exercise}[print=false]
+    This exercise will not be printed but the exercise counter will be
+    incremented nonetheless. Its solution will be printed in the list of
+    solutions.
+  \end{exercise}
+  \begin{solution}
+    The solution of the exercise that has not been printed.
+  \end{solution}
+\end{example}
+
+The schematic structure of an exercise is shown in
+figure~\vref{fig:schematic-structure}.
+
+\begin{figure}[bhp]
+  \centering
+  \begin{tikzpicture}
+    \node[draw,minimum width=.7\linewidth] at (0,0)  {pre hook};
+    \node[draw,minimum width=.7\linewidth] at (0,-1) {begin template code};
+    \node[draw,minimum width=.7\linewidth] at (0,-2) {begin hook};
+    \node[draw,minimum width=.7\linewidth] at (0,-3) {environment body};
+    \node[draw,minimum width=.7\linewidth] at (0,-4) {end hook};
+    \node[draw,minimum width=.7\linewidth] at (0,-5) {end template code};
+    \node[draw,minimum width=.7\linewidth] at (0,-6) {post hook};
+  \end{tikzpicture}
+  \caption{Schematic structure of an exercise.}\label{fig:schematic-structure} 
+\end{figure}
+
+For each exercise type there are the following options (here using the
+\module{exercise} type):
+\begin{options}
+  \keybool{print}\Module{exercise}\Default{true}
+    Determines if exercises of type \module{exercise} are printed.
+  \keybool{use}\Module{exercise}\Default{true}
+    Determines if exercises of type \module{exercise} are used.
+  \keyval{pre-hook}{code}\Module{exercise}\Default
+    The code for the \emph{pre exercise hook} for exercises of the type
+    \module{exercise}.
+  \keyval{begin-hook}{code}\Module{exercise}\Default
+    The code for the \emph{begin exercise hook} for exercises of the type
+    \module{exercise}.
+  \keyval{end-hook}{code}\Module{exercise}\Default
+    The code for the \emph{end exercise hook} for exercises of the type
+    \module{exercise}.
+  \keyval{post-hook}{code}\Module{exercise}\Default
+    The code for the \emph{post exercise hook} for exercises of the type
+    \module{exercise}.
+\end{options}
+
+\section{Collecting Exercises}\label{sec:collecting-exercises}
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
@@ -747,8 +836,6 @@ this means that these options are available:
   \command{ExercisePropertyGlobalSave}
   % parameters
   \expandable\command{GetExerciseParameter}
-  \command{SetExerciseParameter}
-  \command{SetExerciseParameters}
   \expandable\command{GetExerciseName}
   \expandable\command{ExerciseParameterGet}
 \end{commands}
