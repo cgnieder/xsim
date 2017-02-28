@@ -177,7 +177,8 @@
   {
     \xsim_if_insert_mode:F
       {
-        \xsim_add_to_collection:nnn {all~ exercises} {#1} {#2}
+        \xsim_exercise_if_use:nnT {#1} {#2}
+          { \xsim_add_to_collection:nnn {all~ exercises} {#1} {#2} }
         \xsim_foreach_collection:n
           {
             \xsim_exercise_if_use:nnTF {#1} {#2}

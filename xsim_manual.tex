@@ -1,3 +1,6 @@
+% arara: pdflatex
+% arara: pdflatex
+% arara: pdflatex
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -122,7 +125,8 @@
   add-silent-cmds = {
   } ,
   index-setup = { othercode = \footnotesize , level = \section } ,
-  makeindex-setup = { columns = 2 , columnsep = 1em }
+  makeindex-setup = { columns = 2 , columnsep = 1em } ,
+  add-frame-options = { skipabove = 0pt , skipbelow = 0pt }
 }
 
 \expandafter\def\csname libertine@figurestyle\endcsname{LF}
@@ -841,12 +845,14 @@ Once the collection is closed it can be printed:
   \printcollection{foo}
 \end{example}
 
-You can open several collections at the same:
+You can open several collections at the same time:
 \begin{sourcecode}
   \collectexercises{foo}
+    ...
   \collectexercisestype{bar}{exercises}
     ...
   \collectexercisesstop{bar}
+    ...
   \collectexercisesstop{foo}
 \end{sourcecode}
 Exercises will be added to each open collection.
@@ -860,17 +866,33 @@ all exercises up to this point in the document will be printed.
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
+\begin{commands}
+  \command{printsolutionstype}[\sarg\oarg{options}\marg{exercise type}]
+    Prints the solutions of all used exercises of type \meta{exercise type}.
+    The starred version only prints the solutions of all printed exercises of
+    type \meta{exercise type}.
+  \command{printsolutions}[\sarg\oarg{options}]
+    Prints the solutions of all used exercises of all types.  The starred
+    version only prints the solutions of all printed exercises of all types,
+    ordered by type.
+\end{commands}
+
+\begin{example}
+  \printsolutions
+\end{example}
+
 \section{Styling the Exercises -- Templates}\label{sec:styl-exerc-templ}
 
-\subsection{Getting Goal Related Properties}
-
+\subsection{Goal Related Properties}
 \begin{commands}
-  % goals
   \command{ExerciseGoalName}[\marg{goal}\marg{singular}\marg{plural}]
   \command{IfExerciseGoalTF}[\marg{goal}\marg{relation and value}\marg{true}\marg{false}]
   \command{IfExerciseGoalT}[\marg{goal}\marg{relation and value}\marg{true}]
   \command{IfExerciseGoalF}[\marg{goal}\marg{relation and value}\marg{false}]
-  % properties
+\end{commands}
+
+\subsection{Generic Properties}
+\begin{commands}
   \expandable\command{IfExercisePropertyExistTF}
   \expandable\command{IfExercisePropertyExistT}
   \expandable\command{IfExercisePropertyExistF}
@@ -888,11 +910,16 @@ all exercises up to this point in the document will be printed.
   \expandable\command{ExercisePropertyGetAlias}
   \command{ExercisePropertySave}
   \command{ExercisePropertyGlobalSave}
-  % parameters
+\end{commands}
+
+\subsection{Parameters}
+\begin{commands}
   \expandable\command{GetExerciseParameter}
   \expandable\command{GetExerciseName}
   \expandable\command{ExerciseParameterGet}
 \end{commands}
+
+\subsection{Examples}
 
 \section{Exercise Translations}\label{sec:exerc-transl}
 

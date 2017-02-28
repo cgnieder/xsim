@@ -35,9 +35,9 @@
 
 \seq_new:N  \l__xsim_parameters_seq
 \seq_new:N  \l__xsim_fixed_parameters_seq
-\seq_new:N  \g__xsim_exercises_seq
-\int_new:N  \g_xsim_id_int
-\int_new:N  \g_xsim_max_id_int
+\prop_new:N \g__xsim_exercises_prop
+\int_gzero_new:N  \g_xsim_id_int
+\int_gzero_new:N  \g_xsim_max_id_int
 \tl_new:N   \l_xsim_current_id_tl
 \tl_new:N   \g_xsim_exercise_id_tl
 \tl_new:N   \ExerciseID
@@ -55,8 +55,6 @@
 % ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
-\xsim_new_list:n {print}
-\xsim_new_list:n {use}
 
 % #1: boolean if fixed parameter
 % #2: parameter name
@@ -184,8 +182,8 @@
 % #2: id
 % #3: print|use
 \cs_new:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
-  {
-    \xsim_if_in_list:nnT {#3} {#1-#2}
+  { % TODO:
+    \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
       {
         \__xsim_loop_item:nnxxxx
           {#1}
@@ -277,12 +275,12 @@
 % #1: type
 % #2: id
 \cs_new_protected:Npn \xsim_add_exercise:nn #1#2
-  { \seq_gput_right:Nn \g__xsim_exercises_seq {#1-#2} }
+  { \prop_gput:Nnn \g__xsim_exercises_prop {#1-#2} {} }
 \cs_generate_variant:Nn \xsim_add_exercise:nn {nV}
 
 \prg_new_conditional:Npnn \xsim_if_exercise_exists:nn #1#2 {T,F,TF}
   {
-    \seq_if_in:NnTF \g__xsim_exercises_seq {#1-#2}
+    \prop_if_in:NnTF \g__xsim_exercises_prop {#1-#2}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -314,13 +312,9 @@
           {
             Starting~ exercise~ type~ `#1' with~ id~
             ` \g_xsim_exercise_id_tl '.
-          }    
-        \xsim_exercise_if_print:nVTF {#1} \g_xsim_exercise_id_tl
-          { \xsim_add_to_list:nx {print} { #1 - \g_xsim_exercise_id_tl } }
-          { \xsim_remove_from_list:nx {print} { #1 - \g_xsim_exercise_id_tl } }
+          }
         \xsim_exercise_if_use:nVTF {#1} \g_xsim_exercise_id_tl
           {
-            \xsim_add_to_list:nx {use} { #1 - \g_xsim_exercise_id_tl }
             \stepcounter { \xsim_get_parameter:nn {#1} {number} }
             \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
             \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
@@ -330,7 +324,10 @@
               }
             \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
           }
-          { \xsim_remove_from_list:nx {use} { #1 - \g_xsim_exercise_id_tl } }
+          {
+            \xsim_set_properties:nVn {#1} \g_xsim_exercise_id_tl
+              { use = false }
+          }
         \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
         \xsim_add_exercise:nV {#1} \g_xsim_exercise_id_tl
       }
@@ -393,7 +390,7 @@
 
 % ----------------------------------------------------------------------------
 
-\xsim_new_aux_cs:cpn {id} #1
+\xsim_new_aux_cs:cpn {total-number} #1
   { \int_gset:Nn \g_xsim_max_id_int {#1} }
 
 \RequirePackage {etoolbox}
@@ -420,10 +417,8 @@
   
 \AtEndDocument
   {
-    \xsim_update_list:n {print}
-    \xsim_update_list:n {use}
     \xsim_update_list:n {types}
-    \xsim_add_cs_to_aux:nn {id} { { \int_use:N \g_xsim_id_int } }
+    \xsim_add_cs_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
     \xsim_foreach_exercise_type:n
       {
         \xsim_add_cs_to_aux:nn {#1}

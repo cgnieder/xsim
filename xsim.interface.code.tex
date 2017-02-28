@@ -333,6 +333,14 @@
 
 % ----------------------------------------------------------------------------
 
+\NewDocumentCommand \printsolution {mm}
+  { \xsim_insert:nnnn {#1} {#2} {} {solution} }
+
+\NewDocumentCommand \printexercise {mm}
+  { \xsim_insert:nxnn {#1} {#2} {} {exercise} }
+  
+% ----------------------------------------------------------------------------
+  
 \NewDocumentCommand \printsolutionstype {sO{}m}
   {
     \IfBooleanTF {#1}

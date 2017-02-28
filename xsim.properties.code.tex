@@ -27,7 +27,7 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{properties}{properties of exercises}
 
-\xsim_load_modules:n {base}
+\xsim_load_modules:n {base,auxfile}
 
 \msg_new:nnn {xsim} {unknown-property}
   {
@@ -55,6 +55,7 @@
     \xsim_if_property_exist:nF {#2}
       {
         \seq_put_right:Nn \l__xsim_properties_seq {#2}
+        \xsim_new_list:n {#2}
         \bool_if:nTF {#1}
           {
             \xsim_verbose:n
@@ -64,6 +65,8 @@
             \seq_new:c {l__xsim_unique_property_#2_values_seq}
           }
           { \xsim_verbose:n { Declaring~ new~ exercise~ property~ `#2'. } }
+        \AtEndDocument { \xsim_update_list:n {#2} }
+        \AtBeginDocument {}
       }
   }
 
@@ -117,9 +120,9 @@
           {
             \xsim_if_property_unique_value:nnTF {#3} {#4}
               { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
-              { \__xsim_set_property:xxxn {#1} {#2} {#3} {#4} }
+              { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
           }
-          { \__xsim_set_property:xxxn {#1} {#2} {#3} {#4} }
+          { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
       }
       { \msg_error:nnn {xsim} {unknown-property} {#3} }  
   }
@@ -136,9 +139,44 @@
         Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
         value~ `#4'.
       }
+   \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+    % now we can safely add the property to the list:
+    \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
     \prop_gput:Nnn \g__xsim_properties_prop {#2!#1!#3} {#4}
   }
 \cs_generate_variant:Nn \__xsim_set_property:nnnn {xxxn}
+
+\cs_new_protected:Npn \__xsim_extract_property_list_entry:NNww #1#2 #3 == #4 \q_stop
+  {
+    \str_set:Nn #1 {#3}
+    \str_set:Nn #2 {#4}
+  }
+
+\cs_new_protected:Npn \__xsim_remove_property_from_list:nnn #1#2#3
+  {
+    % make sure we change the entry if it has been recorded previously:
+    \xsim_foreach_list_entry:nn {#3}
+      {
+        \__xsim_extract_property_list_entry:NNww
+          \l__xsim_tmpa_str \l__xsim_tmpb_str ##1 \q_stop
+        \str_if_eq:VnT \l__xsim_tmpa_str {#1-#2}
+          {
+            \xsim_remove_from_list:nx {#3}
+              { #1-#2 == {\l__xsim_tmpb_str} }
+          }
+      }
+    % make sure we change the entry if it has been set during the current run:
+    \xsim_foreach_new_list_entry:nn {#3}
+      {
+        \__xsim_extract_property_list_entry:NNww
+          \l__xsim_tmpa_str \l__xsim_tmpb_str ##1 \q_stop
+        \str_if_eq:VnT \l__xsim_tmpa_str {#1-#2}
+          {
+            \xsim_remove_from_list:nx {#3}
+              { #1-#2 == {\l__xsim_tmpb_str} }
+          }
+      }
+  }
 
 % set properties:
 % #1: type
@@ -251,7 +289,7 @@
 % #3: property
 \cs_new:Npn \xsim_get_property:nnn #1#2#3
   { \prop_item:Nn \g__xsim_properties_prop { #2 ! #1 ! #3 } }
-\cs_generate_variant:Nn \xsim_get_property:nnn {nx,xx,oo,no,nnf,nf,oof}
+\cs_generate_variant:Nn \xsim_get_property:nnn {nx,xx,oo,no,nnf,nf,oof,nV}
 
 \cs_new_protected:Npn \xsim_save_property:nnnN #1#2#3#4
   { \prop_get:NnN \g__xsim_properties_prop { #2 ! #1 ! #3 } #4 }

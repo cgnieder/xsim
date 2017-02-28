@@ -93,14 +93,14 @@
         {
           \xsim_foreach_exercise_type_id:nn {print}
             {
-              \xsim_if_in_list:nnT {print} {#3-##2}
+              \xsim_if_in_list:nnT {print} {#3-##2=={true}}
                 { \bool_set_true:N \l__xsim_tmpa_bool }
             }
         }
         {
           \xsim_foreach_exercise_type_id:nn {use}
             {
-              \xsim_if_in_list:nnT {use} {#3-##2}
+              \xsim_if_in_list:nnT {use} {#3-##2=={true}}
                 { \bool_set_true:N \l__xsim_tmpa_bool }
             }
         }
