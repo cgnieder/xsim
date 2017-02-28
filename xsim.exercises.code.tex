@@ -35,6 +35,7 @@
 
 \seq_new:N  \l__xsim_parameters_seq
 \seq_new:N  \l__xsim_fixed_parameters_seq
+\seq_new:N  \l__xsim_mandatory_parameters_seq
 \prop_new:N \g__xsim_exercises_prop
 \int_gzero_new:N  \g_xsim_id_int
 \int_gzero_new:N  \g_xsim_max_id_int
@@ -52,23 +53,38 @@
     has~ been~ set~ for~ type~ `#1'.~ Its~ value~ can't~ be~ changed!
   }
 
+\msg_new:nnn {xsim} {type-exists}
+  {
+    You~ try~ to~ define~ exercise~ type~ `#1'~ \msg_line_context: .~
+    However,~ the~ exercise~ type~ `#1'~ already~ exists.
+  }
+
+\msg_new:nnn {xsim} {mandatory-parameter}
+  {
+    You~ forget~ to~ set~ the~ mandatory~ parameter~ `#1'~ when~ defining~
+    exercise~ type~ `#2'.
+  }
+
 % ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
 
-% #1: boolean if fixed parameter
+% #1: true|false (fixed parameter)
+% #2: true|false (mandatory parameter)
 % #2: parameter name
-\cs_new_protected:Npn \xsim_declare_parameter:nn #1#2
+\cs_new_protected:Npn \xsim_declare_parameter:nnn #1#2#3
   {
-    \xsim_verbose:n { Declaring~ parameter~ `#2'. }
-    \xsim_if_parameter_exist:nF {#2}
+    \xsim_verbose:n { Declaring~ parameter~ `#3'. }
+    \xsim_if_parameter_exist:nF {#3}
       {
-        \seq_put_right:Nn \l__xsim_parameters_seq {#2}
+        \seq_put_right:Nn \l__xsim_parameters_seq {#3}
         \bool_if:cT {c_#1_bool}
-          { \seq_put_right:Nn \l__xsim_fixed_parameters_seq {#2} }
+          { \seq_put_right:Nn \l__xsim_fixed_parameters_seq {#3} }
+        \bool_if:cT {c_#2_bool}
+          { \seq_put_right:Nn \l__xsim_mandatory_parameters_seq {#3} }
       }
   }
-
+  
 \cs_new_protected:Npn \xsim_remove_parameter:n #1
   {
     \xsim_verbose:n { Removing~ parameter~ `#1'. }
@@ -101,11 +117,19 @@
         \xsim_set_parameter:nxx {#1}
           { \seq_item:Nn \l__xsim_tmpa_seq {1} }
           { \seq_item:Nn \l__xsim_tmpa_seq {2} }
-        % TODO: check if *all* parameters have been set; issue error for each
-        % missing paramater
       }
   }
 \cs_generate_variant:Nn \xsim_set_parameters:nn {nx}
+
+% #1: type
+\cs_new_protected:Npn \xsim_check_mandatory_parameters:n #1
+  {
+    \seq_map_inline:Nn \l__xsim_mandatory_parameters_seq
+      {
+        \xsim_if_parameter:nnF {#1} {##1}
+          { \msg_error:nnnn {xsim} {mandatory-parameter} {##1} {#1} }
+      }
+  }
 
 % #1: type
 \prg_new_conditional:Npnn \xsim_if_type:n #1 {p,T,F,TF}
@@ -161,19 +185,19 @@
       { \prg_return_false: }
   }
 
-\xsim_declare_parameter:nn {true}  {exercise-env}
-\xsim_declare_parameter:nn {true}  {solution-env}
-\xsim_declare_parameter:nn {false} {exercise-name}
-\xsim_declare_parameter:nn {false} {solution-name}
-\xsim_declare_parameter:nn {false} {exercise-template}
-\xsim_declare_parameter:nn {false} {solution-template}
-\xsim_declare_parameter:nn {false} {counter}
-\xsim_declare_parameter:nn {true}  {number}
+\xsim_declare_parameter:nnn {true}  {true}  {exercise-env}
+\xsim_declare_parameter:nnn {true}  {true}  {solution-env}
+\xsim_declare_parameter:nnn {false} {true}  {exercise-name}
+\xsim_declare_parameter:nnn {false} {true}  {solution-name}
+\xsim_declare_parameter:nnn {false} {true}  {exercise-template}
+\xsim_declare_parameter:nnn {false} {true}  {solution-template}
+\xsim_declare_parameter:nnn {false} {false} {counter}
+\xsim_declare_parameter:nnn {true}  {false} {number}
 
 % ----------------------------------------------------------------------------
 % inside the argument `#1' refers to the type
 \cs_new_protected:Npn \xsim_foreach_exercise_type:n #1
-  { \seq_map_inline:Nn \g__xsim_list_types_seq {#1} }
+  { \xsim_foreach_new_list_entry:nn {types} {#1} }
 
 \cs_new_protected:Npn \xsim_foreach_exercise_id:n #1
   { \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int } {#1} }
@@ -182,12 +206,14 @@
 % #2: id
 % #3: print|use
 \cs_new:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
-  { % TODO:
+  {
     \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
       {
-        \__xsim_loop_item:nnxxxx
-          {#1}
-          {#2}
+        \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} {#1}
+        \tl_set_rescan:Nnx \l__xsim_tmpb_tl {} {#2}
+        \__xsim_loop_item:VVxxxx
+          \l__xsim_tmpa_tl
+          \l__xsim_tmpb_tl
           { \xsim_get_property:nnn {#1} {#2} {counter} }
           { \xsim_get_property:nnn {#1} {#2} {subtitle} }
           { \xsim_get_property:nnn {#1} {#2} {points} }
@@ -200,7 +226,7 @@
 \xsim_define_loop_macro:Nnn \xsim_foreach_exercise_type_id:nn
   {nnnnnn}
   {
-    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {nnxxxx}
+    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
     \xsim_foreach_exercise_type:n
       {
         \xsim_foreach_exercise_id:n
@@ -211,7 +237,7 @@
 \xsim_define_loop_macro:Nnn \xsim_foreach_exercise_id_type:nn
   {nnnnnn}
   {
-    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {nnxxxx}
+    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
     \xsim_foreach_exercise_id:n
       {
         \xsim_foreach_exercise_type:n
@@ -220,7 +246,12 @@
   }
 
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
-  { \prop_new:c {l__xsim_#1_type_parameters_prop} }
+  {
+    \prop_new:c {l__xsim_#1_type_parameters_prop}
+    \bool_new:c {l__xsim_#1_solution_print_bool}
+    \bool_new:c {l__xsim_#1_exercise_print_bool}
+    \bool_new:c {l__xsim_#1_exercise_use_bool}
+  }
 
 \cs_new_protected:Npn \xsim_define_counter:n #1
   {
@@ -234,8 +265,7 @@
 \cs_new_protected:Npn \xsim_declare_exercise_type:nn #1#2
   {
     \xsim_if_type:nTF {#1}
-      { % error message
-      }
+      { \msg_error:nnn {xsim} {type-exists} {#1} }
       {
         \xsim_verbose:n { Declaring~ new~ exercise~ type~ `#1'. }
         \xsim_define_exercise_type_variables:n {#1}
@@ -243,15 +273,13 @@
         \xsim_set_parameters:nn {#1} {#2}
         \xsim_set_parameter:nnx {#1} {number}
           { number of \xsim_get_parameter:nn {#1} {exercise-env} s }
+        \xsim_check_mandatory_parameters:n {#1}
         \xsim_if_parameter:nnF {#1} {counter}
           {
             \xsim_set_parameters:nx {#1}
               { counter =  \xsim_get_parameter:nn {#1} {exercise-env} }
           }
         \xsim_define_counter:n {#1}
-        \bool_new:c {l__xsim_#1_solution_print_bool}
-        \bool_new:c {l__xsim_#1_exercise_print_bool}
-        \bool_new:c {l__xsim_#1_exercise_use_bool}
         \keys_define:nx {xsim}
           {
             \xsim_get_parameter:nn {#1} {solution-env} / print
@@ -336,7 +364,6 @@
 \cs_new_protected:Npn \xsim_stop_exercise:n #1 {}
 
 % ----------------------------------------------------------------------------
-% TODO: (think of properties, tags, ...)
 % #1: type
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
