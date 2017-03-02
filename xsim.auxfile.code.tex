@@ -128,6 +128,9 @@
 \cs_generate_variant:Nn \xsim_if_in_list:nnTF {nx}
 \cs_generate_variant:Nn \xsim_if_in_list:nnT  {nx}
 
+\cs_new:Npn \xsim_list_show:n #1
+  { \prop_show:c {g__xsim_list_#1_prop}  }
+
 % update list -- should be used inside \AtEndDocument:
 % #1: name
 \cs_new_protected:Npn \xsim_update_list:n #1

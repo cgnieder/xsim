@@ -36,7 +36,6 @@
 \DeclareExerciseProperty* {id}
 \DeclareExerciseProperty* {ID}
 \DeclareExerciseProperty  {counter}
-% \DeclareExerciseProperty  {counter}
 \DeclareExerciseProperty  {subtitle}
 \DeclareExerciseProperty  {points}
 \DeclareExerciseProperty  {bonus-points}
@@ -121,7 +120,7 @@
                   \IfExercisePropertySetT {bonus-points}
                     { {}+{} \GetExerciseProperty {bonus-points} }
                 \) \,
-                \ExerciseGoalName {points}
+                \IfExerciseGoalSingularTF {points}
                   { \XSIMtranslate {point} }
                   { \XSIMtranslate {points} }
               }
