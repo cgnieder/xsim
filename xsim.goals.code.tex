@@ -172,7 +172,9 @@
     goal-print .code:n =
       \cs_set_protected:Npn \__xsim_print_goal:n ##1 {#1} ,
     gradingtable/template .tl_set:N  = \l_xism_grading_table_template_tl ,
-    gradingtable/type     .tl_set:N  = \l_xism_grading_table_exercise_type_tl
+    gradingtable/template .initial:n = default ,
+    gradingtable/type     .tl_set:N  = \l_xism_grading_table_exercise_type_tl ,
+    gradingtable/type     .initial:n =
   }
 
 % ----------------------------------------------------------------------------

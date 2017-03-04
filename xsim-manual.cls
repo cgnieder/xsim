@@ -320,76 +320,76 @@
 \RequirePackage{lipsum}
 \RequirePackage{varioref}
 
-\ExplSyntaxOn
 \RenewDocumentEnvironment{sourcecode} {O{}}
-  {
-    \pgfqkeys{/cnltx}{#1}
+  {%
+    \pgfqkeys{/cnltx}{#1}%
     \setlength\cnltx@sidebysidewidth
-      {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}
-    \exp_args:Nx
-    \lstset{
-      style=cnltx,
-      \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
-        {linewidth=\cnltx@sidebysidewidth,}{}%
-      \expandonce\cnltx@local@listings@options
-    }
-    \use:nx
-      { \xsim_file_write_start:n {\jobname.tmp} }
-      { \tl_if_blank:nT {#1} { \c__xsim_active_eol_tl } }
+      {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
+    \XSIMexpandcode{%
+      \noexpand\lstset{
+        style=cnltx,
+        \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
+          {linewidth=\cnltx@sidebysidewidth,}{}%
+        \expandonce\cnltx@local@listings@options
+      }%
+    }%
+    \XSIMifblankTF{#1}
+      {\XSIMfilewritestart{\jobname.tmp}}
+      {\XSIMfilewritestart*{\jobname.tmp}}%
   }
-  {
-    \xsim_file_write_stop:
+  {%
+    \XSIMfilewritestop
     \cnltxcode
-    \lstinputlisting[style=cnltx] {\jobname.tmp}
+    \lstinputlisting[style=cnltx]{\jobname.tmp}%
     \endcnltxcode
   }
 
 \RenewDocumentEnvironment{example} {O{}}
-  {
-    \pgfqkeys{/cnltx}{#1}
+  {%
+    \pgfqkeys{/cnltx}{#1}%
     \setlength\cnltx@sidebysidewidth
-      {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}
-    \exp_args:Nx
-    \lstset{
-      style=cnltx,
-      \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
-        {linewidth=\cnltx@sidebysidewidth,}{}%
-      \expandonce\cnltx@local@listings@options
-    }
-    \use:nx
-      { \xsim_file_write_start:n {\jobname.tmp} }
-      { \tl_if_blank:nT {#1} { \c__xsim_active_eol_tl } }
+      {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
+    \XSIMexpandcode{%
+      \noexpand\lstset{
+        style=cnltx,
+        \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
+          {linewidth=\cnltx@sidebysidewidth,}{}%
+        \expandonce\cnltx@local@listings@options
+      }%
+    }%
+    \XSIMifblankTF{#1}
+      {\XSIMfilewritestart{\jobname.tmp}}
+      {\XSIMfilewritestart*{\jobname.tmp}}%
   }
-  {
-    \xsim_file_write_stop:
+  {%
+    \XSIMfilewritestop
     \ifbool{cnltx@sidebyside}
-      {
+      {%
         \cnltxcode
         \noindent
-        \minipage[c]{\cnltx@sidebysidewidth}
+        \minipage[c]{\cnltx@sidebysidewidth}%
           \cnltx@pre@source@hook
-          \lstinputlisting[style=cnltx] {\jobname.tmp}
+          \lstinputlisting[style=cnltx] {\jobname.tmp}%
           \cnltx@after@source@hook
         \endminipage\hfill
-        \minipage[c]{\cnltx@sidebysidewidth}
+        \minipage[c]{\cnltx@sidebysidewidth}%
           \cnltx@pre@example@hook
-          \input {\jobname.tmp}
+          \input {\jobname.tmp}%
           \cnltx@after@example@hook
         \endminipage
       }
-      {
-        \cnltxcode[breakable]
+      {%
+        \cnltxcode[breakable]%
         \cnltx@pre@source@hook
-        \lstinputlisting[style=cnltx] {\jobname.tmp}
+        \lstinputlisting[style=cnltx] {\jobname.tmp}%
         \cnltx@after@source@hook
         \tcblower
         \cnltx@pre@example@hook
-        \input {\jobname.tmp}
+        \input {\jobname.tmp}%
         \cnltx@after@example@hook
-      }
+      }%
     \endcnltxcode
   }
-\ExplSyntaxOff
 
 \xsimsetup{
   path = exercises

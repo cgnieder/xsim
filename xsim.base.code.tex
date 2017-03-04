@@ -89,6 +89,44 @@
 
 % ----------------------------------------------------------------------------
 
+\prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+  {
+    \bool_if_exist:NTF \g_xsim_final_bool
+      {
+        \bool_if:NTF \g_xsim_final_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
+  {
+    \bool_if_exist:NTF \g_xsim_verbose_bool
+      {
+        \bool_if:NTF \g_xsim_verbose_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_rerun: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_rerun_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new_protected:Npn \xsim_verbose:n #1
+  { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
+\cs_generate_variant:Nn \xsim_verbose:n {x}
+
+\cs_new_protected:Npn \xsim_rerun:
+  { \bool_gset_true:N \g__xsim_rerun_bool }
+  
+% ----------------------------------------------------------------------------
+
 % #1: macro name
 % #2: 0 to 9 times `n' (= number of arguments of internal item)
 % #3: code; may contain a suiting \__xsim_loop_item:<nnn>

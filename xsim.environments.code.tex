@@ -25,16 +25,14 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\XSIMmodule{environments}{environments that write their bodies to external files}
+\XSIMmodule{environments}{generic code for exercise and solution environments}
 
-\xsim_load_modules:n {templates}
+\xsim_load_modules:n {templates,verbwrite}
 
 \tl_new:N   \l__xsim_file_name_signature_tl
 \tl_new:N   \l__xsim_file_path_tl
 \tl_new:N   \l__xsim_file_path_and_name_tl
 \tl_new:N   \l__xsim_file_name_tl
-\tl_new:N   \l__xsim_file_info_tl
-\iow_new:N  \l__file_contents_iow
 \bool_new:N \l__xsim_options_given_bool
 \bool_new:N \l__xsim_insert_mode_bool
 
@@ -42,18 +40,6 @@
 
 \keys_define:nn {xsim}
   { path .tl_set:N = \l__xsim_file_path_tl }
-
-% ----------------------------------------------------------------------------
-
-\group_begin:
-  \char_set_catcode_other:n {37}
-  \tl_const:Nn \c__xsim_percent_char_tl {%}
-\group_end:
-
-\tl_const:Nx \c__xsim_backslash_char_tl { \cs_to_str:N \\ }
-\tl_const:Nn \c__xsim_comment_line_tl { \c__xsim_percent_char_tl }
-\tl_const:Nn \c__xsim_comment_line_fill_tl { \prg_replicate:nn {76} {-} }
-\tl_const:Nn \c__xsim_comment_line_indent_tl { \c_space_tl \c_space_tl }
 
 % ----------------------------------------------------------------------------
 
@@ -69,7 +55,7 @@
 
 \cs_new:Npn \__xsim_two_digits:n #1
   { \int_compare:nT { #1 < 10 } {0} \int_eval:n {#1} }
-
+  
 % #1: type
 % #2: id
 % #3: exercise|solution
@@ -94,7 +80,7 @@
 % #5: path
 \cs_new_protected:Npn \__xsim_file_info:nnnnn #1#2#3#4#5
   {
-    \tl_set:Nn \l__xsim_file_info_tl
+    \tl_set:Nn \l_xsim_file_info_tl
       {
         \__xsim_comment_line_and_feed:n { \c__xsim_comment_line_fill_tl }
         \__xsim_comment_line_and_feed:n {file~ `#4'}
@@ -134,118 +120,6 @@
 
 % ----------------------------------------------------------------------------
 
-% the `final' option will prevent writing to files:
-% #1: write stream
-% #2: file name
-\cs_new_protected:Npn \__xsim_open_stream:Nn #1#2
-  {
-    \file_if_exist:nTF {#2}
-      { \xsim_if_final:F { \iow_open:Nn #1 {#2} } }
-      {
-        % \g_xsim_final_bool is a global variable; however, if it is true and
-        % the exercise file doesn't exist, yet, we need to set it locally to
-        % false in order to ensure that the file is correctly written and the
-        % stream closed afterwards
-        \bool_set_false:N \g_xsim_final_bool
-        \iow_open:Nn #1 {#2}
-      }
-  }
-
-% #1: write stream
-\cs_new_protected:Npn \__xsim_close_stream:N #1
-  { \xsim_if_final:F { \iow_close:N #1 } }
-
-\RequirePackage{l3tl-analysis}
-% #1: write stream
-% #1: contents
-\cs_new_protected:Npn \__xsim_write_to_stream:Nn #1#2
-  {
-    \xsim_if_final:F
-      {
-        % remove the /one/ space token with catcode 10 that is inserted if
-        % no options are given to the surrounding environment:
-        \tl_set:Nn \l__xsim_tmpa_tl {#2}
-        \tl_remove_once:Nn \l__xsim_tmpa_tl {~}
-        \iow_now:NV #1 \l__xsim_tmpa_tl
-      }
-  }
-\cs_generate_variant:Nn \__xsim_write_to_stream:Nn {Nx}
-
-\cs_new:Npn \__xsim_tab: { \c_space_tl \c_space_tl }
-\cs_new:Npn \__xsim_par: { ^^J ^^J }
-
-\group_begin:
-\char_set_catcode_active:n {13} % ^^M (carriage return, endlinechar)
-\char_set_catcode_active:n {12} % ^^L (form feed)
-\char_set_catcode_active:n {9}  % ^^I (horizontal tab)
-%
-\tl_const:Nn \c__xsim_active_eol_tl {^^M} %
-%
-% the following is inspired by the definition of the `filecontents'
-% environment:
-% #1: file name
-\cs_new_protected:Npn \xsim_file_write_start:n #1 %
-  { %
-    \group_begin: %
-    \xsim_if_final:TF %
-      { \xsim_verbose:x { Not~ (re-)writing~ file~ `#1'. } } %
-      { \xsim_verbose:x { (Re-)writing~ file~ `#1'. } } %
-    \__xsim_open_stream:Nn \l__file_contents_iow {#1} %
-    \tl_if_blank:VF \l__xsim_file_info_tl %
-      { %
-        \__xsim_write_to_stream:Nx \l__file_contents_iow %
-          { \l__xsim_file_info_tl } %
-      } %
-    \seq_map_inline:Nn \l_char_special_seq %
-      { \char_set_catcode_other:N ##1 } %
-    \int_step_inline:nnnn {128} {1} {255} %
-      { \char_set_catcode_letter:n {##1} } %
-    \tl_set:Nx \l__xsim_tmpa_tl %
-      { \c__xsim_backslash_char_tl end \cs_to_str:N \{ \@currenvir \cs_to_str:N \} } %
-    \use:x %
-      { %
-        \cs_set:cpn {__xsim_tmpa:www} %
-          ####1 \l__xsim_tmpa_tl %
-          ####2 \l__xsim_tmpa_tl %
-          ####3 \exp_not:N \q_stop: %
-      } %
-        { %
-          \tl_if_blank:nTF {##3} %
-            { \__xsim_write_to_stream:Nn \l__file_contents_iow {##1} } %
-            { %
-              \cs_set:Npx \__xsim_M:w { \exp_not:N \end {\@currenvir} } %
-              \char_set_active_eq:nN {13} \__xsim_M:w %
-              % the last line is `##1 \end{\@currenvir} ##2':
-              % \tl_if_blank:nF {##1} %
-              %   { \__xsim_write_to_stream:Nn \l__file_contents_iow {##1} }%
-              % \tl_if_blank:nF {##2} %
-              %   {}%
-            } %
-          ^^M %
-        } %
-    \char_set_catcode_active:n {13} %
-    \char_set_catcode_active:n {12} %
-    \char_set_catcode_active:n {9} %
-    \cs_set:Npx \__xsim_M:w ##1 ^^M %
-      { %
-        \exp_not:N \__xsim_tmpa:www ##1 %
-        \l__xsim_tmpa_tl %
-        \l__xsim_tmpa_tl %
-        \exp_not:N \q_stop: %
-      } %
-    \char_set_active_eq:nN {13} \__xsim_M:w %
-    \char_set_active_eq:nN {12} \__xsim_par: %
-    \char_set_active_eq:nN {9}  \__xsim_tab: %
-  } %
-\group_end:
-\cs_generate_variant:Nn \xsim_file_write_start:n {V}
-
-\cs_new_protected:Npn \xsim_file_write_stop:
-  {
-    \__xsim_close_stream:N \l__file_contents_iow
-    \group_end:
-  }
-
 % #1: type
 % #2: id
 % #3: exercise|solution
@@ -255,11 +129,9 @@
     \__xsim_file_info:nnnVV {#1} {#2} {#3}
       \l__xsim_file_name_tl
       \l__xsim_file_path_tl
-    % we need to insert an active ^^M if no options are given
-    % see http://tex.stackexchange.com/q/9035/5049 reasons
-    \use:nx
-      { \xsim_file_write_start:V \l__xsim_file_path_and_name_tl }
-      { \bool_if:NF \l__xsim_options_given_bool { \c__xsim_active_eol_tl } }
+    \xsim_file_write_start:nV
+      { \l__xsim_options_given_bool }
+      \l__xsim_file_path_and_name_tl
   }
 
 \cs_new_protected:Npn \xsim_save_environment_body_end:
