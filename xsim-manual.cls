@@ -116,7 +116,9 @@
   } ,
   add-envs = { exercise , solution } ,
   add-silent-cmds = {
-    lipsum
+    ifnumless ,
+    lipsum ,
+    whileboolexpr
   } ,
   index-setup = { othercode = \footnotesize , level = \section , noclearpage } ,
   makeindex-setup = { columns = 2 , columnsep = 1em }

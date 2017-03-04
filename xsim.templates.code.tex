@@ -119,6 +119,7 @@
 % #3: setup code
 \cs_new_protected:Npn \xsim_setup_template:nnn #1#2#3
   { \tl_set:cn {l__xsim_template_#1_#2_setup_tl} {#3} }
+\cs_generate_variant:Nn \xsim_setup_template:nnn {nnV}
 
 % #1: template type
 % #2: template name

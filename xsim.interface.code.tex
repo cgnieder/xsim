@@ -313,20 +313,23 @@
   }
 
 % ----------------------------------------------------------------------------
-
-\NewDocumentCommand \gradingtable {O{vertical}m}
+  
+\NewDocumentCommand \gradingtable {O{}}
   {
-    \xsim_setup_template:nnn {table} {#1}
-      {
-        \providecommand* \ExerciseTableCode {}
-        \providecommand* \ExerciseTableType [1] {}
-        \providecommand* \ExerciseType {}
-        \renewcommand* \ExerciseType {#2}
-        \renewcommand* \ExerciseTableCode {}
-        \renewcommand* \ExerciseTableType [1]
-          { \XSIMifblankTF { \ExerciseType } {##1} { \ExerciseType } }
-      }
-    \xsim_use_template:nn {table} {#1}
+    \group_begin:
+      \keys_set:nn {xsim/gradingtable} { template = default , type = , #1}
+      \xsim_setup_template:nnV {table} \l_xism_grading_table_template_tl
+        {
+          \providecommand* \ExerciseTableCode {}
+          \providecommand* \ExerciseTableType [1] {}
+          \providecommand* \ExerciseType {}
+          \tl_set_eq:NN \ExerciseType \l_xism_grading_table_exercise_type_tl
+          \renewcommand* \ExerciseTableCode {}
+          \renewcommand* \ExerciseTableType [1]
+            { \XSIMifblankTF { \ExerciseType } {##1} { \ExerciseType } }
+        }
+      \xsim_use_template:nV {table} \l_xism_grading_table_template_tl
+    \group_end:
   }
 
 % ----------------------------------------------------------------------------

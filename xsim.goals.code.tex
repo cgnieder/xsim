@@ -30,6 +30,8 @@
 \xsim_load_modules:n {properties,exercises}
 
 \seq_new:N \l__xsim_goals_seq
+\tl_new:N  \l_xism_grading_table_template_tl
+\tl_new:N  \l_xism_grading_table_exercise_type_tl
 
 % #1: name
 \cs_new_protected:Npn \xsim_declare_exercise_goal:n #1
@@ -103,13 +105,7 @@
 % printed:
 \cs_new_protected:Npn \__xsim_print_goal:n #1 {#1}
 \cs_generate_variant:Nn \__xsim_print_goal:n {x}
-
-\keys_define:nn {xsim}
-  {
-    goal-print .code:n =
-      \cs_set_protected:Npn \__xsim_print_goal:n ##1 {#1}
-  }
-
+  
 % #1: exercise type
 % #2: goal
 % #3: sum == 1
@@ -167,6 +163,16 @@
         \xsim_add_cs_to_aux:nn {totalgoal}
           { {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
       }
+  }
+
+% ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim}
+  {
+    goal-print .code:n =
+      \cs_set_protected:Npn \__xsim_print_goal:n ##1 {#1} ,
+    gradingtable/template .tl_set:N  = \l_xism_grading_table_template_tl ,
+    gradingtable/type     .tl_set:N  = \l_xism_grading_table_exercise_type_tl
   }
 
 % ----------------------------------------------------------------------------

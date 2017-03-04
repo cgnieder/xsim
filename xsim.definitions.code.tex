@@ -41,6 +41,14 @@
 \DeclareExerciseProperty  {bonus-points}
 \DeclareExerciseProperty  {print}
 \DeclareExerciseProperty  {use}
+\ifdefined\chapter
+  \DeclareExerciseProperty {chapter-value}
+  \DeclareExerciseProperty {chapter}
+\fi
+\DeclareExerciseProperty  {section-value}
+\DeclareExerciseProperty  {section}
+\DeclareExerciseProperty  {page-value}
+\DeclareExerciseProperty  {page}
 
 \DeclareExercisePropertyAlias {ID} {id}
 
@@ -91,13 +99,13 @@
   solution-env      = solution ,
   exercise-name     = \XSIMtranslate {exercise} ,
   solution-name     = \XSIMtranslate {solution} ,
-  exercise-template = subsection* ,
-  solution-template = subsection*
+  exercise-template = default ,
+  solution-template = default
 }
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseEnvironmentTemplate {subsection*}
+\DeclareExerciseEnvironmentTemplate {default}
   {
     \subsection*
       {
@@ -139,6 +147,8 @@
 
 % ----------------------------------------------------------------------------
 
+\DeclareExerciseHeadingTemplate {none} {}
+  
 \DeclareExerciseHeadingTemplate {section*}
   {
     \section*
@@ -177,7 +187,7 @@
 
 % ----------------------------------------------------------------------------
 
-\DeclareExerciseTableTemplate {horizontal}
+\DeclareExerciseTableTemplate {default*}
   {
     \XSIMputright \ExerciseTableCode
       {
@@ -240,7 +250,7 @@
       }
   }
 
-\DeclareExerciseTableTemplate {vertical}
+\DeclareExerciseTableTemplate {default}
   {
     \XSIMputright \ExerciseTableCode
       {
@@ -280,9 +290,12 @@
           { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} } &
         \\ \bottomrule
       }
-    \begin {tabular} {ccc}
-      \ExerciseTableCode
-    \end {tabular}
+    \XSIMexpandcode
+      {
+        \noexpand \begin {tabular} {\XSIMifblankTF{\ExerciseType}{l}{c}cc}
+          \noexpand \ExerciseTableCode
+        \noexpand \end {tabular}
+      }
   }
 
 % ----------------------------------------------------------------------------

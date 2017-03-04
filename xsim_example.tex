@@ -51,13 +51,13 @@
       title = \GetExerciseName~\GetExerciseProperty{counter}
       \IfExercisePropertySetT{points}{%
         (\GetExerciseProperty{points}
-        \ExerciseGoalName{points}
+        \IfExerciseGoalSingularTF{points}
           {\XSIMtranslate{point}}
           {\XSIMtranslate{points}})%
       }]
     \IfInsideSolutionF{%
       \IfExercisePropertySetT{tags}{%
-        Tags: \UseExerciseTags{tags}{, } \par
+        Tags: \ListExerciseTags{tags}{, } \par
       }%
     }%
   }
@@ -75,7 +75,7 @@
 
 \begin{document}
 
-\gradingtable{} \par \bigskip
+\gradingtable \par \bigskip
 
 Total: \printtotalpoints \par
 from questions: \printpoints{question} \par
@@ -224,17 +224,17 @@ Number of problems: \numberofproblems
 
 \section{Grading tables}
 
-\gradingtable[horizontal]{exercise} \par \bigskip
+\gradingtable[template=horizontal,type=exercise] \par \bigskip
 
-\gradingtable[horizontal]{problem} \par \bigskip
+\gradingtable[template=horizontal,type=problem] \par \bigskip
 
-\gradingtable[horizontal]{} \par \bigskip
+\gradingtable[template=horizontal] \par \bigskip
 
 % vertical
-\gradingtable{exercise} \par \bigskip
+\gradingtable[type=exercise] \par \bigskip
 
-\gradingtable{problem} \par \bigskip
+\gradingtable[type=problem] \par \bigskip
 
-\gradingtable{}
+\gradingtable
 
 \end{document}

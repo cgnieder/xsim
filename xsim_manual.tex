@@ -30,6 +30,8 @@
 % ----------------------------------------------------------------------------
 \documentclass{xsim-manual}
 
+\usepackage{longtable,booktabs}
+
 \begin{filecontents}{\jobname.bib}
 @online{texsx:romannumeral,
   author = {Bruno Le Floch} ,
@@ -266,8 +268,8 @@ The existing environment pair has been defined as follows:
     solution-env      = solution ,
     exercise-name     = \XSIMtranslate{exercise} ,
     solution-name     = \XSIMtranslate{solution} ,
-    exercise-template = subsection* ,
-    solution-template = subsection*
+    exercise-template = default ,
+    solution-template = default
   }
 \end{sourcecode}
 
@@ -439,6 +441,13 @@ The two existing goals are defined with
   \DeclareExerciseGoal{points}
   \DeclareExerciseGoal{bonus-points}
 \end{sourcecode}
+
+When goal values are printed the decimal number is fed to a function which can
+be changed using the following option:
+\begin{options}
+  \keyval{goal-print}{code}\Default{\#1}
+    How to format goal values.  Use \code{\#1} to refer to the actual number.
+\end{options}
 
 \subsection{A Special Kind of Property: Exercise Tags}\label{sec:tags}
 
@@ -658,6 +667,41 @@ all solutions.
 \end{example}
 
 \section{Grading Tables}\label{sec:grading-tables}
+When you create exercises it may not only be desirable to be able to add
+points and bonus-points to a question (see section~\ref{sec:goals} about
+exercise goals) but also to be able to output a grading table. \xsim\ has
+built-in means for this.
+\begin{commands}
+  \command{gradingtable}[\oarg{options}]
+    Print a grading table.
+\end{commands}
+Valid options for this command are
+\begin{options}
+  \keyval{template}{template}\Default{default}
+    Choose the template used for the grading table.
+  \keyval{type}{exercise type}\Default
+    Choose the exercise type for which the table is printed.
+\end{options}
+Both option defaults can be changed with \cs{xsimsetup} setting the options
+using \module{gradingtable}:
+\begin{sourcecode}
+  \xsimsetup{
+    gradingtable/template = default*
+  }
+\end{sourcecode}
+
+An example:
+\begin{example}
+  \gradingtable[type=exercise]
+\end{example}
+
+Or using the \enquote{\code{default*}} template:
+\begin{example}
+  \gradingtable[template=default*,type=exercise]
+\end{example}
+
+Available templates and how to define new ones are explained in
+sections~\ref{sec:grad-table-templ} and~\ref{sec:template-examples}.
 
 \section{Styling the Exercises -- Templates}\label{sec:styl-exerc-templ}
 
@@ -677,7 +721,12 @@ number of commands which can be used only inside template
 definitions\footnote{The last sentence is wrong: those commands can be used
   anywhere but most of them only give useful results inside of templates.}.
 Those commands are explained in the next section.  Their usage will hopefully
-become clear in the examples in section~\ref{sec:template-examples}.
+become clear in the examples in section~\ref{sec:template-examples}. Having
+full control over the layout comes at a price: you need to be able to program
+yourself in order to achieve certain layouts\footnote{I plan to incorporate
+  the most common layouts -- and maybe some fancy ones, too -- in the examples
+  section~\ref{sec:template-examples} but at the time of writing this is still
+  up in the air.}.
 
 \subsection{Commands for Usage in Template Definitions}
 \subsubsection{Goals}
@@ -774,50 +823,50 @@ become clear in the examples in section~\ref{sec:template-examples}.
     Loops over each \emph{printed} exercise ordered by the exercise types and
     within each type by id.  Inside \meta{code} you can refer to several
     properties of the corresponding exercise:
-    \begin{description}
-      \item[\code{\#1}: ] the type of the exercise
-      \item[\code{\#2}: ] the id of the exercise
-      \item[\code{\#3}: ] the counter of the exercise
-      \item[\code{\#4}: ] the subtitle of the exercise
-      \item[\code{\#5}: ] the points of the exercise
-      \item[\code{\#6}: ] the bonus points of the exercise
-    \end{description}
+    \begin{itemize}
+      \item \code{\#1}: the type of the exercise
+      \item \code{\#2}: the id of the exercise
+      \item \code{\#3}: the counter of the exercise
+      \item \code{\#4}: the subtitle of the exercise
+      \item \code{\#5}: the points of the exercise
+      \item \code{\#6}: the bonus points of the exercise
+    \end{itemize}
   \command{ForEachUsedExerciseByType}[\marg{code}]
     Loops over each \emph{used} exercise ordered by the exercise types and
     within each type by id.  Inside \meta{code} you can refer to several
     properties of the corresponding exercise:
-    \begin{description}
-      \item[\code{\#1}: ] the type of the exercise
-      \item[\code{\#2}: ] the id of the exercise
-      \item[\code{\#3}: ] the counter of the exercise
-      \item[\code{\#4}: ] the subtitle of the exercise
-      \item[\code{\#5}: ] the points of the exercise
-      \item[\code{\#6}: ] the bonus points of the exercise
-    \end{description}
+    \begin{itemize}
+      \item \code{\#1}: the type of the exercise
+      \item \code{\#2}: the id of the exercise
+      \item \code{\#3}: the counter of the exercise
+      \item \code{\#4}: the subtitle of the exercise
+      \item \code{\#5}: the points of the exercise
+      \item \code{\#6}: the bonus points of the exercise
+    \end{itemize}
   \command{ForEachPrintedExerciseByID}
     Loops over each \emph{printed} exercise order by the exercise id.  Inside
     \meta{code} you can refer to several properties of the corresponding
     exercise:
-    \begin{description}
-      \item[\code{\#1}: ] the type of the exercise
-      \item[\code{\#2}: ] the id of the exercise
-      \item[\code{\#3}: ] the counter of the exercise
-      \item[\code{\#4}: ] the subtitle of the exercise
-      \item[\code{\#5}: ] the points of the exercise
-      \item[\code{\#6}: ] the bonus points of the exercise
-    \end{description}
+    \begin{itemize}
+      \item \code{\#1}: the type of the exercise
+      \item \code{\#2}: the id of the exercise
+      \item \code{\#3}: the counter of the exercise
+      \item \code{\#4}: the subtitle of the exercise
+      \item \code{\#5}: the points of the exercise
+      \item \code{\#6}: the bonus points of the exercise
+    \end{itemize}
   \command{ForEachUsedExerciseByID}
     Loops over each \emph{used} exercise order by the exercise id.  Inside
     \meta{code} you can refer to several properties of the corresponding
     exercise:
-    \begin{description}
-      \item[\code{\#1}: ] the type of the exercise
-      \item[\code{\#2}: ] the id of the exercise
-      \item[\code{\#3}: ] the counter of the exercise
-      \item[\code{\#4}: ] the subtitle of the exercise
-      \item[\code{\#5}: ] the points of the exercise
-      \item[\code{\#6}: ] the bonus points of the exercise
-    \end{description}
+    \begin{itemize}
+      \item \code{\#1}: the type of the exercise
+      \item \code{\#2}: the id of the exercise
+      \item \code{\#3}: the counter of the exercise
+      \item \code{\#4}: the subtitle of the exercise
+      \item \code{\#5}: the points of the exercise
+      \item \code{\#6}: the bonus points of the exercise
+    \end{itemize}
   \expandable\command{XSIMtranslate}[\marg{keyword}]
     Delivers the translation of \meta{keyword} according to the current
     document language (in the meaning of a \pkg{babel}~\cite{pkg:babel} or
@@ -868,7 +917,59 @@ become clear in the examples in section~\ref{sec:template-examples}.
 
 \section{Exercise Translations}\label{sec:exerc-transl}
 
-% \ForEachExerciseTranslation
+\begin{commands}
+  \command{DeclareExerciseTranslation}[\marg{keyword}\marg{language}\marg{translation}]
+    Declare the translation of \meta{keyword} for language \meta{language}.
+  \command{DeclareExerciseTranslations}[\marg{keyword}\marg{translations}]
+    Declare the translations of \meta{keyword} for several languages at once.
+    See an example of the usage below.
+  \expandable\command{XSIMtranslate}[\marg{keyword}]
+    Delivers the translation of \meta{keyword} according to the current
+    document language (in the meaning of a \pkg{babel}~\cite{pkg:babel} or
+    \pkg{polyglossia}~\cite{pkg:polyglossia} language).
+  \command{ForEachExerciseTranslation}[\marg{code}]
+    Loops over all translations of all keywords known to \xsim.  Inside
+    \meta{code} you can refer to the keyword with \code{\#1}, to the language
+    with \code{\#2}, and to the translation with \code{\#3}.
+\end{commands}
+
+As an example how to use \cs{DeclareExerciseTranslations} here is how the
+translations for \code{exercise} have been defined:
+
+\begin{sourcecode}
+  \DeclareExerciseTranslations{exercise}{
+    Fallback = exercise ,
+    English  = exercise ,
+    French   = exercice ,
+    German   = \"Ubung
+  }
+\end{sourcecode}
+
+Table~\ref{tab:translation-keys} shows all existing keywords with all
+predefined translations.
+
+\ForEachExerciseTranslation{
+  \appto\translationtable{\texttt{#1} & #2 & \texttt{\detokenize{#3}} \\}
+}
+
+\begin{longtable}{lll}
+    \caption{Translation keywords predefined by \xsim.}
+    \label{tab:translation-keys} \\
+    \toprule
+    \bfseries keyword & \bfseries language & \bfseries translation \\
+    \midrule
+  \endfirsthead
+    \toprule
+    \bfseries keyword & \bfseries language & \bfseries translation \\
+    \midrule
+  \endhead
+    \bottomrule
+  \endlastfoot
+    \midrule
+    & & \hfill\emph{continues} \\
+  \endfoot
+  \translationtable
+\end{longtable}
 
 \section{Other Commands}
 
@@ -877,6 +978,35 @@ become clear in the examples in section~\ref{sec:template-examples}.
 % \printexercise
 
 % \printsolution
+
+\section{How to\dots}
+This section serves as a kind of gallery showing solutions to common
+problems.  I expect this section to grow over the years.
+
+\subsection{\dots Resolve Strange Errors After Updating}
+\xsim\ writes a lot of stuff to the auxfile.  An update may well change how
+this is done so deleting the auxfile and doing a few fresh compilations may
+resolve your problems.
+
+\subsection{\dots Print Solutions Grouped by Section?}
+
+\begin{sourcecode}
+  % preamble:
+  % \usepackage{etoolbox}
+  % \DeclareExerciseHeadingTemplate{per-section}{%
+  %   \section*{\XSIMmixedcase{\ExerciseType s} of Section~\ExerciseSection}%
+  % }
+  % \newcounter{sections}
+
+  % document:
+  \setcounter{sections}{1}
+  \whileboolexpr
+    { test {\ifnumless{\value{sections}}{\value{section}+1}} }
+    {
+      \printsolutions[section=\value{sections},headings-template=per-section]
+      \stepcounter{sections}
+    }
+\end{sourcecode}
 
 \appendix
 \section{All Exercise Examples}

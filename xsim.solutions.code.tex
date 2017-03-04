@@ -29,11 +29,21 @@
 
 \xsim_load_modules:n {tags,properties}
 
-\bool_new:N \l__xsim_inside_solution_bool
+\bool_new:N \l_xsim_inside_solution_bool
+\bool_new:N \l____xsim_this_solution_bool
+\bool_new:N \l__xsim_printsolutions_headings_bool
+\bool_new:N \l__xsim_printsolutions_section_bool
+\bool_new:N \l__xsim_printsolutions_chapter_bool
+\tl_new:N   \l__xsim_printsolutions_headings_template_tl
+\int_new:N  \l_xsim_printsolutions_heading_int
+\tl_new:N   \ExerciseSection
+\tl_new:N   \ExerciseChapter
+
+% ----------------------------------------------------------------------------
 
 \prg_new_conditional:Npnn \xsim_if_inside_solution: {p,T,F,TF}
   {
-    \bool_if:NTF \l__xsim_inside_solution_bool
+    \bool_if:NTF \l_xsim_inside_solution_bool
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -60,22 +70,86 @@
 \cs_new_protected:Npn \xsim_start_solution:nn #1#2
   {
     \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
-    \bool_set_true:N \l__xsim_inside_solution_bool
+    \bool_set_true:N \l_xsim_inside_solution_bool
   }
 
 \cs_new_protected:Npn \xsim_stop_solution:n #1 {}
 
 % ----------------------------------------------------------------------------
 
-\bool_new:N \l__xsim_printsolutions_headings_bool
-\tl_new:N   \l__xsim_printsolutions_headings_template_tl
-
 \keys_define:nn {xsim/print-solutions}
   {
     headings .bool_set:N = \l__xsim_printsolutions_headings_bool ,
     headings .initial:n  = true ,
-    headings-template .tl_set:N = \l__xsim_printsolutions_headings_template_tl ,
-    headings-template .initial:n = section*
+    headings-template .tl_set:N  = \l__xsim_printsolutions_headings_template_tl ,
+    headings-template .initial:n = section* ,
+    section           .choice: ,
+    section/true      .code:n    =
+      \bool_set_true:N  \l__xsim_printsolutions_section_bool
+      \bool_set_false:N \l__xsim_printsolutions_chapter_bool
+      \int_set:Nn \l_xsim_printsolutions_heading_int { \value {section} } ,
+    section/false     .code:n    =
+      \bool_set_false:N \l__xsim_printsolutions_section_bool ,
+    section/unknown   .code:n    =
+      \bool_set_true:N  \l__xsim_printsolutions_section_bool
+      \bool_set_false:N \l__xsim_printsolutions_chapter_bool
+      \int_set:Nn \l_xsim_printsolutions_heading_int {#1} ,
+    section  .default:n  = true ,
+    section  .initial:n  = false ,
+    chapter           .choice: ,
+    chapter/true      .code:n    =
+      \bool_set_false:N \l__xsim_printsolutions_section_bool
+      \bool_set_true:N  \l__xsim_printsolutions_chapter_bool
+      \int_set:Nn \l_xsim_printsolutions_heading_int { \value {chapter} } ,
+    chapter/false     .code:n    =
+      \bool_set_false:N \l__xsim_printsolutions_chapter_bool ,
+    chapter/unknown   .code:n    =
+      \bool_set_false:N \l__xsim_printsolutions_section_bool
+      \bool_set_true:N  \l__xsim_printsolutions_chapter_bool
+      \int_set:Nn \l_xsim_printsolutions_heading_int {#1} ,
+    chapter  .default:n  = true ,
+    chapter  .initial:n  = false
+  }
+
+% #1: type
+% #2: id
+% #3: print|use
+% #4: code
+\cs_new_protected:Npn \xsim_if_this_solution_do:nnnn #1#2#3#4
+  {
+    \bool_set_false:N \l____xsim_this_solution_bool
+    \bool_if:NT \l__xsim_printsolutions_section_bool
+      {
+        \xsim_if_in_list:nxT {section-value}
+          { #1-#2 == { \int_use:N \l_xsim_printsolutions_heading_int } }
+          {
+            \tl_set:Nx \ExerciseSection
+              { \xsim_get_property:nnn {#1} {#2} {section} }
+            \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
+              { \bool_set_true:N \l____xsim_this_solution_bool }
+          }
+      }
+    \bool_if:NT \l__xsim_printsolutions_chapter_bool
+      {
+        \xsim_if_in_list:nxT {chapter-value}
+          { #1-#2 == { \int_use:N \l_xsim_printsolutions_heading_int } }
+          {
+            \tl_set:Nx \ExerciseChapter
+              { \xsim_get_property:nnn {#1} {#2} {chapter} }
+            \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
+              { \bool_set_true:N \l____xsim_this_solution_bool }
+          }
+      }
+    \bool_if:nT
+      {
+        ! \l__xsim_printsolutions_section_bool &&
+        ! \l__xsim_printsolutions_chapter_bool
+      }
+      {
+        \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
+          { \bool_set_true:N \l____xsim_this_solution_bool }
+      }
+    \bool_if:NT \l____xsim_this_solution_bool {#4}
   }
 
 % TODO: add options (template choice, ... )
@@ -88,19 +162,20 @@
     \xsim_verbose:n
       { Printing~ solutions~ for~ exercise~ type~ `#3'. }
     \group_begin:
+      \keys_set:nn {xsim/print-solutions} {#2}
       \bool_set_false:N \l__xsim_tmpa_bool
       \bool_if:nTF {#1}
         {
           \xsim_foreach_exercise_type_id:nn {print}
             {
-              \xsim_if_in_list:nnT {print} {#3-##2=={true}}
+              \xsim_if_this_solution_do:nnnn {#3} {##2} {print}
                 { \bool_set_true:N \l__xsim_tmpa_bool }
             }
         }
         {
           \xsim_foreach_exercise_type_id:nn {use}
             {
-              \xsim_if_in_list:nnT {use} {#3-##2=={true}}
+              \xsim_if_this_solution_do:nnnn {#3} {##2} {use}
                 { \bool_set_true:N \l__xsim_tmpa_bool }
             }
         }
@@ -113,11 +188,21 @@
                 {heading}
                 \l__xsim_printsolutions_headings_template_tl
             }
-          % only loops over exercises in print list which effectively makes
-          % boolean #1 always true:
-          % \xsim_foreach_exercise_type_id:n
+        }
+      \bool_if:nTF {#1}
+        {
+          \xsim_foreach_exercise_type_id:nn {print}
+            {
+              \xsim_if_this_solution_do:nnnn {#3} {##2} {print}
+                { \xsim_insert:nnnn {#3} {##2} {} {solution} }
+            }
+        }
+        {
           \xsim_foreach_exercise_type_id:nn {use}
-            { \xsim_insert:nnnn {#3} {##2} {#2} {solution} }
+            {
+              \xsim_if_this_solution_do:nnnn {#3} {##2} {use}
+                { \xsim_insert:nnnn {#3} {##2} {} {solution} }
+            }
         }
     \group_end:
   }

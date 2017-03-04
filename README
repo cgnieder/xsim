@@ -22,9 +22,9 @@ This work has the LPPL maintenance status `maintained'.
 
 The Current Maintainer of this work is Clemens Niederberger.
 --------------------------------------------------------------------------
-The xsim bundle consists of the files
- - xsim.sty
- - xsim.base.code.tex
+The xsim package consists of the code files:
+   xsim.sty
+   xsim.base.code.tex
    xsim.blanks.code.tex
    xsim.colections.code.tex
    xsim.definitions.code.tex
@@ -37,8 +37,11 @@ The xsim bundle consists of the files
    xsim.tags.code.tex
    xsim.templates.code.tex
    xsim.translations.code.tex
- - README
- - xsim_man.tex, xsim_man.pdf
+--------------------------------------------------------------------------
+The xsim package consists of the documentation files:
+   README
+   xsim_manual.tex, xsim_manual.pdf
+   xsim-manual.cls
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please
 feel free to contact me.
