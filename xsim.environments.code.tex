@@ -80,7 +80,7 @@
 % #5: path
 \cs_new_protected:Npn \__xsim_file_info:nnnnn #1#2#3#4#5
   {
-    \tl_set:Nn \l_xsim_file_info_tl
+    \tl_set:Nn \l_xsim_file_begin_tl
       {
         \__xsim_comment_line_and_feed:n { \c__xsim_comment_line_fill_tl }
         \__xsim_comment_line_and_feed:n {file~ `#4'}
@@ -129,6 +129,7 @@
     \__xsim_file_info:nnnVV {#1} {#2} {#3}
       \l__xsim_file_name_tl
       \l__xsim_file_path_tl
+    \int_zero:N \l_xsim_line_gobble_int
     \xsim_file_write_start:nV
       { \l__xsim_options_given_bool }
       \l__xsim_file_path_and_name_tl

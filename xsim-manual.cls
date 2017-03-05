@@ -57,8 +57,8 @@
     DeclareExerciseTranslation ,
     DeclareExerciseTranslations ,
     DeclareExerciseType ,
+    ExerciseCollection ,
     ExerciseID ,
-    ExerciseGoalName ,
     ExerciseParameterGet ,
     ExercisePropertyGet ,
     ExercisePropertyGetAlias ,
@@ -80,6 +80,9 @@
     GetExerciseProperty ,
     GlobalSaveExerciseProperty ,
     gradingtable ,
+    IfExerciseGoalSingularF ,
+    IfExerciseGoalSingularT ,
+    IfExerciseGoalSingularTF ,
     IfExerciseGoalF ,
     IfExerciseGoalF ,
     IfExerciseGoalTF ,
@@ -103,6 +106,10 @@
     UseExerciseTags ,
     UseExerciseTagsX ,
     XSIMexpandcode ,
+    XSIMsetfilebegin ,
+    XSIMfilewritestart ,
+    XSIMfilewritestop ,
+    XSIMsetfileend ,
     XSIMifblankT ,
     XSIMifblankF ,
     XSIMifblankTF ,
@@ -116,8 +123,11 @@
   } ,
   add-envs = { exercise , solution } ,
   add-silent-cmds = {
+    @percentchar ,
+    IfNoValueTF ,
     ifnumless ,
     lipsum ,
+    NewDocumentEnvironment ,
     whileboolexpr
   } ,
   index-setup = { othercode = \footnotesize , level = \section , noclearpage } ,
@@ -312,15 +322,20 @@
 \newcommand*\environ[1]{\beginenv*\Marg{\env{exercise}}}
 
 \RequirePackage{tcolorbox}
-\tcbuselibrary{breakable}
+\tcbuselibrary{skins,breakable}
+\tcbset{enhanced,enhanced jigsaw}
 
 \newtcolorbox{bewareofthedog}{colback=red!5!white,colframe=red!75!black}
-\newtcolorbox{cnltxcode}[1][]{colback=cnltxbg,colframe=cnltx,arc=5pt,#1}
+\newtcolorbox{cnltxcode}[1][]{
+  boxrule = 1pt ,
+  colback = cnltxbg ,
+  colframe = cnltx ,
+  arc = 5pt ,
+  beforeafter skip = .5\baselineskip ,%
+  #1%
+}
 
-\RequirePackage{lipsum}
-\RequirePackage{varioref}
-
-\RenewDocumentEnvironment{sourcecode} {O{}}
+\RenewDocumentEnvironment{sourcecode}{O{}}
   {%
     \pgfqkeys{/cnltx}{#1}%
     \setlength\cnltx@sidebysidewidth
@@ -333,13 +348,14 @@
         \expandonce\cnltx@local@listings@options
       }%
     }%
+    \XSIMgobblechars{2}%
     \XSIMifblankTF{#1}
       {\XSIMfilewritestart{\jobname.tmp}}
       {\XSIMfilewritestart*{\jobname.tmp}}%
   }
   {%
     \XSIMfilewritestop
-    \cnltxcode
+    \cnltxcode[breakable]%
     \lstinputlisting[style=cnltx]{\jobname.tmp}%
     \endcnltxcode
   }
@@ -357,6 +373,7 @@
         \expandonce\cnltx@local@listings@options
       }%
     }%
+    \XSIMgobblechars{2}%
     \XSIMifblankTF{#1}
       {\XSIMfilewritestart{\jobname.tmp}}
       {\XSIMfilewritestart*{\jobname.tmp}}%
@@ -391,6 +408,11 @@
     \endcnltxcode
   }
 
+\RequirePackage{longtable,booktabs}
+
+\RequirePackage{lipsum}
+\RequirePackage{varioref}
+
 \xsimsetup{
   path = exercises
 }
@@ -400,6 +422,46 @@
 \newrobustcmd*\TF{%
   \colorlet{outside}{.}%
   \textcolor{red}{\underline{\textcolor{outside}{TF}}}%
+}
+
+\DeclareExerciseEnvironmentTemplate{tcolorbox}
+  {%
+    \tcolorbox[
+      colback = red!5!white ,
+      colframe = red!75!black ,
+      colbacktitle = yellow!50!red ,
+      coltitle = red!25!black ,
+      subtitle style = {
+        boxrule = 0.4pt ,
+        colback = yellow!50!red!25!white
+      } ,
+      breakable ,
+      drop shadow ,
+      beforeafter skip = .5\baselineskip ,
+      title =
+        \textbf{\GetExerciseName~\GetExerciseProperty{counter}}%
+        \IfExercisePropertySetT{subtitle}
+          { \textit{\GetExerciseProperty{subtitle}}}%
+        \IfInsideSolutionF{%
+          \IfExercisePropertySetT{points}
+            {
+              (\GetExerciseProperty{points}
+              \IfExerciseGoalSingularTF{points}
+                {\XSIMtranslate{point}}
+                {\XSIMtranslate{points}})%
+            }%
+        }%
+    ]%
+  }
+  {\endtcolorbox}
+
+\DeclareExerciseType{problem}{
+  exercise-env = problem ,
+  solution-env = answer ,
+  exercise-name = Problem ,
+  solution-name = Answer ,
+  exercise-template = tcolorbox ,
+  solution-template = tcolorbox
 }
 
 \endinput

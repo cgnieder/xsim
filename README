@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/03/01 v0.1pre-5
+XSIM 2017/03/05 v0.1pre-6
 
   eXercise Sheets IMproved
 
@@ -24,19 +24,22 @@ The Current Maintainer of this work is Clemens Niederberger.
 --------------------------------------------------------------------------
 The xsim package consists of the code files:
    xsim.sty
+   xsimverb.sty
    xsim.base.code.tex
    xsim.blanks.code.tex
-   xsim.colections.code.tex
+   xsim.collections.code.tex
    xsim.definitions.code.tex
    xsim.environments.code.tex
    xsim.exercises.code.tex
    xsim.goals.code.tex
    xsim.interface.code.tex
+   xsim.modules.code.tex
    xsim.properties.code.tex
    xsim.solutions.code.tex
    xsim.tags.code.tex
    xsim.templates.code.tex
    xsim.translations.code.tex
+   xsim.verbwrite.code.tex
 --------------------------------------------------------------------------
 The xsim package consists of the documentation files:
    README

@@ -148,8 +148,8 @@
 % ----------------------------------------------------------------------------
 
 \DeclareExerciseHeadingTemplate {none} {}
-  
-\DeclareExerciseHeadingTemplate {section*}
+
+\DeclareExerciseHeadingTemplate {default}
   {
     \section*
       {
@@ -158,31 +158,10 @@
       }
   }
 
-\DeclareExerciseHeadingTemplate {subsection*}
+\DeclareExerciseHeadingTemplate {collection}
   {
-    \subsection*
-      {
-        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
-         to~ the~ \XSIMmixedcase { \ExerciseType s}
-      }
-  }
-
-\DeclareExerciseHeadingTemplate {section}
-  {
-    \section
-      {
-        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
-         to~ the~ \XSIMmixedcase { \ExerciseType s}
-      }
-  }
-
-\DeclareExerciseHeadingTemplate {subsection}
-  {
-    \subsection
-      {
-        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
-         to~ the~ \XSIMmixedcase { \ExerciseType s}
-      }
+    \section*
+      { \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } }
   }
 
 % ----------------------------------------------------------------------------

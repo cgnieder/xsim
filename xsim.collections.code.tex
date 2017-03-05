@@ -220,21 +220,59 @@
 
 % ----------------------------------------------------------------------------
 
-% #1: collection name
-\cs_new_protected:Npn \xsim_print_collection:n #1
+\bool_new:N \l__xsim_printcollection_headings_bool
+\tl_new:N  \l__xsim_printcollection_headings_template_tl
+
+\keys_define:nn {xsim/print-collection}
   {
-    % \xsim_list_show:n {collection:#1}
-    \xsim_if_collection_active:nTF {#1}
-      { \msg_error:nnn {xsim} {collection-active} {#1} }
+    headings .bool_set:N = \l__xsim_printcollection_headings_bool ,
+    headings .initial:n  = false ,
+    headings-template .tl_set:N  = \l__xsim_printcollection_headings_template_tl ,
+    headings-template .initial:n = collection
+  }
+
+% #1: options
+% #2: collection name
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_print_collection:nnn #1#2#3
+  {
+    \xsim_if_collection_active:nTF {#2}
+      { \msg_error:nnn {xsim} {collection-active} {#2} }
       {
-        \xsim_foreach_exercise_type_id:nn {use}
-          {
-            \xsim_if_in_collection:nnnT {#1} {##1} {##2}
-              {
-                \xsim_if_exercise_exists:nnT {##1} {##2}
-                  { \xsim_insert:nnnn {##1} {##2} {} {exercise} }
-              }
-          }
+        \group_begin:
+          \keys_set:nn {xsim/print-collection} {#1} 
+          \tl_set:Nn \ExerciseCollection {#2}
+          \xsim_foreach_exercise_type:n
+            {
+              \tl_set:Nn \ExerciseType {##1}
+              \bool_if:NT \l__xsim_printcollection_headings_bool
+                {
+                  \bool_set_false:N \l__xsim_tmpa_bool
+                  \xsim_foreach_exercise_id:n
+                    {
+                      \xsim_if_in_collection:nnnT {#2} {##1} {####1}
+                        {
+                          \use:c {xsim_if_#3_exists:nnT} {##1} {####1}
+                            { \bool_set_true:N \l__xsim_tmpa_bool }
+                        }
+                    }
+                  \bool_if:NT \l__xsim_tmpa_bool
+                    {
+                      \xsim_use_template:nV
+                      {heading}
+                      \l__xsim_printcollection_headings_template_tl
+                    }
+                }
+              \xsim_foreach_exercise_id:n
+                {
+                  \xsim_if_in_collection:nnnT {#2} {##1} {####1}
+                    {
+                      \use:c{xsim_if_#3_exists:nnT} {##1} {####1}
+                        { \xsim_insert:nnnn {##1} {####1} {} {#3} }
+                    }
+                }
+            }
+        \group_end:
       }
   }
 

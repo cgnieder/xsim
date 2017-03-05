@@ -157,8 +157,8 @@
 \NewDocumentCommand \XSIMexpandcode {+m}
   { \use:x {#1} }
 
-\DeclareExpandableDocumentCommand \XSIMmixedcase {m}
-  { \tl_mixed_case:f {#1} }
+\DeclareDocumentCommand \XSIMmixedcase {m}
+  { \tl_mixed_case:x {#1} }
 
 \NewDocumentCommand \XSIMputright {mm}
   { \tl_put_right:Nn #1 {#2} }
@@ -281,8 +281,8 @@
 \NewDocumentCommand \collectexercisesstop {m}
   { \xsim_stop_collection:n {#1} }
 
-\NewDocumentCommand \printcollection {m}
-  { \xsim_print_collection:n {#1} }
+\NewDocumentCommand \printcollection {O{}m}
+  { \xsim_print_collection:nnn {#1} {#2} {exercise} }
 
 % ----------------------------------------------------------------------------
 

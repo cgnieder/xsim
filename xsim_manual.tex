@@ -30,8 +30,6 @@
 % ----------------------------------------------------------------------------
 \documentclass{xsim-manual}
 
-\usepackage{longtable,booktabs}
-
 \begin{filecontents}{\jobname.bib}
 @online{texsx:romannumeral,
   author = {Bruno Le Floch} ,
@@ -595,11 +593,13 @@ often as needed.
     exercises until the collection is closed with \cs{collectexercisesstop}.
   \command{collectexercisesstop}[\marg{collection name}]
     Closes the collection \meta{collection name}.
-  \command{printcollection}[\marg{collection name}]
+  \command{printcollection}[\oarg{options}\marg{collection name}]
     Prints the collection \meta{collection name}, \ie, all exercises collected
     earlier.  This command cannot be used before the corresponding collection
     has been closed correctly.
 \end{commands}
+
+% TODO: options
 
 The usage should be clear:
 \begin{example}[outside]
@@ -643,7 +643,8 @@ all exercises will be printed.
   LaTeX Warning: There were multiply-defined labels.
 \end{sourcecode}
   Equally if you have environments like \environ{equation} which step a
-  counter the counter will be stepped each time the exercise is used.
+  counter inside an exercise or solution the counter will be stepped each time
+  the exercise is used.
 \end{bewareofthedog}
 
 \section{Printing Solutions}\label{sec:printing-solutions}
@@ -663,12 +664,15 @@ all solutions.
 \end{commands}
 
 \begin{example}
-  \printsolutions
+  \printsolutionstype{exercises}
 \end{example}
+
+% TODO: print solutions of a collection
+% TODO: unify printing commands
 
 \section{Grading Tables}\label{sec:grading-tables}
 When you create exercises it may not only be desirable to be able to add
-points and bonus-points to a question (see section~\ref{sec:goals} about
+points and bonus-points to a question (see section~\vref{sec:goals} about
 exercise goals) but also to be able to output a grading table. \xsim\ has
 built-in means for this.
 \begin{commands}
@@ -701,7 +705,15 @@ Or using the \enquote{\code{default*}} template:
 \end{example}
 
 Available templates and how to define new ones are explained in
-sections~\ref{sec:grad-table-templ} and~\ref{sec:template-examples}.
+sections~\vref{sec:grad-table-templ} and~\vref{sec:template-examples}.  \xsim\
+per default provides two templates \enquote{\code{default}} and
+\enquote{\code{default*}}, the first one has a vertical layout, the second a
+horizontal layout.  Both templates can be used per type like in the examples
+above or for all types at once by leaving the specification \option{type}
+away:
+\begin{example}
+  \gradingtable
+\end{example}
 
 \section{Styling the Exercises -- Templates}\label{sec:styl-exerc-templ}
 
@@ -709,9 +721,9 @@ sections~\ref{sec:grad-table-templ} and~\ref{sec:template-examples}.
 Whenever \xsim\ outputs something to be typeset it uses so-called templates
 for the task.  \xsim\ knows of three different kinds of templates:
 \begin{itemize}
-  \item environment templates (see section~\ref{sec:envir-templ}),
-  \item heading templates (see section~\ref{sec:heading-templates}) and
-  \item grading table templates (see section~\ref{sec:grad-table-templ})
+  \item environment templates (see section~\vref{sec:envir-templ}),
+  \item heading templates (see section~\vref{sec:heading-templates}) and
+  \item grading table templates (see section~\vref{sec:grad-table-templ})
 \end{itemize}
 
 The most important one for the styling of the exercises are the environment
@@ -721,11 +733,11 @@ number of commands which can be used only inside template
 definitions\footnote{The last sentence is wrong: those commands can be used
   anywhere but most of them only give useful results inside of templates.}.
 Those commands are explained in the next section.  Their usage will hopefully
-become clear in the examples in section~\ref{sec:template-examples}. Having
+become clear in the examples in section~\vref{sec:template-examples}. Having
 full control over the layout comes at a price: you need to be able to program
 yourself in order to achieve certain layouts\footnote{I plan to incorporate
   the most common layouts -- and maybe some fancy ones, too -- in the examples
-  section~\ref{sec:template-examples} but at the time of writing this is still
+  section~\vref{sec:template-examples} but at the time of writing this is still
   up in the air.}.
 
 \subsection{Commands for Usage in Template Definitions}
@@ -817,6 +829,13 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
 
 \subsubsection{Further Commands for Usage in Template Definitions}
 \begin{commands}
+  \expandable\command{ExerciseType}
+    Can be used to refer to the current exercise type.
+  \expandable\command{ExerciseID}
+    Can be used to refer to the current exercise id.
+  \expandable\command{ExerciseCollection}
+    Can be used in certain templates to refer to the collection that is
+    currently inserted.
   \expandable\command{IfInsideSolution\TF}[\marg{true}\marg{false}]
     Tests if the template is used inside a solution environment or not.
   \command{ForEachPrintedExerciseByType}[\marg{code}]
@@ -872,13 +891,15 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     document language (in the meaning of a \pkg{babel}~\cite{pkg:babel} or
     \pkg{polyglossia}~\cite{pkg:polyglossia} language).  Existing keywords and
     keyword translations (and how to add new ones) are explained in
-    section~\ref{sec:exerc-transl}.
+    section~\vref{sec:exerc-transl}.
   \command{XSIMexpandcode}[\marg{code}]
     Expands \meta{code} like \cs*{edef} does and leaves the result in the
     input stream.
   \command{XSIMmixedcase}[\marg{code}]
     Converts \meta{code} to mixed case: \\
-    \verbcode+\XSIMmixedcase{this is some text}+ \XSIMmixedcase{this is some text}
+    \verbcode+\XSIMmixedcase{this is some text}+ \XSIMmixedcase{this is some
+      text} \\
+    \emph{This command expands \meta{code} before converting it}.
   \command{XSIMputright}[\meta{macro}\marg{code}]
     Extends the macro definition of \meta{macro} with \meta{code} putting it
     to the right.  This is like a local version of the LaTeX kernel macro
@@ -915,6 +936,58 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
 
 \subsection{Examples}\label{sec:template-examples}
 
+\subsubsection{A New Exercise Type Using \pkg*{tcolorbox}}
+
+\begin{sourcecode}
+  \DeclareExerciseEnvironmentTemplate{tcolorbox}
+    {%
+      \tcolorbox[
+        colback = red!5!white ,
+        colframe = red!75!black ,
+        colbacktitle = yellow!50!red ,
+        coltitle = red!25!black ,
+        subtitle style = {
+          boxrule = 0.4pt ,
+          colback = yellow!50!red!25!white
+        } ,
+        breakable ,
+        drop shadow ,
+        beforeafter skip = .5\baselineskip ,
+        title =
+          \textbf{\GetExerciseName~\GetExerciseProperty{counter}}%
+          \IfExercisePropertySetT{subtitle}
+            { \textit{\GetExerciseProperty{subtitle}}}%
+          \IfInsideSolutionF{%
+            \IfExercisePropertySetT{points}{ %
+              (\GetExerciseProperty{points}
+              \IfExerciseGoalSingularTF{points}
+                {\XSIMtranslate{point}}
+                {\XSIMtranslate{points}})%
+            }%
+          }%
+      ]%
+    }
+    {\endtcolorbox}
+
+  \DeclareExerciseType{problem}{
+    exercise-env = problem ,
+    solution-env = answer ,
+    exercise-name = Problem ,
+    solution-name = Answer ,
+    exercise-template = tcolorbox ,
+    solution-template = tcolorbox
+  }
+\end{sourcecode}
+
+\begin{example}
+  \begin{problem}[subtitle=My subtitle,points=5]
+    This is a problem using a subtitle and points.
+  \end{problem}
+  \begin{answer}
+    This is the answer to problem~\GetExerciseProperty{counter}.
+  \end{answer}
+\end{example}
+
 \section{Exercise Translations}\label{sec:exerc-transl}
 
 \begin{commands}
@@ -945,31 +1018,25 @@ translations for \code{exercise} have been defined:
   }
 \end{sourcecode}
 
-Table~\ref{tab:translation-keys} shows all existing keywords with all
+Table~\vref{tab:translation-keys} shows all existing keywords with all
 predefined translations.
 
 \ForEachExerciseTranslation{
   \appto\translationtable{\texttt{#1} & #2 & \texttt{\detokenize{#3}} \\}
 }
 
-\begin{longtable}{lll}
-    \caption{Translation keywords predefined by \xsim.}
-    \label{tab:translation-keys} \\
+\begin{table}
+  \centering
+  \caption{Translation keywords predefined by \xsim.}
+  \label{tab:translation-keys}
+  \begin{tabular}{lll}
     \toprule
     \bfseries keyword & \bfseries language & \bfseries translation \\
     \midrule
-  \endfirsthead
-    \toprule
-    \bfseries keyword & \bfseries language & \bfseries translation \\
-    \midrule
-  \endhead
+    \translationtable
     \bottomrule
-  \endlastfoot
-    \midrule
-    & & \hfill\emph{continues} \\
-  \endfoot
-  \translationtable
-\end{longtable}
+  \end{tabular}
+\end{table}
 
 \section{Other Commands}
 
@@ -979,11 +1046,13 @@ predefined translations.
 
 % \printsolution
 
+\appendix
+
 \section{How to\dots}
 This section serves as a kind of gallery showing solutions to common
 problems.  I expect this section to grow over the years.
 
-\subsection{\dots Resolve Strange Errors After Updating}
+\subsection{\dots Resolve Strange Errors After Updating?}
 \xsim\ writes a lot of stuff to the auxfile.  An update may well change how
 this is done so deleting the auxfile and doing a few fresh compilations may
 resolve your problems.
@@ -1008,9 +1077,70 @@ resolve your problems.
     }
 \end{sourcecode}
 
-\appendix
+\section{The \pkg*{xsimverb} package}
+\xsim\ comes bundled with another package called \pkg{xsimverb}.  This package
+loads a very small subset of \xsim\ which allows to create environments which
+write their contents verbatim to external files.  It provides the following
+commands (which of course are also available in \xsim):
+
+\begin{commands}
+  \command{XSIMfilewritestart}[\sarg\marg{file name}]
+    Start writing to the file named \meta{file name}.  This should be the
+    \emph{last} command in the \emph{begin} definition of an environment.  If
+    is is used in an environment with arguments where the \emph{last} argument
+    is optional you should check if the optional argument is given and used
+    the starred version if the test is positive.  This is demonstrated in an
+    example below using \pkg{xparse}'s \cs{NewDocumentEnvironment} but the
+    same is true for environments defined with \cs*{newenvironment}.
+  \command{XSIMfilewritestop}
+    Stop writing to the file.  This should be the \emph{first} command in the
+    \emph{end} definition of an environment.
+  \command{XSIMsetfilebegin}[\marg{code}]
+    This command can be used to write something to the external file
+    \emph{before} the environment contents.  Must be set before
+    \cs{XSIMfilewritestart} in the \emph{begin} definition.
+  \command{XSIMsetfileend}[\marg{code}]
+    This command can be used to write something to the external file
+    \emph{after} the environment contents.  Must be set before
+    \cs{XSIMfilewritestart} in the \emph{begin} definition.
+  \command{XSIMgobblechars}[\marg{integer}]
+    Determines how many characters are cut off of the beginning of each line
+    of the environment body before it is written to the file.  The default
+    value is~$0$.
+\end{commands}
+
+An example of how to use those commands:
+\begin{sourcecode}
+  \documentclass{article}
+  \usepackage{xsimverb,listings}
+
+  \makeatletter
+  \NewDocumentEnvironment{example}{o}
+    {%
+      \XSIMsetfilebegin{\@percentchar\space file `\jobname.tmp'}%
+      \XSIMsetfileend{\@percentchar\space bye bye}%
+      \IfNoValueTF{#1}
+        {\XSIMfilewritestart{\jobname.tmp}}
+        {\XSIMfilewritestart*{\jobname.tmp}}%
+    }
+    {%
+      \XSIMfilewritestop
+      \lstinputlisting[language={[LaTeX]TeX}]{\jobname.tmp}%
+      \input{\jobname.tmp}
+    }
+  \makeatother
+
+  \begin{document}
+  
+  \begin{example}
+  bla bla \LaTeX
+  \end{example}
+
+  \end{document}
+\end{sourcecode}
+
 \section{All Exercise Examples}
-\printcollection{all exercises}
+\printcollection[headings]{all exercises}
 
 \section{All Solution Examples}
 \printsolutions

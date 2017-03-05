@@ -148,7 +148,7 @@
 \tl_if_exist:NF \c_xsim_version_tl
   { \tl_set:Nx \l__xsim_module_version_tl {\c_xsimverb_version_tl} }
 
-\AfterPackage{xsim}
+\AfterPackage*{xsim}
   {
     \tl_set:Nx \l__xsim_module_date_tl {\c_xsim_date_tl}
     \tl_set:Nx \l__xsim_module_version_tl {\c_xsim_version_tl}
