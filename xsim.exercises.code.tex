@@ -68,7 +68,6 @@
 % ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
-\xsim_new_list:n {exercises}
 
 % #1: true|false (fixed parameter)
 % #2: true|false (mandatory parameter)
@@ -303,13 +302,10 @@
 
 % #1: type
 % #2: id
-\cs_new_protected:Npn \xsim_add_exercise:nn #1#2
-  { \xsim_add_to_list:nn {exercises} {#1-#2} }
-\cs_generate_variant:Nn \xsim_add_exercise:nn {nV}
-
 \prg_new_conditional:Npnn \xsim_if_exercise_exists:nn #1#2 {T,F,TF}
   {
-    \xsim_if_in_list:nnTF {exercises} {#1-#2}
+    \__xsim_set_file_signature:nnn {#1} {#2} {exercise}
+    \file_if_exist:VTF \l__xsim_file_path_and_name_tl
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -370,7 +366,6 @@
               { use = false }
           }
         \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
-        \xsim_add_exercise:nV {#1} \g_xsim_exercise_id_tl
       }
   }
 
@@ -458,7 +453,6 @@
 \AtEndDocument
   {
     \xsim_update_list:n {types}
-    \xsim_update_list:n {exercises}
     \xsim_add_cs_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
     \xsim_foreach_exercise_type:n
       {

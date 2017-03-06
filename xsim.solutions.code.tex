@@ -46,8 +46,6 @@
 \tl_new:N   \ExerciseChapter
 \tl_new:N   \l__xsim_printsolutions_collection_tl
 
-\xsim_new_list:n {solutions}
-
 % ----------------------------------------------------------------------------
 
 \prg_new_conditional:Npnn \xsim_if_inside_solution: {p,T,F,TF}
@@ -76,13 +74,10 @@
 
 % #1: type
 % #2: id
-\cs_new_protected:Npn \xsim_add_solution:nn #1#2
-  { \xsim_add_to_list:nn {solutions} {#1-#2} }
-\cs_generate_variant:Nn \xsim_add_solution:nn {nV}
-
 \prg_new_conditional:Npnn \xsim_if_solution_exists:nn #1#2 {T,F,TF}
   {
-    \xsim_if_in_list:nnTF {solutions} {#1-#2}
+    \__xsim_set_file_signature:nnn {#1} {#2} {solution}
+    \file_if_exist:VTF \l__xsim_file_path_and_name_tl
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -93,7 +88,6 @@
   {
     \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
     \bool_set_true:N \l_xsim_inside_solution_bool
-    \xsim_add_solution:nV {#1} \ExerciseID
   }
 
 \cs_new_protected:Npn \xsim_stop_solution:n #1 {}
@@ -275,8 +269,11 @@
 % #4: code
 \cs_new_protected:Npn \xsim_if_this_solution_do:nnnn #1#2#3#4
   {
-    \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4}
-    \__xsim_printsolutions_if_conditions:nnnF {#1} {#2} {#3} {#4}
+    \xsim_if_solution_exists:nnT {#1} {#2}
+      {
+        \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4}
+        \__xsim_printsolutions_if_conditions:nnnF {#1} {#2} {#3} {#4}
+      }
   }
 
 % ----------------------------------------------------------------------------
@@ -356,7 +353,4 @@
 
 % ----------------------------------------------------------------------------
 
-\AtEndDocument { \xsim_update_list:n {solutions} }
-
-% ----------------------------------------------------------------------------
 \tex_endinput:D

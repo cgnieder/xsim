@@ -1,6 +1,7 @@
 % arara: pdflatex
 % arara: pdflatex
 % arara: pdflatex
+% arara: pdflatex
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -1076,6 +1077,8 @@ predefined translations.
 
 % \printsolution
 
+\edef\lastsection{\arabic{section}}
+
 \appendix
 
 \section{How to\dots}
@@ -1087,7 +1090,7 @@ problems.  I expect this section to grow over the years.
 this is done so deleting the auxfile and doing a few fresh compilations may
 resolve your problems.
 
-\subsection{\dots Print Solutions Grouped by Section?}
+\subsection{\dots Print All Solutions Grouped by Section?}
 
 \begin{sourcecode}
   % preamble:
@@ -1104,11 +1107,20 @@ resolve your problems.
     }
 \end{sourcecode}
 
+\newcounter{sections}
+\setcounter{sections}{1}
+\whileboolexpr
+  { test {\ifnumless{\value{sections}}{\lastsection+1}} }
+  {
+    \printsolutions[section=\value{sections},headings-template=per-section]
+    \stepcounter{sections}
+  }
+    
 \section{The \pkg*{xsimverb} package}
 \xsim\ comes bundled with another package called \pkg{xsimverb}.  This package
 loads a very small subset of \xsim\ which allows to create environments which
 write their contents verbatim to external files.  It provides the following
-commands (which of course are also available in \xsim):
+commands (which of course are also available in \xsim, too):
 
 \begin{commands}
   \command{XSIMfilewritestart}[\sarg\marg{file name}]
@@ -1164,6 +1176,14 @@ An example of how to use those commands:
   \end{example}
 
   \end{document}
+\end{sourcecode}
+
+The \code{tmp} file produced by the above example will contain the following
+three lines (if the file itself was called \code{test.tex}):
+\begin{sourcecode}
+  % file `test.tmp'
+  bla bla \LaTeX
+  % bye bye
 \end{sourcecode}
 
 \section{All Exercise Examples}
