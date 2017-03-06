@@ -1,7 +1,7 @@
 % arara: pdflatex
 % arara: pdflatex
 % arara: pdflatex
-% arara: pdflatex
+% !arara: pdflatex
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -31,14 +31,21 @@
 % ----------------------------------------------------------------------------
 \documentclass{xsim-manual}
 
-\begin{filecontents}{\jobname.bib}
+\usepackage{filecontents}
+\begin{filecontents*}{\jobname.bib}
 @online{texsx:romannumeral,
   author = {Bruno Le Floch} ,
   title = {Cunning (La)TeX tricks} ,
   urldate = {2017-03-02} ,
   url = {http://tex.stackexchange.com/a/19769/}
 }
-\end{filecontents}
+@online{texsx:tagged/exsheets,
+  title = {`exsheets' questions} ,
+  author = {various} ,
+  url = {http://tex.stackexchange.com/questions/tagged/exsheets} ,
+  urldate = {2017-03-06}
+}
+\end{filecontents*}
 \addbibresource{\jobname.bib}
 
 \begin{document}
@@ -58,10 +65,10 @@ no further action should be needed.
 It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in Juni 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
-shows (98~at the time of writing).  User questions, bug reports and feature
-requests improved it over the time.  It still has a version number starting
-with a zero, though, which in my versioning system means I still consider it
-experimental.
+shows (99~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
+questions, bug reports and feature requests improved it over the time.  It
+still has a version number starting with a zero, though, which in my
+versioning system means I still consider it experimental.
 
 This is due to several facts.  It lacks a few features which I consider
 essential for a full version~1.  For one thing it is not possible to have
@@ -357,7 +364,7 @@ include \property{id} and \property{counter}.  The others can be set using the
 optional argument of the exercise environment.
 
 \begin{example}
-  \begin{exercise}[subtitle={This is a subtitle}]
+  \begin{exercise}[subtitle={This is a subtitle},points=4,bonus-points=1]
     An exercise where some properties have been set.
   \end{exercise}
 \end{example}
@@ -577,33 +584,61 @@ the environments' names are the module names for the options (here using the
 
 \section{Collecting Exercises}\label{sec:collecting-exercises}
 
-\xsim\ knows the concept of \enquote{exercise collections}.  A collection must
-be declared in the preamble.  Using a pair of commands explained below
-exercises between those commands are added to the corresponding collection but
-not printed.  After a collection is completed the collection can be printed as
-often as needed.
+\subsection{Background}
+\xsim\ knows the concept of \enquote{exercise collections}.  A collection of
+exercises can be useful when you want to print a certain group of exercises
+several times.  Each collection must have a unique name with which you can
+refer to the corresponding collection.  A collection is realized by declaring
+the collection and by surrounding the exercises belonging to the collection
+with a certain pair of commands (this is explained in the next section).
+
+Let's say you have several files of math exercises where one only contains
+geometry exercises and another only calculus exercises and so on.  Surrounding
+the \cs*{input} of each file with said pair of commands for a certain
+collection all exercises of the corresponding file now are a collection which
+then can be printed at once whereever you want the collection of exercises to
+be printed.  By choosing certain tags (see section~\vref{sec:tags}) inside
+each collection you could even cherry-pick exercises from the external file.
+
+\subsection{Usage}
+A collection must be declared in the preamble.  Using a pair of commands
+explained below exercises between those commands are added to the
+corresponding collection but not printed.  After a collection is completed the
+collection can be printed as often as needed.
 \begin{commands}
   \command{DeclareExerciseCollection}[\marg{collection name}]
     Define a new collection \meta{collection name} in the document preamble.
   \command{collectexercisestype}[\marg{collection name}\marg{exercise type}]
     Opens the collection \meta{collection name} which now collects all
     exercises of type \meta{exercise type} until the collection is closed with
-    \cs{collectexercisesstop}.  Collections of other types are not collected.
+    \cs{collectexercisesstop}.  Collections of other types are not
+    collected.  \emph{This command starts a group!}
   \command{collectexercises}[\marg{collection name}]
     Opens the collection \meta{collection name} which now collects all
-    exercises until the collection is closed with \cs{collectexercisesstop}.
+    exercises until the collection is closed with
+    \cs{collectexercisesstop}.  \emph{This command starts a group!}
   \command{collectexercisesstop}[\marg{collection name}]
-    Closes the collection \meta{collection name}.
+    Closes the collection \meta{collection name}.  \emph{This command ends a
+      group!}
   \command{printcollection}[\oarg{options}\marg{collection name}]
     Prints the collection \meta{collection name}, \ie, all exercises collected
     earlier.  This command cannot be used before the corresponding collection
     has been closed correctly.
 \end{commands}
 
-% TODO: options
+Valid options are the following:
+\begin{options}
+  \keybool{headings}\Default{false}
+    If true a heading for each exercise type is inserted.
+  \keyval{headings-template}{template}\Default{collection}
+    The heading template used when \keyis{headings}{true}.
+\end{options}
+
+Those options can also be set via \cs{xsimsetup} using the module
+\module{print-collection}.
 
 The usage should be clear:
-\begin{example}[outside]
+\begin{example}
   \collectexercises{foo}
   \begin{exercise}
     This exercise is added to the collection `foo'.
@@ -647,6 +682,29 @@ all exercises will be printed.
   counter inside an exercise or solution the counter will be stepped each time
   the exercise is used.
 \end{bewareofthedog}
+
+At last now an example using external files, collections and tags:
+\begin{sourcecode}
+  % preamble:
+  % \DeclareExerciseCollection{foo-easy}
+  % \DeclareExerciseCollection{foo-medium}
+  % \DeclareExerciseTagging{difficulty}
+
+  % document:
+  \collectexercises{foo-easy}
+  \xsimsetup{difficulty=easy}
+  \input{foo.tex}
+  \collectexercisesstop{foo-easy}
+  % collection `foo-easy' now contains all exercises of file `foo.tex' tagged
+  % with `difficulty=easy'
+
+  \collectexercises{foo-medium}
+  \xsimsetup{difficulty=medium}
+  \input{foo.tex}
+  \collectexercisesstop{foo-medium}
+  % collection `foo-medium' now contains all exercises of file `foo.tex'
+  % tagged with `difficulty=medium'
+\end{sourcecode}
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
@@ -718,10 +776,10 @@ Valid options for this command are
     Choose the exercise type for which the table is printed.
 \end{options}
 Both option defaults can be changed with \cs{xsimsetup} setting the options
-using \module{gradingtable}:
+using \module{grading-table}:
 \begin{sourcecode}
   \xsimsetup{
-    gradingtable/template = default*
+    grading-table/template = default*
   }
 \end{sourcecode}
 
@@ -952,22 +1010,69 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     code}\marg{end code}]
     Declare the environment template \meta{name}.
 \end{commands}
+Environment templates are used by the exercise and solution environments.
+Those are the templates set with the parameters \parameter{exercise-template}
+and \parameter{solution-template}.
 
 \subsubsection{Heading Templates}\label{sec:heading-templates}
 \begin{commands}
   \command{DeclareExerciseHeadingTemplate}[\marg{name}\marg{code}]
     Declare the heading template \meta{name}.
 \end{commands}
+Heading templates are used by \cs{printsolutions}, \cs{printsolutionstype} and
+\cs{printcollection}.  Those are the templates set with the option
+\option{headings-template} of the modules \module{print-solutions} and
+\module{print-collection}.
 
 \subsubsection{Grading Table Templates}\label{sec:grad-table-templ}
 \begin{commands}
   \command{DeclareExerciseTableTemplate}[\marg{name}\marg{code}]
     Declare the grading table template \meta{name}.
 \end{commands}
+Table templates are used by \cs{gradingtable}.  Those are the templates set
+with the option \option{template} of module \module{grading-table}
 
 \subsection{Examples}\label{sec:template-examples}
 
+\subsubsection{The \code{default} Exercise Template}
+
+Below the definition of the \code{default} exercise template provided by
+\xsim\ is shown:
+
+\begin{sourcecode}
+  \DeclareExerciseEnvironmentTemplate{default}{%
+    \subsection*
+      {%
+        \XSIMmixedcase{\GetExerciseName}\nobreakspace
+        \GetExerciseProperty{counter}%
+        \IfInsideSolutionF
+          {%
+            \IfExercisePropertySetT{subtitle}
+              { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+          }%
+      }
+    \IfExercisePropertySetT{points}
+      {%
+        \marginpar
+          {%
+            \IfInsideSolutionF{\rule{1.2cm}{1pt}\slash}%
+            \GetExerciseProperty{points}%
+            \IfExercisePropertySetT{bonus-points}
+              {~(+\GetExerciseProperty{bonus-points})}%
+            ~\XSIMtranslate {point-abbr}%
+          }%
+      }%
+  }
+  {}
+\end{sourcecode}
+
 \subsubsection{A New Exercise Type Using \pkg*{tcolorbox}}
+Let's say we want exercises to be put in a \env*{tcolorbox}. We want a bold
+title and. if given, an italic subtitle.  Exercises should also have the
+points after the subtitle in parentheses if given.  Let's also say we want
+those to be an additional exercise type in addition to the ones \xsim\ already
+provides.  This is shown with the following code which is also how the
+problems in this manual have been defined:
 
 \begin{sourcecode}
   \DeclareExerciseEnvironmentTemplate{tcolorbox}
@@ -977,10 +1082,6 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
         colframe = red!75!black ,
         colbacktitle = yellow!50!red ,
         coltitle = red!25!black ,
-        subtitle style = {
-          boxrule = 0.4pt ,
-          colback = yellow!50!red!25!white
-        } ,
         breakable ,
         drop shadow ,
         beforeafter skip = .5\baselineskip ,
@@ -989,11 +1090,13 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
           \IfExercisePropertySetT{subtitle}
             { \textit{\GetExerciseProperty{subtitle}}}%
           \IfInsideSolutionF{%
-            \IfExercisePropertySetT{points}{ %
-              (\GetExerciseProperty{points}
-              \IfExerciseGoalSingularTF{points}
-                {\XSIMtranslate{point}}
-                {\XSIMtranslate{points}})%
+            \IfExercisePropertySetT{points}{ % notice the space
+              (%
+                \GetExerciseProperty{points}
+                \IfExerciseGoalSingularTF{points}
+                  {\XSIMtranslate{point}}
+                  {\XSIMtranslate{points}}%
+              )%
             }%
           }%
       ]%
@@ -1010,6 +1113,7 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   }
 \end{sourcecode}
 
+See it in action:
 \begin{example}
   \begin{problem}[subtitle=My subtitle,points=5]
     This is a problem using a subtitle and points.
@@ -1017,6 +1121,84 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \begin{answer}
     This is the answer to problem~\GetExerciseProperty{counter}.
   \end{answer}
+\end{example}
+
+\subsubsection{Mimicking \pkg*{exsheets}' \code{runin} Template}
+
+The following example shows how you could mimick \pkg*{exsheets}' \code{runin}
+template.  The outcome isn't exactly the same since \pkg{exsheets} doesn't use
+\cs*{marginpar} but the result should look very similar.
+
+\begin{sourcecode}
+  \usepackage{needspace}
+  \DeclareExerciseEnvironmentTemplate{runin}
+    {%
+      \par\vspace{\baselineskip}
+      \Needspace*{2\baselineskip}
+      \noindent
+      \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
+      \IfExercisePropertySetT{subtitle}
+        { \textit{\GetExerciseProperty{subtitle}}} %
+      \IfExercisePropertySetT{points}{%
+        \marginpar{%
+          \GetExerciseProperty{points}%
+          \IfExercisePropertySetT{bonus-points}
+            {+\GetExerciseProperty{bonus-points}}%
+          \,\IfExerciseGoalSingularTF{points}
+              {\XSIMtranslate{point}}
+              {\XSIMtranslate{points}}%
+        }%
+      }%
+    }
+    {}
+\end{sourcecode}
+
+See it in action:
+\begin{example}
+  \SetExerciseParameter{exercise}{exercise-template}{runin}
+  \renewcommand*\theexercise{\arabic{exercise}.}
+  \begin{exercise}[subtitle=exsheets' runin,points=2.5]
+    \lipsum[4]
+  \end{exercise}
+\end{example}
+
+\subsubsection{Mimicking \pkg*{exsheets}' \code{margin} Template}
+
+The following example shows how you could mimick \pkg*{exsheets}'
+\code{margin} template.
+
+\begin{sourcecode}
+  \usepackage{needspace}
+  \DeclareExerciseEnvironmentTemplate{margin}
+    {%
+      \par\vspace{\baselineskip}
+      \Needspace*{2\baselineskip}
+      \noindent
+      \llap{%
+        \smash{%
+          \tabular[t]{@{}r@{}}
+            \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
+            \IfExercisePropertySetT{points}{%
+              \tabularnewline
+              (\GetExerciseProperty{points}%
+              \IfExercisePropertySetT{bonus-points}
+                {+\GetExerciseProperty{bonus-points}}%
+              \,\XSIMtranslate{point-abbr})%
+            }%
+          \endtabular
+        } % notice the space
+      }%
+    }
+    {}
+\end{sourcecode}
+
+See it in action:
+\begin{example}
+  \SetExerciseParameter{exercise}{exercise-template}{margin}
+  \renewcommand*\theexercise{\arabic{exercise}.}
+  \begin{exercise}[subtitle=exsheets' margin,points=2.5]
+    \lipsum[4]
+  \end{exercise}
 \end{example}
 
 \section{Exercise Translations}\label{sec:exerc-transl}
@@ -1085,13 +1267,42 @@ predefined translations.
 This section serves as a kind of gallery showing solutions to common
 problems.  I expect this section to grow over the years.
 
+\subsection{\dots Know if \xsim\ Needs Another Compilation?}
+If \xsim\ wants you to recompile your document it writes the following to the
+logfile:
+\begin{sourcecode}
+  *************************************************
+  * xsim warning: "rerun"
+  * 
+  * Exercise properties may have changed. Rerun to get them synchronized.
+  *************************************************
+\end{sourcecode}
+So just check the logfile regularly (which you should be doing anyway) and
+keep your eyes open.
+
+\subsection{\dots Resolve Getting Repeatedly Wrong Exercise Properties or
+  Wrong Exercise Lists?}
+\xsim\ writes a lot of stuff to the auxfile for re-using information on
+subsequent compilations.  If you add exercises, change properties \etc\ it
+might happen that wrong information is staying in the auxfile and is wrongly
+used by \xsim.  In such cases deleting the auxfile and doing a few fresh
+compilations may resolve your problems.
+
+Sometimes the existing of exercise or solution files from earlier compilations
+may lead to wrong lists of exercises or solutions.  In such cases it can be
+useful to delete all those files and doing a fresh compilation.  It may be
+helpful to use a subfolder for those exernal files which will make deleting
+them a little bit easier. (Don't forget to both create the subfolder and set
+\option{path} accordingly then.)
+
 \subsection{\dots Resolve Strange Errors After Updating?}
 \xsim\ writes a lot of stuff to the auxfile.  An update may well change how
 this is done so deleting the auxfile and doing a few fresh compilations may
 resolve your problems.
 
 \subsection{\dots Print All Solutions Grouped by Section?}
-
+Here is an idea how to get a list of all solutions grouped by the section the
+corresponding exercises are appearing in.
 \begin{sourcecode}
   % preamble:
   % \usepackage{etoolbox}
@@ -1106,6 +1317,11 @@ resolve your problems.
       \stepcounter{sections}
     }
 \end{sourcecode}
+For this manual we then get the following list\footnote{Taking care of the
+  fact that we're in the appendix now which means we can use
+  \cs*{value}\Marg{section}.  Therefore this manual does
+  \cs*{edef}\cs*{lastsection}\Marg{\cs*{arabic}\Marg{section}} right before
+  \cs*{appendix}}.
 
 \newcounter{sections}
 \setcounter{sections}{1}

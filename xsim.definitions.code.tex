@@ -121,25 +121,11 @@
       {
         \marginpar
           {
-            \IfInsideSolutionTF
-              {
-                \(
-                  \GetExerciseProperty {points}
-                  \IfExercisePropertySetT {bonus-points}
-                    { {}+{} \GetExerciseProperty {bonus-points} }
-                \) \,
-                \IfExerciseGoalSingularTF {points}
-                  { \XSIMtranslate {point} }
-                  { \XSIMtranslate {points} }
-              }
-              {
-                \rule {1.3cm} {1pt} /
-                \(
-                  \GetExerciseProperty {points}
-                  \IfExercisePropertySetT {bonus-points}
-                    { {}+{} \GetExerciseProperty {bonus-points} }
-                \)
-              }
+            \IfInsideSolutionF { \rule {1.2cm} {1pt} \slash }
+            \GetExerciseProperty {points}
+            \IfExercisePropertySetT {bonus-points}
+              { \nobreakspace ( + \GetExerciseProperty {bonus-points} ) }
+            \nobreakspace\XSIMtranslate {point-abbr}
           }
       }
   }
@@ -318,6 +304,13 @@
   English  = solution ,
   French   = solution ,
   German   = L\"osung
+}
+
+\DeclareExerciseTranslations {point-abbr} {
+  Fallback = p. ,
+  English  = p. ,
+  French   = p. ,
+  German   = P.
 }
 
 \DeclareExerciseTranslations {point} {

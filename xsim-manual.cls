@@ -103,6 +103,7 @@
     SaveExerciseProperty ,
     SetExerciseParameter ,
     SetExerciseParameters ,
+    theexercise ,
     TotalExerciseGoal ,
     TotalExerciseTypeGoal ,
     UseExerciseTags ,
@@ -129,9 +130,11 @@
     IfNoValueTF ,
     ifnumless ,
     lipsum ,
+    Needspace ,
     NewDocumentEnvironment ,
     whileboolexpr
   } ,
+  pre-output = { \let\marginpar\marginnote } ,
   index-setup = { othercode = \footnotesize , level = \section , noclearpage } ,
   makeindex-setup = { columns = 2 , columnsep = 1em }
 }
@@ -150,9 +153,13 @@
 \ChangeEmph{[}[,.02em]{]}[.055em,-.08em]
 \ChangeEmph{(}[-.01em,.04em]{)}[.04em,-.05em]
 
+\defbibheading{bibliography}{\section{References}}
+
 \colorlet{property}{orange}
 \newidxcmd\property{\code{\textcolor{property}{#1}}}[ (property)]
 \newrobustcmd*\prop{\@ifstar{\cnltx@prop@star}{\cnltx@prop@nostar}}
+
+\RequirePackage{marginnote}
 
 \renewcommand*\module@idx@app{ (option class)}
 
@@ -446,7 +453,7 @@
           { \textit{\GetExerciseProperty{subtitle}}}%
         \IfInsideSolutionF{%
           \IfExercisePropertySetT{points}
-            {
+            { % notice the space
               (\GetExerciseProperty{points}
               \IfExerciseGoalSingularTF{points}
                 {\XSIMtranslate{point}}
@@ -456,6 +463,51 @@
     ]%
   }
   {\endtcolorbox}
+
+\RequirePackage{needspace}
+  
+\DeclareExerciseEnvironmentTemplate{runin}
+  {%
+    \par\vspace{\baselineskip}
+    \Needspace*{2\baselineskip}
+    \noindent
+    \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
+    \IfExercisePropertySetT{subtitle}
+      { \textit{\GetExerciseProperty{subtitle}}} %
+    \IfExercisePropertySetT{points}{%
+      \marginpar{%
+        \GetExerciseProperty {points}%
+        \IfExercisePropertySetT {bonus-points}
+          {+\GetExerciseProperty{bonus-points}}%
+        \,\IfExerciseGoalSingularTF{points}
+            {\XSIMtranslate{point}}
+            {\XSIMtranslate{points}}%
+      }%
+    }%
+  }
+  {}
+
+\DeclareExerciseEnvironmentTemplate{margin}
+  {%
+    \par\vspace{\baselineskip}
+    \Needspace*{2\baselineskip}
+    \noindent
+    \llap{%
+      \smash{%
+        \tabular[t]{@{}r@{}}
+          \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
+          \IfExercisePropertySetT{points}{%
+            \tabularnewline
+            (\GetExerciseProperty{points}%
+            \IfExercisePropertySetT{bonus-points}
+              {+\GetExerciseProperty{bonus-points}}%
+            \,\XSIMtranslate{point-abbr})%
+          }%
+        \endtabular
+      } % notice the space
+    }%
+  }
+  {}
 
 \DeclareExerciseType{problem}{
   exercise-env = problem ,
