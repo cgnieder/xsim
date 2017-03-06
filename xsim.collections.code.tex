@@ -217,6 +217,7 @@
       { \prg_return_true: }
       { \prg_return_false: }
   }
+\cs_generate_variant:Nn \xsim_if_in_collection:nnnTF {V}
 
 % ----------------------------------------------------------------------------
 
@@ -267,7 +268,7 @@
                 {
                   \xsim_if_in_collection:nnnT {#2} {##1} {####1}
                     {
-                      \use:c{xsim_if_#3_exists:nnT} {##1} {####1}
+                      \use:c {xsim_if_#3_exists:nnT} {##1} {####1}
                         { \xsim_insert:nnnn {##1} {####1} {} {#3} }
                     }
                 }

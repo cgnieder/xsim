@@ -664,11 +664,41 @@ all solutions.
 \end{commands}
 
 \begin{example}
-  \printsolutionstype{exercises}
+  \printsolutionstype{exercise}
 \end{example}
 
-% TODO: print solutions of a collection
-% TODO: unify printing commands
+The options can be diveded into two groups.  The ones in the first group
+modify the layout.
+\begin{options}
+  \keybool{headings}\Default{true}
+    If true a heading for each exercise type is inserted.
+  \keyval{headings-template}{template}\Default{default}
+    The heading template used when \keyis{headings}{true}.
+\end{options}
+
+The ones in the second group set conditions selecting which solutions are
+printed.  If you combine those conditions a solution is printed if it meets
+either of the conditions.
+\begin{options}
+  \keychoice{section}{\default{true},false,\meta{integer}}\Default{false}
+    If you set \keyis{section}{true} only solutions of exercises of the
+    current section are printed.  If you set \keyis{section}{4} only solutions
+    of exercises in a section with number~$4$ are printed.
+  \keychoice{chapter}{\default{true},false,\meta{integer}}\Default{false}
+    If you set \keyis{chapter}{true} only solutions of exercises of the
+    current chapter are printed.  If you set \keyis{chapter}{4} only solutions
+    of exercises in a chapter with number~$4$ are printed.
+  \keychoice{collection}{false,\meta{collection name}}\Default{false}
+    If used only solutions of exercises belonging to collection
+    \meta{collection name} are printed.
+\end{options}
+
+All options can also be set via \cs{xsimsetup} using the module
+\module{print-solutions}.
+
+\begin{example}
+  \printsolutions[section=5,headings-template=per-section]
+\end{example}
 
 \section{Grading Tables}\label{sec:grading-tables}
 When you create exercises it may not only be desirable to be able to add
@@ -1062,9 +1092,6 @@ resolve your problems.
 \begin{sourcecode}
   % preamble:
   % \usepackage{etoolbox}
-  % \DeclareExerciseHeadingTemplate{per-section}{%
-  %   \section*{\XSIMmixedcase{\ExerciseType s} of Section~\ExerciseSection}%
-  % }
   % \newcounter{sections}
 
   % document:

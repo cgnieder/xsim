@@ -96,6 +96,8 @@
     IfInsideSolutionT ,
     IfInsideSolutionTF ,
     printcollection ,
+    printexercise ,
+    printsolution ,
     printsolutions ,
     printsolutionstype ,
     SaveExerciseProperty ,

@@ -164,6 +164,26 @@
       { \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } }
   }
 
+\DeclareExerciseHeadingTemplate {per-section}
+  {
+    \section*
+      {
+        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+         to~ the~ \XSIMmixedcase { \ExerciseType s}~
+         of~ Section \nobreakspace \ExerciseSection
+      }
+  }
+
+\DeclareExerciseHeadingTemplate {per-chapter}
+  {
+    \section*
+      {
+        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+         to~ the~ \XSIMmixedcase { \ExerciseType s}~
+         of~ Chapter \nobreakspace \ExerciseChapter
+      }
+  }
+
 % ----------------------------------------------------------------------------
 
 \DeclareExerciseTableTemplate {default*}
