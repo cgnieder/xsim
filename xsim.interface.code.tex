@@ -334,11 +334,11 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \printsolution {mm}
-  { \xsim_insert:nnnn {#1} {#2} {} {solution} }
+\NewDocumentCommand \printsolution {O{}mm}
+  { \xsim_insert:nnnn {#2} {#3} {#1} {solution} }
 
-\NewDocumentCommand \printexercise {mm}
-  { \xsim_insert:nxnn {#1} {#2} {} {exercise} }
+\NewDocumentCommand \printexercise {O{}mm}
+  { \xsim_insert:nnnn {#2} {#3} {#1} {exercise} }
   
 % ----------------------------------------------------------------------------
   

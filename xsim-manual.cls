@@ -135,8 +135,18 @@
     whileboolexpr
   } ,
   pre-output = { \let\marginpar\marginnote } ,
-  index-setup = { othercode = \footnotesize , level = \section , noclearpage } ,
+  add-listings-options = {
+    numberstyle = \tiny\noncopy
+  } ,
+  index-setup = { level = \section , noclearpage } ,
   makeindex-setup = { columns = 2 , columnsep = 1em }
+}
+
+\RequirePackage{accsupp}
+\newcommand*\noncopy[1]{%
+  \BeginAccSupp{method=escape,ActualText={}}%
+    #1%
+  \EndAccSupp{}%
 }
 
 \expandafter\def\csname libertine@figurestyle\endcsname{LF}
@@ -303,8 +313,7 @@
   short = collection ,
   long  = A \emph{collection} bundles a number of exercises of one type or all
     types of exercises within certain barriers in the document.  Those
-    exercise collections can be printed at any place in the document
-    \emph{after} the collection is complete.
+    exercise collections can be printed at any place in the document.
 }
 
 \DeclareAcronym{tmpl}{

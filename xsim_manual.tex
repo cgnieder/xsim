@@ -1,7 +1,7 @@
-% arara: pdflatex
-% arara: pdflatex
-% arara: pdflatex
-% !arara: pdflatex
+% arara: pdflatex: { action: nonstopmode }
+% arara: pdflatex: { action: nonstopmode }
+% !arara: pdflatex: { action: nonstopmode }
+% !arara: pdflatex: { action: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -80,10 +80,26 @@ quite a while now was to have different types of points to exercises\ldots
 All of those aren't easy to add due to the way \pkg{exsheets} is implemented
 right now. As a consequence I wanted to re-implement \pkg{exsheets} for a long
 time.  This is what lead to \xsim.  Internally the package works completely
-different. It will be the official successor of \pkg{exsheets} which is now
-considered obsolete and will only receive bugfix releases any more.
+different.
 
-\section{Package Options}\label{sec:package-options}
+\begin{bewareofthedog}
+  \xsim\ will be the official successor of \pkg{exsheets} which is now
+  considered obsolete but will stay alive and will still receive bugfix
+  releases. However, new features will not be added to \pkg{exsheets} any
+  more.
+\end{bewareofthedog}
+
+\section{How to Read the Manual}\label{sec:how-read-manual}
+
+\subsection{Nomenclature}
+
+Throughout this manual certain terms are used.  This section explains their
+meaning in this manual.
+
+\acuseall
+\printacronyms[heading=none]
+
+\subsection{Package Options}\label{sec:package-options}
 \xsim\ has two package options:
 \begin{options}
   \opt{verbose}
@@ -108,16 +124,6 @@ or via the setup command:
     Set up \xsim's two package options and all other options described at
     other places in the manual.
 \end{commands}
-
-\section{How to Read the Manual}\label{sec:how-read-manual}
-
-\subsection{Nomenclature}
-
-Throughout this manual certain terms are used.  This section explains their
-meaning in this manual.
-
-\acuseall
-\printacronyms[heading=none]
 
 \subsection{Setting Options}
 Apart from the package options already described in
@@ -167,8 +173,8 @@ also means to additional commands exist:
 
 \section{Exercises and Solutions}
 
-\subsection{The Environments}
-
+The two predefined environments for exercises and solutions are the following
+ones:
 \begin{environments}
   \environment{exercise}[\oarg{\acsp*{prop}}]
     Input and typeset an exercise.  See section~\vref{sec:exercise-properties}
@@ -214,7 +220,8 @@ There is an completely analoguous option for the \env{exercise} environment:
   \keybool{print}\Module{exercise}\Default{true}
     Set if exercises are printed or or not.
 \end{options}
-See also section~\vref{sec:using-printing}.
+More details on those two environments can be found in
+section~\vref{sec:using-printing}.
 
 \section{How the Exercise Environments Work}
 Both enviroments write the contents of their bodies verbatim to external files
@@ -492,7 +499,6 @@ this means that these options are available:
 \end{options}
 
 \section{Using and Printing an Exercise}\label{sec:using-printing}
-
 \subsection{What the Environments do}
 
 When an exercise is started with \environ{exercise} (or other environments
@@ -516,7 +522,7 @@ depending on different settings:
     around the environment body.
 \end{itemize}
 
-\begin{example}[outside]
+\begin{example}
   \begin{exercise}[print=false]
     This exercise will not be printed but the exercise counter will be
     incremented nonetheless. Its solution will be printed in the list of
@@ -554,6 +560,10 @@ the environments' names are the module names for the options (here using the
     Determines if exercises of type \enquote{exercise} are printed.
   \keybool{use}\Module{exercise}\Default{true}
     Determines if exercises of type \enquote{exercise} are used.
+  \keyval{within}{counter}\Module{exercise}\Default
+    Adds the exercise counter to the reset list of the counter
+    \meta{counter}.  \emph{Beware that if the counter is a shared counter
+      this will affect \emph{all objects} using this counter!}
   \keyval{pre-hook}{code}\Module{exercise}\Default
     The code for the \emph{pre exercise hook} for exercises of the type
     \enquote{exercise}.
@@ -581,6 +591,18 @@ the environments' names are the module names for the options (here using the
     The code for the \emph{post solution hook} for solutions of the type
     \enquote{exercise}.
 \end{options}
+
+\subsection{(Re-)Inserting a Certain Exercise}
+If you know type and \property{id} of an exercise you can (re-)insert every
+existing exercise, \ie, every exercise whose external file exists.
+\begin{commands}
+  \command{printexercise}[\marg{type}\marg{id}]
+    Inserts the exercise of type \meta{type} with the \property{id}
+    \meta{id}.
+\end{commands}
+\begin{example}
+  \printexercise{exercise}{5}
+\end{example}
 
 \section{Collecting Exercises}\label{sec:collecting-exercises}
 
@@ -720,6 +742,9 @@ all solutions.
     Prints the solutions of all used exercises of all types.  The starred
     version only prints the solutions of all printed exercises of all types,
     ordered by type.
+  \command{printsolution}[\oarg{options}\marg{type}\marg{id}]
+    Prints the solution of the exercise of type \meta{type} with the
+    \property{id} \meta{id}.
 \end{commands}
 
 \begin{example}
@@ -752,11 +777,27 @@ either of the conditions.
     \meta{collection name} are printed.
 \end{options}
 
+\begin{bewareofthedog}
+  The selection per section or per chapter relies on the \emph{counter
+    numbers} of the sections or chapters, respectively.  This means if section
+  numbers are reset (\eg\ by \cs*{chapter} or \cs*{appendix}) and you have
+  exercises from \emph{different} sections with \emph{the same section number}
+  the solutions of \emph{all those exercises} will be printed.  This means you
+  only should use the \option{section} selection when section are the top
+  document level headings (apart from parts) and you have no exercises in the
+  appendix.  Similar considerations are valid for the \option{chapter}
+  selection.
+\end{bewareofthedog}
+
 All options can also be set via \cs{xsimsetup} using the module
 \module{print-solutions}.
 
 \begin{example}
-  \printsolutions[section=5,headings-template=per-section]
+  \printsolutions[section=4,headings-template=per-section]
+\end{example}
+
+\begin{example}
+  \printsolution{exercise}{5}
 \end{example}
 
 \section{Grading Tables}\label{sec:grading-tables}

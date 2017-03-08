@@ -294,12 +294,14 @@
               .bool_set:N = \exp_not:c {l__xsim_#1_exercise_use_bool} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / use
               .initial:n  = true ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / within .code:n =
+              \exp_not:N \@addtoreset { \xsim_get_parameter:nn {#1} {counter} } {####1}
           }
         \xsim_new_environment:nn {#1} {exercise}
         \xsim_new_environment:nn {#1} {solution}
       }
   }
-
+  
 % #1: type
 % #2: id
 \prg_new_conditional:Npnn \xsim_if_exercise_exists:nn #1#2 {T,F,TF}
