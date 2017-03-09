@@ -67,7 +67,9 @@
     ExercisePropertyIfSetT ,
     ExercisePropertyIfSetTF ,
     ExercisePropertySave ,
-    ExercisyType ,
+    ExerciseTableType ,
+    ExerciseTableCode ,
+    ExerciseType ,
     ForeachExerciseTag ,
     ForEachExerciseTranslation ,
     ForEachPrintedExerciseByType ,
@@ -127,11 +129,14 @@
   add-envs = { exercise , solution } ,
   add-silent-cmds = {
     @percentchar ,
+    bottomrule ,
     IfNoValueTF ,
     ifnumless ,
     lipsum ,
+    midrule ,
     Needspace ,
     NewDocumentEnvironment ,
+    toprule ,
     whileboolexpr
   } ,
   pre-output = { \let\marginpar\marginnote } ,
@@ -416,7 +421,7 @@
       {%
         \cnltxcode[breakable]%
         \cnltx@pre@source@hook
-        \lstinputlisting[style=cnltx] {\jobname.tmp}%
+        \lstinputlisting{\jobname.tmp}%
         \cnltx@after@source@hook
         \tcblower
         \cnltx@pre@example@hook
@@ -426,10 +431,26 @@
     \endcnltxcode
   }
 
+\renewrobustcmd*\inputsourcecode[2][]{%
+  \begingroup
+    \pgfqkeys{/cnltx}{#1}%
+    \XSIMexpandcode{%
+      \noexpand\lstset{
+        style=cnltx,%
+        \expandonce\cnltx@local@listings@options
+      }%
+    }%
+    \cnltxcode[breakable]%
+      \lstinputlisting{#2}%
+    \endcnltxcode
+  \endgroup
+}
+
 \RequirePackage{longtable,booktabs}
 
 \RequirePackage{lipsum}
 \RequirePackage{varioref}
+\RequirePackage{bookmark}
 
 \xsimsetup{
   path = exercises

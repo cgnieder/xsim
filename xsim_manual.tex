@@ -264,6 +264,21 @@ order to deal with this somehow \xsim\ offers the following option:
     document uses \keyis{path}{exercises}.
 \end{options}
 
+\begin{bewareofthedog}
+  \xsim\ writes a lot of stuff to the auxfile for re-using information on
+  subsequent compilations.  If you add exercises, change properties \etc\ it
+  might happen that wrong information is staying in the auxfile and is wrongly
+  used by \xsim.  In such cases deleting the auxfile and doing a few fresh
+  compilations may resolve your problems.
+
+  Sometimes the existing of exercise or solution files from earlier
+  compilations may lead to wrong lists of exercises or solutions.  In such
+  cases it can be useful to delete all those files and doing a fresh
+  compilation.  It may be helpful to use a subfolder for those exernal files
+  which will make deleting them a little bit easier. (Don't forget to both
+  create the subfolder and set \option{path} accordingly then.)
+\end{bewareofthedog}
+
 \section{New Exercise Types}\label{sec:new-exercise-types}
 
 It is easy to define new exercise environments together with a corresponding
@@ -966,6 +981,9 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \expandable\command{ExerciseCollection}
     Can be used in certain templates to refer to the collection that is
     currently inserted.
+  \expandable\command{ExerciseTableType}[\marg{code}]
+    In table template definitions this macro either expands to the given
+    exercise type or -- if no type has been given -- to \meta{code}.
   \expandable\command{IfInsideSolution\TF}[\marg{true}\marg{false}]
     Tests if the template is used inside a solution environment or not.
   \command{ForEachPrintedExerciseByType}[\marg{code}]
@@ -1242,6 +1260,81 @@ See it in action:
   \end{exercise}
 \end{example}
 
+\subsubsection{The Headings Templates}
+\xsim\ defines four heading templates which only differ by which text they
+output:
+\begin{sourcecode}
+  \DeclareExerciseHeadingTemplate{default}
+    {\section*{\XSIMtranslate{default-heading}}}
+  \DeclareExerciseHeadingTemplate{collection}
+    {\section*{\XSIMtranslate{collection-heading}}}
+  \DeclareExerciseHeadingTemplate{per-section}
+    {\section*{\XSIMtranslate{per-section-heading}}}
+  \DeclareExerciseHeadingTemplate{per-chapter}
+    {\section*{\XSIMtranslate{per-chapter-heading}}}
+\end{sourcecode}
+Section~\ref{sec:exerc-transl} shows how the translations are defined.
+
+\subsubsection{The \code{default} Table Template}
+This template is the one used for grading tables per default.  It has a
+vertical layout.
+
+\begin{sourcecode}
+  \DeclareExerciseTableTemplate{default}{%
+    \XSIMputright\ExerciseTableCode{%
+      \toprule
+      \XSIMifblankTF{\ExerciseType}
+        {}
+        {\XSIMmixedcase{\GetExerciseParameter{exercise-name}}}
+      &
+      \XSIMmixedcase{\XSIMtranslate{points}} &
+      \XSIMtranslate{reached} \\
+      \midrule
+    }%
+    \ForEachUsedExerciseByType{%
+      \XSIMifeqTF{#1}{\ExerciseTableType{#1}}
+        {%
+          \XSIMifblankTF{\ExerciseType}
+            {%
+              \XSIMputright\ExerciseTableCode{%
+                \XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name} }%
+              }%
+            }
+            {}%
+          \XSIMputright\ExerciseTableCode
+            { #3 & \XSIMifblankTF{#5}{0}{#5} & \\ }%
+        }
+        {}%
+    }
+    \XSIMputright\ExerciseTableCode{%
+      \midrule
+      \XSIMtranslate{total} &
+      \XSIMifblankTF{\ExerciseType}
+        { \TotalExerciseGoal{points}{}{} }
+        { \TotalExerciseTypeGoal{\ExerciseType}{points}{}{} } &
+      \\ \bottomrule
+    }%
+    \XSIMexpandcode{%
+      \noexpand\begin{tabular}{\XSIMifblankTF{\ExerciseType}{l}{c}cc}
+        \noexpand\ExerciseTableCode
+      \noexpand\end{tabular}%
+    }%
+  }
+\end{sourcecode}
+
+The part
+\begin{sourcecode}
+  \XSIMifblankTF{\ExerciseType}{ ... }{ ... }
+\end{sourcecode}
+repeatedly checks if an exercise type has been given for the table.  This
+makes it possible to design the table differently if it is for one exercise
+type only (the \code{true} case) or for all exercise types (the \code{false}
+case).  \cs*{ExerciseTableType}\marg{code} either expands to the given
+exercise type or to \meta{code}.
+
+\subsubsection{The \code{default*} Table Template}
+A grading table template.  It has a horizontal layout.
+
 \section{Exercise Translations}\label{sec:exerc-transl}
 
 \begin{commands}
@@ -1279,18 +1372,24 @@ predefined translations.
   \appto\translationtable{\texttt{#1} & #2 & \texttt{\detokenize{#3}} \\}
 }
 
-\begin{table}
-  \centering
-  \caption{Translation keywords predefined by \xsim.}
-  \label{tab:translation-keys}
-  \begin{tabular}{lll}
+\begin{longtable}{llp{.55\linewidth}}
+    \caption{Translation keywords predefined by \xsim.}
+    \label{tab:translation-keys} \\
     \toprule
     \bfseries keyword & \bfseries language & \bfseries translation \\
     \midrule
-    \translationtable
+  \endfirsthead
+    \toprule
+    \bfseries keyword & \bfseries language & \bfseries translation \\
+    \midrule
+  \endhead
     \bottomrule
-  \end{tabular}
-\end{table}
+  \endlastfoot
+    \midrule
+    & & \hfill\emph{continues} \\
+  \endfoot
+    \translationtable
+\end{longtable}
 
 \section{Other Commands}
 
@@ -1387,7 +1486,8 @@ commands (which of course are also available in \xsim, too):
     is optional you should check if the optional argument is given and used
     the starred version if the test is positive.  This is demonstrated in an
     example below using \pkg{xparse}'s \cs{NewDocumentEnvironment} but the
-    same is true for environments defined with \cs*{newenvironment}.
+    same is true for environments defined with \cs*{newenvironment}.  In other
+    cases the starred version is not needed.
   \command{XSIMfilewritestop}
     Stop writing to the file.  This should be the \emph{first} command in the
     \emph{end} definition of an environment.

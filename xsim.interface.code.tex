@@ -45,6 +45,9 @@
   { \xsim_declare_exercise_type:nn {#1} {#2} }
 \@onlypreamble \DeclareExerciseType
 
+\DeclareExpandableDocumentCommand \numberofusedexercises {}
+  { \int_use:N \g_xsim_max_id_int }
+
 % ----------------------------------------------------------------------------
 
 \DeclareExpandableDocumentCommand \IfInsideSolutionTF {+m+m}
@@ -215,7 +218,7 @@
 
 \NewDocumentCommand \TotalExerciseGoal {mmm}
   { \xsim_print_total_goal_sum:nnn {#1} {#2} {#3} }
-
+  
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseTagging {m}

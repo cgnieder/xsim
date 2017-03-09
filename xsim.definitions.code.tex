@@ -136,39 +136,16 @@
 \DeclareExerciseHeadingTemplate {none} {}
 
 \DeclareExerciseHeadingTemplate {default}
-  {
-    \section*
-      {
-        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
-         to~ the~ \XSIMmixedcase { \ExerciseType s}
-      }
-  }
+  { \section* { \XSIMtranslate {default-heading} } }
 
 \DeclareExerciseHeadingTemplate {collection}
-  {
-    \section*
-      { \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } }
-  }
+  { \section* { \XSIMtranslate {collection-heading} } }
 
 \DeclareExerciseHeadingTemplate {per-section}
-  {
-    \section*
-      {
-        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
-         to~ the~ \XSIMmixedcase { \ExerciseType s}~
-         of~ Section \nobreakspace \ExerciseSection
-      }
-  }
-
+  { \section* { \XSIMtranslate {per-section-heading} } }
+  
 \DeclareExerciseHeadingTemplate {per-chapter}
-  {
-    \section*
-      {
-        \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
-         to~ the~ \XSIMmixedcase { \ExerciseType s}~
-         of~ Chapter \nobreakspace \ExerciseChapter
-      }
-  }
+  { \section* { \XSIMtranslate {per-chapter-heading} } }
 
 % ----------------------------------------------------------------------------
 
@@ -200,7 +177,10 @@
           {}
       }
     \XSIMputright \ExerciseTableCode
-      { Total \\ \midrule \XSIMmixedcase { \XSIMtranslate {point} }s & }
+      {
+        \XSIMtranslate {total} \\
+        \midrule \XSIMmixedcase { \XSIMtranslate {points} } &
+      }
     \ForEachUsedExerciseByType
       {
         \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
@@ -213,7 +193,7 @@
           { \TotalExerciseGoal {points} {} {} }
           { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} }
         \\ \midrule
-        \XSIMmixedcase { \XSIMtranslate {reached} } &
+        \XSIMtranslate {reached} &
       }
     \ForEachUsedExerciseByType
       {
@@ -224,7 +204,7 @@
     \XSIMputright \ExerciseTableCode { \\ \bottomrule }
     \def\numberofcolumns{
       \XSIMifblankTF {\ExerciseType}
-        {\g_xsim_max_id_int}
+        {\numberofusedexercises}
         {\csname numberof \ExerciseType s\endcsname}
       }
     \XSIMifeqF{\numberofcolumns}{0}
@@ -244,8 +224,8 @@
           {}
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
-        \XSIMmixedcase { \XSIMtranslate {point} } s &
-        \XSIMmixedcase { \XSIMtranslate {reached} } \\
+        \XSIMmixedcase { \XSIMtranslate {points} } &
+        \XSIMtranslate {reached} \\
         \midrule
       }
     \ForEachUsedExerciseByType
@@ -269,7 +249,7 @@
     \XSIMputright \ExerciseTableCode
       {
         \midrule
-        Total &
+        \XSIMtranslate {total} &
         \XSIMifblankTF {\ExerciseType}
           { \TotalExerciseGoal {points} {} {} }
           { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} } &
@@ -332,6 +312,52 @@
   English  = reached ,
   French   = atteint ,
   German   = erreicht
+}
+
+\DeclareExerciseTranslations {total} {
+  Fallback = total ,
+  English  = total ,
+  French   = totalement ,
+  German   = insgesamt
+}
+
+\DeclareExerciseTranslations {default-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+             to~ the~ \XSIMmixedcase { \ExerciseType s} ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+             to~ the~ \XSIMmixedcase { \ExerciseType s} ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {solution-name} en }~
+             zu~ den~ \XSIMmixedcase { \ExerciseType en}
+}
+
+\DeclareExerciseTranslations {collection-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {exercise-name} en }
+}
+
+\DeclareExerciseTranslations {per-section-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+             to~ the~ \XSIMmixedcase { \ExerciseType s}~ of~ Section
+             \nobreakspace \ExerciseSection ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+             to~ the~ \XSIMmixedcase { \ExerciseType s}~ of~ Section
+             \nobreakspace \ExerciseSection ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {solution-name} en }~
+             zu~ den~ \XSIMmixedcase { \ExerciseType en}~ in~ Abschnitt
+             \nobreakspace \ExerciseSection
+}
+
+\DeclareExerciseTranslations {per-chapter-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+             to~ the~ \XSIMmixedcase { \ExerciseType s}~ of~ Chapter
+             \nobreakspace \ExerciseChapter ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {solution-name} s }~
+             to~ the~ \XSIMmixedcase { \ExerciseType s}~ of~ Chapter
+             \nobreakspace \ExerciseChapter ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {solution-name} en }~
+             zu~ den~ \XSIMmixedcase { \ExerciseType en}~ in~ Kapitel
+             \nobreakspace \ExerciseChapter
 }
 
 % ----------------------------------------------------------------------------
