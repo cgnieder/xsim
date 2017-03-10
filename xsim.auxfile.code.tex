@@ -131,6 +131,10 @@
 \cs_new:Npn \xsim_list_show:n #1
   { \prop_show:c {g__xsim_list_#1_prop}  }
 
+\bool_new:N \l__xsim_empty_lists_bool
+\cs_new_protected:Npn \xsim_empty_lists:
+  { \bool_set_true:N \l__xsim_empty_lists_bool }
+
 % update list -- should be used inside \AtEndDocument:
 % #1: name
 \cs_new_protected:Npn \xsim_update_list:n #1
@@ -145,8 +149,11 @@
       { \seq_use:cn {g__xsim_list_recorded_#1_seq} {} }
     \str_if_eq:NNF \l__xsim_tmpa_str \l__xsim_tmpb_str
       { \xsim_rerun: }
-    \xsim_add_cs_to_aux:nn {#1}
-      { { \seq_use:cn {g__xsim_list_#1_seq} {|} } }
+    \bool_if:NF \l__xsim_empty_lists_bool
+      {
+        \xsim_add_cs_to_aux:nn {#1}
+          { { \seq_use:cn {g__xsim_list_#1_seq} {|} } }
+      }
   }
 
 % loop over list:

@@ -71,7 +71,7 @@
 
 % #1: true|false (fixed parameter)
 % #2: true|false (mandatory parameter)
-% #2: parameter name
+% #3: parameter name
 \cs_new_protected:Npn \xsim_declare_parameter:nnn #1#2#3
   {
     \xsim_verbose:n { Declaring~ parameter~ `#3'. }
@@ -185,15 +185,6 @@
       { \prg_return_false: }
   }
 
-\xsim_declare_parameter:nnn {true}  {true}  {exercise-env}
-\xsim_declare_parameter:nnn {true}  {true}  {solution-env}
-\xsim_declare_parameter:nnn {false} {true}  {exercise-name}
-\xsim_declare_parameter:nnn {false} {true}  {solution-name}
-\xsim_declare_parameter:nnn {false} {true}  {exercise-template}
-\xsim_declare_parameter:nnn {false} {true}  {solution-template}
-\xsim_declare_parameter:nnn {false} {false} {counter}
-\xsim_declare_parameter:nnn {true}  {false} {number}
-
 % ----------------------------------------------------------------------------
 % inside the argument `#1' refers to the type
 \cs_new_protected:Npn \xsim_foreach_exercise_type:n #1
@@ -295,7 +286,9 @@
             \xsim_get_parameter:nn {#1} {exercise-env} / use
               .initial:n  = true ,
             \xsim_get_parameter:nn {#1} {exercise-env} / within .code:n =
-              \exp_not:N \@addtoreset { \xsim_get_parameter:nn {#1} {counter} } {####1}
+              \exp_not:N \@addtoreset { \xsim_get_parameter:nn {#1} {counter} } {####1},
+            \xsim_get_parameter:nn {#1} {exercise-env} / the-counter .code:n =
+              \cs_set:cpn {the \xsim_get_parameter:nn {#1} {counter} } {####1}
           }
         \xsim_new_environment:nn {#1} {exercise}
         \xsim_new_environment:nn {#1} {solution}
@@ -324,7 +317,6 @@
           { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
         \xsim_set_properties:nxx {#1} { \int_use:N \g_xsim_id_int }
           {
-            % name = \xsim_get_parameter:nn {#1} {exercise-name} ,
             print = true ,
             use = true ,
             \exp_not:n {#2} ,
@@ -365,7 +357,7 @@
           }
           {
             \xsim_set_properties:nVn {#1} \g_xsim_exercise_id_tl
-              { use = false }
+              { use = false , print = false }
           }
         \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
       }
@@ -454,13 +446,15 @@
   
 \AtEndDocument
   {
-    \xsim_update_list:n {types}
+    \int_compare:nNnF { \g_xsim_max_id_int } = { \g_xsim_id_int }
+      { \xsim_empty_lists: }
     \xsim_add_cs_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
     \xsim_foreach_exercise_type:n
       {
         \xsim_add_cs_to_aux:nn {#1}
           { { \arabic { \xsim_get_parameter:nn {#1} {number} } } }
       }
+    \xsim_update_list:n {types}
   }
 
 % ----------------------------------------------------------------------------  

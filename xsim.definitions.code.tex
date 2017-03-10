@@ -29,16 +29,22 @@
 
 \xsim_load_modules:n {base,exercises,blanks,translations,interface}
 
-\RequirePackage{array,booktabs}
+% not exactly a user choice: the `exercises' template relies on them:
+\DeclareExerciseParameter*!{exercise-env}
+\DeclareExerciseParameter*!{solution-env}
+\DeclareExerciseParameter !{exercise-name}
+\DeclareExerciseParameter !{solution-name}
+\DeclareExerciseParameter !{exercise-template}
+\DeclareExerciseParameter !{solution-template}
+\DeclareExerciseParameter  {counter}
+\DeclareExerciseParameter* {number}
 
 % ----------------------------------------------------------------------------
 
+% not exactly a user choice, must be present at various places:
 \DeclareExerciseProperty* {id}
 \DeclareExerciseProperty* {ID}
 \DeclareExerciseProperty  {counter}
-\DeclareExerciseProperty  {subtitle}
-\DeclareExerciseProperty  {points}
-\DeclareExerciseProperty  {bonus-points}
 \DeclareExerciseProperty  {print}
 \DeclareExerciseProperty  {use}
 \ifdefined\chapter
@@ -47,6 +53,12 @@
 \fi
 \DeclareExerciseProperty  {section-value}
 \DeclareExerciseProperty  {section}
+
+% those are additional and wouldn't *need* to be present except for
+% pre-defined templates which make use of them:
+\DeclareExerciseProperty  {subtitle}
+\DeclareExerciseProperty  {points}
+\DeclareExerciseProperty  {bonus-points}
 \DeclareExerciseProperty  {page-value}
 \DeclareExerciseProperty  {page}
 
@@ -148,6 +160,8 @@
   { \section* { \XSIMtranslate {per-chapter-heading} } }
 
 % ----------------------------------------------------------------------------
+
+\RequirePackage{array,booktabs}
 
 \DeclareExerciseTableTemplate {default*}
   {

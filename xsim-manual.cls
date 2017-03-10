@@ -97,6 +97,8 @@
     IfInsideSolutionF ,
     IfInsideSolutionT ,
     IfInsideSolutionTF ,
+    numberofexercises ,
+    numberofusedexercises ,
     printcollection ,
     printexercise ,
     printsolution ,
@@ -136,6 +138,8 @@
     midrule ,
     Needspace ,
     NewDocumentEnvironment ,
+    numberofcolumns ,
+    numberofproblems ,
     toprule ,
     whileboolexpr
   } ,

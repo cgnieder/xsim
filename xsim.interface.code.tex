@@ -109,7 +109,22 @@
   { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 
 % ----------------------------------------------------------------------------
-  
+
+\NewDocumentCommand \DeclareExerciseParameter {st!m}
+   {
+     \IfBooleanTF {#1}
+       {
+         \IfBooleanTF {#2}
+           { \xsim_declare_parameter:nnn {true} {true} {#3} }
+           { \xsim_declare_parameter:nnn {true} {false} {#3} }
+       }
+       {
+         \IfBooleanTF {#2}
+           { \xsim_declare_parameter:nnn {false} {true} {#3} }
+           { \xsim_declare_parameter:nnn {false} {false} {#3} }
+       }
+   }
+
 \DeclareExpandableDocumentCommand \GetExerciseParameter {m}
   { \xsim_get_parameter:on {\ExerciseType} {#1} }
 

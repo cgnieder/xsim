@@ -57,6 +57,42 @@
           \xsim_set_seq_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
       }
     \xsim_declare_property:nn { \c_false_bool } {#1}
+    \__xsim_declare_printsolutions_condition:nn {#1}
+      { \__xsim_printsolutions_if_tagged:nnnnTF {#1}  }
+    \keys_define:nn {xsim/print-solutions}
+      {
+        #1         .choice: ,
+        #1/false   .code:n    =
+          \__xsim_printsolutions_condition:nn {#1} {false} ,
+        #1/true    .code:n    =
+          \__xsim_printsolutions_condition:nn {#1} {true} ,
+        #1/unknown .code:n    =
+          \keys_set:nn {xsim} { #1 = ##1 }
+          \__xsim_printsolutions_condition:nn {#1} {true} ,
+        #1         .initial:n = false
+      }
+  }
+
+% #1: tag type
+% #2: exercise type
+% #3: id
+% #4: print|use
+\prg_new_protected_conditional:Npnn
+  \__xsim_printsolutions_if_tagged:nnnn #1#2#3#4 {T,F,TF}
+  {
+    \xsim_if_in_list:nnTF {#4} {#2-#3=={true}}
+      {
+        \__xsim_printsolutions_if_condition:nTF {#1}
+          {
+            \__xsim_printsolutions_condition_true:
+            % TODO: doesn't return anything
+            \xsim_if_tagged:nnnTF {#2} {#3} {#1}
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
   }
 
 % #1: exercise type
@@ -80,7 +116,7 @@
           {
             \seq_map_inline:Nn \l__xsim_tmpa_seq
               {
-                \seq_if_in:cnTF {l__xsim_chosen_tags_#3_seq} {##1}
+                \seq_if_in:cnT {l__xsim_chosen_tags_#3_seq} {##1}
                   {
                     \bool_set_true:c {l____xsim_tagged_#3_bool}
                     \seq_map_break:
