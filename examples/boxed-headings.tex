@@ -1,0 +1,32 @@
+\documentclass{article}
+
+\usepackage{tcolorbox}
+\usepackage{xsim}    
+\usepackage{needspace}
+
+\DeclareExerciseEnvironmentTemplate{custom}
+  {%
+    \Needspace*{5\baselineskip}
+    \begin{tcolorbox}
+      \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}.}%
+      \IfExercisePropertySetT{subtitle}
+        { \textit{\GetExerciseProperty{subtitle}}}%
+    \end{tcolorbox}
+    \noindent
+  }
+  {\vspace{\baselineskip}}
+\SetExerciseParameters{exercise}{
+  exercise-template = custom
+}
+
+\usepackage{lipsum}
+
+\begin{document}
+
+\begin{exercise}[subtitle=Foo bar baz]
+  \lipsum[1]
+\end{exercise}
+
+\lipsum[2]
+
+\end{document}

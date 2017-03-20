@@ -1,0 +1,52 @@
+\documentclass{article}
+\usepackage{xsim}
+
+\DeclareExerciseGoal{A}
+\DeclareExerciseGoal{C}
+\DeclareExerciseGoal{E}
+
+\newcommand*\printA{\TotalExerciseGoal{A}{~A~point}{~A~points}}
+\newcommand*\printC{\TotalExerciseGoal{C}{~C~point}{~C~points}}
+\newcommand*\printE{\TotalExerciseGoal{E}{~E~point}{~E~points}}
+
+\usepackage{needspace}
+\DeclareExerciseEnvironmentTemplate{custom}
+  {%
+    \par\vspace{\baselineskip}
+    \Needspace*{2\baselineskip}
+    \noindent
+    \textbf{\GetExerciseProperty{counter}}%
+    \IfExercisePropertySetT{subtitle}
+      { \textit{\GetExerciseProperty{subtitle}}} %
+    \IfInsideSolutionF{%
+      \marginpar{%
+        (\IfExercisePropertySetTF{E}{\GetExerciseProperty{E}}{0}/%
+         \IfExercisePropertySetTF{C}{\GetExerciseProperty{C}}{0}/%
+         \IfExercisePropertySetTF{A}{\GetExerciseProperty{A}}{0})%
+      }%
+    }%
+  }
+  {}
+\SetExerciseParameters{exercise}{
+  exercise-template = custom ,
+  solution-template = custom
+}
+\renewcommand*\theexercise{\arabic{exercise}.}
+
+\begin{document}
+
+Reachable: \printA, \printC, and \printE.
+
+\begin{exercise}[E=1]
+  Differentiate $y=3x^2+5x+3$.
+\end{exercise}
+
+\begin{exercise}[E=2,C=1]
+  Find the equation of the tangent line to the function $y=x/2$ at $x=2$.
+\end{exercise}
+
+\begin{exercise}[C=1,A=2]
+  Prove that the derivative of a constant is zero.
+\end{exercise}
+
+\end{document}
