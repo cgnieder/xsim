@@ -1,0 +1,51 @@
+\documentclass{article}
+
+\usepackage{xsim}
+\DeclareExerciseTagging{difficulty}
+\xsimsetup{
+  difficulty={easy,hard}
+}
+
+\DeclareExerciseEnvironmentTemplate{custom}
+  {
+    \subsection*
+      {%
+        \XSIMmixedcase {\GetExerciseName}\nobreakspace
+        \GetExerciseProperty{counter}%
+        \IfExercisePropertySetT{difficulty}
+          { {\normalfont(\GetExerciseProperty{difficulty})}}%
+        \IfInsideSolutionF{%
+          \IfExercisePropertySetT{subtitle}
+            { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+        }%
+      }%
+    \IfExercisePropertySetT{points}
+      {%
+        \marginpar
+          {%
+            \IfInsideSolutionF{\rule{1.2cm}{1pt}\slash}%
+            \GetExerciseProperty{points}%
+            \IfExercisePropertySetT{bonus-points}
+              {\nobreakspace(+\GetExerciseProperty{bonus-points})}
+            \nobreakspace\XSIMtranslate{point-abbr}%
+          }%
+      }%
+  }
+  {}
+\SetExerciseParameters{exercise}{
+  exercise-template = custom
+}
+
+\begin{document}
+
+\begin{exercise}[difficulty=easy]
+  An easy question.
+\end{exercise}
+\begin{exercise}[difficulty=medium]
+  This one’s a bit harder.
+\end{exercise}
+\begin{exercise}[difficulty=hard]
+  Now let’s see if you can solve this one.
+\end{exercise}
+
+\end{document}
