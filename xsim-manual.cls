@@ -29,14 +29,18 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2017/03/02]
+\ProvidesClass{xsim-manual}[2017/03/19]
 
-\LoadClass[load-preamble+]{cnltx-doc}
+\LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{xsim}
 
 \setcnltx{
   package  = {xsim},
+  info     =
+    \textsc{e\textcolor{cnltx}{X}ercise \textcolor{cnltx}{S}heets
+    \textcolor{cnltx}{IM}proved} \\
+    the official successor of the \cnltxpackagenameformat{exsheets} package ,
   url      = https://github.com/cgnieder/xsim ,
   authors  = Clemens Niederberger ,
   email    = contact@mychemistry.eu ,
@@ -132,6 +136,7 @@
   add-silent-cmds = {
     @percentchar ,
     bottomrule ,
+    endtcolorbox ,
     IfNoValueTF ,
     ifnumless ,
     lipsum ,
@@ -140,6 +145,7 @@
     NewDocumentEnvironment ,
     numberofcolumns ,
     numberofproblems ,
+    tcolorbox ,
     toprule ,
     whileboolexpr
   } ,
@@ -167,6 +173,13 @@
     {\mbox{$\epsilon$-\TeX}}
     {e-TeX}%
 }
+
+\RequirePackage[
+  backend=biber,
+  style=cnltx,
+  sortlocale=en_US,
+  indexing=cite]{biblatex}
+\addbibresource{cnltx.bib}
 
 \RequirePackage[biblatex]{embrac}
 \ChangeEmph{[}[,.02em]{]}[.055em,-.08em]
@@ -377,8 +390,8 @@
     }%
     \XSIMgobblechars{2}%
     \XSIMifblankTF{#1}
-      {\XSIMfilewritestart{\jobname.tmp}}
-      {\XSIMfilewritestart*{\jobname.tmp}}%
+      {\XSIMfilewritestart*{\jobname.tmp}}
+      {\XSIMfilewritestart{\jobname.tmp}}%
   }
   {%
     \XSIMfilewritestop
@@ -402,8 +415,8 @@
     }%
     \XSIMgobblechars{2}%
     \XSIMifblankTF{#1}
-      {\XSIMfilewritestart{\jobname.tmp}}
-      {\XSIMfilewritestart*{\jobname.tmp}}%
+      {\XSIMfilewritestart*{\jobname.tmp}}
+      {\XSIMfilewritestart{\jobname.tmp}}%
   }
   {%
     \XSIMfilewritestop
@@ -457,6 +470,7 @@
 \RequirePackage{bookmark}
 
 \xsimsetup{
+  clear-aux ,
   path = exercises
 }
 

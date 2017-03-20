@@ -89,8 +89,8 @@
 
 % the following is inspired by the definition of the `filecontents'
 % environment:
-% #1: boolean - if true an active eol needs to be inserted before starting to
-%               write
+% #1: boolean - if true an active eol needs to be inserted before
+%               starting to write
 % #2: file name
 \cs_new_protected:Npn \xsim_file_write_start:nn #1#2
   {
@@ -187,8 +187,8 @@
 \NewDocumentCommand \XSIMfilewritestart {sm}
   {
     \IfBooleanTF {#1}
-      { \xsim_file_write_start:nn { \c_true_bool  } {#2} }
-      { \xsim_file_write_start:nn { \c_false_bool } {#2} }
+      { \xsim_file_write_start:nn { \c_false_bool  } {#2} }
+      { \xsim_file_write_start:nn { \c_true_bool } {#2} }
   }
 
 \NewDocumentCommand \XSIMfilewritestop {}

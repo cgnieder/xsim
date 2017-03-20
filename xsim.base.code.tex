@@ -90,6 +90,15 @@
 
 % ----------------------------------------------------------------------------
 
+\prg_new_conditional:Npnn \xsim_if_komascript: {T,F,TF}
+  {
+    \cs_if_exist:cTF {KOMAClassName}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
 \prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
   {
     \bool_if_exist:NTF \g_xsim_final_bool
@@ -116,6 +125,21 @@
   {
     \bool_if:NTF \g__xsim_rerun_bool
       { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_clear_aux: {p,T,F,TF}
+  {
+    \bool_if_exist:NTF \g_xsim_final_bool
+      {
+        \bool_if:NTF \g_xsim_final_bool
+          { \prg_return_false: }
+          {
+            \bool_if:NTF \g_xsim_clear_aux_bool
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+      }
       { \prg_return_false: }
   }
 

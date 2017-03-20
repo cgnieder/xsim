@@ -45,6 +45,13 @@
 \msg_new:nnn {xsim} {wrong-module-name}
   { The~ module~ file~ name~ is~ `#2'~ but~ it~ provides~ module~ `#1'. }
 
+\msg_new:nnn {xsim} {forbidden-module}
+  {
+    You've~ requested~ the~ xsim~ module~ `modules'~ \msg_line_context: .~
+  This~ module~ is~ a~ pseudo~ module~ which~ may~ not~ be~ loaded~ through~
+  the~ module~ loading~ mechansim.
+  }
+
 % ----------------------------------------------------------------------------
 
 \tl_const:Nn \c__xsim_module_extension_tl {code.tex}
@@ -59,7 +66,9 @@
 \cs_new_protected:Npn \xsim_load_module:n #1
   {
     \tl_set:Nx \l_tmpa_tl { \tl_trim_spaces:n {#1} }
-    \__xsim_load_module:V \l_tmpa_tl
+    \str_if_eq_x:nnTF { \l_tmpa_tl } {modules}
+      { \msg_error:nn {xsim} {forbidden-module} }
+      {  \__xsim_load_module:V \l_tmpa_tl }
   }
 
 \cs_new_protected:Npn \__xsim_load_module:n #1

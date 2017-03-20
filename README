@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/03/10 v0.1pre-9
+XSIM 2017/03/19 v0.1
 
   eXercise Sheets IMproved
 
@@ -49,8 +49,3 @@ The xsim package consists of the documentation files:
 If you have any ideas, questions, suggestions or bugs to report, please
 feel free to contact me.
 --------------------------------------------------------------------------
-
-v0.0 is in active development,is an unfinished package and not production
-ready! The code may change at any time. The first official release for
-production and testing will have v0.1. With v0.1 `xsim` will follow a proper
-versioning scheme.

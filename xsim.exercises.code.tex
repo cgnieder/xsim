@@ -443,11 +443,14 @@
           { \token_to_str:N \providecommand \token_to_str:N \numberof #1 s {} }
       }
   }
-  
+
 \AtEndDocument
   {
-    \int_compare:nNnF { \g_xsim_max_id_int } = { \g_xsim_id_int }
-      { \xsim_empty_lists: }
+    \xsim_if_clear_aux:T
+      {
+        \int_compare:nNnF { \g_xsim_max_id_int } = { \g_xsim_id_int }
+          { \xsim_empty_lists: }
+      }
     \xsim_add_cs_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
     \xsim_foreach_exercise_type:n
       {

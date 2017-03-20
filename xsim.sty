@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2017/03/10}
+\tl_const:Nn \c_xsim_date_tl                 {2017/03/19}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
 \tl_const:Nn \c_xsim_version_minor_number_tl {1}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {pre-9}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -57,11 +57,13 @@
   
 \bool_new:N \g_xsim_final_bool
 \bool_new:N \g_xsim_verbose_bool
+\bool_new:N \g_xsim_clear_aux_bool
 
 \keys_define:nn {xsim}
   {
     final .bool_gset:N = \g_xsim_final_bool ,
-    verbose .bool_gset:N = \g_xsim_verbose_bool
+    verbose .bool_gset:N = \g_xsim_verbose_bool ,
+    clear-aux .bool_gset:N = \g_xsim_clear_aux_bool
   }
 
 \DeclareOption {final}
@@ -69,6 +71,9 @@
 
 \DeclareOption {verbose}
   { \bool_gset_true:N \g_xsim_verbose_bool }
+
+\DeclareOption {clear-aux}
+  { \bool_gset_true:N \g_xsim_clear_aux_bool }
 
 \ProcessOptions \scan_stop:
 
@@ -107,3 +112,5 @@
 HISTORY:
 
 v0.0  2017/02/09 - start with coding the first ideas
+v0.1  2017/03/19 - first draft which actually seems to do everything as
+                   planned

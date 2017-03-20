@@ -1,6 +1,6 @@
 % arara: pdflatex: { action: nonstopmode }
 % arara: pdflatex: { action: nonstopmode }
-% !arara: pdflatex: { action: nonstopmode }
+% arara: pdflatex: { action: nonstopmode }
 % !arara: pdflatex: { action: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
@@ -40,7 +40,7 @@
   url = {http://tex.stackexchange.com/a/19769/}
 }
 @online{texsx:tagged/exsheets,
-  title = {`exsheets' questions} ,
+  title = {Questions tagged `exsheets'} ,
   author = {various} ,
   url = {http://tex.stackexchange.com/questions/tagged/exsheets} ,
   urldate = {2017-03-06}
@@ -55,10 +55,11 @@
 
 \xsim\ loads the packages \pkg{expl3}~\cite{bnd:l3kernel},
 \pkg{xparse}~\cite{bnd:l3packages}, \pkg{etoolbox}~\cite{pkg:etoolbox},
-\pkg{booktabs}~\cite{pkg:booktabs} and
+\pkg{array}~\cite{pkg:array} \pkg{booktabs}~\cite{pkg:booktabs} and
 \pkg{translations}~\cite{pkg:translations}.  All of these packages are present
 on a modern and up to date \TeX\ distribution such as \TeX~Live or MiK\TeX\ so
-no further action should be needed.
+no further action should be needed.  When you are using \xsim\ you should be
+using an up to date \TeX\ distribution, anyway.
 
 \section{Motivation and Background}
 
@@ -100,7 +101,7 @@ meaning in this manual.
 \printacronyms[heading=none]
 
 \subsection{Package Options}\label{sec:package-options}
-\xsim\ has two package options:
+\xsim\ has these package options:
 \begin{options}
   \opt{verbose}
     Writes extensive information about what \xsim\ is doing into the log
@@ -108,6 +109,15 @@ meaning in this manual.
   \opt{final}
     If used the exercise and solution environments will not rewrite the
     environment body files.
+  \opt{clear-aux}
+    If used every time the  total number of exercise changes \xsim\ will write
+    \emph{less} information to the auxfile on the next run and only if the
+    number of exercises stays stable between compilations the needed
+    information will be written to the auxfile. \emph{This needs more
+      compilations until everything stabilizes but should reduce the
+      probability of possibly faulty exercises after changes to the document.}
+    The \option{final} option automatically disables this option.  See also
+    sections~\vref{sec:how-exerc-envir} and~\vref{sec:resolve-getting}.
 \end{options}
 
 Those options are used the usual way as package option
@@ -151,7 +161,7 @@ names.  This indicates that the command is expandable, \ie, it is usable in an
 description.  All other commands are engine protected, \ie, in the sense of
 \eTeX's \cs*{protected}.
 
-Some command name descriptions end with \cs*{\TF}.
+Some command name descriptions end with \code*{\TF}.
 \begin{commands}
   \command*{SomeCommand\TF}[\meta{arguments}\marg{true}\marg{false}]
     A command with maybe some arguments and ending with the two arguments
@@ -160,7 +170,7 @@ Some command name descriptions end with \cs*{\TF}.
 This means two things: the command is a conditional which tests something and
 depending on the outcome of the test leaves either the \meta{true} argument
 (\code{T}) or the \meta{false} argument (\code{F}) in the input stream.  It
-also means to additional commands exist:
+also means two additional commands exist:
 \begin{commands}
   \command*{SomeCommandT}[\meta{arguments}\marg{true}]
     The same as \cs*{SomeCommandTF} but only with the \meta{true} argument and
@@ -223,7 +233,7 @@ There is an completely analoguous option for the \env{exercise} environment:
 More details on those two environments can be found in
 section~\vref{sec:using-printing}.
 
-\section{How the Exercise Environments Work}
+\section{How the Exercise Environments Work}\label{sec:how-exerc-envir}
 Both enviroments write the contents of their bodies verbatim to external files
 following a certain naming structure:
 \begin{itemize}
@@ -271,12 +281,14 @@ order to deal with this somehow \xsim\ offers the following option:
   used by \xsim.  In such cases deleting the auxfile and doing a few fresh
   compilations may resolve your problems.
 
-  Sometimes the existing of exercise or solution files from earlier
-  compilations may lead to wrong lists of exercises or solutions.  In such
+  Sometimes the \emph{existence of exercise or solution files from earlier
+    compilations} may lead to wrong lists of exercises or solutions.  In such
   cases it can be useful to delete all those files and doing a fresh
   compilation.  It may be helpful to use a subfolder for those exernal files
   which will make deleting them a little bit easier. (Don't forget to both
   create the subfolder and set \option{path} accordingly then.)
+
+  Using the \option{clear-aux} option might help to reduce erroneous exercises.
 \end{bewareofthedog}
 
 \section{New Exercise Types}\label{sec:new-exercise-types}
@@ -621,7 +633,7 @@ the environments' names are the module names for the options (here using the
     \enquote{exercise}.
 \end{options}
 
-\subsection{(Re-)Inserting a Certain Exercise}
+\subsection{(Re-) Inserting a Certain Exercise}
 If you know type and \property{id} of an exercise you can (re-)insert every
 existing exercise, \ie, every exercise whose external file exists.
 \begin{commands}
@@ -1090,6 +1102,9 @@ Environment templates are used by the exercise and solution environments.
 Those are the templates set with the parameters \parameter{exercise-template}
 and \parameter{solution-template}.
 
+The predefined template is called \enquote{\code{default}}, see
+section~\vref{sec:exercise-templ-default}.
+
 \subsubsection{Heading Templates}\label{sec:heading-templates}
 \begin{commands}
   \command{DeclareExerciseHeadingTemplate}[\marg{name}\marg{code}]
@@ -1100,6 +1115,10 @@ Heading templates are used by \cs{printsolutions}, \cs{printsolutionstype} and
 \option{headings-template} of the modules \module{print-solutions} and
 \module{print-collection}.
 
+The predefined templates are \enquote{\code{default}},
+\enquote{\code{collection}}, \enquote{\code{per-section}} and
+\enquote{\code{per-chapter}} see section~\vref{sec:headings-templates}.
+
 \subsubsection{Grading Table Templates}\label{sec:grad-table-templ}
 \begin{commands}
   \command{DeclareExerciseTableTemplate}[\marg{name}\marg{code}]
@@ -1108,9 +1127,13 @@ Heading templates are used by \cs{printsolutions}, \cs{printsolutionstype} and
 Table templates are used by \cs{gradingtable}.  Those are the templates set
 with the option \option{template} of module \module{grading-table}
 
+The predefined templates are \enquote{\code{default}} and
+\enquote{\code{default}}, see sections~\vref{sec:table-templ-default}
+and~\vref{sec:table-templ-default*}.
+
 \subsection{Examples}\label{sec:template-examples}
 
-\subsubsection{The \code{default} Exercise Template}
+\subsubsection{The \code{default} Exercise Template}\label{sec:exercise-templ-default}
 
 Below the definition of the \code{default} exercise template provided by
 \xsim\ is shown:
@@ -1203,7 +1226,8 @@ See it in action:
 
 The following example shows how you could mimick \pkg*{exsheets}' \code{runin}
 template.  The outcome isn't exactly the same since \pkg{exsheets} doesn't use
-\cs*{marginpar} but the result should look very similar.
+\cs*{marginpar} but the result should look very similar.  A safer definition
+would use a real sectioning command for the title.
 
 \begin{sourcecode}
   \usepackage{needspace}
@@ -1277,7 +1301,7 @@ See it in action:
   \end{exercise}
 \end{example}
 
-\subsubsection{The Headings Templates}
+\subsubsection{The Headings Templates}\label{sec:headings-templates}
 \xsim\ defines four heading templates which only differ by which text they
 output:
 \begin{sourcecode}
@@ -1292,7 +1316,7 @@ output:
 \end{sourcecode}
 Section~\ref{sec:exerc-transl} shows how the translations are defined.
 
-\subsubsection{The \code{default} Table Template}
+\subsubsection{The \code{default} Table Template}\label{sec:table-templ-default}
 This template is the one used for grading tables per default.  It has a
 vertical layout.
 
@@ -1349,7 +1373,7 @@ type only (the \code{true} case) or for all exercise types (the \code{false}
 case).  \cs*{ExerciseTableType}\marg{code} either expands to the given
 exercise type or to \meta{code}.
 
-\subsubsection{The \code{default*} Table Template}
+\subsubsection{The \code{default*} Table Template}\label{sec:table-templ-default*}
 The second of the predefined grading table templates.  It has a horizontal
 layout.
 \begin{bewareofthedog}
@@ -1513,19 +1537,21 @@ So just check the logfile regularly (which you should be doing anyway) and
 keep your eyes open.
 
 \subsection{\dots Resolve Getting Repeatedly Wrong Exercise Properties or
-  Wrong Exercise Lists?}
+  Wrong Exercise Lists?}\label{sec:resolve-getting}
 \xsim\ writes a lot of stuff to the auxfile for re-using information on
 subsequent compilations.  If you add exercises, change properties \etc\ it
 might happen that wrong information is staying in the auxfile and is wrongly
 used by \xsim.  In such cases deleting the auxfile and doing a few fresh
 compilations may resolve your problems.
 
-Sometimes the existing of exercise or solution files from earlier compilations
-may lead to wrong lists of exercises or solutions.  In such cases it can be
-useful to delete all those files and doing a fresh compilation.  It may be
-helpful to use a subfolder for those exernal files which will make deleting
-them a little bit easier. (Don't forget to both create the subfolder and set
-\option{path} accordingly then.)
+Sometimes the \emph{existence of exercise or solution files from earlier
+  compilations} may lead to wrong lists of exercises or solutions.  In such
+cases it can be useful to delete all those files and doing a fresh
+compilation.  It may be helpful to use a subfolder for those exernal files
+which will make deleting them a little bit easier. (Don't forget to both
+create the subfolder and set \option{path} accordingly then.)
+
+Using the \option{clear-aux} option might help to reduce erroneous exercises.
 
 \subsection{\dots Resolve Strange Errors After Updating?}
 \xsim\ writes a lot of stuff to the auxfile.  An update may well change how
@@ -1575,11 +1601,14 @@ commands (which of course are also available in \xsim, too):
     Start writing to the file named \meta{file name}.  This should be the
     \emph{last} command in the \emph{begin} definition of an environment.  If
     is is used in an environment with arguments where the \emph{last} argument
-    is optional you should check if the optional argument is given and used
-    the starred version if the test is positive.  This is demonstrated in an
-    example below using \pkg{xparse}'s \cs{NewDocumentEnvironment} but the
-    same is true for environments defined with \cs*{newenvironment}.  In other
-    cases the starred version is not needed.
+    is optional you should check if the optional argument is given and use
+    the starred version if the test is negative.  This is demonstrated in an
+    example below using \pkg{xparse}'s \cs{NewDocumentEnvironment}.  \emph{If
+      you want an environment with only an optional argument you \emph{should}
+      use \pkg{xparse}'s commands to define it.  Due to the way how
+      \cs*{newenvironment} scans for optional arguments you'll otherwise may
+      end up with leading spaces gobbled from the first line in your
+      environment.}
   \command{XSIMfilewritestop}
     Stop writing to the file.  This should be the \emph{first} command in the
     \emph{end} definition of an environment.
@@ -1608,8 +1637,8 @@ An example of how to use those commands:
       \XSIMsetfilebegin{\@percentchar\space file `\jobname.tmp'}%
       \XSIMsetfileend{\@percentchar\space bye bye}%
       \IfNoValueTF{#1}
-        {\XSIMfilewritestart{\jobname.tmp}}
-        {\XSIMfilewritestart*{\jobname.tmp}}%
+        {\XSIMfilewritestart*{\jobname.tmp}}
+        {\XSIMfilewritestart{\jobname.tmp}}%
     }
     {%
       \XSIMfilewritestop
@@ -1640,6 +1669,8 @@ three lines (if the file itself was called \code{test.tex}):
 
 \section{All Solution Examples}
 \printsolutions
+
+\printbibliography
 
 \end{document}
 
