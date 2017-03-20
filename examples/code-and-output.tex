@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{xsimverb,listings,xcolor}
+
+\lstdefinestyle{mystyle}{
+  language = [AlLaTeX]TeX ,
+  basicstyle = \ttfamily ,
+  columns = fullflexible ,
+  commentstyle = \color{gray!70} ,
+  keywordstyle = \color{red!70!black}
+}
+
+\makeatletter
+\NewDocumentEnvironment{example}{o}
+  {%
+    \XSIMgobblechars{2}%
+    \XSIMsetfilebegin{\@percentchar\space file `\jobname.tmp'}%
+    \XSIMsetfileend{\@percentchar\space bye bye}%
+    \IfNoValueTF{#1}
+      {\XSIMfilewritestart*{\jobname.tmp}}
+      {\XSIMfilewritestart{\jobname.tmp}}%
+  }
+  {%
+    \XSIMfilewritestop
+    \lstinputlisting[style=mystyle]{\jobname.tmp}%
+    \input{\jobname.tmp}
+  }
+
+\NewDocumentEnvironment{code}{o}
+  {%
+    \XSIMgobblechars{2}%
+    \IfNoValueTF{#1}
+      {\XSIMfilewritestart*{\jobname.tmp}}
+      {\XSIMfilewritestart{\jobname.tmp}}%
+  }
+  {%
+    \XSIMfilewritestop
+    \lstinputlisting[style=mystyle]{\jobname.tmp}%
+  }
+\makeatother
+
+\begin{document}
+
+\begin{example}
+  bla bla \LaTeX
+\end{example}
+
+\bigskip
+
+\begin{code}
+  blubber \LaTeX
+\end{code}
+
+\end{document}
