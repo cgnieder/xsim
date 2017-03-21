@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/03/19 v0.1
+XSIM 2017/03/21 v0.2
 
   eXercise Sheets IMproved
 
@@ -45,6 +45,16 @@ The xsim package consists of the documentation files:
    README
    xsim_manual.tex, xsim_manual.pdf
    xsim-manual.cls
+--------------------------------------------------------------------------
+The xsim package consists of the example files:
+   boxed-headings.tex, boxed-headings.pdf
+   code-and-output.tex, code-and-output.pdf
+   collections.tex, collections.pdf
+   different-point-types.tex, different-point-types.pdf
+   difficulties.tex, difficulties.pdf
+   floating.tex, floating.pdf
+   listings.tex, listings.pdf
+   various.tex, various.pdf
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please
 feel free to contact me.

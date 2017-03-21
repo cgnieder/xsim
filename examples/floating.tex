@@ -1,0 +1,52 @@
+% floating exercises:
+\documentclass{article}
+\usepackage{xsim,newfloat,caption,lipsum}
+
+\DeclareFloatingEnvironment[
+  fileext=loe,
+  listname={List of Exercises},
+  name=Exercise,
+  placement=htp,
+]{ex}
+
+\SetExerciseParameters{exercise}{
+  exercise-template = float
+}
+
+\DeclareExerciseEnvironmentTemplate{float}
+  {%
+    \ex
+    \captionsetup{labelformat=empty,singlelinecheck=false,listformat=empty}
+    \IfExercisePropertySetTF{subtitle}{%
+      \XSIMexpandcode{%
+        \noexpand\caption{%
+          \noexpand\textbf{%
+            \XSIMmixedcase{\GetExerciseName}\nobreakspace
+            \GetExerciseProperty{counter}%
+          }: \GetExerciseProperty{subtitle}%
+        }%
+      }%
+    }{%
+      \caption{%
+        \textbf{%
+          \XSIMmixedcase{\GetExerciseName}\nobreakspace
+          \GetExerciseProperty{counter}%
+        }%
+      }%
+    }%
+  }
+  {\endex}
+
+\begin{document}
+
+\listofexs
+
+\begin{exercise}
+  \lipsum[4]
+\end{exercise}
+
+\begin{exercise}[subtitle=Let's have a look]
+  \lipsum[4]
+\end{exercise}
+
+\end{document}

@@ -1,7 +1,8 @@
 % arara: pdflatex: { action: nonstopmode }
+% arara: biber
 % arara: pdflatex: { action: nonstopmode }
 % arara: pdflatex: { action: nonstopmode }
-% !arara: pdflatex: { action: nonstopmode }
+% arara: pdflatex: { action: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -398,8 +399,14 @@ Exercise like the \env{exercise} environment and possibly others defined with
     Holds the reachable bonus-points of an exercise.
   \propbool{print}
     Holds the print boolean of an exercise.
+  \propbool{print\bang}
+    Holds a special print boolean of an exercise, see
+    page~\pageref{property:print!}.
   \propbool{use}
     Holds the usage boolean of an exercise.
+  \propbool{use\bang}
+    Holds a special usage boolean of an exercise, see
+    page~\pageref{property:print!}.
   \propval{tags}{csv list of tags}
     Holds the list of tags the exercise should be associated with.
   \propval{topics}{csv list of topics}
@@ -420,11 +427,21 @@ optional argument of the exercise environment.
 
 \xsim\ offers the possibility to declare additional exercise properties:
 \begin{commands}
-  \command{DeclareExerciseProperty}[\sarg\marg{property}]
-    Declares the property \meta{property}.  If used with the optional star a
-    unique property is defined which means that each exercise must have a
-    property value distinct from all other exercises (all means all --
-    \emph{independent from the exercise type}).
+  \command{DeclareExerciseProperty}[\sarg\parg\narg\marg{property}]
+    Declares the property \meta{property}.
+    
+    If used with the optional star a unique property is defined which means
+    that each exercise must have a property value distinct from all other
+    exercises (all means all -- \emph{independent from the exercise type}).
+
+    If used with the optional \code{+} a boolean property is defined which
+    means that it only should get the values \code{true} or \code{false} and
+    if used without value it gets the value \code{true} instead of an empty
+    value.  If any other value is used the property is set to \code{false}.
+
+    If used with the optional \code{-} a property is defined which won't get
+    updated through subsequent compilation runs but is only set when the
+    exercise is used.
   \command{DeclareExercisePropertyAlias}[\marg{property 1}\marg{property 2}]
     Declares \meta{property 1} to be an alias of \meta{property 2}.  This
     means that each time \meta{property 2} is set \meta{property 1} will be
@@ -538,6 +555,18 @@ this means that these options are available:
     If set to true exercises with no topics will be printed even if tags have
     been chosen with the option \option{tags}.
 \end{options}
+
+It may happen that you choose certain tags for printing and want one or two
+exercises to be printed or used even if they don't match the tagging
+criteria.  For this reason two additional properties exist which can be set to
+an exercise:\label{property:print!}
+\begin{properties}
+  \propbool{print\bang}
+    If set to true the exercise will be printed (and thus used) regardless of
+    other conditions.
+  \propbool{use\bang}
+    If set to true the exercise will be used regardless of other conditions.
+\end{properties}
 
 \section{Using and Printing an Exercise}\label{sec:using-printing}
 \subsection{What the Environments do}
@@ -1521,7 +1550,9 @@ predefined translations.
 
 \section{How to\dots}
 This section serves as a kind of gallery showing solutions to common
-problems.  I expect this section to grow over the years.
+problems.  I expect this section to grow over the years.  Some examples
+especially regarding other layouts are also shown in example files added to
+this package.
 
 \subsection{\dots Know if \xsim\ Needs Another Compilation?}
 If \xsim\ wants you to recompile your document it writes the following to the

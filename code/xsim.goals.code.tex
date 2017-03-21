@@ -39,7 +39,11 @@
     \xsim_if_goal_exists:nF {#1}
       {
         \xsim_verbose:n { Declaring~ new~ goal~ `#1'. }
-        \xsim_declare_property:nn { \c_false_bool } {#1}
+        \xsim_declare_property:nnnn
+          { \c_false_bool }
+          { \c_false_bool }
+          { \c_false_bool }
+          {#1}
         \seq_put_right:Nn \l__xsim_goals_seq {#1}
         \fp_gzero_new:c {g__xsim_goal_#1_fp}
         \fp_if_exist:cF {g__xsim_total_goal_#1_fp}

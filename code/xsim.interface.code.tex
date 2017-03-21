@@ -61,11 +61,63 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \DeclareExerciseProperty {sm}
+\NewDocumentCommand \DeclareExerciseProperty {st+t-m}
   {
-    \IfBooleanTF {#1}
-      { \xsim_declare_property:nn { \c_true_bool } {#2} }
-      { \xsim_declare_property:nn { \c_false_bool } {#2} }
+    \IfBooleanTF {#2}
+      {
+        \IfBooleanTF {#3}
+          {
+            \xsim_declare_property:nnnn
+              { \c_false_bool }
+              { \c_true_bool }
+              { \c_true_bool }
+              {#4}
+          }
+          {
+            \xsim_declare_property:nnnn
+              { \c_false_bool }
+              { \c_true_bool }
+              { \c_false_bool }
+              {#4}
+          }
+      }
+      {
+        \IfBooleanTF {#1}
+          {
+            \IfBooleanTF {#3}
+              {
+                \xsim_declare_property:nnnn
+                  { \c_true_bool }
+                  { \c_false_bool }
+                  { \c_true_bool }
+                  {#4}
+              }
+              {
+                \xsim_declare_property:nnnn
+                  { \c_true_bool }
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  {#4}
+              }
+          }
+          {
+            \IfBooleanTF {#3}
+              {
+                \xsim_declare_property:nnnn
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  { \c_true_bool }
+                  {#4}
+              }
+              {
+                \xsim_declare_property:nnnn
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  {#4}
+              }
+          }
+      }
   }
 \@onlypreamble \DeclareExerciseProperty
 

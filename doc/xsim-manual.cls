@@ -481,6 +481,10 @@
   \textcolor{red}{\underline{\textcolor{outside}{TF}}}%
 }
 
+\newcommand*\narg{\textcolor{argument}{\code{-}}}
+
+\newrobustcmd\bang{!}
+
 \DeclareExerciseEnvironmentTemplate{tcolorbox}
   {%
     \tcolorbox[

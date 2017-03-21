@@ -56,7 +56,11 @@
         #1                 .code:n     =
           \xsim_set_seq_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
       }
-    \xsim_declare_property:nn { \c_false_bool } {#1}
+    \xsim_declare_property:nnnn
+      { \c_false_bool }
+      { \c_false_bool }
+      { \c_false_bool }
+      {#1}
     \__xsim_declare_printsolutions_condition:nn {#1}
       { \__xsim_printsolutions_if_tagged:nnnnTF {#1}  }
     \keys_define:nn {xsim/print-solutions}

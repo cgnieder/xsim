@@ -370,16 +370,20 @@
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
   {
-    \bool_set_true:N \l____xsim_print_bool
-    \bool_if:cF {l__xsim_#1_exercise_print_bool}
-      { \bool_set_false:N \l____xsim_print_bool }
-    \xsim_if_tagged:nnF {#1} {#2}
-      { \bool_set_false:N \l____xsim_print_bool }
-    \bool_if:cF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
-      { \bool_set_false:N \l____xsim_print_bool }
-    \bool_if:NTF \l____xsim_print_bool
+    \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {print!} _bool}
       { \prg_return_true: }
-      { \prg_return_false: }
+      {
+        \bool_set_true:N \l____xsim_print_bool
+        \bool_if:cF {l__xsim_#1_exercise_print_bool}
+          { \bool_set_false:N \l____xsim_print_bool }
+        \xsim_if_tagged:nnF {#1} {#2}
+          { \bool_set_false:N \l____xsim_print_bool }
+        \bool_if:cF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
+          { \bool_set_false:N \l____xsim_print_bool }
+        \bool_if:NTF \l____xsim_print_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
   }
 \cs_generate_variant:Nn \xsim_exercise_if_print:nnT  {nV}
 \cs_generate_variant:Nn \xsim_exercise_if_print:nnTF {nV}
@@ -388,20 +392,25 @@
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
   {
-    \xsim_exercise_if_print:nnTF {#1} {#2}
+    \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use!} _bool}
       { \prg_return_true: }
       {
-        \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+        \xsim_exercise_if_print:nnTF {#1} {#2}
+          { \prg_return_true: }
           {
-            \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use} _bool}
+            \bool_if:cTF {l__xsim_#1_exercise_use_bool}
               {
-                \xsim_if_tagged:nnTF {#1} {#2}
-                  { \prg_return_true: }
+                \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use} _bool}
+                  {
+                    \xsim_if_tagged:nnTF {#1} {#2}
+                      { \prg_return_true: }
+                      { \prg_return_false: }
+                  }
                   { \prg_return_false: }
               }
               { \prg_return_false: }
           }
-          { \prg_return_false: }
+          
       }
   }
 \cs_generate_variant:Nn \xsim_exercise_if_use:nnT  {nV}

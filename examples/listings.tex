@@ -1,0 +1,48 @@
+% http://tex.stackexchange.com/questions/131546/
+\documentclass{article}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{xsim}
+
+\lstset{
+  frame=single,
+  xleftmargin=20pt,
+  numbers=left,
+  numberstyle=\small,
+  tabsize=2,
+  breaklines,
+  showspaces=false,
+  showstringspaces=false,
+  language=C,
+  basicstyle=\small\ttfamily,
+  commentstyle=\itshape\color{gray}
+}
+
+\begin{document}
+
+\begin{exercise}[points=6]
+Consider the following C program.
+\begin{lstlisting}
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+  printf("hello, world\n");
+}
+\end{lstlisting}
+\end{exercise}
+\begin{solution}
+Consider the following C program.
+\begin{lstlisting}
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+  printf("hello, world\n");
+}
+\end{lstlisting}
+\end{solution}
+
+\pagebreak
+\printsolutions 
+
+\end{document}
