@@ -1,5 +1,5 @@
-% arara: pdflatex: { action: nonstopmode }
-% arara: biber
+% !arara: pdflatex: { action: nonstopmode }
+% !arara: biber
 % arara: pdflatex: { action: nonstopmode }
 % arara: pdflatex: { action: nonstopmode }
 % !arara: pdflatex: { action: nonstopmode }
@@ -634,6 +634,15 @@ the environments' names are the module names for the options (here using the
     Adds the exercise counter to the reset list of the counter
     \meta{counter}.  \emph{Beware that if the counter is a shared counter
       this will affect \emph{all objects} using this counter!}
+  \keyval{the-counter}{code}\Module{exercise}
+    An interface for redefining the counter representation command
+    \cs*{the\meta{counter}}.
+  \keyval{exercise-template}{template}\Module{exercise}
+    An interface for \cs{SetExerciseParameter}\Marg{exercise}%
+    \Marg{exercise-template}\marg{template}.
+  \keyval{solution-template}{template}\Module{exercise}
+    An interface for \cs{SetExerciseParameter}\Marg{exercise}%
+    \Marg{solution-template}\marg{template}.
   \keyval{pre-hook}{code}\Module{exercise}\Default
     The code for the \emph{pre exercise hook} for exercises of the type
     \enquote{exercise}.
@@ -660,6 +669,7 @@ the environments' names are the module names for the options (here using the
   \keyval{post-hook}{code}\Module{solution}\Default
     The code for the \emph{post solution hook} for solutions of the type
     \enquote{exercise}.
+  % TODO
 \end{options}
 
 \subsection{(Re-) Inserting a Certain Exercise}
@@ -1289,7 +1299,7 @@ would use a real sectioning command for the title.
 
 See it in action:
 \begin{example}
-  \SetExerciseParameter{exercise}{exercise-template}{runin}
+  \xsimsetup{exercise/exercise-template=runin}
   \renewcommand*\theexercise{\arabic{exercise}.}
   \begin{exercise}[subtitle=exsheets' runin,points=2.5]
     \lipsum[4]
@@ -1329,7 +1339,7 @@ The following example shows how you could mimick \pkg*{exsheets}'
 
 See it in action:
 \begin{example}
-  \SetExerciseParameter{exercise}{exercise-template}{margin}
+  \xsimsetup{exercise/exercise-template=margin}
   \renewcommand*\theexercise{\arabic{exercise}.}
   \begin{exercise}[subtitle=exsheets' margin,points=2.5]
     \lipsum[4]
@@ -1595,6 +1605,53 @@ Using the \option{clear-aux} option might help to reduce erroneous exercises.
 this is done so deleting the auxfile and doing a few fresh compilations may
 resolve your problems.
 
+\subsection{\dots Put a Star (or Other Symbol) in Exercises That Are Special?}
+
+The code below shows one possible modification of an exercise template which
+allows to easily create bonus exercises:
+\begin{sourcecode}
+  % preamble:
+  \usepackage{amsymb}
+  % declare boolean property:
+  \DeclareExerciseProperty+{bonus}
+  \DeclareExerciseEnvironmentTemplate{bonus}
+    {%
+      \subsection*
+        {%
+          % test for boolean property and insert star symbol if true:
+          \IfExerciseBooleanPropertyT{bonus}{\llap{$\bigstar$ }Bonus }%
+          \XSIMmixedcase{\GetExerciseName}\nobreakspace
+          \GetExerciseProperty{counter}%
+          \IfInsideSolutionF
+            {%
+              \IfExercisePropertySetT{subtitle}
+                { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+            }%
+        }
+      \GetExercisePropertyT{points}
+        {%
+          \marginpar
+            {%
+              \IfInsideSolutionF{\rule{1.2cm}{1pt}\slash}%
+              \PropertyValue
+              \GetExercisePropertyT{bonus-points}
+                {\nobreakspace(+\PropertyValue)}%
+              \nobreakspace\XSIMtranslate{point-abbr}%
+            }%
+        }%
+    }
+    {}
+\end{sourcecode}
+
+The usage is now as follows:
+\begin{example}
+  \xsimsetup{exercise/exercise-template = bonus}
+  % set the boolean property to true
+  \begin{exercise}[bonus]
+    A bonus question.
+  \end{exercise}
+\end{example}
+
 \subsection{\dots Print All Solutions Grouped by Section?}
 Here is an idea how to get a list of all solutions grouped by the section the
 corresponding exercises are appearing in.
@@ -1702,6 +1759,7 @@ three lines (if the file itself was called \code{test.tex}):
 \end{sourcecode}
 
 \section{All Exercise Examples}
+\xsimsetup{exercise/exercise-template = bonus}
 \printcollection[headings]{all exercises}
 
 \section{All Solution Examples}
@@ -1710,9 +1768,3 @@ three lines (if the file itself was called \code{test.tex}):
 \printbibliography
 
 \end{document}
-
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: t
-%%% End:

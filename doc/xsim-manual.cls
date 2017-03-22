@@ -567,6 +567,34 @@
   }
   {}
 
+\DeclareExerciseProperty+{bonus}
+\DeclareExerciseEnvironmentTemplate{bonus}
+  {%
+    \subsection*
+      {%
+        \IfExerciseBooleanPropertyT{bonus}{\llap{$\bigstar$ }Bonus }%
+        \XSIMmixedcase{\GetExerciseName}\nobreakspace
+        \GetExerciseProperty{counter}%
+        \IfInsideSolutionF
+          {%
+            \IfExercisePropertySetT{subtitle}
+              { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+          }%
+      }
+    \GetExercisePropertyT{points}
+      {%
+        \marginpar
+          {%
+            \IfInsideSolutionF{\rule{1.2cm}{1pt}\slash}%
+            \PropertyValue
+            \GetExercisePropertyT{bonus-points}
+              {\nobreakspace(+\PropertyValue)}%
+            \nobreakspace\XSIMtranslate{point-abbr}%
+          }%
+      }%
+  }
+  {}
+
 \DeclareExerciseType{problem}{
   exercise-env = problem ,
   solution-env = answer ,
