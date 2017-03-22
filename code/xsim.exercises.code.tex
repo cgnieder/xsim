@@ -370,7 +370,7 @@
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
   {
-    \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {print!} _bool}
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {print!}
       { \prg_return_true: }
       {
         \bool_set_true:N \l____xsim_print_bool
@@ -378,7 +378,7 @@
           { \bool_set_false:N \l____xsim_print_bool }
         \xsim_if_tagged:nnF {#1} {#2}
           { \bool_set_false:N \l____xsim_print_bool }
-        \bool_if:cF {c_ \xsim_get_property:nnn {#1} {#2} {print} _bool}
+        \xsim_if_boolean_property:nnnF {#1} {#2} {print}
           { \bool_set_false:N \l____xsim_print_bool }
         \bool_if:NTF \l____xsim_print_bool
           { \prg_return_true: }
@@ -392,7 +392,7 @@
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
   {
-    \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use!} _bool}
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {use!}
       { \prg_return_true: }
       {
         \xsim_exercise_if_print:nnTF {#1} {#2}
@@ -400,7 +400,7 @@
           {
             \bool_if:cTF {l__xsim_#1_exercise_use_bool}
               {
-                \bool_if:cTF {c_ \xsim_get_property:nnn {#1} {#2} {use} _bool}
+                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
                   {
                     \xsim_if_tagged:nnTF {#1} {#2}
                       { \prg_return_true: }

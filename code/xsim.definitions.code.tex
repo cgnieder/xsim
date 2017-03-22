@@ -130,15 +130,15 @@
             \IfExercisePropertySetT {subtitle}
               { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
           }
-    }
-    \IfExercisePropertySetT {points}
+      }
+    \GetExercisePropertyT {points}
       {
         \marginpar
           {
             \IfInsideSolutionF { \rule {1.2cm} {1pt} \slash }
-            \GetExerciseProperty {points}
-            \IfExercisePropertySetT {bonus-points}
-              { \nobreakspace ( + \GetExerciseProperty {bonus-points} ) }
+            \PropertyValue
+            \GetExercisePropertyT {bonus-points}
+              { \nobreakspace ( + \PropertyValue ) }
             \nobreakspace\XSIMtranslate {point-abbr}
           }
       }

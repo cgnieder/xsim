@@ -2,7 +2,7 @@
 % arara: biber
 % arara: pdflatex: { action: nonstopmode }
 % arara: pdflatex: { action: nonstopmode }
-% arara: pdflatex: { action: nonstopmode }
+% !arara: pdflatex: { action: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -162,7 +162,7 @@ names.  This indicates that the command is expandable, \ie, it is usable in an
 description.  All other commands are engine protected, \ie, in the sense of
 \eTeX's \cs*{protected}.
 
-Some command name descriptions end with \code*{\TF}.
+Some command name descriptions end with \code{\TF}.
 \begin{commands}
   \command*{SomeCommand\TF}[\meta{arguments}\marg{true}\marg{false}]
     A command with maybe some arguments and ending with the two arguments
@@ -970,6 +970,15 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \expandable\command{GetExerciseProperty}[\marg{property}]
     Retrieves the value of the property \meta{property} for the current
     exercise.
+  \command{GetExerciseProperty\TF}[\marg{property}\marg{true}\marg{false}]
+    Tests wether the exercise property \meta{property} has been set for the
+    current exercise.  Inside the \meta{true} branch you can refer to the
+    retrieved value either with \code{\#1} or with \cs{PropertyValue}
+  \expandable\command{IfExerciseBooleanProperty\TF}[\marg{property}%
+    \marg{true}\marg{false}]
+    Checks wether the boolean property \meta{property} has value \code{true}
+    or \meta{false} and leaves the corresponding argument in the input
+    stream.  Gives an error if \meta{property} is not a boolean property.
   \expandable\command{GetExerciseAliasProperty}[\marg{property}]
     Retrieves the value of the property of which \meta{property} is an alias
     of for the current exercise.
@@ -1175,18 +1184,17 @@ Below the definition of the \code{default} exercise template provided by
         \GetExerciseProperty{counter}%
         \IfInsideSolutionF
           {%
-            \IfExercisePropertySetT{subtitle}
-              { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+            \GetExercisePropertyT{subtitle}
+              { {\normalfont\itshape\PropertyValue}}%
           }%
       }
-    \IfExercisePropertySetT{points}
+    \GetExercisePropertyT{points}
       {%
         \marginpar
           {%
             \IfInsideSolutionF{\rule{1.2cm}{1pt}\slash}%
-            \GetExerciseProperty{points}%
-            \IfExercisePropertySetT{bonus-points}
-              {~(+\GetExerciseProperty{bonus-points})}%
+            \PropertyValue
+            \GetExercisePropertyT{bonus-points}{~(+\PropertyValue)}%
             ~\XSIMtranslate {point-abbr}%
           }%
       }%
@@ -1215,12 +1223,11 @@ problems in this manual have been defined:
         beforeafter skip = .5\baselineskip ,
         title =
           \textbf{\GetExerciseName~\GetExerciseProperty{counter}}%
-          \IfExercisePropertySetT{subtitle}
-            { \textit{\GetExerciseProperty{subtitle}}}%
+          \GetExercisePropertyT{subtitle}{ \textit{\PropertyValue}}%
           \IfInsideSolutionF{%
-            \IfExercisePropertySetT{points}{ % notice the space
+            \GetExercisePropertyT{points}{ % notice the space
               (%
-                \GetExerciseProperty{points}
+                \PropertyValue
                 \IfExerciseGoalSingularTF{points}
                   {\XSIMtranslate{point}}
                   {\XSIMtranslate{points}}%
@@ -1266,13 +1273,11 @@ would use a real sectioning command for the title.
       \Needspace*{2\baselineskip}
       \noindent
       \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
-      \IfExercisePropertySetT{subtitle}
-        { \textit{\GetExerciseProperty{subtitle}}} %
-      \IfExercisePropertySetT{points}{%
+      \GetExercisePropertyT{subtitle}{ \textit{#1}} %
+      \GetExercisePropertyT{points}{%
         \marginpar{%
-          \GetExerciseProperty{points}%
-          \IfExercisePropertySetT{bonus-points}
-            {+\GetExerciseProperty{bonus-points}}%
+          \PropertyValue
+          \GetExercisePropertyT{bonus-points}{+\PropertyValue}%
           \,\IfExerciseGoalSingularTF{points}
               {\XSIMtranslate{point}}
               {\XSIMtranslate{points}}%
@@ -1309,10 +1314,11 @@ The following example shows how you could mimick \pkg*{exsheets}'
             \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
             \IfExercisePropertySetT{points}{%
               \tabularnewline
-              (\GetExerciseProperty{points}%
-              \IfExercisePropertySetT{bonus-points}
-                {+\GetExerciseProperty{bonus-points}}%
-              \,\XSIMtranslate{point-abbr})%
+              (%
+                \GetExerciseProperty{points}%
+                \GetExercisePropertyT{bonus-points}{+#1}%
+                \,\XSIMtranslate{point-abbr}%
+              )%
             }%
           \endtabular
         } % notice the space

@@ -9,8 +9,7 @@
     \Needspace*{5\baselineskip}
     \begin{tcolorbox}
       \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}.}%
-      \IfExercisePropertySetT{subtitle}
-        { \textit{\GetExerciseProperty{subtitle}}}%
+      \GetExercisePropertyT{subtitle}{ \textit{#1}}%
     \end{tcolorbox}
     \noindent
   }

@@ -84,8 +84,14 @@
     GetExerciseName ,
     GetExerciseParameter ,
     GetExerciseProperty ,
+    GetExercisePropertyF ,
+    GetExercisePropertyT ,
+    GetExercisePropertyTF ,
     GlobalSaveExerciseProperty ,
     gradingtable ,
+    IfExerciseBooleanPropertyF ,
+    IfExerciseBooleanPropertyT ,
+    IfExerciseBooleanPropertyTF ,
     IfExerciseGoalSingularF ,
     IfExerciseGoalSingularT ,
     IfExerciseGoalSingularTF ,
@@ -108,6 +114,7 @@
     printsolution ,
     printsolutions ,
     printsolutionstype ,
+    PropertyValue ,
     SaveExerciseProperty ,
     SetExerciseParameter ,
     SetExerciseParameters ,
@@ -501,12 +508,12 @@
       beforeafter skip = .5\baselineskip ,
       title =
         \textbf{\GetExerciseName~\GetExerciseProperty{counter}}%
-        \IfExercisePropertySetT{subtitle}
-          { \textit{\GetExerciseProperty{subtitle}}}%
+        \GetExercisePropertyT{subtitle}
+          { \textit{\PropertyValue}}%
         \IfInsideSolutionF{%
-          \IfExercisePropertySetT{points}
+          \GetExercisePropertyT{points}
             { % notice the space
-              (\GetExerciseProperty{points}
+              (\PropertyValue
               \IfExerciseGoalSingularTF{points}
                 {\XSIMtranslate{point}}
                 {\XSIMtranslate{points}})%
@@ -524,13 +531,11 @@
     \Needspace*{2\baselineskip}
     \noindent
     \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
-    \IfExercisePropertySetT{subtitle}
-      { \textit{\GetExerciseProperty{subtitle}}} %
-    \IfExercisePropertySetT{points}{%
+    \GetExercisePropertyT{subtitle}{ \textit{#1}} %
+    \GetExercisePropertyT{points}{%
       \marginpar{%
-        \GetExerciseProperty {points}%
-        \IfExercisePropertySetT {bonus-points}
-          {+\GetExerciseProperty{bonus-points}}%
+        \PropertyValue
+        \GetExercisePropertyT{bonus-points}{+\PropertyValue}%
         \,\IfExerciseGoalSingularTF{points}
             {\XSIMtranslate{point}}
             {\XSIMtranslate{points}}%
@@ -550,10 +555,11 @@
           \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
           \IfExercisePropertySetT{points}{%
             \tabularnewline
-            (\GetExerciseProperty{points}%
-            \IfExercisePropertySetT{bonus-points}
-              {+\GetExerciseProperty{bonus-points}}%
-            \,\XSIMtranslate{point-abbr})%
+            (%
+              \GetExerciseProperty{points}%
+              \GetExercisePropertyT{bonus-points}{+#1}%
+              \,\XSIMtranslate{point-abbr}%
+            )%
           }%
         \endtabular
       } % notice the space

@@ -154,6 +154,30 @@
       { \xsim_property_alias:n {#1} }
   }
 
+\NewDocumentCommand \GetExercisePropertyTF {m+m+m}
+  {
+    \xsim_get_property_if_set:oonTF {\ExerciseType} {\ExerciseID} {#1}
+      {#2}
+      {#3}
+  }
+
+\NewDocumentCommand \GetExercisePropertyT {m+m}
+  { \GetExercisePropertyTF {#1} {#2} {} }
+\NewDocumentCommand \GetExercisePropertyF {m+m+m}
+  { \GetExercisePropertyTF {#1} {} {#2} }
+
+\DeclareExpandableDocumentCommand \IfExerciseBooleanPropertyTF {+m+m+m}
+  {
+    \xsim_if_boolean_property:oonTF {\ExerciseType} {\ExerciseID} {#1}
+      {#2}
+      {#3}
+  }
+
+\DeclareExpandableDocumentCommand \IfExerciseBooleanPropertyT {+m+m}
+  { \IfExerciseBooleanPropertyTF {#1} {#2} {} }
+\DeclareExpandableDocumentCommand \IfExerciseBooleanPropertyF {+m+m}
+  { \IfExerciseBooleanPropertyTF {#1} {} {#2} }
+
 \NewDocumentCommand \SaveExerciseProperty {mm}
   { \xsim_save_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
 

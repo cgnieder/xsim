@@ -43,6 +43,13 @@
     cannot~ be~ set~ to~ `#2'~ since~ this~ value~ is~ already~ talen.
   }
 
+\msg_new:nnn {xsim} {no-boolean-property}
+  {
+    You~ tried~ to~ check~ the~ boolean~ value~ of~ property~ `#1'~
+    \msg_line_context: . \\
+    However,~ property~ `#1'~ is~ not~ a~ boolean~ property!
+  }
+  
 \seq_new:N \l__xsim_properties_seq
 \seq_new:N \l__xsim_boolean_properties_seq
 \seq_new:N \l__xsim_unique_properties_seq
@@ -383,6 +390,54 @@
 \cs_new:Npn \xsim_get_property:nnn #1#2#3
   { \prop_item:Nn \g__xsim_properties_prop { #2 ! #1 ! #3 } }
 \cs_generate_variant:Nn \xsim_get_property:nnn {nx,xx,oo,no,nnf,nf,oof,nV}
+
+\cs_new:Npn \__xsim_get_property_tmp:n #1 {}
+\cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnTF #1#2#3#4#5
+  {
+    \xsim_if_property_exist:nTF {#3}
+      {
+        \xsim_if_property_set:nnnTF {#1} {#2} {#3}
+          {
+            \group_begin:
+              \tl_set:Nx \PropertyValue
+                { \xsim_get_property:nnn {#1} {#2} {#3} }
+              \cs_set:Npn \__xsim_get_property_tmp:n ##1 {#4}
+              \__xsim_get_property_tmp:V \PropertyValue
+            \group_end:
+          }
+          {#5}
+      }
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }
+  }
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnT #1#2#3#4
+  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {#4} {} }
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnF #1#2#3#4
+  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {} {#4} }
+\cs_generate_variant:Nn \xsim_get_property_if_set:nnnTF {oo}
+
+% #1: type
+% #2: id
+% #3: property
+\prg_new_conditional:Npnn \xsim_if_boolean_property:nnn #1#2#3 {T,F,TF}
+  {
+    \xsim_if_property_exist:nTF {#3}
+      {
+        \xsim_if_property_boolean:nTF {#3}
+          {
+            \bool_if:cTF { c_ \xsim_get_property:nnn {#1} {#2} {#3} _bool}
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+          { \msg_error:nnn {xsim} {no-boolean-property} {#3} }
+      }
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }
+  }
+\cs_generate_variant:Nn \xsim_if_boolean_property:nnnTF {oo}
 
 \cs_new_protected:Npn \xsim_save_property:nnnN #1#2#3#4
   { \prop_get:NnN \g__xsim_properties_prop { #2 ! #1 ! #3 } #4 }
