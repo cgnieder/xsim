@@ -1,0 +1,70 @@
+\documentclass{scrartcl}
+\usepackage[clear-aux]{xsim}
+
+\usepackage{enumitem,amssymb,fmtcount}
+\newlist{choices}{itemize}{1}
+\setlist[choices]{label=$\Box$}
+\newcommand*\choice{\item}
+
+\DeclareExerciseProperty{choices}
+\DeclareExerciseProperty*{multiple}
+\DeclareExerciseEnvironmentTemplate{mc}
+  {%
+    \UseExerciseTemplate{begin}{default}%
+    \IfExerciseBooleanPropertyTF{multiple}
+      {Select one or more correct answers}
+      {%
+        \GetExercisePropertyT{choices}
+          {Select \numberstringnum{#1} correct answer\ifnum#1>1 s\fi.}%
+      }%
+    \begin{choices}
+  }
+  {%
+    \end{choices}
+    \UseExerciseTemplate{end}{default}%
+  }
+
+\DeclareExerciseType{mc}{
+  exercise-env = multiplechoice ,
+  solution-env = correctchoices ,
+  exercise-name = Question ,
+  solution-name = Solution ,
+  exercise-template = mc ,
+  solution-template = mc ,
+  counter = exercise
+}
+
+\xsimsetup{
+  exercise/exercise-name = Question ,
+  exercise/solution-name = Solution
+}
+
+\begin{document}
+
+\section{Questions}
+\begin{multiplechoice}[choices=1]
+  \choice one
+  \choice two
+  \choice three
+  \choice four
+\end{multiplechoice}
+
+\begin{exercise}
+  Answer this question on a separate sheet.  
+\end{exercise}
+
+\begin{multiplechoice}[multiple]
+  \choice one
+  \choice two
+  \choice three
+  \choice four
+\end{multiplechoice}
+
+\begin{multiplechoice}[choices=2]
+  \choice one
+  \choice two
+  \choice three
+  \choice four
+\end{multiplechoice}
+
+\end{document}

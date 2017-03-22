@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{xsim,lipsum,hyperref}
+
+\DeclareExerciseHeadingTemplate{custom}
+  {\section{\XSIMtranslate{default-heading}}}
+
+\DeclareExerciseEnvironmentTemplate{custom}
+  {%
+    \IfInsideSolutionTF
+      {\label{sol:\ExerciseID}}
+      {\label{ex:\ExerciseID}}
+    \subsection*
+      {%
+        \XSIMmixedcase{\GetExerciseName}%
+        \IfInsideSolutionTF
+          {
+            to \GetExerciseParameter{exercise-name}%
+            ~\GetExerciseProperty{counter}%
+          }
+          {%
+            ~\GetExerciseProperty{counter}
+            \GetExercisePropertyT{subtitle}
+              { {\normalfont\itshape\PropertyValue}}%
+          }%
+      }
+    \noindent\llap{%
+      \footnotesize\sffamily
+      \IfInsideSolutionTF
+        {%
+          \XSIMmixedcase{\GetExerciseParameter{exercise-name}}
+          on page~\pageref{ex:\ExerciseID}.%
+        }
+        {%
+          \XSIMmixedcase{\GetExerciseParameter{solution-name}}
+          on page~\pageref{sol:\ExerciseID}.%
+        }%
+      \hspace*{\marginparsep}%
+    }%
+  }
+  {}
+\xsimsetup{
+  exercise/exercise-template = custom ,
+  exercise/solution-template = custom ,
+  print-solutions/headings-template = custom
+}
+
+\begin{document}
+
+\section{Exercises}
+\begin{exercise}
+  \lipsum[4]
+\end{exercise}
+\begin{solution}
+  \lipsum[4]
+\end{solution}
+
+\clearpage
+\printsolutions
+
+\end{document}

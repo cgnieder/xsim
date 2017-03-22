@@ -39,6 +39,9 @@
   { \xsim_declare_table_template:nn {#1} {#2} }
 \@onlypreamble \DeclareExerciseTableTemplate
 
+\NewDocumentCommand \UseExerciseTemplate {mm}
+  { \xsim_use_template:nn {#1} {#2} }
+
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseType {mm}
@@ -61,7 +64,7 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \DeclareExerciseProperty {st+t-m}
+\NewDocumentCommand \DeclareExerciseProperty {t!st-m}
   {
     \IfBooleanTF {#2}
       {
@@ -251,8 +254,8 @@
 \NewDocumentCommand \XSIMexpandcode {+m}
   { \use:x {#1} }
 
-\DeclareDocumentCommand \XSIMmixedcase {m}
-  { \tl_mixed_case:x {#1} }
+\DeclareExpandableDocumentCommand \XSIMmixedcase {m}
+  { \tl_mixed_case:f {#1} }
 
 \NewDocumentCommand \XSIMputright {mm}
   { \tl_put_right:Nn #1 {#2} }
@@ -448,6 +451,13 @@
     \IfBooleanTF {#1}
       { \xsim_print_all_solutions:nn { \c_true_bool } {#2} }
       { \xsim_print_all_solutions:nn { \c_false_bool } {#2} }
+  }
+
+\NewDocumentCommand \printallsolutions {sO{}}
+  {
+    \IfBooleanTF {#1}
+      { \xsim_print_id_solutions:nn { \c_true_bool } {#2} }
+      { \xsim_print_id_solutions:nn { \c_false_bool } {#2} }
   }
 
 % ----------------------------------------------------------------------------

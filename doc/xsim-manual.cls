@@ -32,6 +32,7 @@
 \ProvidesClass{xsim-manual}[2017/03/19]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
+\RequirePackage{imakeidx}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{xsim}
 
@@ -109,6 +110,7 @@
     IfInsideSolutionTF ,
     numberofexercises ,
     numberofusedexercises ,
+    printallsolutions ,
     printcollection ,
     printexercise ,
     printsolution ,
@@ -163,6 +165,7 @@
   index-setup = { level = \section , noclearpage } ,
   makeindex-setup = { columns = 2 , columnsep = 1em }
 }
+
 
 \RequirePackage{accsupp}
 \newcommand*\noncopy[1]{%
@@ -489,6 +492,7 @@
 }
 
 \newcommand*\narg{\textcolor{argument}{\code{-}}}
+\newcommand*\barg{\textcolor{argument}{\code{\bang}}}
 
 \newrobustcmd\bang{!}
 
@@ -567,7 +571,7 @@
   }
   {}
 
-\DeclareExerciseProperty+{bonus}
+\DeclareExerciseProperty*{bonus}
 \DeclareExerciseEnvironmentTemplate{bonus}
   {%
     \subsection*

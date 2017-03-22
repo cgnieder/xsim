@@ -57,11 +57,11 @@
 \prg_new_protected_conditional:Npnn \xsim_solution_if_print:nn #1#2 {T,F,TF}
   {
     \bool_set_true:N \l____xsim_print_bool
-    \bool_if:cF {l__xsim_#1_solution_print_bool}
-      { \bool_set_false:N \l____xsim_print_bool }
     \xsim_if_tagged:nnF {#1} {#2}
       { \bool_set_false:N \l____xsim_print_bool }
-    \xsim_if_in_list:nnF {print} {#1-#2}
+    \xsim_if_boolean_property:nnnF {#1} {#2} {print}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \bool_if:cF {l__xsim_#1_solution_print_bool}
       { \bool_set_false:N \l____xsim_print_bool }
     \bool_if:NTF \l____xsim_print_bool
       { \prg_return_true: }
@@ -85,6 +85,7 @@
   {
     \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
     \bool_set_true:N \l_xsim_inside_solution_bool
+    \refstepcounter { \xsim_get_parameter:nn {#1} {solution-env} }
   }
 
 \cs_new_protected:Npn \xsim_stop_solution:n #1 {}
@@ -313,6 +314,33 @@
   {
     \xsim_foreach_exercise_type:n
       { \xsim_print_type_solutions:nnn {#1} {#2} {##1} }
+  }
+
+% #1: boolean -- if true only the solutions of printed exercises will be
+%     output
+% #2: options
+\cs_new_protected:Npn \xsim_print_id_solutions:nn #1#2
+  {
+    \xsim_verbose:n { Printing~ solutions. }
+    \group_begin:
+      \keys_set:nn {xsim/print-solutions} {#2}
+      \bool_set_false:N \l__xsim_tmpa_bool
+      \bool_if:nTF {#1}
+        {
+          \xsim_foreach_exercise_id_type:nn {print}
+            {
+              \xsim_if_this_solution_do:nnnn {##1} {##2} {print}
+                { \xsim_insert:nnnn {##1} {##2} {} {solution} }
+            }
+        }
+        {
+          \xsim_foreach_exercise_id_type:nn {use}
+            {
+              \xsim_if_this_solution_do:nnnn {##1} {##2} {use}
+                { \xsim_insert:nnnn {##1} {##2} {} {solution} }
+            }
+        }
+    \group_end:
   }
 
 % ----------------------------------------------------------------------------

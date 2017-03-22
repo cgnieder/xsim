@@ -427,19 +427,22 @@ optional argument of the exercise environment.
 
 \xsim\ offers the possibility to declare additional exercise properties:
 \begin{commands}
-  \command{DeclareExerciseProperty}[\sarg\parg\narg\marg{property}]
+  \command{DeclareExerciseProperty}[\barg\sarg\narg\marg{property}]
     Declares the property \meta{property}.
     
-    If used with the optional star a unique property is defined which means
-    that each exercise must have a property value distinct from all other
-    exercises (all means all -- \emph{independent from the exercise type}).
+    If used with the optional \barg\ star a unique property is defined which
+    means that each exercise must have a property value distinct from all
+    other exercises (all means all -- \emph{independent from the exercise type}).
 
-    If used with the optional \code{+} a boolean property is defined which
+    If used with the optional \sarg\ a boolean property is defined which
     means that it only should get the values \code{true} or \code{false} and
     if used without value it gets the value \code{true} instead of an empty
-    value.  If any other value is used the property is set to \code{false}.
+    value.  If any other value is used the property is set to
+    \code{false}.  A boolean option obviously cannot be unique.  The optional
+    \sarg\ takes precedence over the optional star, \ie, if both are present
+    the property is boolean \emph{but not} unique.
 
-    If used with the optional \code{-} a property is defined which won't get
+    If used with the optional \narg\ a property is defined which won't get
     updated through subsequent compilation runs but is only set when the
     exercise is used.
   \command{DeclareExercisePropertyAlias}[\marg{property 1}\marg{property 2}]
@@ -714,14 +717,16 @@ collection can be printed as often as needed.
     Opens the collection \meta{collection name} which now collects all
     exercises of type \meta{exercise type} until the collection is closed with
     \cs{collectexercisesstop}.  Collections of other types are not
-    collected.  \emph{This command starts a group!}
+    collected\footnote{This command starts a group with
+      \cs*{begingroup}!}.
   \command{collectexercises}[\marg{collection name}]
     Opens the collection \meta{collection name} which now collects all
     exercises until the collection is closed with
-    \cs{collectexercisesstop}.  \emph{This command starts a group!}
+    \cs{collectexercisesstop}\footnote{This command starts a group with
+      \cs*{begingroup}!}.
   \command{collectexercisesstop}[\marg{collection name}]
-    Closes the collection \meta{collection name}.  \emph{This command ends a
-      group!}
+    Closes the collection \meta{collection name}\footnote{This command ends
+      a group with \cs*{endgroup}!}.
   \command{printcollection}[\oarg{options}\marg{collection name}]
     Prints the collection \meta{collection name}, \ie, all exercises collected
     earlier.  This command cannot be used before the corresponding collection
@@ -819,9 +824,13 @@ all solutions.
     The starred version only prints the solutions of all printed exercises of
     type \meta{exercise type}.
   \command{printsolutions}[\sarg\oarg{options}]
-    Prints the solutions of all used exercises of all types.  The starred
-    version only prints the solutions of all printed exercises of all types,
-    ordered by type.
+    Prints the solutions of all used exercises of all types ordered by type.
+    The starred version only prints the solutions of all printed exercises of
+    all types.
+  \command{printallsolutions}[\sarg\oarg{options}]
+    Prints the solutions of all used exercises of all types ordered by
+    appearance in the document.  The starred version only prints the solutions
+    of all printed exercises of all types.
   \command{printsolution}[\oarg{options}\marg{type}\marg{id}]
     Prints the solution of the exercise of type \meta{type} with the
     \property{id} \meta{id}.
@@ -1613,7 +1622,7 @@ allows to easily create bonus exercises:
   % preamble:
   \usepackage{amsymb}
   % declare boolean property:
-  \DeclareExerciseProperty+{bonus}
+  \DeclareExerciseProperty*{bonus}
   \DeclareExerciseEnvironmentTemplate{bonus}
     {%
       \subsection*

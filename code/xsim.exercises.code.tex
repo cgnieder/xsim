@@ -244,10 +244,11 @@
     \bool_new:c {l__xsim_#1_exercise_use_bool}
   }
 
-\cs_new_protected:Npn \xsim_define_counter:n #1
+\cs_new_protected:Npn \xsim_define_counters:n #1
   {
     \cs_if_exist:cF { c@ \xsim_get_parameter:nn {#1} {counter} }
       { \newcounter { \xsim_get_parameter:nn {#1} {counter} } }
+    \newcounter { \xsim_get_parameter:nn {#1} {solution-env} }
     \cs_if_exist:cF { c@ number of \xsim_get_parameter:nn {#1} {exercise-env} s }
       { \newcounter { number of \xsim_get_parameter:nn {#1} {exercise-env} s } }
   }
@@ -270,7 +271,7 @@
             \xsim_set_parameters:nx {#1}
               { counter =  \xsim_get_parameter:nn {#1} {exercise-env} }
           }
-        \xsim_define_counter:n {#1}
+        \xsim_define_counters:n {#1}
         \keys_define:nx {xsim}
           {
             \xsim_get_parameter:nn {#1} {solution-env} / print
@@ -292,7 +293,11 @@
             \xsim_get_parameter:nn {#1} {exercise-env} / exercise-template
               .code:n = \xsim_set_parameter:nnn {#1} {exercise-template} {####1} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / solution-template
-              .code:n = \xsim_set_parameter:nnn {#1} {solution-template} {####1}
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-template} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / exercise-name
+              .code:n = \xsim_set_parameter:nnn {#1} {exercise-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / solution-name
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-name} {####1}
           }
         \xsim_new_environment:nn {#1} {exercise}
         \xsim_new_environment:nn {#1} {solution}
