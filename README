@@ -50,10 +50,12 @@ The xsim package consists of the example files:
    boxed-headings.tex, boxed-headings.pdf
    code-and-output.tex, code-and-output.pdf
    collections.tex, collections.pdf
+   crossref.tex, crossref.pdf
    different-point-types.tex, different-point-types.pdf
    difficulties.tex, difficulties.pdf
    floating.tex, floating.pdf
    listings.tex, listings.pdf
+   multiplechoice.tex, multiplechoice.pdf
    various.tex, various.pdf
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please
