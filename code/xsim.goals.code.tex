@@ -93,6 +93,19 @@
 \cs_generate_variant:Nn \xsim_update_goals:nn {nV}
 
 % #1: exercise type
+% #2: goal
+% #3: value
+\cs_new_protected:Npn \xsim_addto_goal:nnn #1#2#3
+  {
+    \xsim_if_goal_exists:nT {#2}
+      {
+        \fp_gadd:cn {g__xsim_goal_#2_fp} {#3}
+        \fp_gadd:cn {g__xsim_#1_goal_#2_fp} {#3}
+      }
+  }
+\cs_generate_variant:Nn \xsim_addto_goal:nnn {x}
+
+% #1: exercise type
 % #2: id
 % #3: goal
 % #4: relation and value
@@ -109,25 +122,28 @@
 % printed:
 \cs_new_protected:Npn \__xsim_print_goal:n #1 {#1}
 \cs_generate_variant:Nn \__xsim_print_goal:n {x}
-  
+
+% #1: value
+% #2: value == 1
+% #3: value != 1
+\cs_new_protected:Npn \xsim_print_goal:nnn #1#2#3
+  {
+    \__xsim_print_goal:n { \fp_to_decimal:n {#1} }
+    \fp_compare:nTF { (#1) = 1 } {#2} {#3}
+  }
+
 % #1: exercise type
 % #2: goal
 % #3: sum == 1
 % #4: sum != 1
-\cs_new:Npn \xsim_print_goal_sum:nnnn #1#2#3#4
-  {
-    \__xsim_print_goal:x { \fp_to_decimal:c {g__xsim_total_#1_goal_#2_fp} }
-    \fp_compare:nTF { \use:c {g__xsim_total_#1_goal_#2_fp} = 1 } {#3} {#4}
-  }
+\cs_new_protected:Npn \xsim_print_goal_sum:nnnn #1#2#3#4
+  { \xsim_print_goal:nnn { \use:c {g__xsim_total_#1_goal_#2_fp} } {#3} {#4} }
 
 % #1: goal
 % #2: sum == 1
 % #3: sum != 1
-\cs_new:Npn \xsim_print_total_goal_sum:nnn #1#2#3
-  {
-    \__xsim_print_goal:x { \fp_to_decimal:c {g__xsim_total_goal_#1_fp} }
-    \fp_compare:nTF { \use:c {g__xsim_total_goal_#1_fp} = 1 } {#2} {#3}
-  }
+\cs_new_protected:Npn \xsim_print_total_goal_sum:nnn #1#2#3
+  { \xsim_print_goal:nnn { \use:c {g__xsim_total_goal_#1_fp} } {#2} {#3} }
 
 % #1: exercise type
 % #2: goal

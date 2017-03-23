@@ -486,9 +486,28 @@ available (after a compilation) throughout the document.
     \meta{singular} andf \meta{plural} are placed after the sum in the input
     stream depending on whether the sum equals~$1$ or not.
   \command{TotalExerciseGoal}[\marg{goal}\marg{singular}\marg{plural}]
-    Get the sum of goal \meta{goal} for all exercises. \meta{singular} andf
+    Get the sum of goal \meta{goal} for all exercises. \meta{singular} and
     \meta{plural} are placed after the sum in the input stream depending on
     whether the sum equals~$1$ or not.
+  \command{AddtoExerciseTypeGoal}[\marg{type}\marg{goal}\marg{value}]
+    Adds \meta{value} to the goal \meta{goal} of exercise type \meta{type}.
+  \command{AddtoExerciseTypeGoalPrint}[\marg{type}\marg{goal}\marg{value}%
+    \marg{singular}\marg{plural}]
+    Adds \meta{value} to the goal \meta{goal} of exercise type \meta{type}.
+    The value and -- depending on wether the value equals $1$ or not --
+    \meta{singular} or \meta{plural} are left in the input stream.
+  \command{AddtoExerciseGoal}[\marg{goal}\marg{value}]
+    Adds \meta{value} to the goal \meta{goal} of the current exercise
+    type. (To be used within exercises.)
+  \command{AddtoExerciseTypeGoalPrint}[\marg{goal}\marg{value}%
+    \marg{singular}\marg{plural}]
+    Adds \meta{value} to the goal \meta{goal} of the current exercise type.
+    The value and -- depending on wether the value equals $1$ or not --
+    \meta{singular} or \meta{plural} are left in the input stream. (To be used
+    within exercises.)
+  \command{ExerciseGoalValuePrint}[\marg{value}\marg{singular}\marg{plural}]
+    Print \meta{value} and -- depending on wether the value equals $1$ or not --
+    \meta{singular} or \meta{plural}.
   \command{printpoints}[\marg{type}]
     Print the sum of points for all exercises of type \meta{type} followed by
     an appropriate translation of the words \enquote{point} or
@@ -498,16 +517,32 @@ available (after a compilation) throughout the document.
   \command{printtotalpoints}
     Print the sum of points for all exercises followed by an appropriate
     translation of the words \enquote{point} or \enquote{points},
-    respectivaly.  Defined in terms of \cs{TotalExerciseGoal}.
+    respectively.  Defined in terms of \cs{TotalExerciseGoal}.
+  \command{addpoints}[\sarg\marg{value}]
+    Adds \meta{value} to the points of the current exercise type. (To be used
+    within exercises.)  Prints the value followed by an appropriate
+    translation of the words \enquote{point} or \enquote{points},
+    respectively.  The starred version prints nothing.  Defined in terms of
+    \cs{AddtoExerciseGoal} and \cs{AddtoExerciseGoalPrint}.
+  \command{points}[\marg{value}]
+    Print \meta{value}followed by an appropriate translation of the words
+    \enquote{point} or \enquote{points}, respectively.  Defined in terms of
+    \cs{ExerciseGoalValuePrint}.
   \command{printbonus}[\marg{type}]
     Print the sum of bonus points for all exercises of type \meta{type}
     followed by an appropriate translation of the words \enquote{point} or
-    \enquote{points}, respectivaly.  Defined in terms of
+    \enquote{points}, respectively.  Defined in terms of
     \cs{TotalExerciseTypeGoal}.
   \command{printtotalbonus}
     Print the sum of bonus points for all exercises followed by an appropriate
     translation of the words \enquote{point} or \enquote{points},
-    respectivaly.  Defined in terms of \cs{TotalExerciseGoal}.
+    respectively.  Defined in terms of \cs{TotalExerciseGoal}.
+  \command{addbonus}[\sarg\marg{value}]
+    Adds \meta{value} to the bonus points of the current exercise type. (To be
+    used within exercises.)  Prints the value followed by an appropriate
+    translation of the words \enquote{point} or \enquote{points},
+    respectively.  The starred version prints nothing.  Defined in terms of
+    \cs{AddtoExerciseGoal} and \cs{AddtoExerciseGoalPrint}.
 \end{commands}
 
 The two existing goals are defined with

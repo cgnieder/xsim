@@ -78,6 +78,19 @@
 \DeclareExerciseGoal {points}
 \DeclareExerciseGoal {bonus-points}
 
+\NewDocumentCommand \points {m}
+  {
+    \ExerciseGoalValuePrint {#1}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \addpoints {sm}
+  {
+    \AddtoExerciseGoal {points} {#2}
+    \IfBooleanF {#1} { \points {#2} }
+  }
+
 \NewDocumentCommand \printpoints {m}
   {
     \TotalExerciseTypeGoal {#1} {points}
@@ -90,6 +103,12 @@
     \TotalExerciseGoal {points}
       { \, \XSIMtranslate {point} }
       { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \addbonus {sm}
+  {
+    \AddtoExerciseGoal {bonus-points} {#2}
+    \IfBooleanF {#1} { \points {#2} }
   }
 
 \NewDocumentCommand \printbonus {m}
