@@ -36,7 +36,7 @@
 \DeclareExerciseParameter !{solution-name}
 \DeclareExerciseParameter !{exercise-template}
 \DeclareExerciseParameter !{solution-template}
-\DeclareExerciseParameter  {counter}
+\DeclareExerciseParameter* {counter}
 \DeclareExerciseParameter* {number}
 
 % ----------------------------------------------------------------------------
@@ -77,6 +77,9 @@
 
 \DeclareExerciseGoal {points}
 \DeclareExerciseGoal {bonus-points}
+
+\NewDocumentCommand \printgoal {m}
+  { \ExerciseGoalValuePrint {#1} {} {} }
 
 \NewDocumentCommand \points {m}
   {
@@ -219,7 +222,10 @@
     \ForEachUsedExerciseByType
       {
         \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
-          { \XSIMputright \ExerciseTableCode { \XSIMifblankTF {#5} {0} {#5} & } }
+          {
+            \XSIMputright \ExerciseTableCode
+              { \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & }
+          }
           {}
       }
     \XSIMputright \ExerciseTableCode
@@ -277,7 +283,7 @@
               }
               {}
             \XSIMputright \ExerciseTableCode
-              { #3 & \XSIMifblankTF {#5} {0} {#5} & \\ }
+              { #3 & \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & \\ }
           }
           {}
       }

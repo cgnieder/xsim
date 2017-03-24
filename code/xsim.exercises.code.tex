@@ -290,13 +290,13 @@
               \exp_not:N \@addtoreset { \xsim_get_parameter:nn {#1} {counter} } {####1},
             \xsim_get_parameter:nn {#1} {exercise-env} / the-counter .code:n =
               \cs_set:cpn {the \xsim_get_parameter:nn {#1} {counter} } {####1} ,
-            \xsim_get_parameter:nn {#1} {exercise-env} / exercise-template
+            \xsim_get_parameter:nn {#1} {exercise-env} / template
               .code:n = \xsim_set_parameter:nnn {#1} {exercise-template} {####1} ,
-            \xsim_get_parameter:nn {#1} {exercise-env} / solution-template
+            \xsim_get_parameter:nn {#1} {solution-env} / template
               .code:n = \xsim_set_parameter:nnn {#1} {solution-template} {####1} ,
-            \xsim_get_parameter:nn {#1} {exercise-env} / exercise-name
+            \xsim_get_parameter:nn {#1} {exercise-env} / name
               .code:n = \xsim_set_parameter:nnn {#1} {exercise-name} {####1} ,
-            \xsim_get_parameter:nn {#1} {exercise-env} / solution-name
+            \xsim_get_parameter:nn {#1} {solution-env} / name
               .code:n = \xsim_set_parameter:nnn {#1} {solution-name} {####1}
           }
         \xsim_new_environment:nn {#1} {exercise}

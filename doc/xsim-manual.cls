@@ -121,6 +121,8 @@
     printallsolutions ,
     printcollection ,
     printexercise ,
+    printgoal ,
+    printpoints ,
     printsolution ,
     printsolutions ,
     printsolutionstype ,
@@ -377,7 +379,9 @@
   }
 \ExplSyntaxOff
 
-\newcommand*\environ[1]{\beginenv*\Marg{\env{exercise}}}
+\newcommand*\environ{\@ifstar\environ@star\environ@nostar}
+\newcommand*\environ@star[1]{\beginenv*\Marg{\env*{#1}}}
+\newcommand*\environ@nostar[1]{\beginenv*\Marg{\env{#1}}}
 
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins,breakable}

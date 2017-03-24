@@ -65,7 +65,7 @@ using an up to date \TeX\ distribution, anyway.
 \section{Motivation and Background}
 
 It has been quite a while since I first published
-\pkg{exsheets}~\cite{pkg:exsheets} in Juni 2012.  Since then it has gained a
+\pkg{exsheets}~\cite{pkg:exsheets} in June 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
 shows (99~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
 questions, bug reports and feature requests improved it over the time.  It
@@ -132,7 +132,7 @@ or as global option
 or via the setup command:
 \begin{commands}
   \command{xsimsetup}[\marg{options}]
-    Set up \xsim's two package options and all other options described at
+    Set up \xsim's package options and all other options described at
     other places in the manual.
 \end{commands}
 
@@ -143,7 +143,7 @@ section~\vref{sec:package-options} \xsim\ has further options. Those can be
 \begin{options}
   \keyval*{toplevel}{value}
     A toplevel option.
-  \keyval*{sublebel}{value}\Module*{module}
+  \keyval*{sublevel}{value}\Module*{module}
     A sublevel option belonging to the module \module*{module}
 \end{options}
 Both kinds of options are set with \cs{xsimsetup}:
@@ -353,7 +353,8 @@ must) be set.  Here is the complete list:
     The counter used for the exercises of type \meta{type}.  If not explicitly
     set the counter with the same name as \parameter{exercise-env} is used.
     Otherwise the specified counter is used.  This enables to have different
-    types of exercises sharing a common counter.
+    types of exercises sharing a common counter.  This parameter can't be
+    changed afterwards.
   \paraval{number}{integer}
     An internal parameter that is used to keep track of the number of
     exercises of a type.  This parameter cannot be set or changed by the
@@ -362,8 +363,8 @@ must) be set.  Here is the complete list:
 
 It is possible to change some of the parameters after an exercise type has
 been defined.  Those include \parameter{exercise-name},
-\parameter{solution-name}, \parameter{exercise-template},
-\parameter{solution-template}, and \parameter{counter}:
+\parameter{solution-name}, \parameter{exercise-template}, and
+\parameter{solution-template}:
 \begin{commands}
   \command{SetExerciseParameter}[\marg{type}\marg{parameter}\marg{value}]
     Usable to set a single parameter to a new value.
@@ -372,9 +373,10 @@ been defined.  Those include \parameter{exercise-name},
     key/value pairs.
 \end{commands}
 If you try to set an already set but fixed parameter like
-\parameter{exercise-env} a warning will be written to the log file.  If you
-set \parameter{counter} to another value you must make sure that the new value
-is a valid and defined counter.
+\parameter{exercise-env} a warning will be written to the log file.  For all
+parameters that can be changed also options exist wich can be set via
+\cs{xsimsetup}.  They are explained in
+section~\vref{sec:environment-options-hooks}.
 
 \section{Exercise Properties}\label{sec:exercise-properties}
 
@@ -439,7 +441,7 @@ optional argument of the exercise environment.
     if used without value it gets the value \code{true} instead of an empty
     value.  If any other value is used the property is set to
     \code{false}.  A boolean option obviously cannot be unique.  The optional
-    \sarg\ takes precedence over the optional star, \ie, if both are present
+    \sarg\ takes precedence over the optional \barg, \ie, if both are present
     the property is boolean \emph{but not} unique.
 
     If used with the optional \narg\ a property is defined which won't get
@@ -483,7 +485,7 @@ available (after a compilation) throughout the document.
     \meta{goal}.
   \command{TotalExerciseTypeGoal}[\marg{type}\marg{goal}\marg{singular}\marg{plural}]
     Get the sum of goal \meta{goal} for all exercises of type \meta{type}.
-    \meta{singular} andf \meta{plural} are placed after the sum in the input
+    \meta{singular} and \meta{plural} are placed after the sum in the input
     stream depending on whether the sum equals~$1$ or not.
   \command{TotalExerciseGoal}[\marg{goal}\marg{singular}\marg{plural}]
     Get the sum of goal \meta{goal} for all exercises. \meta{singular} and
@@ -508,6 +510,9 @@ available (after a compilation) throughout the document.
   \command{ExerciseGoalValuePrint}[\marg{value}\marg{singular}\marg{plural}]
     Print \meta{value} and -- depending on wether the value equals $1$ or not --
     \meta{singular} or \meta{plural}.
+  \command{printgoal}[\marg{value}]
+    Print \meta{value} according to option \option{goal-print}.  Defined in
+    terms of \cs{ExerciseGoalValuePrint}.
   \command{printpoints}[\marg{type}]
     Print the sum of points for all exercises of type \meta{type} followed by
     an appropriate translation of the words \enquote{point} or
@@ -567,9 +572,9 @@ use exercises.  See section~\vref{sec:using-printing} for details on
 \emph{usage} of exercises and the difference to \emph{printing} an exercise
 and how to use exercise tags for selection.
 \begin{commands}
-  \command{DeclareExerciseTagging}{tag}
-    This defines an exercise tagging group name \meta{tag}.  It also defines a
-    property named \meta{tag}.  In addition to options are defines: and option
+  \command{DeclareExerciseTagging}[\marg{tag}]
+    This defines an exercise tagging group named \meta{tag}.  It also defines a
+    property named \meta{tag}.  In addition two options are defined: an option
     named \code{\meta{tag}} which can be used for selection and an boolean
     option \code{\meta{tag}/ignore-untagged}.
 \end{commands}
@@ -580,7 +585,7 @@ following code:
   \DeclareExerciseTagging{topics}
   \xsimsetup{tags/ingore-untagged=false}
 \end{sourcecode}
-this means that these options are available:
+This means that these options are available:
 \begin{options}
   \keyval{tags}{csv list of tags}
     Choose the set of tags whose associated exercises should be printed.
@@ -591,7 +596,7 @@ this means that these options are available:
     been chosen with the option \option{tags}.
   \keybool{ignore-tagging}\Module{topics}\Default{true}
     If set to true exercises with no topics will be printed even if tags have
-    been chosen with the option \option{tags}.
+    been chosen with the option \option{topics}.
 \end{options}
 
 It may happen that you choose certain tags for printing and want one or two
@@ -619,13 +624,13 @@ depending on different settings:
   \item If the exercise is \emph{used} the corresponding counter is stepped
     and the exercise is added to the \enquote{use list}.  The properties
     \property{counter} and \property{use} are updated accordingly.
-  \item If an exercise is printed then it is also used. An exercise that isn't
-    used cannot be printed.  Being printed means two things: being added to
-    the \enquote{print list} and being typeset at the position where the
-    exercise is placed in the source file.  If an exercise is \emph{not
-      printed but used} it means that the counter will be stepped.  This can
-    be useful for creating an exercise sheet only containing the solutions for
-    some exercises.
+  \item If an exercise is \emph{printed} then it is also \emph{used}. An
+    exercise that isn't used cannot be printed.  Being printed means two
+    things: being added to the \enquote{print list} and being typeset at the
+    position where the exercise is placed in the source file.  If an exercise
+    is \emph{not printed but used} it means that the counter will be stepped.
+    This can be useful for creating an exercise sheet only containing the
+    solutions for some exercises.
   \item If an exercise is printed certain hooks and template code is inserted
     around the environment body.
 \end{itemize}
@@ -675,12 +680,18 @@ the environments' names are the module names for the options (here using the
   \keyval{the-counter}{code}\Module{exercise}
     An interface for redefining the counter representation command
     \cs*{the\meta{counter}}.
-  \keyval{exercise-template}{template}\Module{exercise}
+  \keyval{template}{template}\Module{exercise}
     An interface for \cs{SetExerciseParameter}\Marg{exercise}%
     \Marg{exercise-template}\marg{template}.
-  \keyval{solution-template}{template}\Module{exercise}
+  \keyval{template}{template}\Module{solution}
     An interface for \cs{SetExerciseParameter}\Marg{exercise}%
     \Marg{solution-template}\marg{template}.
+  \keyval{name}{name}\Module{exercise}
+    An interface for \cs{SetExerciseParameter}\Marg{exercise}%
+    \Marg{exercise-name}\marg{name}.
+  \keyval{name}{name}\Module{solution}
+    An interface for \cs{SetExerciseParameter}\Marg{exercise}%
+    \Marg{solution-name}\marg{name}.
   \keyval{pre-hook}{code}\Module{exercise}\Default
     The code for the \emph{pre exercise hook} for exercises of the type
     \enquote{exercise}.
@@ -850,9 +861,7 @@ At last now an example using external files, collections and tags:
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
-There are two commands for printing the solutions to exercises -- one for
-printing the solutions of a specific exercise type and another for printing
-all solutions.
+There are different commands for printing the solutions to exercises:
 \begin{commands}
   \command{printsolutionstype}[\sarg\oarg{options}\marg{exercise type}]
     Prints the solutions of all used exercises of type \meta{exercise type}.
@@ -1343,7 +1352,7 @@ would use a real sectioning command for the title.
 
 See it in action:
 \begin{example}
-  \xsimsetup{exercise/exercise-template=runin}
+  \xsimsetup{exercise/template=runin}
   \renewcommand*\theexercise{\arabic{exercise}.}
   \begin{exercise}[subtitle=exsheets' runin,points=2.5]
     \lipsum[4]
@@ -1383,7 +1392,7 @@ The following example shows how you could mimick \pkg*{exsheets}'
 
 See it in action:
 \begin{example}
-  \xsimsetup{exercise/exercise-template=margin}
+  \xsimsetup{exercise/template=margin}
   \renewcommand*\theexercise{\arabic{exercise}.}
   \begin{exercise}[subtitle=exsheets' margin,points=2.5]
     \lipsum[4]
@@ -1432,7 +1441,7 @@ vertical layout.
             }
             {}%
           \XSIMputright\ExerciseTableCode
-            {#3 & \XSIMifblankTF{#5}{0}{#5} & \\ }%
+            {#3 & \XSIMifblankTF{#5}{\printgoal{0}}{\printgoal{#5}} & \\ }%
         }
         {}%
     }
@@ -1500,7 +1509,10 @@ layout.
     }%
     \ForEachUsedExerciseByType{%
       \XSIMifeqTF{#1}{\ExerciseTableType{#1}}
-        {\XSIMputright\ExerciseTableCode{\XSIMifblankTF{#5}{0}{#5} &}}
+        {%
+          \XSIMputright\ExerciseTableCode{%
+            \XSIMifblankTF{#5}{\printgoal{0}}{\printgoal{#5}} &}%
+        }
         {}%
     }%
     \XSIMputright\ExerciseTableCode{%
@@ -1689,7 +1701,7 @@ allows to easily create bonus exercises:
 
 The usage is now as follows:
 \begin{example}
-  \xsimsetup{exercise/exercise-template = bonus}
+  \xsimsetup{exercise/template = bonus}
   % set the boolean property to true
   \begin{exercise}[bonus]
     A bonus question.
@@ -1803,7 +1815,7 @@ three lines (if the file itself was called \code{test.tex}):
 \end{sourcecode}
 
 \section{All Exercise Examples}
-\xsimsetup{exercise/exercise-template = bonus}
+\xsimsetup{exercise/template = bonus}
 \printcollection[headings]{all exercises}
 
 \section{All Solution Examples}
