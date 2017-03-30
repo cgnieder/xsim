@@ -115,6 +115,7 @@
     IfInsideSolutionF ,
     IfInsideSolutionT ,
     IfInsideSolutionTF ,
+    loadxsimstyle ,
     numberofexercises ,
     numberofusedexercises ,
     points ,
@@ -149,6 +150,7 @@
     XSIMmixedcase ,
     XSIMputright ,
     xsimsetup ,
+    xsimstyle ,
     XSIMtranslate
   } ,
   add-envs = { exercise , solution } ,
@@ -387,7 +389,17 @@
 \tcbuselibrary{skins,breakable}
 \tcbset{enhanced,enhanced jigsaw}
 
-\newtcolorbox{bewareofthedog}{colback=red!5!white,colframe=red!75!black}
+\newtcolorbox{bewareofthedog}{
+  colback  = red!25!white ,
+  colframe = red ,
+  underlay={%
+    \path[draw=none]
+      (interior.south west)
+      rectangle node[red]{\Huge\bfseries !}
+      ([xshift=-4mm]interior.north west);
+    }%
+}
+
 \newtcolorbox{cnltxcode}[1][]{
   boxrule = 1pt ,
   colback = cnltxbg ,

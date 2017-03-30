@@ -51,7 +51,7 @@
 
 \begin{document}
 
-\section{Licence, Requirements and \textsc{README}}
+\section{Licence, Requirements and \textsc{readme}}
 \license
 
 \xsim\ loads the packages \pkg{expl3}~\cite{bnd:l3kernel},
@@ -61,6 +61,16 @@
 on a modern and up to date \TeX\ distribution such as \TeX~Live or MiK\TeX\ so
 no further action should be needed.  When you are using \xsim\ you should be
 using an up to date \TeX\ distribution, anyway.
+
+\begin{bewareofthedog}
+  Newer versions of \xsim\ may depend on newer versions of the support
+  packages.  Remember: it is always dangerous to update single packages.
+  Always update your \TeX\ distribution if you want an up to date version of a
+  package.  Be careful: if you're in the middle of an important project it
+  might be better to wait with the update until you've finished the project.
+  Every update might be breaking some things.
+\end{bewareofthedog}
+
 
 \section{Motivation and Background}
 
@@ -910,6 +920,12 @@ either of the conditions.
     \meta{collection name} are printed.
 \end{options}
 
+The conditions can be combined.  The following call will only print solutions
+from exercises in section~3 of chapter~2:
+\begin{sourcecode}
+  \printsolutions[chapter=2,section=3]
+\end{sourcecode}
+
 \begin{bewareofthedog}
   The selection per section or per chapter relies on the \emph{counter
     numbers} of the sections or chapters, respectively.  This means if section
@@ -1620,7 +1636,25 @@ predefined translations.
 
 \appendix
 
-\section{How to\dots}
+\section{Future Plans}
+
+\xsim\ is complete in so far as it is perfectly usable to create exams or
+exercise and solution sections in books with the most freedom in layout
+already.  But still there are features which would be useful additions.  Below
+I list all ideas that I currently plan to add to \xsim:
+\begin{itemize}
+  \item random selection of exercises from a collection.
+  \item a documentclass \code{xsim-exam} for creating exams; this class should
+    itself feature the possibility of creating different versions of an exam,
+    maybe already provide multiple choice questions and so on; one could also
+    think about automatic creation of running headers and footers, \ie, means
+    for changing the layout of the exam; following the spirit of \xsim\ this
+    should probably be done using templates as well.
+\end{itemize}
+I am very open to suggestions regarding features, both in general and
+specifically regarding the document class.
+
+\section{FAQ \& How to\dots}
 This section serves as a kind of gallery showing solutions to common
 problems.  I expect this section to grow over the years.  Some examples
 especially regarding other layouts are also shown in example files added to
@@ -1661,7 +1695,26 @@ Using the \option{clear-aux} option might help to reduce erroneous exercises.
 this is done so deleting the auxfile and doing a few fresh compilations may
 resolve your problems.
 
-\subsection{\dots Put a Star (or Other Symbol) in Exercises That Are Special?}
+\subsection{\code{! TeX capacity exceeded, sorry [text input levels=15].}
+  Why?}
+You probably tried to use an exercise or solution in a macro of some sort.
+This generally will fail\footnote{The reasons are not entirely clear to me.}.
+A minimal example to reproduce the problem:
+\begin{sourcecode}
+  \documentclass{article}
+  \usepackage{xsim}
+  \begin{document}
+  \def\x{%
+  \begin{exercise}
+  \end{exercise}%
+  }\x
+  \end{document}
+\end{sourcecode}
+But there should never be the need to hide the environments inside of a macro,
+anyway.
+
+\subsection{\dots Put a Star (or Another Symbol) in Headings of Exercises That
+  Are Special?}
 
 The code below shows one possible modification of an exercise template which
 allows to easily create bonus exercises:
@@ -1707,6 +1760,57 @@ The usage is now as follows:
     A bonus question.
   \end{exercise}
 \end{example}
+
+\subsection{\dots Create and Use \xsim\ Style Files?}
+
+\xsim\ offers you the possibility to create own \emph{style files}.  Let's say
+you want to have a style called \code{math-exam}.  Then you need to save all
+necessary definitions in a file called:
+\begin{center}
+  \code{xsim.math-exam.code.tex}
+\end{center}
+The first command in the file should be \cs{xsimstyle}\Marg{math-exam}.  This
+file can now be loaded into your document using
+\cs{loadxsimstyle}\Marg{math-exam}:
+\begin{sourcecode}
+  \documentclass[DIV=18,parskip=half]{scrartcl}
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+
+  \usepackage[clear-aux]{xsim}
+  \loadxsimstyle{math-exam}
+
+  \title{Math Exam \#3}
+  \date{2017-03-28}
+\end{sourcecode}
+
+In this style file stuff like template and property definitions should
+happen.  This is more or less a convenient way to
+\begin{itemize}
+  \item keep the preamble \enquote{clean} and
+  \item define re-usable styles without the need of copying the document
+    preamble to another document.
+\end{itemize}
+A style file is like a package or class file, \ie, \code{@} has category
+code~11 (letter).
+
+The formal description of the commands:
+\begin{commands}
+  \command{xsimstyle}[\sarg\marg{style name}]
+    The first command in a \xsim\ style file called \code{xsim.\meta{style
+        name}.code.tex} which defines the \xsim\ style \meta{style name}.  The
+    starred version activates expl3 syntax\footnote{Those uses who want this
+      will know what it means.  If you don't know what it means you will not
+      need it.}.
+  \command{loadxsimstyle}[\marg{csv list of style names}]
+    Load one or more styles into the document.
+\end{commands}
+
+\begin{bewareofthedog}
+  At the moment this mechanism offers no advantages over creating a custom
+  package or simply \cs*{input}ing a file.  Future versions might provide
+  additional features.
+\end{bewareofthedog}
 
 \subsection{\dots Print All Solutions Grouped by Section?}
 Here is an idea how to get a list of all solutions grouped by the section the

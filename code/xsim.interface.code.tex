@@ -470,15 +470,15 @@
 \NewDocumentCommand \printsolutions {sO{}}
   {
     \IfBooleanTF {#1}
-      { \xsim_print_all_solutions:nn { \c_true_bool } {#2} }
-      { \xsim_print_all_solutions:nn { \c_false_bool } {#2} }
+      { \xsim_print_all_solutions_per_type:nn { \c_true_bool } {#2} }
+      { \xsim_print_all_solutions_per_type:nn { \c_false_bool } {#2} }
   }
 
 \NewDocumentCommand \printallsolutions {sO{}}
   {
     \IfBooleanTF {#1}
-      { \xsim_print_id_solutions:nn { \c_true_bool } {#2} }
-      { \xsim_print_id_solutions:nn { \c_false_bool } {#2} }
+      { \xsim_print_all_solutions_per_id:nn { \c_true_bool } {#2} }
+      { \xsim_print_all_solutions_per_id:nn { \c_false_bool } {#2} }
   }
 
 % ----------------------------------------------------------------------------

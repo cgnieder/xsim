@@ -36,7 +36,8 @@
 
 \prop_new:N \l__xsim_printsolutions_conditions_prop
 
-\int_new:N  \l_xsim_printsolutions_heading_int
+\int_new:N  \l_xsim_printsolutions_section_int
+\int_new:N  \l_xsim_printsolutions_chapter_int
 
 \tl_new:N   \l__xsim_printsolutions_headings_template_tl
 \tl_new:N   \ExerciseSection
@@ -105,7 +106,7 @@
           {
             \__xsim_printsolutions_condition_true:
             \xsim_if_in_list:nxTF {section-value}
-              { #1-#2 == { \int_use:N \l_xsim_printsolutions_heading_int } }
+              { #1-#2 == { \int_use:N \l_xsim_printsolutions_section_int } }
               {
                 \tl_set:Nx \ExerciseSection
                   { \xsim_get_property:nnn {#1} {#2} {section} }
@@ -131,7 +132,7 @@
           {
             \__xsim_printsolutions_condition_true:
             \xsim_if_in_list:nxTF {chapter-value}
-              { #1-#2 == { \int_use:N \l_xsim_printsolutions_heading_int } }
+              { #1-#2 == { \int_use:N \l_xsim_printsolutions_chapter_int } }
               {
                 \tl_set:Nx \ExerciseChapter
                   { \xsim_get_property:nnn {#1} {#2} {chapter} }
@@ -215,6 +216,7 @@
 \cs_new_protected:Npn \__xsim_printsolutions_condition:nn #1#2
   { \bool_set_eq:cc {l__xsim_printsolutions_#1_condition_bool} {c_#2_bool} }
 
+% false if any condition is false for this solution:
 % #1: type
 % #2: id
 % #3: print|use
@@ -245,10 +247,7 @@
 \cs_new_protected:Npn \xsim_if_this_solution_do:nnnn #1#2#3#4
   {
     \xsim_if_solution_exists:nnT {#1} {#2}
-      {
-        \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4}
-%        \__xsim_printsolutions_if_conditions:nnnF {#1} {#2} {#3} {#4}
-      }
+      { \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4} }
   }
 
 % ----------------------------------------------------------------------------
@@ -306,11 +305,10 @@
     \group_end:
   }
 
-% TODO: add options (print subheadings, sort per type,...)
 % #1: boolean -- if true only the solutions of printed exercises will be
 %     output
 % #2: options
-\cs_new_protected:Npn \xsim_print_all_solutions:nn #1#2
+\cs_new_protected:Npn \xsim_print_all_solutions_per_type:nn #1#2
   {
     \xsim_foreach_exercise_type:n
       { \xsim_print_type_solutions:nnn {#1} {#2} {##1} }
@@ -319,7 +317,7 @@
 % #1: boolean -- if true only the solutions of printed exercises will be
 %     output
 % #2: options
-\cs_new_protected:Npn \xsim_print_id_solutions:nn #1#2
+\cs_new_protected:Npn \xsim_print_all_solutions_per_id:nn #1#2
   {
     \xsim_verbose:n { Printing~ solutions. }
     \group_begin:
@@ -363,27 +361,23 @@
     section           .choice: ,
     section/true      .code:n    =
       \__xsim_printsolutions_condition:nn  {per-section} {true}
-      \__xsim_printsolutions_condition:nn  {per-chapter} {false}
-      \int_set:Nn \l_xsim_printsolutions_heading_int { \value {section} } ,
+      \int_set:Nn \l_xsim_printsolutions_section_int { \value {section} } ,
     section/false     .code:n    =
       \__xsim_printsolutions_condition:nn  {per-section} {false} ,
     section/unknown   .code:n    =
       \__xsim_printsolutions_condition:nn  {per-section} {true}
-      \__xsim_printsolutions_condition:nn  {per-chapter} {false}
-      \int_set:Nn \l_xsim_printsolutions_heading_int {#1} ,
+      \int_set:Nn \l_xsim_printsolutions_section_int {#1} ,
     section  .default:n  = true ,
     section  .initial:n  = false ,
     chapter           .choice: ,
     chapter/true      .code:n    =
-      \__xsim_printsolutions_condition:nn  {per-section} {false}
       \__xsim_printsolutions_condition:nn  {per-chapter} {true}
-      \int_set:Nn \l_xsim_printsolutions_heading_int { \value {chapter} } ,
+      \int_set:Nn \l_xsim_printsolutions_chapter_int { \value {chapter} } ,
     chapter/false     .code:n    =
       \__xsim_printsolutions_condition:nn  {per-chapter} {false} ,
     chapter/unknown   .code:n    =
-      \__xsim_printsolutions_condition:nn  {per-section} {false}
       \__xsim_printsolutions_condition:nn  {per-chapter} {true}
-      \int_set:Nn \l_xsim_printsolutions_heading_int {#1} ,
+      \int_set:Nn \l_xsim_printsolutions_chapter_int {#1} ,
     chapter           .default:n  = true ,
     chapter           .initial:n  = false ,
     collection        .choice: ,

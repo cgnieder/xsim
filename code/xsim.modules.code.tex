@@ -184,7 +184,6 @@
         \c_space_tl
         xsim~ module~ `#1'~ (#2)
       ]
-    \ExplSyntaxOn
   }
 \cs_generate_variant:Nn \msg_error:nnnn {nnnx}
 
@@ -192,7 +191,21 @@
 % define a xsim module:
 % #1: name
 % #2: description
-\NewDocumentCommand \XSIMmodule {mm} { \__xsim_module:nn {#1} {#2} }
+\NewDocumentCommand \XSIMmodule {mm} { \__xsim_module:nn {#1} {#2}
+\ExplSyntaxOn }
+
+% --------------------------------------------------------------------------
+% style files
+\NewDocumentCommand \xsimstyle   {sm}
+  {
+    \__xsim_module:nn {#2} {}
+    \IfBooleanF {#1} { \ExplSyntaxOn }
+  }
+
+\cs_new_protected:Npn \xsim_style_options:nn #1#2
+  { \keys_define:nn {xsim/#1} {#2} }
+
+\NewDocumentCommand \loadxsimstyle {m} { \xsim_load_module:n {#1} }
 
 % --------------------------------------------------------------------------
 \tex_endinput:D
