@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{xsim,lipsum}
+
+\DeclareExerciseEnvironmentTemplate{item}
+  {\item[\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}]}
+  {}
+\xsimsetup{
+  exercise/template=item,
+  solution/template=item,
+  print-solutions/headings-template=none
+}
+
+\newenvironment{exercises}
+  {\section{Exercises}\description}
+  {\enddescription}
+
+\newenvironment{solutions}
+  {\section{Solutions}\description}
+  {\enddescription}
+  
+\begin{document}
+
+\begin{exercises}
+  \begin{exercise}
+    \lipsum[4]
+  \end{exercise}
+  \begin{solution}
+    \lipsum[3]
+  \end{solution}
+  \begin{exercise}
+    \lipsum[12]
+  \end{exercise}
+  \begin{solution}
+    \lipsum[23]
+  \end{solution}
+\end{exercises}
+
+\begin{solutions}
+  \printsolutions
+\end{solutions}
+
+\end{document}
