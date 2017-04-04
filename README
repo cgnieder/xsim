@@ -51,6 +51,7 @@ The xsim package consists of the example files:
    code-and-output.tex, code-and-output.pdf
    collections.tex, collections.pdf
    crossref.tex, crossref.pdf
+   description-list.tex, description-list.pdf
    different-point-types.tex, different-point-types.pdf
    difficulties.tex, difficulties.pdf
    floating.tex, floating.pdf

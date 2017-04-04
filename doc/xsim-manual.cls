@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2017/03/19]
+\ProvidesClass{xsim-manual}[2017/04/14]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -174,10 +174,18 @@
   add-listings-options = {
     numberstyle = \tiny\noncopy
   } ,
-  index-setup = { level = \section , noclearpage } ,
-  makeindex-setup = { columns = 2 , columnsep = 1em }
+  index-setup = { level = \section } ,
+  makeindex-setup = { columns = 2 , columnsep = 1em } ,
+  module-sep = {\texttt{/}}%
 }
 
+\renewcommand*\cnltx@module@text[2]{%
+  \begingroup
+    \reversemarginpar
+    \setlength\marginparsep{1em}%
+    \marginnote{\hfill\llap{\module#1{#2}\cnltx@module@sep}}%
+  \endgroup
+}
 
 \RequirePackage{accsupp}
 \newcommand*\noncopy[1]{%
@@ -186,9 +194,18 @@
   \EndAccSupp{}%
 }
 
-\expandafter\def\csname libertine@figurestyle\endcsname{LF}
+\def\libertine@figurestyle{LF}
 \RequirePackage[libertine]{newtxmath}
-\expandafter\def\csname libertine@figurestyle\endcsname{OsF}
+\def\libertine@figurestyle{OsF}
+
+\RequirePackage{refcount}
+
+\renewcommand*\footref[1]{%
+  \begingroup
+    \unrestored@protected@xdef\@thefnmark{\getrefnumber{#1}}%
+  \endgroup
+  \@footnotemark
+}
 
 \newcommand*\eTeX{%
   \texorpdfstring
@@ -390,7 +407,7 @@
 \tcbset{enhanced,enhanced jigsaw}
 
 \newtcolorbox{bewareofthedog}{
-  colback  = red!25!white ,
+  colback  = red!10!white ,
   colframe = red ,
   underlay={%
     \path[draw=none]

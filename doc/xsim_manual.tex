@@ -1190,7 +1190,8 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Expands \meta{code} like \cs*{edef} does and leaves the result in the
     input stream.
   \command{XSIMmixedcase}[\marg{code}]
-    Converts \meta{code} to mixed case: \\
+    Converts the full expansion\footref{fn:romannumeral} of \meta{code} to
+    mixed case: \\
     \verbcode+\XSIMmixedcase{this is some text}+ \XSIMmixedcase{this is some
       text} \\
     \emph{This command expands \meta{code} before converting it}.
@@ -1428,7 +1429,7 @@ output:
   \DeclareExerciseHeadingTemplate{per-chapter}
     {\section*{\XSIMtranslate{per-chapter-heading}}}
 \end{sourcecode}
-Section~\ref{sec:exerc-transl} shows how the translations are defined.
+Section~\vref{sec:exerc-transl} shows how the translations are defined.
 
 \subsubsection{The \code{default} Table Template}\label{sec:table-templ-default}
 This template is the one used for grading tables per default.  It has a
@@ -1844,7 +1845,7 @@ For this manual we then get the following list\footnote{Taking care of the
     \stepcounter{sections}
   }
     
-\section{The \pkg*{xsimverb} package}
+\section{The \pkg*{xsimverb} package}\label{sec:xsimverb-package}
 \xsim\ comes bundled with another package called \pkg{xsimverb}.  This package
 loads a very small subset of \xsim\ which allows to create environments which
 write their contents verbatim to external files.  It provides the following
@@ -1918,6 +1919,37 @@ three lines (if the file itself was called \code{test.tex}):
   % bye bye
 \end{sourcecode}
 
+\section{Example Documents Coming With This Package}
+The repository of this package\footnote{GitHub:
+  \url{https://github.com/cgnieder/xsim/}, CTAN:
+  \url{http://www.ctan.org/pkg/xsim/}} includes a number of example documents
+demonstrating how different aspects of this package work or how different
+kinds of problems can be solved or how different kinds of layouts can be
+achieved.  They include:
+\begin{description}
+  \item \code{boxed-headings.tex} -- the headings of exercises put in a
+    \pkg{tcolorbox};
+  \item \code{code-and-output.tex} -- an example for the \pkg{xsimverb}
+    package, see section~\vref{sec:xsimverb-package};
+  \item \code{collections.tex} -- demonstrating collections, see
+    section~\vref{sec:collecting-exercises};
+  \item \code{crossref.tex} -- hyperlinks from exercises to solutions and
+    back;
+  \item \code{description-list.tex} -- exercises as items in a
+    \env*{description} list;
+  \item \code{different-point-types.tex} -- defining custom point types and
+    using them, see section~\vref{sec:goals};
+  \item \code{difficulties.tex} -- defining custom tags and using them, see
+    section~\vref{sec:tags};
+  \item \code{floating.tex} -- exercises as floats;
+  \item \code{listings.tex} -- using code listings inside of exercises and
+    solutions;
+  \item \code{multiplechoice.tex} -- defining a multiple choice exercise type
+    with custom properties;
+  \item \code{various.tex} -- the original test file of the package author,
+    demonstrating various aspects of the package.
+\end{description}
+
 \section{All Exercise Examples}
 \xsimsetup{exercise/template = bonus}
 \printcollection[headings]{all exercises}
@@ -1925,6 +1957,7 @@ three lines (if the file itself was called \code{test.tex}):
 \section{All Solution Examples}
 \printsolutions
 
+\clearpage
 \printbibliography
 
 \end{document}
