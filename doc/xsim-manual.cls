@@ -407,7 +407,7 @@
 \tcbset{enhanced,enhanced jigsaw}
 
 \newtcolorbox{bewareofthedog}{
-  colback  = red!10!white ,
+  colback  = white ,
   colframe = red ,
   underlay={%
     \path[draw=none]

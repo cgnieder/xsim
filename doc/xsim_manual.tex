@@ -388,6 +388,13 @@ parameters that can be changed also options exist wich can be set via
 \cs{xsimsetup}.  They are explained in
 section~\vref{sec:environment-options-hooks}.
 
+\begin{bewareofthedog}
+  All exercises of a type use the parameters
+  (\eg, \parameter{exercise-template}) that's \emph{currently active}.  If you
+  want exercises with a different look you should use different exercises
+  types.
+\end{bewareofthedog}
+
 \section{Exercise Properties}\label{sec:exercise-properties}
 
 \subsection{Predefined Properties}
@@ -1190,20 +1197,20 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Expands \meta{code} like \cs*{edef} does and leaves the result in the
     input stream.
   \command{XSIMmixedcase}[\marg{code}]
-    Converts the full expansion\footref{fn:romannumeral} of \meta{code} to
-    mixed case: \\
+    Converts the full expansion\footnote{This is a \cs*{romannumeral}
+      expansion~\cite{texsx:romannumeral}.\label{fn:romannumeral}} of
+    \meta{code} to mixed case: \\
     \verbcode+\XSIMmixedcase{this is some text}+ \XSIMmixedcase{this is some
       text} \\
     \emph{This command expands \meta{code} before converting it}.
   \command{XSIMputright}[\meta{macro}\marg{code}]
     Extends the macro definition of \meta{macro} with \meta{code} putting it
-    to the right.  This is like a local version of the LaTeX kernel macro
-    \cs*{g@addto@macro}.
+    to the right.  This is more or less a local version of the LaTeX kernel
+    macro \cs*{g@addto@macro}.
   \expandable\command{XSIMifeq\TF}[\marg{code 1}\marg{code
     2}\marg{true}\marg{false}]
-    Checks if the full expansion\footnote{This is a \cs*{romannumeral}
-      expansion~\cite{texsx:romannumeral}.\label{fn:romannumeral}} of
-    \meta{code 1} and \meta{code 2} is the same tokenlist.
+    Checks if the full expansion\footref{fn:romannumeral} of \meta{code 1} and
+    \meta{code 2} is the same tokenlist.
   \expandable\command{XSIMifblank\TF}[\marg{code}\marg{true}\marg{false}]
     Checks if the full expansion\footref{fn:romannumeral} of \meta{code} is
     blank (\ie, if it is empty or only consists of spaces). 
@@ -1926,7 +1933,7 @@ The repository of this package\footnote{GitHub:
 demonstrating how different aspects of this package work or how different
 kinds of problems can be solved or how different kinds of layouts can be
 achieved.  They include:
-\begin{description}
+\begin{itemize}
   \item \code{boxed-headings.tex} -- the headings of exercises put in a
     \pkg{tcolorbox};
   \item \code{code-and-output.tex} -- an example for the \pkg{xsimverb}
@@ -1948,9 +1955,24 @@ achieved.  They include:
     with custom properties;
   \item \code{various.tex} -- the original test file of the package author,
     demonstrating various aspects of the package.
-\end{description}
+\end{itemize}
 
 \section{All Exercise Examples}
+
+\begin{bewareofthedog}
+  You will notice that some exercises from
+  section~\vref{sec:template-examples} look differently in this section.  That
+  is because all exercises of a type use the template that's \emph{currently
+    active}.  If you want exercises with a different look you should use
+  different exercises types.
+\end{bewareofthedog}
+
+The following list is created with this code:
+\begin{sourcecode}
+  \xsimsetup{exercise/template = bonus}
+  \printcollection[headings]{all exercises}
+\end{sourcecode}
+
 \xsimsetup{exercise/template = bonus}
 \printcollection[headings]{all exercises}
 
