@@ -101,23 +101,15 @@
 
 \prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
   {
-    \bool_if_exist:NTF \g_xsim_final_bool
-      {
-        \bool_if:NTF \g_xsim_final_bool
-          { \prg_return_true: }
-          { \prg_return_false: }
-      }
+    \bool_if:NTF \g_xsim_final_bool
+      { \prg_return_true: }
       { \prg_return_false: }
   }
 
 \prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
   {
-    \bool_if_exist:NTF \g_xsim_verbose_bool
-      {
-        \bool_if:NTF \g_xsim_verbose_bool
-          { \prg_return_true: }
-          { \prg_return_false: }
-      }
+    \bool_if:NTF \g_xsim_verbose_bool
+      { \prg_return_true: }
       { \prg_return_false: }
   }
 
@@ -130,17 +122,13 @@
 
 \prg_new_conditional:Npnn \xsim_if_clear_aux: {p,T,F,TF}
   {
-    \bool_if_exist:NTF \g_xsim_final_bool
-      {
-        \bool_if:NTF \g_xsim_final_bool
-          { \prg_return_false: }
-          {
-            \bool_if:NTF \g_xsim_clear_aux_bool
-              { \prg_return_true: }
-              { \prg_return_false: }
-          }
-      }
+    \xsim_if_final:TF
       { \prg_return_false: }
+      {
+        \bool_if:NTF \g_xsim_clear_aux_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
   }
 
 \cs_new_protected:Npn \xsim_verbose:n #1

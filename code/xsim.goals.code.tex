@@ -46,6 +46,7 @@
           {#1}
         \seq_put_right:Nn \l__xsim_goals_seq {#1}
         \fp_gzero_new:c {g__xsim_goal_#1_fp}
+        \fp_gzero_new:c {l__xsim_current_goal_#1_fp}
         \fp_if_exist:cF {g__xsim_total_goal_#1_fp}
           { \fp_new:c {g__xsim_total_goal_#1_fp} }
         \fp_if_exist:cF {g__xsim_total_goal_recorded_#1_fp}
@@ -87,23 +88,31 @@
 % #2: id
 \cs_new_protected:Npn \xsim_update_goals:nn #1#2
   {
-    \seq_map_inline:Nn \l__xsim_goals_seq
+    \xsim_foreach_goal:n
       { \xsim_update_goal:nnn {#1} {#2} {##1} }
   }
 \cs_generate_variant:Nn \xsim_update_goals:nn {nV}
 
+\cs_new_protected:Npn \xsim_foreach_goal:n #1
+  { \seq_map_inline:Nn \l__xsim_goals_seq {#1} }
+
 % #1: exercise type
-% #2: goal
-% #3: value
-\cs_new_protected:Npn \xsim_addto_goal:nnn #1#2#3
+% #2: id
+% #3: goal
+% #4: value
+\cs_new_protected:Npn \xsim_addto_goal:nnnn #1#2#3#4
   {
-    \xsim_if_goal_exists:nT {#2}
+    \xsim_if_goal_exists:nT {#3}
       {
-        \fp_gadd:cn {g__xsim_goal_#2_fp} {#3}
-        \fp_gadd:cn {g__xsim_#1_goal_#2_fp} {#3}
+        \fp_gadd:cn {g__xsim_goal_#3_fp} {#4}
+        \fp_gadd:cn {g__xsim_#1_goal_#3_fp} {#4}
+        \fp_add:cn {l__xsim_current_goal_#3_fp} {#4}
+        % \fp_add:Nn \l__xsim_tmpa_fp {#4}
+        % \xsim_set_property:nnnx {#1} {#2} {#3}
+        %   { \fp_to_decimal:N \l__xsim_tmpa_fp }
       }
   }
-\cs_generate_variant:Nn \xsim_addto_goal:nnn {x}
+\cs_generate_variant:Nn \xsim_addto_goal:nnnn {xx,nVnx}
 
 % #1: exercise type
 % #2: id

@@ -313,24 +313,24 @@
 \NewDocumentCommand \TotalExerciseGoal {mmm}
   { \xsim_print_total_goal_sum:nnn {#1} {#2} {#3} }
 
-\NewDocumentCommand \AddtoExerciseTypeGoal {mmm}
-  { \xsim_addto_goal:nnn {#1} {#2} {#3} }
+\NewDocumentCommand \AddtoExerciseTypeGoal {mmmm}
+  { \xsim_addto_goal:nnnn {#1} {#2} {#3} {#4} }
 
 \NewDocumentCommand \AddtoExerciseGoal {mm}
-  { \xsim_addto_goal:xnn {\ExerciseType} {#1} {#2} }
+  { \xsim_addto_goal:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \ExerciseGoalValuePrint {mmm}
   { \xsim_print_goal:nnn {#1} {#2} {#3} }
 
-\NewDocumentCommand \AddtoExerciseTypeGoalPrint {mmmmm}
+\NewDocumentCommand \AddtoExerciseTypeGoalPrint {mmmmmm}
   {
-    \xsim_addto_goal:nnn {#1} {#2} {#3}
-    \xsim_print_goal:nnn {#3} {#4} {#5}
+    \xsim_addto_goal:nnnn {#1} {#2} {#3} {#4}
+    \xsim_print_goal:nnn {#4} {#5} {#6}
   }
 
 \NewDocumentCommand \AddtoExerciseGoalPrint {mmmm}
   {
-    \xsim_addto_goal:xnn {\ExerciseType} {#1} {#2}
+    \xsim_addto_goal:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2}
     \xsim_print_goal:nnn {#2} {#3} {#4}
   }
 

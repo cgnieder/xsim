@@ -649,4 +649,6 @@
   solution-template = tcolorbox
 }
 
+\RequirePackage{hyperref,bookmark}
+
 \endinput

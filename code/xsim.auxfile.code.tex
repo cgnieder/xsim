@@ -111,8 +111,8 @@
       { \prop_gremove:cn {g__xsim_list_#1_prop} {#2} }
     \seq_if_in:cVT {g__xsim_list_#1_seq} \l__xsim_tmpa_str
       { \seq_gremove_all:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str }
-    \seq_if_in:cVT {g__xsim_recorded_list_#1_seq} \l__xsim_tmpa_str
-      { \seq_gremove_all:cV {g__xsim_recorded_list_#1_seq} \l__xsim_tmpa_str }
+    \seq_if_in:cVT {g__xsim_list_recorded#1_seq} \l__xsim_tmpa_str
+      { \seq_gremove_all:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str }
   }
 \cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
 
@@ -142,7 +142,6 @@
     \xsim_verbose:n { Updating~ list~ `#1'. }
     \seq_remove_duplicates:c {g__xsim_list_#1_seq}
     \seq_remove_duplicates:c {g__xsim_list_recorded_#1_seq}
-    % TODO: strings
     \str_set:Nx \l__xsim_tmpa_str
       { \seq_use:cn {g__xsim_list_#1_seq} {} }
     \str_set:Nx \l__xsim_tmpb_str
