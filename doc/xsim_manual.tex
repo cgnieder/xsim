@@ -1060,6 +1060,9 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Tests wether the exercise property \meta{property} has been set for the
     current exercise.  Inside the \meta{true} branch you can refer to the
     retrieved value either with \code{\#1} or with \cs{PropertyValue}
+  \command{SetExerciseProperty}[\marg{type}\marg{id}\marg{property}\marg{value}]
+    Set the property \meta{property} of exercise of type \meta{type} and id
+    \meta{id} to \meta{value}.
   \expandable\command{IfExerciseBooleanProperty\TF}[\marg{property}%
     \marg{true}\marg{false}]
     Checks wether the boolean property \meta{property} has value \code{true}

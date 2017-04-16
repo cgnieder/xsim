@@ -128,6 +128,9 @@
   { \xsim_make_property_alias:nn {#1} {#2} }
 \@onlypreamble \DeclareExercisePropertyAlias
 
+\NewDocumentCommand \SetExerciseProperty {mmm+m}
+  { \xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
+
 \DeclareExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
 
