@@ -29,6 +29,9 @@
 
 \xsim_load_modules:n {properties,exercises}
 
+\msg_new:nnn {xsim} {goal-unknown}
+  { The~ goal~ `#1'~ has~ never~ been~ declared~ \msg_line_context: }
+
 \seq_new:N \l__xsim_goals_seq
 \tl_new:N  \l_xism_grading_table_template_tl
 \tl_new:N  \l_xism_grading_table_exercise_type_tl
