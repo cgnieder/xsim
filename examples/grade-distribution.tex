@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{xsim}
+
+\xsimsetup{grades/split=;}
+
+\DeclareGradeDistribution{
+  1   = 1 ;
+  1,5 = .9167 ;
+  2   = .8333 ;
+  2,5 = .75 ;
+  3   = .6667 ;
+  3,5 = .5833 ;
+  4   = .5
+}
+
+\begin{document}
+
+\begin{exercise}[points=4]
+\end{exercise}
+
+\begin{exercise}[points=4]
+\end{exercise}
+
+\begin{exercise}[points=4]
+\end{exercise}
+
+\begin{exercise}[points=4,bonus-points=10]
+\end{exercise}
+
+\begin{exercise}[points=4]
+\end{exercise}
+
+\begin{exercise}[points=4]
+\end{exercise}
+
+
+\goalsforgrade{points + bonus-points}{1,5}
+\goalsforgrade{points+bonus-points}{2}
+
+\pointsforgrade{1}
+\pointsforgrade{1,5}
+\pointsforgrade{2}
+\pointsforgrade{2,5}
+\pointsforgrade{3}
+\pointsforgrade{3,5}
+\pointsforgrade{4}
+
+\totalgoalforgrade{1}
+\totalgoalforgrade{1,5}
+\totalgoalforgrade{2}
+\totalgoalforgrade{2,5}
+\totalgoalforgrade{3}
+\totalgoalforgrade{3,5}
+\totalgoalforgrade{4}
+
+\end{document}

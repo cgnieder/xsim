@@ -36,6 +36,7 @@
 \fp_new:N   \l__xsim_grade_round_fp
 \fp_zero:N  \l__xsim_grade_round_fp
 \prop_new:N \l__xsim_relative_grades_prop
+\tl_new:N   \l__xsim_grade_split_tl
 
 \cs_new:Npn \__xsim_fp_round_to_half:n #1
   { round( 2*(#1),0)/2 }
@@ -55,7 +56,7 @@
 
 \cs_new_protected:Npn \xsim_declare_relative_grades:n #1
   {
-    \seq_set_split:Nnn \l__xsim_tmpa_seq {;} {#1}
+    \seq_set_split:NVn \l__xsim_tmpa_seq \l__xsim_grade_split_tl {#1}
     \seq_map_inline:Nn \l__xsim_tmpa_seq
       { \__xsim_declare_relative_grade:w ##1 \q_stop }
     \xsim_verbose:n {Declaring~ relative~ grade~ distribution}
@@ -71,32 +72,81 @@
   }
 
 % #1: grade
+% #2: sum of points
+% #3: code after grade requirement if == 1
+% #4: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_grade:nnnn #1#2#3#4
+  {
+    \prop_get:NnNTF \l__xsim_relative_grades_prop {#1} \l__xsim_tmpa_tl
+      {
+        \xsim_print_goal:nnn
+          {
+            min(
+              \__xsim_grade_rounded:nn
+                { \l__xsim_tmpa_tl }
+                {#2} ,
+              #2
+            )
+          }
+          {#3}
+          {#4}
+      }
+      { \msg_error:nnn {xsim} {grade-unknown} {#1} }
+  }
+
+% #1: grade
 % #2: goal
-\cs_new_protected:Npn \xsim_get_grade_goal:nn #1#2
+% #3: code after grade requirement if == 1
+% #4: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_grade_goal:nnnn #1#2#3#4
   {
     \xsim_if_goal_exists:nTF {#2}
       {
-        \prop_get:NnNTF \l__xsim_relative_grades_prop {#1} \l__xsim_tmpa_fp
-          {
-            \fp_to_decimal:n
-              {
-                min(
-                  \__xsim_grade_rounded:nn
-                    { \l__xsim_tmpa_fp }
-                    { \use:c {g__xsim_total_goal_#2_fp} } ,
-                  \use:c {g__xsim_total_goal_#2_fp}
-                )
-              }
-          }
-          { \msg_error:nnn {xsim} {grade-unknown} {#1} }
+        \xsim_get_grade:nnnn
+          {#1}
+          { \use:c {g__xsim_total_goal_#2_fp} }
+          {#3}
+          {#4}
       }
       { \msg_error:nnn {xsim} {goal-unknown} {#2} }
   }
 
-\keys_define:nn { xsim / grades }
+% #1: grade
+% #2: goal list (separated with +)
+% #3: code after grade requirement if == 1
+% #4: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_grade_requirement:nnnn #1#2#3#4
+  {
+    \seq_set_split:Nnn \l__xsim_tmpa_seq {+} {#2}
+    \fp_zero:N \l__xsim_tmpa_fp
+    \seq_map_inline:Nn \l__xsim_tmpa_seq
+      {
+        \fp_add:Nn \l__xsim_tmpa_fp
+          { \use:c {g__xsim_total_goal_\tl_trim_spaces:n {##1} _fp} }
+      }
+    \xsim_get_grade:nnnn {#1} { \l__xsim_tmpa_fp } {#3} {#4}
+  }
+
+% #1: grade
+% #2: code after grade requirement if == 1
+% #3: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_absolute_grade_requirement:nnn #1#2#3
+  {
+    \fp_zero:N \l__xsim_tmpa_fp
+    \xsim_foreach_goal:n
+      {
+        \fp_add:Nn \l__xsim_tmpa_fp
+          { \use:c {g__xsim_total_goal_##1_fp} }
+      }
+    \xsim_get_grade:nnnn {#1} { \l__xsim_tmpa_fp } {#2} {#3}
+  }
+
+\keys_define:nn {xsim/grades}
   {
     round .fp_set:N   = \l__xsim_grade_round_fp ,
-    half  .bool_set:N = \l__xsim_grades_half_bool
+    half  .bool_set:N = \l__xsim_grades_half_bool ,
+    split .tl_set:N   = \l__xsim_grade_split_tl ,
+    split .initial:n  = {,}
   }
 
 % ----------------------------------------------------------------------------

@@ -129,6 +129,28 @@
   }
 
 % ----------------------------------------------------------------------------
+\NewDocumentCommand \pointsforgrade {m}
+  {
+    \GetGradeRequirementForGoal {#1} {points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \goalsforgrade {mm}
+  {
+    \GetGradeRequirementForGoals {#2} {#1}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \totalgoalforgrade {m}
+  {
+    \GetGradeRequirement {#1}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+% ----------------------------------------------------------------------------
 
 \DeclareExerciseType {exercise} {
   exercise-env      = exercise ,

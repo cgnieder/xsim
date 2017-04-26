@@ -338,6 +338,19 @@
   }
 
 % ----------------------------------------------------------------------------
+\NewDocumentCommand \DeclareGradeDistribution {m}
+  { \xsim_declare_relative_grades:n {#1} }
+
+\NewDocumentCommand \GetGradeRequirementForGoal {mmmm}
+  { \xsim_get_grade_goal:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \GetGradeRequirementForGoals {mmmm}
+  { \xsim_get_grade_requirement:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \GetGradeRequirement {mmm}
+  { \xsim_get_absolute_grade_requirement:nnn {#1} {#2} {#3} }
+
+% ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseTagging {m}
   { \xsim_new_tag_type:n {#1} }
