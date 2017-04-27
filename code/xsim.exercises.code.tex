@@ -362,7 +362,6 @@
                 counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
                 use = true
               }
-            % see TODO below:
             \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
           }
           {
@@ -370,31 +369,10 @@
               { use = false , print = false }
           }
         \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
-        % TODO:
-        % remove goal properties and set them at the end of the exercise?
-        % this could allow for points (and other goals) added in the exercise
-        % body to be added automatically…
-        % \xsim_foreach_goal:n
-        %   {
-        %     \fp_zero:c {l__xsim_current_goal_##1_fp}
-        %     \xsim_addto_goal:nVnx {#1} \g_xsim_exercise_id_tl {##1}
-        %       { 0 \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
-        %     \xsim_unset_property:nVn {#1} \g_xsim_exercise_id_tl {##1}
-        %   }
       }
   }
 
-\cs_new_protected:Npn \xsim_stop_exercise:n #1
-  {
-    % this is too late for the template...
-    % \xsim_foreach_goal:n
-    %   {
-    %     \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
-    %       { \fp_to_decimal:c {l__xsim_current_goal_##1_fp} }
-    %   }
-    % \xsim_exercise_if_use:nVT {#1} \g_xsim_exercise_id_tl
-    %   { \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl }
-  }
+\cs_new_protected:Npn \xsim_stop_exercise:n #1 {}
 
 % ----------------------------------------------------------------------------
 % #1: type

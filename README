@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/04/16 v0.5b
+XSIM 2017/04/27 v0.6
 
   eXercise Sheets IMproved
 
@@ -32,6 +32,7 @@ The xsim package consists of the code files:
    xsim.environments.code.tex
    xsim.exercises.code.tex
    xsim.goals.code.tex
+   xsim.grades.code.tex
    xsim.interface.code.tex
    xsim.modules.code.tex
    xsim.properties.code.tex
@@ -55,6 +56,7 @@ The xsim package consists of the example files:
    different-point-types.tex, different-point-types.pdf
    difficulties.tex, difficulties.pdf
    floating.tex, floating.pdf
+   grade-distribution.tex, grade-distribution.pdf
    listings.tex, listings.pdf
    multiplechoice.tex, multiplechoice.pdf
    various.tex, various.pdf
