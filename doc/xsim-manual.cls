@@ -54,6 +54,7 @@
     AddtoExerciseGoalPrint ,
     AddtoExerciseTypeGoal ,
     AddtoExerciseTypeGoalPrint ,
+    blank ,
     collectexercises ,
     collectexercisestype ,
     collectexercisesstop ,
@@ -166,9 +167,11 @@
     NewDocumentEnvironment ,
     numberofcolumns ,
     numberofproblems ,
+    pkg ,
     tcolorbox ,
     toprule ,
-    whileboolexpr
+    whileboolexpr ,
+    xsim
   } ,
   pre-output = { \let\marginpar\marginnote } ,
   add-listings-options = {

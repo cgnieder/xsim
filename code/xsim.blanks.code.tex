@@ -25,7 +25,7 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\XSIMmodule{blanks}{basic functionality of the package}
+\XSIMmodule{blanks}{add blanks, cloze}
 
 \bool_new:N \l__xsim_blank_width_bool
 \bool_new:N \l__xsim_blank_linespread_bool
@@ -36,13 +36,22 @@
 \dim_new:N  \l__xsim_blank_line_minimum_length_dim
 \box_new:N  \l__xsim_blank_box
 
-\cs_new_protected:Npn \xsim_write_blank:n #1 {#1}
+\cs_new_protected:Npn \xsim_write_cloze_blank:n #1 {#1}
+\cs_new_protected:Npn \xsim_write_cloze_filled:n #1 {#1}
 
 \keys_define:nn {xsim/blank}
   {
-    style               .code:n    =
-      \cs_set_protected:Npn \xsim_write_blank:n {#1} ,
-    style               .initial:n = \underline ,
+    blank-style         .code:n    =
+      \cs_set_protected:Npn \xsim_write_cloze_blank:n ##1 {#1} ,
+    blank-style         .initial:n = \underline {#1} ,
+    filled-style        .code:n    =
+      \cs_set_protected:Npn \xsim_write_cloze_filled:n ##1 {#1} ,
+    filled-style        .initial:n = \underline {#1} ,
+    style               .meta:n    =
+      {
+        blank-style = #1 ,
+        filled-style = #1
+      } ,
     scale               .tl_set:N  = \l__xsim_blank_scale_tl ,
     scale               .initial:n = 1 ,
     width               .code:n    =
@@ -67,7 +76,7 @@
       { \hbox_set:Nn \l__xsim_blank_box { $ \m@th \mathpalette{}{#1} $ } }
       { \hbox_set:Nn \l__xsim_blank_box {#1} }
     \xsim_if_inside_solution:TF
-      { \xsim_write_blank:n {#1} }
+      { \xsim_write_cloze_filled:n {#1} }
       {
         \bool_if:NTF \l__xsim_blank_width_bool
           { \__xsim_blank_skip:V \l__xsim_blank_dim }
@@ -88,23 +97,27 @@
       { \l__xsim_tmpa_dim > \l__xsim_blank_line_minimum_length_dim }
       {
         \mode_if_math:TF
-          { \xsim_write_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
+          { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
           {
             \dim_do_while:nn { \l__xsim_tmpa_dim > \c_zero_dim }
               {
+                % I wonder what the correct l3 way would be -- if there is
+                % one, yet:
+                \tex_hfil:D
                 \tex_penalty:D \hyphenpenalty
+                \tex_hfilneg:D
                 \dim_compare:nTF
                   { \l__xsim_tmpa_dim < \l__xsim_blank_line_increment_dim }
-                  { \xsim_write_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
+                  { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
                   {
-                    \xsim_write_blank:n
+                    \xsim_write_cloze_blank:n
                       { \skip_horizontal:N \l__xsim_blank_line_increment_dim }
                   }
                 \dim_sub:Nn \l__xsim_tmpa_dim { \l__xsim_blank_line_increment_dim }
               }
           }
       }
-      { \xsim_write_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
+      { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
   }
 \cs_generate_variant:Nn \__xsim_blank_skip:n { V }
 

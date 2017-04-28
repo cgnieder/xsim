@@ -426,13 +426,12 @@
       \IfNoValueF {#2} { \keys_set:nn {xsim/blank} {#2} }
       \mode_if_vertical:TF
         {
-          \IfBooleanF {#1} { \noindent }
-          \xsim_blank:n {#3}
-          \IfBooleanF {#1}
+          \IfBooleanTF {#1}
+            { \xsim_blank:n {#3} }
             {
               \bool_if:NT \l__xsim_blank_linespread_bool
                 { \linespread { \l__xsim_blank_linespread_tl } \selectfont }
-              \par
+              \noindent \null \xsim_blank:n {#3} \par
             }
         }
         { \xsim_blank:n {#3} }

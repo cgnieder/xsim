@@ -1635,13 +1635,65 @@ predefined translations.
     \translationtable
 \end{longtable}
 
-\section{Other Commands}
+\section{Cloze Tests and Blank Lines}
 
-% \blank
+Similar to \pkg{exsheets} \xsim\ provides a command \cs{blank}:
+\begin{commands}
+  \command{blank}[\sarg\oarg{options}\marg{text to be filled in}]
+    Creates a blank in normal text or in an exercise but fills the text of its
+    argument if inside a solution.  If used at the \emph{begin of a paragraph}
+    \cs{blank} will do two things: it will set the linespread according to an
+    option explained below and will insert \cs*{par} after the lines.  If you
+    don't want that use the starred version.
+\end{commands}
 
-% \printexercise
+Those are the options for customization:
+\begin{options}
+  \keyval{blank-style}{code}\Module{blank}\Default{\cs*{underline}\Marg{\#1}}
+    Instructions for typesetting the blank cloze.  Refer to the filled in
+    space with \code{\#1}.
+  \keyval{filled-style}{code}\Module{blank}\Default{\cs*{underline}\Marg{\#1}}
+    Instructions for typesetting the filled cloze.  Refer to the filled in text
+    with \code{\#1}
+  \keyval{style}{code}
+    Shortcut for setting both \option{blank-style} and \option{filled-style}
+    at once.
+  \keyval{scale}{decimal number}\Module{blank}\Default{\code{1}}
+    Scales the blank to \meta{decimal number} times its natural width.
+  \keyval{width}{dim}\Module{blank}\Default
+    Sets the blank to a width of \meta{dim}.  This takes precendence over
+    \option{scale}.
+  \keyval{linespread}{decimal number}\Module{blank}\Default{\code{1}}
+    Set the linespread for the blank lines. This only has an effect if
+    \cs{blank} is used at the begin of a paragraph.
+  \keyval{line-increment}{dim}\Module{blank}\Default{\code{1pt}}
+    The blank line is built in multiples of this value.  If the value is too
+    large you may end up with uneven lines.  If the value is too small you may
+    end up with a non-ending compilation.  Experiment with values to find the
+    suiting one for your use case.
+  \keyval{line-minimum-length}{dim}\Module{blank}\Default{\code{2em}}
+     The minimal length a line must have before it is built step by step.
+\end{options}
 
-% \printsolution
+\begin{example}
+  This is a \blank{blank} outside in normal text.
+  \begin{exercise}
+    Try to fill in \blank[width=4cm]{these} blanks.  All of them
+    \blank{are created} by using the \cs{blank} \blank{command}.
+  \end{exercise}
+  \xsimsetup{blank/filled-style=\textcolor{red}{#1}}
+  \begin{solution}[print]
+    Try to fill in \blank[width=4cm]{these} blanks.  All of them
+    \blank{are created} by using the \cs{blank} \blank{command}.
+  \end{solution}
+\end{example}
+A number of empty lines are easily created by setting the \option{width}
+option:
+\begin{example}
+  Write up the pros and cons of \xsim\ over \pkg{exsheets}:
+  
+  \blank[width=4.8\linewidth,linespread=1.5]{}
+\end{example}
 
 \edef\lastsection{\arabic{section}}
 
