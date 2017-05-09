@@ -45,14 +45,16 @@
 \DeclareExerciseProperty!  {id}
 \DeclareExerciseProperty!  {ID}
 \DeclareExerciseProperty   {counter}
+\DeclareExerciseProperty   {counter-value}
 \DeclareExerciseProperty * {print}
 \DeclareExerciseProperty *-{print!}
 \DeclareExerciseProperty * {use}
+\DeclareExerciseProperty * {used}
 \DeclareExerciseProperty *-{use!}
-\ifdefined\chapter
+\XSIMifchapterT{
   \DeclareExerciseProperty {chapter-value}
   \DeclareExerciseProperty {chapter}
-\fi
+}
 \DeclareExerciseProperty  {section-value}
 \DeclareExerciseProperty  {section}
 

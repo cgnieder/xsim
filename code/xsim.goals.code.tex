@@ -127,6 +127,7 @@
   }
 \cs_generate_variant:Nn \xsim_if_goal_value:nnnnTF {xx}
 
+% ----------------------------------------------------------------------------
 % a function which can be used to modify how the numbers of a goal are
 % printed:
 \cs_new_protected:Npn \__xsim_print_goal:n #1 {#1}
@@ -154,6 +155,101 @@
 \cs_new_protected:Npn \xsim_print_total_goal_sum:nnn #1#2#3
   { \xsim_print_goal:nnn { \use:c {g__xsim_total_goal_#1_fp} } {#2} {#3} }
 
+% ----------------------------------------------------------------------------
+% the same as the last to functions but for a list of goals:
+
+% #1: fp variable to be set
+% #2: list of goals (separated with +)
+% #3: function to be applied to goal names
+\cs_new_protected:Npn \__xsim_exercise_goals_sum_aux:Nnn #1#2#3
+  {
+    \seq_set_split:Nnn \l__xsim_tmpa_seq {+} {#2}
+    \seq_set_map:NNn \l__xsim_tmpb_seq \l__xsim_tmpa_seq {#3}
+    \fp_set:Nn #1 { \seq_use:Nn \l__xsim_tmpb_seq {+} }
+  }
+
+% #1: fp variable
+% #2: exercise type
+% #3: list of goals (separated with +)
+\cs_new_protected:Npn \__xsim_exercise_goals_sum:Nnn #1#2#3
+  {
+    \__xsim_exercise_goals_sum_aux:Nnn #1 {#3}
+      { \exp_not:c {g__xsim_total_#2_goal_ \tl_trim_spaces:n {##1} _fp} }
+  }
+
+% #1: fp variable
+% #2: list of goals (separated with +)
+\cs_new_protected:Npn \__xsim_exercise_goals_sum:Nn #1#2
+  {
+    \__xsim_exercise_goals_sum_aux:Nnn #1 {#2}
+      { \exp_not:c {g__xsim_total_goal_ \tl_trim_spaces:n {##1} _fp} }
+  }
+
+% #1: exercise type
+% #2: list of goals (separated with +)
+% #3: sum == 1
+% #4: sum != 1
+\cs_new_protected:Npn \xsim_print_goals_sum:nnnn #1#2#3#4
+  {
+    \__xsim_exercise_goals_sum:Nnn \l__xsim_tmpa_fp {#1} {#2}
+    \xsim_print_goal:nnn { \l__xsim_tmpa_fp } {#3} {#4}
+  }
+
+% #1: list of goals (separated with +)
+% #2: sum == 1
+% #3: sum != 1
+\cs_new_protected:Npn \xsim_print_total_goals_sum:nnn #1#2#3
+  {
+    \__xsim_exercise_goals_sum:Nn \l__xsim_tmpa_fp {#1}
+    \xsim_print_goal:nnn { \l__xsim_tmpa_fp } {#2} {#3}
+  }
+
+% ----------------------------------------------------------------------------
+% #1: exercise type
+% #2: goal
+% #3: relation and value
+\prg_new_conditional:Npnn \xsim_if_goal_sum:nnn #1#2#3 {p,T,F,TF}
+  {
+    \fp_compare:nTF
+      { ( \use:c {g__xsim_total_#1_goal_#2_fp} ) #3 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: exercise type
+% #2: list of goals (separated with +)
+% #3: relation and value
+\prg_new_protected_conditional:Npnn \xsim_if_goals_sum:nnn #1#2#3 {T,F,TF}
+  {
+    \__xsim_exercise_goals_sum:Nnn \l__xsim_tmpa_fp {#1} {#2}
+    \fp_compare:nTF
+      { ( \l__xsim_tmpa_fp ) #3 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: goal
+% #2: relation and value
+\prg_new_conditional:Npnn \xsim_if_total_goal_sum:nn #1#2 {p,T,F,TF}
+  {
+    \fp_compare:nTF
+      { ( \use:c {g__xsim_total_goal_#1_fp} ) #2 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: list of goals (separated with +)
+% #2: relation and value
+\prg_new_protected_conditional:Npnn \xsim_if_total_goals_sum:nn #1#2 {T,F,TF}
+  {
+    \__xsim_exercise_goals_sum:Nn \l__xsim_tmpa_fp {#1}
+    \fp_compare:nTF
+      { ( \l__xsim_tmpa_fp ) #2 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
 % #1: exercise type
 % #2: goal
 % #3: value

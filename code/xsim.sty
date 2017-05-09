@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2017/04/28}
+\tl_const:Nn \c_xsim_date_tl                 {2017/05/09}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
-\tl_const:Nn \c_xsim_version_minor_number_tl {6}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {a}
+\tl_const:Nn \c_xsim_version_minor_number_tl {7}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -107,33 +107,3 @@
 \AtEndDocument { \xsim_do_rerun: }
 
 \tex_endinput:D
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-HISTORY:
-
-v0.0  2017/02/09 - start with coding the first ideas
-v0.1  2017/03/19 - first draft which actually seems to do everything as
-                   planned
-v0.2  2017/03/21 - bugfix in the verbwrite module
-                 - add `use!' and `print!' properties
-                 - add the concepts of `noupdate' and `boolean' properties
-v0.4  2017/03/24 - \IfExerciseBooleanPropertyTF
-                 - \GetExercisePropertyTF, \PropertyValue
-                 - \printallsolutions
-                 - \UseExerciseTemplate
-                 - bug fix in solution environments: now get printed again
-                   when option `print=true' is used
-                 - bug fix to the translations of the solution list headings:
-                   exercise name instead of exercise type is now printed
-                 - \AddtoExerciseTypeGoal, \AddtoExerciseGoal
-                   \AddtoExerciseTypeGoalPrint, \AddtoExerciseGoalPrint,
-                   \ExerciseGoalValuePrint
-                 - \addpoints, \addbonus, \points, \printgoal
-v0.5  2017/03/30 - add style file mechanism
-                 - make solution print conditions `section' and `chapter'
-                   combinable
-v0.5a 2017/04/15 - fix wrong translation of the `default-heading'
-v0.5b 2017/04/16 - add \SetExerciseProperty
-v0.6  2017/04/27 - official interface for grade distributions
-                 - refine hook management (environment module)
-v0.6a 2017/04/28 - refine \blank command, add documentation for said command

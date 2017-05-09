@@ -164,5 +164,16 @@
 \cs_new_protected:Npn \xsim_foreach_new_list_entry:nn #1#2
   { \seq_map_inline:cn {g__xsim_list_#1_seq} {#2} }
 
+% length of a list:
+% #1: name
+\cs_new:Npn \xsim_list_count:n #1
+  { \seq_count:c {g__xsim_list_recorded_#1_seq} }
+
+% item of a list:
+% #1: name
+% #2: integer
+\cs_new:Npn \xsim_list_item:nn #1#2
+  { \seq_item:cn {g__xsim_list_recorded_#1_seq} {#2} }
+
 % ----------------------------------------------------------------------------
 \tex_endinput:D

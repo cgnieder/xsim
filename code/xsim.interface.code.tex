@@ -310,11 +310,35 @@
 \NewDocumentCommand \IfExerciseGoalSingularF {mm}
   { \IfExerciseGoalF {#1} {=1} {#2} }
 
+\NewDocumentCommand \IfExerciseTypeGoalsSumTF {mmm+m+m}
+  { \xsim_if_goals_sum:nnnTF {#1} {#2} {#3} {#4} {#5} }
+
+\NewDocumentCommand \IfExerciseTypeGoalsSumT {mmm+m}
+  { \IfExerciseTypeGoalsSumTF {#1} {#2} {#3} {#4} {} }
+
+\NewDocumentCommand \IfExerciseTypeGoalsSumF {mmm+m}
+  { \IfExerciseTypeGoalsSumTF {#1} {#2} {#3} {} {#4} }
+
+\NewDocumentCommand \IfExerciseGoalsSumTF {mm+m+m}
+  { \xsim_if_total_goals_sum:nnTF {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \IfExerciseGoalsSumT {mm+m}
+  { \IfExerciseGoalsSumTF {#1} {#2} {#3} {} }
+
+\NewDocumentCommand \IfExerciseGoalsSumF {mm+m}
+  { \IfExerciseGoalsSumTF {#1} {#2} {} {#3} }
+
 \NewDocumentCommand \TotalExerciseTypeGoal {mmmm}
   { \xsim_print_goal_sum:nnnn {#1} {#2} {#3} {#4} }
 
+\NewDocumentCommand \TotalExerciseTypeGoals {mmmm}
+  { \xsim_print_goals_sum:nnnn {#1} {#2} {#3} {#4} }
+
 \NewDocumentCommand \TotalExerciseGoal {mmm}
   { \xsim_print_total_goal_sum:nnn {#1} {#2} {#3} }
+
+\NewDocumentCommand \TotalExerciseGoals {mmm}
+  { \xsim_print_total_goals_sum:nnn {#1} {#2} {#3} }
 
 \NewDocumentCommand \AddtoExerciseTypeGoal {mmmm}
   { \xsim_addto_goal:nnnn {#1} {#2} {#3} {#4} }
@@ -500,6 +524,16 @@
 
 \NewDocumentCommand \xsimsetup {m}
   { \xsim_setup:n {#1} }
+
+% ----------------------------------------------------------------------------
+\NewExpandableDocumentCommand \XSIMifchapterTF {+m+m}
+  { \xsim_if_chapter:TF {#1} {#2} }
+
+\NewExpandableDocumentCommand \XSIMifchapterT {+m}
+  { \xsim_if_chapter:T {#1} }
+
+\NewExpandableDocumentCommand \XSIMifchapterF {+m}
+  { \xsim_if_chapter:F {#1} }
 
 % ----------------------------------------------------------------------------
 \tex_endinput:D

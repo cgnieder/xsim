@@ -244,7 +244,29 @@
           \tl_set:Nn \ExerciseType {#1}
           \tl_set:Nn \ExerciseID {#2}
           \str_if_eq:nnT {#4} {exercise}
-            { \xsim_set_properties:nnn {#1} {#2} { print=true } }
+            {
+              \xsim_if_boolean_property:nnnF {#1} {#2} {used}
+                {
+                  \xsim_step_exercise_counter:nn {#1} {#2}
+                  \xsim_set_properties:nnx {#1} {#2}
+                    {
+                      page-value = \arabic{page} ,
+                      page = \thepage ,
+                      section-value = \arabic{section} ,
+                      section = \thesection
+                    }
+                }
+              \xsim_if_property_exist:nT {chapter}
+                {
+                  \xsim_set_properties:nnx {#1} {#2}
+                    {
+                      chapter-value = \arabic{chapter} ,
+                      chapter = \thechapter
+                    }
+                }
+              \xsim_set_properties:nnn {#1} {#2}
+                { print=true , used=true }
+            }
           \use:x
             {
               \exp_not:N \par

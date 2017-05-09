@@ -407,9 +407,13 @@ Exercise like the \env{exercise} environment and possibly others defined with
   \propval{ID}{text}
     Holds the user id of an exercise if defined.  Otherwise it is equal to
     \property{id}.
-  \propval{counter}{integer}
-    Holds the counter value of an exercise.  \emph{Cannot be set by the
+  \propval{counter}{text}
+    Holds the counter value represenation of an exercise (\ie, what you
+    usually know as \cs*{the\meta{counter}}).  \emph{Cannot be set by the
       user}.
+  \propval{counter-value}{integer}
+    Holds the counter value of an exercise (\ie, what you usually know as
+    \cs*{arabic}\marg{counter}).  \emph{Cannot be set by the user}.
   \propval{subtitle}{text}
     Holds the subtitle of an exercise.
   \propval{points}{number}
@@ -426,15 +430,39 @@ Exercise like the \env{exercise} environment and possibly others defined with
   \propbool{use\bang}
     Holds a special usage boolean of an exercise, see
     page~\pageref{property:print!}.
+  \propbool{used}
+    True if an exercise has been used at least once.  For an existing exercise
+    this is only false for exercises that have been collected (\cf\
+    section~\vref{sec:collecting-exercises}).
   \propval{tags}{csv list of tags}
     Holds the list of tags the exercise should be associated with.
   \propval{topics}{csv list of topics}
     Holds the list of topics the exercise should be associated with.
+  \propval{page}{text}
+    Holds the page counter value represenation of an exercise (\ie, what you
+    usually know as \cs*{thepage}).
+  \propval{page-value}{integer}
+    Holds the page counter value of an exercise (\ie, what you usually know as
+    \cs*{arabic}\Marg{page}).
+  \propval{section}{text}
+    Holds the section counter value represenation of an exercise (\ie, what
+    you usually know as \cs*{thesection}).
+  \propval{section-value}{integer}
+    Holds the section counter value of an exercise (\ie, what you usually know
+    as \cs*{arabic}\Marg{section}).
+  \propval{chapter}{text}
+    Holds the chapter counter value represenation of an exercise (\ie, what
+    you usually know as \cs*{thechapter}).  \emph{Only if a command
+      \cs*{chapter} \emph{and} a counter \code{chapter} exist.}
+  \propval{chapter-value}{integer}
+    Holds the chapter counter value of an exercise (\ie, what you usually know
+    as \cs*{arabic}\Marg{chapter}).  \emph{Only if a command \cs*{chapter}
+      \emph{and} a counter \code{chapter} exist.}
 \end{properties}
 
 Some of these \acsp*{prop} are fixed and cannot be set by the user.  Those
-include \property{id} and \property{counter}.  The others can be set using the
-optional argument of the exercise environment.
+include \property{id}, \property{counter}, and \property{counter-value}.  The
+others can be set using the optional argument of the exercise environment.
 
 \begin{example}
   \begin{exercise}[subtitle={This is a subtitle},points=4,bonus-points=1]
@@ -504,10 +532,23 @@ available (after a compilation) throughout the document.
     Get the sum of goal \meta{goal} for all exercises of type \meta{type}.
     \meta{singular} and \meta{plural} are placed after the sum in the input
     stream depending on whether the sum equals~$1$ or not.
+    \command{TotalExerciseTypeGoals}[\marg{type}\marg{list of
+      goals}\marg{singular}\marg{plural}]
+    Get the sum of goal all goals in \meta{list of goals} for all exercises of
+    type \meta{type}.  The goal names in \meta{list of goals} must be
+    separated with \code{+}. \meta{singular} and \meta{plural} are placed
+    after the sum in the input stream depending on whether the sum equals~$1$
+    or not.
   \command{TotalExerciseGoal}[\marg{goal}\marg{singular}\marg{plural}]
     Get the sum of goal \meta{goal} for all exercises. \meta{singular} and
     \meta{plural} are placed after the sum in the input stream depending on
     whether the sum equals~$1$ or not.
+  \command{TotalExerciseGoals}[\marg{list of
+    goals}\marg{singular}\marg{plural}]
+    Get the sum of goal all goals in \meta{list of goals} for all exercises.
+    The goal names in \meta{list of goals} must be separated with
+    \code{+}. \meta{singular} and \meta{plural} are placed after the sum in
+    the input stream depending on whether the sum equals~$1$ or not.
   \command{AddtoExerciseTypeGoal}[\marg{type}\marg{goal}\marg{value}]
     Adds \meta{value} to the goal \meta{goal} of exercise type \meta{type}.
   \command{AddtoExerciseTypeGoalPrint}[\marg{type}\marg{goal}\marg{value}%
@@ -579,6 +620,28 @@ be changed using the following option:
   \keyval{goal-print}{code}\Default{\#1}
     How to format goal values.  Use \code{\#1} to refer to the actual number.
 \end{options}
+
+At last some examples for a custom command: let's say you want a command which
+prints the complete sum for all exercises of all exercise types of both
+\property{points} \emph{and} \property{bonus-points} added up:
+\begin{sourcecode}
+  \NewDocumentCommand\printsumofpointsandbonus{}{%
+    \TotalExerciseGoals{points+bonus-points}
+      {\,\XSIMtranslate{point}}
+      {\,\XSIMtranslate{points}}%
+  }
+\end{sourcecode}
+Here is how you could mimick the command \cs*{totalpoints} from
+\pkg{exsheets}:
+\begin{sourcecode}
+  \NewDocumentCommand\pointsandbonus{}{%
+    \TotalExerciseGoal{points}{}{}%
+    \IfExerciseGoalsSumF{bonus-points}{=0}
+      {\,(+\,\TotalExerciseGoal{bonus-points}{}{})}%
+    \,\XSIMtranslate{points}%
+  }
+\end{sourcecode}
+
 
 \subsection{A Special Kind of Property: Exercise Tags}\label{sec:tags}
 
@@ -769,8 +832,8 @@ be printed.  By choosing certain tags (see section~\vref{sec:tags}) inside
 each collection you could even cherry-pick exercises from the external file.
 
 \subsection{Usage}
-A collection must be declared in the preamble.  Using a pair of commands
-explained below exercises between those commands are added to the
+\emph{A collection must be declared in the preamble.}  Using a pair of
+commands explained below exercises between those commands are added to the
 corresponding collection but not printed.  After a collection is completed the
 collection can be printed as often as needed.
 \begin{commands}
@@ -807,6 +870,14 @@ Valid options are the following:
 Those options can also be set via \cs{xsimsetup} using the module
 \module{print-collection}.
 
+\begin{bewareofthedog}
+  Please be aware that exercises are not used or printed while they are
+  collected.  Also their counters are \emph{not stepped} during the process.
+  This only happens when they are printed the first time, \cf\ the
+  \property{used} property.  At that time also the properties \property{page},
+  \property{section} and \property{chapter} are set.
+\end{bewareofthedog}
+
 The usage should be clear:
 \begin{example}
   \collectexercises{foo}
@@ -820,7 +891,7 @@ Once the collection is closed it can be printed:
   \printcollection{foo}
 \end{example}
 Actually a collection can be printed \emph{before} it is opened, too.  This
-needs at least two compilations, though.
+needs \emph{at least} two compilations, though.
 
 You can open several collections at the same time:
 \begin{sourcecode}
@@ -875,6 +946,14 @@ At last now an example using external files, collections and tags:
   % collection `foo-medium' now contains all exercises of file `foo.tex'
   % tagged with `difficulty=medium'
 \end{sourcecode}
+
+\begin{bewareofthedog}
+  The recommended usage is similar to the last example.  It is safer printing
+  a collection only once and only after it has been collected.  You probably
+  also will make sure that the exercises in a collection are unique, \ie, that
+  an exercises is not part of several collections -- at least not if both
+  collections are printed in the same document.
+\end{bewareofthedog}
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
@@ -1036,6 +1115,14 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Checks if the value of the goal \meta{goal} of the current exercise
     equals~$1$.  This is the same as \\
     \cs{IfExerciseGoalTF}\marg{goal}\Marg{=1}\marg{true}\marg{false}.
+  \command{IfExerciseTypeGoalsSum\TF}[\marg{type}\marg{list of
+    goals}\marg{relation and value}\marg{true}\marg{false}]
+    Ckecks the sum of all goals in \meta{list of goals} for the exercises of
+    type \meta{type} against \meta{relation and value}.
+  \command{IfExerciseGoalsSum\TF}[\marg{type}\marg{list of
+    goals}\marg{relation and value}\marg{true}\marg{false}]
+    Ckecks the sum of all goals in \meta{list of goals} for all exercises of
+    all types against \meta{relation and value}.
   \command{TotalExerciseTypeGoal}[\marg{goal}\marg{type}\marg{singular}\marg{plural}]
     Print the sum of goal \meta{goal} for the exercises of type \meta{type}
     and append \meta{singular} or \meta{plural} depending on wether the sum
@@ -1199,6 +1286,9 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \command{XSIMexpandcode}[\marg{code}]
     Expands \meta{code} like \cs*{edef} does and leaves the result in the
     input stream.
+  \expandable\command{XSIMifchapter\TF}[\marg{true}\marg{false}]
+    Returns \meta{true} if both a macro \cs*{chapter} and a counter
+    \code{chapter} are defined and \meta{false} otherwise.
   \command{XSIMmixedcase}[\marg{code}]
     Converts the full expansion\footnote{This is a \cs*{romannumeral}
       expansion~\cite{texsx:romannumeral}.\label{fn:romannumeral}} of
@@ -1707,12 +1797,12 @@ already.  But still there are features which would be useful additions.  Below
 I list all ideas that I currently plan to add to \xsim:
 \begin{itemize}
   \item random selection of exercises from a collection.
-  \item a documentclass \code{xsim-exam} for creating exams; this class should
-    itself feature the possibility of creating different versions of an exam,
-    maybe already provide multiple choice questions and so on; one could also
-    think about automatic creation of running headers and footers, \ie, means
-    for changing the layout of the exam; following the spirit of \xsim\ this
-    should probably be done using templates as well.
+  \item a document class \code{xsim-exam} for creating exams; this class
+    should itself feature the possibility of creating different versions of an
+    exam, maybe already provide multiple choice questions and so on; one could
+    also think about automatic creation of running headers and footers, \ie,
+    means for changing the layout of the exam; following the spirit of \xsim\
+    this should probably be done using templates as well.
 \end{itemize}
 I am very open to suggestions regarding features, both in general and
 specifically regarding the document class.

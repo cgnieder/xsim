@@ -30,7 +30,6 @@
 \xsim_load_modules:n {base}
 
 \prop_new:N \g__xsim_collections_prop
-\prop_new:N \g__xsim_collected_exercises_prop
 \bool_new:N \l____xsim_active_bool
 
 \msg_new:nnn {xsim} {collection-exists}
@@ -167,7 +166,6 @@
   {
     \xsim_verbose:n
       { Adding~ exercise~ type~ `#2'~ id~ `#3'~ to~ collection~ `#1'. } 
-    \prop_gput:Nnn \g__xsim_collected_exercises_prop {#1::#2::#3} {}
     \xsim_add_to_list:nn {collection:#1} {#2-#3}
   }
 
@@ -212,7 +210,6 @@
 % #3: id
 \prg_new_conditional:Npnn \xsim_if_in_collection:nnn #1#2#3 {T,F,TF}
   {
-    % \prop_if_in:NnTF \g__xsim_collected_exercises_prop {#1::#2::#3}
     \xsim_if_in_list:nnTF {collection:#1} {#2-#3}
       { \prg_return_true: }
       { \prg_return_false: }
@@ -318,6 +315,7 @@
     \xsim_get_collections:
     \xsim_activate_collection:n   {all~ exercises}
   }
+
 \AtEndDocument
   {
     \xsim_deactivate_collection:n {all~ exercises}

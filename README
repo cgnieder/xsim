@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/04/28 v0.6a
+XSIM 2017/05/09 v0.7
 
   eXercise Sheets IMproved
 
@@ -44,6 +44,7 @@ The xsim package consists of the code files:
 --------------------------------------------------------------------------
 The xsim package consists of the documentation files:
    README
+   xsim.history, xsim.ideas
    xsim_manual.tex, xsim_manual.pdf
    xsim-manual.cls
 --------------------------------------------------------------------------
@@ -59,6 +60,7 @@ The xsim package consists of the example files:
    grade-distribution.tex, grade-distribution.pdf
    listings.tex, listings.pdf
    multiplechoice.tex, multiplechoice.pdf
+   pointsums.tex, pointsums.pdf
    various.tex, various.pdf
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please

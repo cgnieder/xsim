@@ -203,12 +203,12 @@
         \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} {#1}
         \tl_set_rescan:Nnx \l__xsim_tmpb_tl {} {#2}
         \__xsim_loop_item:VVxxxx
-          \l__xsim_tmpa_tl
-          \l__xsim_tmpb_tl
-          { \xsim_get_property:nnn {#1} {#2} {counter} }
-          { \xsim_get_property:nnn {#1} {#2} {subtitle} }
-          { \xsim_get_property:nnn {#1} {#2} {points} }
-          { \xsim_get_property:nnn {#1} {#2} {bonus-points} }
+          \l__xsim_tmpa_tl                                    % #1
+          \l__xsim_tmpb_tl                                    % #2
+          { \xsim_get_property:nnn {#1} {#2} {counter} }      % #3
+          { \xsim_get_property:nnn {#1} {#2} {subtitle} }     % #4
+          { \xsim_get_property:nnn {#1} {#2} {points} }       % #5
+          { \xsim_get_property:nnn {#1} {#2} {bonus-points} } % #6
        }
   }
 
@@ -252,6 +252,19 @@
     \cs_if_exist:cF { c@ number of \xsim_get_parameter:nn {#1} {exercise-env} s }
       { \newcounter { number of \xsim_get_parameter:nn {#1} {exercise-env} s } }
   }
+
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_step_exercise_counter:nn #1#2
+  {
+    \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
+    \xsim_set_properties:nnx {#1} {#2}
+      {
+        counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
+        counter-value = \arabic { \xsim_get_parameter:nn {#1} {counter} }
+      }
+  }
+\cs_generate_variant:Nn \xsim_step_exercise_counter:nn {nV}
 
 % #1: type
 \cs_new_protected:Npn \xsim_declare_exercise_type:nn #1#2
@@ -333,7 +346,8 @@
             section-value = \arabic{section} ,
             section = \thesection ,
             page-value = \arabic{page} ,
-            page = \thepage
+            page = \thepage ,
+            used = false
           }
         \xsim_if_property_exist:nT {chapter}
           {
@@ -356,12 +370,17 @@
         \xsim_exercise_if_use:nVTF {#1} \g_xsim_exercise_id_tl
           {
             \stepcounter { \xsim_get_parameter:nn {#1} {number} }
-            \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
-            \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
+            % don't step if in active collection:
+            \xsim_if_collections_active:F
               {
-                counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
-                use = true
+                \xsim_step_exercise_counter:nV {#1} \g_xsim_exercise_id_tl
+                \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+                  {used}
+                  {true}
               }
+            \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+              {use}
+              {true}
             \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
           }
           {

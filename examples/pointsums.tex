@@ -1,0 +1,30 @@
+\documentclass{article}
+\usepackage{xsim,lipsum}
+
+\NewDocumentCommand\printcompletepoints{}{%
+  \TotalExerciseGoals{points+bonus-points}
+    {\,\XSIMtranslate{point}}
+    {\,\XSIMtranslate{points}}%
+}
+
+\NewDocumentCommand\pointsandbonus{}{%
+  \TotalExerciseGoal{points}{}{}%
+  \IfExerciseGoalsSumTF{bonus-points}{=0}
+    {}
+    {\,(+\,\TotalExerciseGoal{bonus-points}{}{})}%
+  \,\XSIMtranslate{points}%
+}
+
+\begin{document}
+
+\begin{exercise}[points=3,bonus-points=1]
+  \lipsum[4]
+\end{exercise}
+
+\begin{exercise}[points=8,bonus-points=3]
+  \lipsum[4]
+\end{exercise}
+
+\printtotalpoints\ vs.\@ \printcompletepoints\ vs.\@ \pointsandbonus
+
+\end{document}
