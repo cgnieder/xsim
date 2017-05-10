@@ -1,0 +1,108 @@
+% ----------------------------------------------------------------------------
+% the XSIM package - random module
+% 
+%   eXercise Sheets IMproved
+% 
+% ----------------------------------------------------------------------------
+% Clemens Niederberger
+% Web:    https://github.com/cgnieder/xsim
+% E-Mail: contact@mychemistry.eu
+% ----------------------------------------------------------------------------
+% Copyright 2017 Clemens Niederberger
+% 
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   http://www.latex-project.org/lppl.txt
+% and version 1.3 or later is part of all distributions of LaTeX
+% version 2005/12/01 or later.
+% 
+% This work has the LPPL maintenance status `maintained'.
+% 
+% The Current Maintainer of this work is Clemens Niederberger.
+% ----------------------------------------------------------------------------
+% If you have any ideas, questions, suggestions or bugs to report, please
+% feel free to contact me.
+% ----------------------------------------------------------------------------
+\XSIMmodule{random}{randomly select exercises from collections}
+
+\xsim_load_modules:n {collections}
+
+\seq_new:N \g__xsim_random_list_seq
+\int_new:N \g__xsim_random_list_id_int
+
+% #1: collection
+% #2: number of items
+\cs_new_protected:Npn \xsim_generate_random_list:nn #1#2
+  {
+    \xsim_if_collection_exists:nTF {#1}
+      {
+        \int_gincr:N \g__xsim_random_list_id_int
+        \int_compare:nNnTF { \xsim_list_count:n {collection:#1} } = {0}
+          { \xsim_rerun: }
+          {
+            % TODO: determine list count minus excluded exercises
+            \int_compare:nNnTF {#2} > { \xsim_list_count:n {collection:#1} }
+              {
+                \int_set:Nn \l__xsim_tmpa_int
+                  { \xsim_list_count:n {collection:#1} }
+              }
+              { \int_set:Nn \l__xsim_tmpa_int {#2} }
+            \seq_gclear:N \g__xsim_random_list_seq
+            \int_do_until:nNnn
+              { \seq_count:N \g__xsim_random_list_seq } = { \l__xsim_tmpa_int }
+              {
+                \tl_set:Nx \l__xsim_tmpa_tl
+                  { \fp_eval:n { randint( \xsim_list_count:n {collection:#1} ) } }
+                \seq_if_in:NVF \g__xsim_random_list_seq
+                  \l__xsim_tmpa_tl
+                  {
+                    \seq_gput_right:NV \g__xsim_random_list_seq
+                      \l__xsim_tmpa_tl
+                  }
+              }
+            \seq_sort:Nn \g__xsim_random_list_seq
+              {
+                \int_compare:nNnTF {##1} > {##2}
+                  { \sort_return_swapped: }
+                  { \sort_return_same: }
+              }
+            \xsim_save_random_list:nN
+              { \int_to_alph:n { \g__xsim_random_list_id_int } }
+              \g__xsim_random_list_seq
+          }
+      }
+      { \msg_error:nnn {xsim} {unknown-collection} {#1} }
+  }
+
+\xsim_new_aux_cs:cpn {random} #1#2
+  {
+    \seq_if_exist:cF {g__xsim_random_#1_seq}
+      { \seq_new:c {g__xsim_random_#1 _seq} }
+    \seq_gset_from_clist:cn {g__xsim_random_#1_seq}
+      {#2}
+  }
+
+\cs_new_protected:Npn \xsim_save_random_list:nN #1#2
+  {
+    \seq_if_exist:cF {g__xsim_random_#1_seq}
+      { \seq_new:c {g__xsim_random_#1 _seq} }
+    \seq_if_empty:cT {g__xsim_random_#1 _seq}
+      {
+        \seq_set_eq:cN
+          {g__xsim_random_#1_seq}
+          #2
+      }
+    \xsim_add_cs_to_aux:nn {random}
+      { {#1} { \seq_use:cn {g__xsim_random_#1_seq} {,} } }
+  }
+
+% use this in the exclude list:
+% \xsim_get_type_for_property:nn {id} {}
+% or a combination of:
+% \xsim_get_type_for_property:nn {ID} {}
+% \xsim_get_id_for_property:nn {ID} {}
+
+% ----------------------------------------------------------------------------
+\tex_endinput:D

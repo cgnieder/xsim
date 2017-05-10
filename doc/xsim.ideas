@@ -24,8 +24,10 @@ The Current Maintainer of this work is Clemens Niederberger.
 
 IDEAS:
 
-- random selection of exercises from a collection.
-- provide a switch: either write the environments to an external file
-  or save it to an auxiliary file
+- reverse lookup for unique properties: find exercise a certain property value
+  belongs to (before upload to CTAN)
+- random selection of exercises from a collection (before upload to CTAN)
 - a document class `xsim-exam' for creating exams
 - a mechanism for providing variants of an exam
+- provide a switch: either write the environments to an external file
+  or save it to an auxiliary file ? (not really sure about this one)

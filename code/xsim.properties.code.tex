@@ -87,6 +87,8 @@
                 \seq_if_in:NnF \l__xsim_unique_properties_seq {#4}
                   { \seq_put_right:Nn \l__xsim_unique_properties_seq {#4} }
                 \seq_new:c {l__xsim_unique_property_#4_values_seq}
+                \prop_new:c {g__xsim_property_#4_type_prop}
+                \prop_new:c {g__xsim_property_#4_id_prop}
               }
               { \xsim_verbose:n { Declaring~ new~ exercise~ property~ `#4'. } }
           }
@@ -129,6 +131,8 @@
       { \prg_return_false: }
   }
 
+% #1: property
+% #2: value
 \prg_new_conditional:Npnn \xsim_if_property_unique_value:nn #1#2 {p,T,F,TF}
   {
     \xsim_if_property_unique:nTF {#1}
@@ -154,33 +158,44 @@
               { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
               {
                 \xsim_if_property_boolean:nTF {#3}
+                  { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
                   {
-                    \str_case_x:nnF { \str_lower_case:n {#4} }
-                      {
-                        {} { \__xsim_set_property:nnnn {#1} {#2} {#3} {true} }
-                        {true} { \__xsim_set_property:nnnn {#1} {#2} {#3} {true} }
-                      }
-                      { \__xsim_set_property:nnnn {#1} {#2} {#3} {false} }
+                    \xsim_if_property_unique:nTF {#3}
+                      { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
+                      { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
                   }
-                  { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
               }
           }
           {
             \xsim_if_property_boolean:nTF {#3}
+              { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
               {
-                \str_case:nnF {#4}
-                  {
-                    {} { \__xsim_set_property:nnnn {#1} {#2} {#3} {true} }
-                    {true} { \__xsim_set_property:nnnn {#1} {#2} {#3} {true} }
-                  }
-                  { \__xsim_set_property:nnnn {#1} {#2} {#3} {false} }
+                \xsim_if_property_unique:nTF {#3}
+                  { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
+                  { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
               }
-              { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
           }
       }
       { \msg_error:nnn {xsim} {unknown-property} {#3} }  
   }
 \cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx}
+
+\cs_new_protected:Npn \__xsim_set_boolean_property:nnnn #1#2#3#4
+  {
+    \str_case_x:nnTF { \str_lower_case:n {#4} }
+      {
+        {} {}
+        {true} {}
+      }
+      { \__xsim_set_property:nnnn {#1} {#2} {#3} {true} }
+      { \__xsim_set_property:nnnn {#1} {#2} {#3} {false} }
+  }
+
+\cs_new_protected:Npn \__xsim_set_unique_property:nnnn #1#2#3#4
+  {
+    \__xsim_set_property:nnnn {#1} {#2} {#3} {#4}
+    \__xsim_set_property_reverse:nnnn {#1} {#2} {#3} {#4}
+  }
 
 % #1: type
 % #2: id
@@ -210,6 +225,16 @@
     \prop_gput:Nnn \g__xsim_properties_prop {#2!#1!#3} {#4}
   }
 \cs_generate_variant:Nn \__xsim_set_property:nnnn {VVnV}
+
+% #1: type
+% #2: id
+% #3: property
+% #4: value
+\cs_new_protected:Npn \__xsim_set_property_reverse:nnnn #1#2#3#4
+  {
+    \prop_gput:cnn {g__xsim_property_#3_type_prop} {#4} {#1}
+    \prop_gput:cnn {g__xsim_property_#3_id_prop} {#4} {#2}
+  }
 
 % #1: type
 % #2: id
@@ -394,25 +419,35 @@
 \cs_new:Npn \__xsim_get_property_tmp:n #1 {}
 \cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
 
+% #1: property
+% #2: value
+\cs_new:Npn \xsim_get_id_for_property:nn #1#2
+  { \prop_item:cn {g__xsim_property_#1_id_prop} {#2} }
+
+% #1: property
+% #2: value
+\cs_new:Npn \xsim_get_type_for_property:nn #1#2
+  { \prop_item:cn {g__xsim_property_#1_type_prop} {#2} }
+
 % #1: type
 % #2: id
 % #3: property
 \cs_new_protected:Npn \xsim_get_property_if_set:nnnTF #1#2#3#4#5
   {
-    \xsim_if_property_exist:nTF {#3}
-      {
-        \xsim_if_property_set:nnnTF {#1} {#2} {#3}
-          {
-            \group_begin:
+    \group_begin:
+      \xsim_if_property_exist:nTF {#3}
+        {
+          \xsim_if_property_set:nnnTF {#1} {#2} {#3}
+            {    
               \tl_set:Nx \PropertyValue
                 { \xsim_get_property:nnn {#1} {#2} {#3} }
               \cs_set:Npn \__xsim_get_property_tmp:n ##1 {#4}
               \__xsim_get_property_tmp:V \PropertyValue
-            \group_end:
-          }
-          {#5}
-      }
-      { \msg_error:nnn {xsim} {unknown-property} {#3} }
+            }
+            {#5}
+        }
+        { \msg_error:nnn {xsim} {unknown-property} {#3} }
+    \group_end:
   }
 \cs_new_protected:Npn \xsim_get_property_if_set:nnnT #1#2#3#4
   { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {#4} {} }
@@ -429,8 +464,12 @@
       {
         \xsim_if_property_boolean:nTF {#3}
           {
-            \bool_if:cTF { c_ \xsim_get_property:nnn {#1} {#2} {#3} _bool}
-              { \prg_return_true: }
+            \xsim_if_property_set:nnnTF {#1} {#2} {#3}
+              {
+                \bool_if:cTF { c_ \xsim_get_property:nnn {#1} {#2} {#3} _bool}
+                  { \prg_return_true: }
+                  { \prg_return_false: }
+              }
               { \prg_return_false: }
           }
           { \msg_error:nnn {xsim} {no-boolean-property} {#3} }

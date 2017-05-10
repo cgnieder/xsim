@@ -49,6 +49,7 @@ The xsim package consists of the documentation files:
    xsim-manual.cls
 --------------------------------------------------------------------------
 The xsim package consists of the example files:
+   blanks.tex, blanks.pdf
    boxed-headings.tex, boxed-headings.pdf
    code-and-output.tex, code-and-output.pdf
    collections.tex, collections.pdf

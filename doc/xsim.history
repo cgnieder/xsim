@@ -63,3 +63,5 @@ HISTORY:
                    - \xsim_if_goal_sum:nnnTF and friends,
                      \IfExerciseTypeGoalsSumTF and \IfExerciseGoalsSumTF
                    - some more hints in the manual regarding collections
+ v0.8   2017/05/?? - bug fix in \xsim_set_property:nnnn
+
