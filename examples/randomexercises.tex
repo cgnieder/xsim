@@ -1,0 +1,55 @@
+\documentclass{article}
+\usepackage{xsim}
+
+\DeclareExerciseCollection{foo}
+
+\usepackage{filecontents}
+\begin{filecontents*}{random.tex}
+\begin{exercise}[ID=A]
+  exercise A
+\end{exercise}
+\begin{solution}
+  solution A
+\end{solution}
+\begin{exercise}[ID=B]
+  exercise B
+\end{exercise}
+\begin{solution}
+  solution B
+\end{solution}
+\begin{exercise}[ID=C]
+  exercise C
+\end{exercise}
+\begin{solution}
+  solution C
+\end{solution}
+\begin{exercise}[ID=D]
+  exercise D
+\end{exercise}
+\begin{solution}
+  solution D
+\end{solution}
+\begin{exercise}[ID=E]
+  exercise E
+\end{exercise}
+\begin{solution}
+  solution E
+\end{solution}
+\begin{exercise}[ID=F]
+  exercise F
+\end{exercise}
+\begin{solution}
+  solution F
+\end{solution}
+\end{filecontents*}
+
+\begin{document}
+
+\collectexercises{foo}
+\input{random.tex}
+\collectexercisesstop{foo}
+
+\section*{Exercises}
+\printrandomexercises[collection=foo,exclude=D]{3}
+
+\end{document}

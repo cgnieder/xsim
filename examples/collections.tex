@@ -6,7 +6,7 @@
 \DeclareExerciseTagging{difficulty}
 
 \usepackage{filecontents,lipsum}
-\begin{filecontents}{foo.tex}
+\begin{filecontents*}{foo.tex}
 \begin{exercise}[difficulty=easy,points=1]
   foo one \lipsum[4]
 \end{exercise}
@@ -25,28 +25,7 @@
 \begin{solution}
   foo three \lipsum[4]
 \end{solution}
-\end{filecontents}
-
-\begin{filecontents}{bar.tex}
-\begin{exercise}[difficulty=easy,points=1]
-  bar one \lipsum[4]
-\end{exercise}
-\begin{solution}
-  bar one \lipsum[4]
-\end{solution}
-\begin{exercise}[difficulty=medium,points=1]
-  bar two \lipsum[4]
-\end{exercise}
-\begin{solution}
-  bar two \lipsum[4]
-\end{solution}
-\begin{exercise}[difficulty=easy,points=1]
-  bar three \lipsum[4]
-\end{exercise}
-\begin{solution}
-  bar three \lipsum[4]
-\end{solution}
-\end{filecontents}
+\end{filecontents*}
 
 \begin{document}
 
