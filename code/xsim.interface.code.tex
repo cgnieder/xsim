@@ -442,6 +442,17 @@
 \NewDocumentCommand \printcollection {O{}m}
   { \xsim_print_collection:nnn {#1} {#2} {exercise} }
 
+\NewDocumentCommand \printrandomexercises {O{}m}
+  {
+    \group_begin:
+      \keys_set:nn {xsim/random} {#1}
+      \xsim_print_random_list:VnV
+        \l_xsim_random_collection_tl
+        {#2}
+        \l_xsim_random_exclude_list_tl
+    \group_end:
+  }
+
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \blank {som}

@@ -36,6 +36,7 @@ The xsim package consists of the code files:
    xsim.interface.code.tex
    xsim.modules.code.tex
    xsim.properties.code.tex
+   xsim.random.code.tex
    xsim.solutions.code.tex
    xsim.tags.code.tex
    xsim.templates.code.tex

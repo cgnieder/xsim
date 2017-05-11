@@ -169,6 +169,9 @@
     \xsim_add_to_list:nn {collection:#1} {#2-#3}
   }
 
+\cs_new:Npn \xsim_collection_count:n #1
+  { \xsim_list_count:n {collection:#1} }
+
 % #1: type
 % #2: id
 \cs_new_protected:Npn \xsim_update_collections:nn #1#2
@@ -215,6 +218,7 @@
       { \prg_return_false: }
   }
 \cs_generate_variant:Nn \xsim_if_in_collection:nnnTF {V}
+\cs_generate_variant:Nn \xsim_if_in_collection:nnnT  {x,nV}
 
 % ----------------------------------------------------------------------------
 

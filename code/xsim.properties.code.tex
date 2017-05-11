@@ -428,6 +428,7 @@
 % #2: value
 \cs_new:Npn \xsim_get_type_for_property:nn #1#2
   { \prop_item:cn {g__xsim_property_#1_type_prop} {#2} }
+\cs_generate_variant:Nn \xsim_get_type_for_property:nn {nV}
 
 % #1: type
 % #2: id
