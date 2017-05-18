@@ -206,6 +206,7 @@
     settasks ,
     tcbuselibrary ,
     tcolorbox ,
+    thesection ,
     toprule ,
     whileboolexpr ,
     xsim
@@ -709,7 +710,9 @@
     ]
     \lstinputlisting[style=cnltx,lastline=10]{../examples/##1.tex}
     \tcblower
-    \fbox{\includegraphics[width=.8\linewidth]{../examples/##1.pdf}}%
+    \fbox{%
+      \href{../examples/##1.pdf}{%
+        \includegraphics[width=.8\linewidth]{../examples/##1.pdf}}}%
     \end{cnltxcode}
   }%
   \dolistloop\xsim@examplefiles
@@ -730,11 +733,16 @@
 \xsim@add@example{pointsums}
 \xsim@add@example{randomexercises}
 \xsim@add@example{various}
+\xsim@add@example{texsx-199360}
+\xsim@add@example{texsx-299534}
+\xsim@add@example{texsx-305110}
 \xsim@add@example{texsx-338165}
+\xsim@add@example{texsx-350028}
 \xsim@add@example{texsx-369065}
 \xsim@add@example{texsx-369636}
 \xsim@add@example{texsx-369803}
 \xsim@add@example{texwelt-6698}
 \xsim@add@example{texwelt-15093}
+\xsim@add@example{golatex-18844}
 
 \endinput

@@ -65,12 +65,17 @@ The xsim package consists of the example files:
    pointsums.tex, pointsums.pdf
    randomexercises.tex, randomexercises.pdf
    various.tex, various.pdf
+   texsx-199360.tex, texsx-199360.pdf
+   texsx-299534.tex, texsx-299534.pdf
+   texsx-305110.tex, texsx-305110.pdf
    texsx-338165.tex, texsx-338165.pdf
+   texsx-350028.tex, texsx-350028.pdf
    texsx-369065.tex, texsx-369065.pdf
    texsx-369803.tex, texsx-369803.pdf
    texsx-369686.tex, texsx-369686.pdf
    texwelt-6698.tex, texwelt-6698.pdf
    texwelt-15093.tex, texwelt-15093.pdf
+   golatex-18844.tex, golatex-18844.pdf
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please
 feel free to contact me.
