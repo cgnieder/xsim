@@ -1,0 +1,32 @@
+% http://tex.stackexchange.com/q/299534/
+\documentclass{article}
+\usepackage{pythontex}
+\usepackage{xsim}
+
+\begin{document}
+
+\section{Test}
+
+\begin{exercise}[subtitle = Codeless Question,points=10]
+  A question without code, worth 10 points. Subtitle and point values are in
+  correct place.
+\end{exercise}
+\begin{solution}
+  Solution 1
+\end{solution}
+
+\begin{exercise}[subtitle = Codeful Question,points=15]
+Now with PythonTeX:
+\begin{pyblock}
+print("hello, world!")
+sum = 0
+for j in range(0,100):
+    sum += j
+print(sum)
+\end{pyblock}
+\end{exercise}
+\begin{solution}
+  Solution 2
+\end{solution}
+
+\end{document}

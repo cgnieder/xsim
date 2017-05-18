@@ -1,0 +1,135 @@
+% http://tex.stackexchange.com/q/350028/
+\documentclass{book}
+
+\usepackage{xsimverb}
+\usepackage{xsim}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\DeclareExerciseEnvironmentTemplate{tcolorbox}
+  {%
+    \tcolorbox[
+      enhanced,
+      colframe=green!20!black,
+      colback=yellow!10!white,
+      coltitle=green!40!black,
+      fonttitle=\bfseries,
+      underlay={%
+        \begin{tcbclipinterior}
+          \shade[
+            inner color=\IfInsideSolutionTF{red!50!yellow}{green!80!yellow},
+            outer color=yellow!10!white]
+            (interior.north west) circle (2cm);
+          \draw[help lines,step=5mm,yellow!80!black,shift={(interior.north west)}]
+            (interior.south west) grid (interior.north east);
+          \end{tcbclipinterior}%
+        },
+      attach title to upper=\quad,
+      title = \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}
+      \IfExercisePropertySetT{points}{%
+        (\GetExerciseProperty{points}
+        \IfExerciseGoalSingularTF{points}
+          {\XSIMtranslate{point}}
+          {\XSIMtranslate{points}})%
+      }]%
+    \IfInsideSolutionT{\label{solution:\ExerciseID}}%
+  }
+  {%
+    \endtcolorbox
+    \vspace*{\baselineskip}
+    \IfInsideSolutionTF
+      {%
+        \noindent Exercise~\GetExerciseProperty{counter} is on
+        page~\GetExerciseProperty{page}.%
+      }
+      {%
+        \noindent The solution of this exercise is on
+        page~\pageref{solution:\ExerciseID}.%
+      }%
+    \vspace{\baselineskip}
+  }
+
+\xsimsetup{
+  exercise/template = tcolorbox ,
+  solution/template = tcolorbox
+}
+
+\usepackage{fmtcount,etoolbox}
+\newrobustcmd*\mystringnum[2]{\csname#1stringnum\endcsname{#2}}
+\renewcommand*\thechapter{\mystringnum{number}{\value{chapter}}}
+\renewcommand*\thesection{\arabic{chapter}.\arabic{section}}
+
+% for the header: \MakeUppercase{\mystringnum{number}{1}}
+%                 => \mystringnum{NUMBER}{1}
+%                 => \NUMBERstringnum{1}
+% elsewhere:      \mystringnum{number}{1}
+%                 => \numberstringnum{1}
+
+\usepackage{totcount}
+\regtotcounter{chapter}
+
+\newcounter{chapters}
+\setcounter{chapters}{1}
+\newcommand*\printsolutionsperchapter{%
+  \whileboolexpr
+    { test { \ifnumless {\value{chapters}} {\totvalue{chapter}+1} } }
+    {%
+      \printsolutions[chapter=\value{chapters},headings-template=per-chapter]
+      \stepcounter{chapters}%
+    }%
+}
+
+\begin{document}
+
+\chapter{The First Chapter}
+
+\begin{exercise}
+  Compute the derivative of the following function:
+  \begin{equation*}
+    f(x) = \sin((\sin x)^2)
+  \end{equation*}
+\end{exercise}
+\begin{solution}
+  The derivative is:
+  \begin{align*}
+    f’(x) &= ( \sin((\sin x)^2) )'
+           = \cos((\sin x)^2) \cdot 2\sin x \cos x
+  \end{align*}
+\end{solution}
+
+\begin{exercise}
+  Compute the derivative of the following function:
+  \begin{equation*}
+    f(x) = \sin((\sin x)^2)
+  \end{equation*}
+\end{exercise}
+\begin{solution}
+  The derivative is:
+  \begin{align*}
+    f’(x) &= ( \sin((\sin x)^2) )'
+           = \cos((\sin x)^2) \cdot 2\sin x \cos x
+  \end{align*}
+\end{solution}
+
+\chapter{The Second Chapter}
+
+\begin{exercise}
+  Compute the derivative of the following function:
+  \begin{equation*}
+    f(x) = (x^2+1) \sqrt{x^4+1}
+  \end{equation*}
+\end{exercise}
+\begin{solution}
+  The derivative is:
+  \begin{align*}
+    f’(x) &= ( (x^2+1) \sqrt{x^4+1} )'
+           = 2x\sqrt{x^4+1} + \frac{2x^3(x^2+1)}{\sqrt{x^4+1}}
+  \end{align*}
+\end{solution}
+
+\clearpage
+\section{Solutions of the Exercices}
+
+\printsolutionsperchapter
+
+\end{document}

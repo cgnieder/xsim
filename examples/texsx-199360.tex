@@ -1,0 +1,60 @@
+% http://tex.stackexchange.com/a/199360/
+\documentclass{scrartcl}
+\usepackage[clear-aux]{xsim}
+
+\usepackage{tcolorbox,blindtext}
+
+\DeclareExerciseEnvironmentTemplate{custom}
+  {%
+    \begin{tcolorbox}[
+      width = \textwidth ,
+      colbacktitle = \IfInsideSolutionTF{green}{red} ,
+      coltitle = black ,
+      title = {\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}]}
+  {\end{tcolorbox}}
+
+\xsimsetup{
+  exercise/template = custom ,
+  solution/template = custom
+}
+
+\begin{document}
+
+\begin{exercise}
+  First Question
+\end{exercise}
+\begin{solution}
+  Yes, it's a question
+\end{solution}
+
+\begin{exercise}[print=false,use]
+  Question: What is special about Brontosaurs?
+\end{exercise}
+\begin{solution}
+  They are thin at one end, thick in the middle and thin on the end again
+\end{solution}
+
+\begin{exercise}
+  Proof 
+\begin{equation}
+  a^2 + b^2 = c^2
+\end{equation}
+\end{exercise}
+\begin{solution}
+  to be done
+\end{solution}
+
+\begin{exercise}
+  Cite a Latin Text
+\end{exercise}
+\begin{solution}
+  \textcolor{blue}{\blindtext}
+\end{solution}
+
+\begin{exercise}
+  \textcolor{red}{\textbf{Cite a Latin text again}}
+\end{exercise}
+
+\printsolutions*
+
+\end{document}

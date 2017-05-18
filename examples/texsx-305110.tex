@@ -1,0 +1,67 @@
+% https://tex.stackexchange.com/q/305110
+\documentclass[12pt, a4paper]{book}
+\usepackage{xsim}
+
+\xsimsetup{
+  exercise/within = section ,
+  exercise/the-counter = \thesection.\arabic{exercise}
+}
+
+\begin{document}
+\part{EXCERCISES}
+\chapter{Topic 1}
+
+\section{Section}
+
+\begin{exercise}
+  I'm an excercise.
+\end{exercise}
+\begin{solution}
+  I'm a solution.
+\end{solution}
+
+\section{Section}
+
+\begin{exercise}
+  I'm an excercise.
+\end{exercise}
+\begin{solution}
+  I'm a solution.
+\end{solution}
+
+\chapter{Topic 2}
+
+\section{Section}
+\begin{exercise}
+  I'm an excercise.
+\end{exercise}
+\begin{solution}
+  I'm a solution.
+\end{solution}
+
+\section{Section}
+\begin{exercise}
+  I'm an excercise.
+\end{exercise}
+\begin{solution}
+  I'm a solution.
+\end{solution}
+
+\setcounter{chapter}{0}
+\part{SOLUTIONS}
+
+\chapter{Topic 1}
+\section{Section}
+\printsolutions[chapter=1,section=1]
+
+\section{Section}
+\printsolutions[chapter=1,section=2]
+
+\chapter{Topic 2}
+\section{Section}
+\printsolutions[chapter=2,section=1]
+
+\section{Section}
+\printsolutions[chapter=2,section=2]
+
+\end{document}

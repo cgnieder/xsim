@@ -1,0 +1,94 @@
+% http://golatex.de/aufgabe-loesungs-umgebung-t18844.html
+\documentclass[18pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{xsim,tcolorbox}
+\usepackage{amsmath}
+\xsimsetup{
+  exercise/within = section ,
+  exercise/the-counter = \thesection.\arabic{exercise} ,
+  print-solutions/headings-template=none
+}
+\SetExerciseParameters{exercise}{
+  exercise-template = mine ,
+  solution-template = mine
+}
+
+\DeclareExerciseEnvironmentTemplate{mine}
+  {%
+    \tcolorbox[
+      % colors:
+      colback = white , colframe = black , coltitle = black ,
+      % rules:
+      boxrule = 0pt , toprule = 1pt , bottomrule = 1pt , arc = 0pt ,
+      % spacing:
+      boxsep = 0pt , left = 0pt , right = 0pt ,
+      % title:
+      detach title , before upper = \tcbtitle\par\noindent ,
+      fonttitle = \bfseries ,
+      title = \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}
+    ]
+  }
+  {\endtcolorbox}
+
+\DeclareExerciseTranslation{German}{exercise}{Aufgabe}
+\DeclareExerciseTagging{difficulty}
+
+\begin{document}
+
+\section{Wellenausbreitung im Vakuum und in Materie}
+\subsection{Maxwellsche Gleichungen}
+
+\begin{align*}
+  \nabla \cdot \vec{E}\left(\vec{r}, t \right) =
+    \frac{\varrho\left(\vec{r}, t \right)}{\varepsilon_0}
+\end{align*}
+
+\begin{exercise}[difficulty=easy]
+Something stupid
+\end{exercise}
+\begin{solution}
+Here is a nonstupid solution for your problem
+\end{solution}
+
+\subsection{Empirischer Zugang zu Wellengleichungen}
+
+\begin{exercise}[difficulty=hard]
+Eine weitere Aufgabe
+\end{exercise}
+\begin{solution}
+Solution Number 2
+\end{solution}
+
+\subsection*{Lösungen}
+\printsolutions[section,difficulty=hard]
+
+\section{Wellenausbreitung im Vakuum und in Materie}
+\subsection{Maxwellsche Gleichungen}
+
+\begin{align*}
+  \nabla \cdot \vec{E}\left(\vec{r}, t \right) =
+    \frac{\varrho\left(\vec{r}, t \right)}{\varepsilon_0}
+\end{align*}
+
+\begin{exercise}[difficulty=easy]
+Something stupid
+\end{exercise}
+\begin{solution}
+Here is a nonstupid solution for your problem
+\end{solution}
+
+\subsection{Empirischer Zugang zu Wellengleichungen}
+
+\begin{exercise}[difficulty=hard]
+Eine weitere Aufgabe
+\end{exercise}
+\begin{solution}
+Solution Number 2
+\end{solution}
+
+\subsection*{Lösungen}
+\printsolutions[section]
+
+\end{document}
