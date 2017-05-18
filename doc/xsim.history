@@ -63,7 +63,19 @@ HISTORY:
                    - \xsim_if_goal_sum:nnnTF and friends,
                      \IfExerciseTypeGoalsSumTF and \IfExerciseGoalsSumTF
                    - some more hints in the manual regarding collections
- v0.8   2017/05/?? - bug fix in \xsim_set_property:nnnn
+ v0.8   2017/05/18 - bug fix in \xsim_set_property:nnnn
                    - random exercise lists from collections
                    - \xsim_collection_count:n
+                   - \GetExerciseIdForProperty and \GetExerciseTypeForProperty
+                     for unique properties
+                   - set property `print=false' during collection and only to
+                     true when the corresponding exercises actually are
+                     printed
+                   - do not insert \par at the beginning and end of exercises
+                     and solutions; this should be left to the templates!
+                   - new option `print-collection/print' which allows to
+                     choose between exercises, solutions, and both to be
+                     printed
+                   - new parameter `solution-counter' in order to avoid
+                     possible conflicts with existing counters
 

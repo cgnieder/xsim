@@ -1,0 +1,50 @@
+% https://tex.stackexchange.com/q/369803
+\documentclass[a4paper,parskip=half]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{amsmath}
+\usepackage{amsthm} 
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage[left=2cm,right=2.5cm,top=2.5cm,bottom=2cm]{geometry}
+
+\usepackage{xsim,siunitx}
+\DeclareExerciseTagging{difficulty}
+\DeclareExerciseEnvironmentTemplate{custom}
+  {%
+    \subsection*
+      {%
+        \XSIMmixedcase{\GetExerciseName}\nobreakspace
+        \GetExerciseProperty{counter}%
+        \IfInsideSolutionF
+          {%
+            \IfExercisePropertySetT{subtitle}
+              { {\normalfont(\GetExerciseProperty{subtitle})}}%
+          }%
+      }%
+  }{}
+
+\xsimsetup{
+  exercise/name = \XSIMtranslate{question} ,
+  exercise/template=custom ,
+  solution/print=true
+}
+
+\begin{document}
+
+\begin{exercise}[ID=wdsw, subtitle = Widerstandswürfel , difficulty = 2]
+  Gegeben ist ein Würfel, wobei jede der Kanten einen Widerstand von $R =
+  \SI{1}{\ohm}$ hat.
+  
+  Wie groß ist der Widerstand entlang einer Raumdiagonale?
+\end{exercise}
+\begin{solution}
+  Wir wollen den Widerstand zwischen den Punkten $X$ und $Y$ bestimmen, also
+  entlang der Raumdiagonale (siehe Abb. \ref{fig:wdsws1}). Weil die
+  Raumdiagonale eine Symmetrieachse ist, sollte das Problem symmetrisch sein,
+  und deswegen eine recht einfache Lösung haben.
+\end{solution}
+
+\end{document}

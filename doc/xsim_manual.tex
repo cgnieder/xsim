@@ -2,7 +2,7 @@
 % !arara: biber
 % arara: pdflatex: { action: nonstopmode }
 % arara: pdflatex: { action: nonstopmode }
-% !arara: pdflatex: { action: nonstopmode }
+% arara: pdflatex: { action: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -44,7 +44,7 @@
   title = {Questions tagged `exsheets'} ,
   author = {various} ,
   url = {http://tex.stackexchange.com/questions/tagged/exsheets} ,
-  urldate = {2017-03-06}
+  urldate = {2017-05-15}
 }
 \end{filecontents*}
 \addbibresource{\jobname.bib}
@@ -71,13 +71,12 @@ using an up to date \TeX\ distribution, anyway.
   Every update might be breaking some things.
 \end{bewareofthedog}
 
-
 \section{Motivation and Background}
 
 It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in June 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
-shows (99~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
+shows (103~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
 questions, bug reports and feature requests improved it over the time.  It
 still has a version number starting with a zero, though, which in my
 versioning system means I still consider it experimental.
@@ -311,7 +310,6 @@ solution environment using the following command:
     Declare a new exercise type analoguous to the \env{exercise} and
     \env{solution} environments.
 \end{commands}
-
 Declaring a new exercise type will also define a new command:
 \begin{commands}
   \command{numberof\meta{exercise-env}s}
@@ -363,8 +361,19 @@ must) be set.  Here is the complete list:
     The counter used for the exercises of type \meta{type}.  If not explicitly
     set the counter with the same name as \parameter{exercise-env} is used.
     Otherwise the specified counter is used.  This enables to have different
-    types of exercises sharing a common counter.  This parameter can't be
-    changed afterwards.
+    types of exercises sharing a common counter.  \emph{This parameter can't
+      be changed afterwards.}  If the explicit or implicit counter does not
+    exist, yet, it will be defined.
+  \paraval{solution-counter}{counter name}
+    The counter used for the solutions of type \meta{type}.  If not explicitly
+    set the counter with the same name as \parameter{solution-env} is used.
+    Otherwise the specified counter is used.  This enables to have different
+    types of solutions sharing a common counter although this doesn't actually
+    make much sense.  But it can be useful to avoid using an already existing
+    counter. \emph{This parameter can't be changed afterwards.}  If the
+    explicit or implicit counter does not exist, yet, it will be defined.  The
+    sole purpose of this counter is to be able to label solutions so they can
+    be \cs*{pageref}ed.
   \paraval{number}{integer}
     An internal parameter that is used to keep track of the number of
     exercises of a type.  This parameter cannot be set or changed by the
@@ -390,9 +399,9 @@ section~\vref{sec:environment-options-hooks}.
 
 \begin{bewareofthedog}
   All exercises of a type use the parameters
-  (\eg, \parameter{exercise-template}) that's \emph{currently active}.  If you
-  want exercises with a different look you should use different exercises
-  types.
+  (\eg, \parameter{exercise-template}) that are \emph{currently active}.  If
+  you want exercises with a different look or different names in the same
+  document you should use different exercises types.
 \end{bewareofthedog}
 
 \section{Exercise Properties}\label{sec:exercise-properties}
@@ -432,8 +441,8 @@ Exercise like the \env{exercise} environment and possibly others defined with
     page~\pageref{property:print!}.
   \propbool{used}
     True if an exercise has been used at least once.  For an existing exercise
-    this is only false for exercises that have been collected (\cf\
-    section~\vref{sec:collecting-exercises}).
+    this is only false for exercises that have been collected
+    (\cf~section~\vref{sec:collecting-exercises}).
   \propval{tags}{csv list of tags}
     Holds the list of tags the exercise should be associated with.
   \propval{topics}{csv list of topics}
@@ -861,10 +870,14 @@ collection can be printed as often as needed.
 
 Valid options are the following:
 \begin{options}
-  \keybool{headings}\Default{false}
+  \keybool{headings}\Module{print-collection}\Default{false}
     If true a heading for each exercise type is inserted.
-  \keyval{headings-template}{template}\Default{collection}
+  \keyval{headings-template}{template}\Module{print-collection}\Default{collection}
     The heading template used when \keyis{headings}{true}.
+  \keychoice{print}{exercises,solutions,both}\Module{print-collection}\Default{exercises}
+    Determines wether \cs{printcollection} prints the exercises or the
+    solutions of the collection.  When you choose \code{both} exercises and
+    solutions are printed alternately.
 \end{options}
 
 Those options can also be set via \cs{xsimsetup} using the module
@@ -872,10 +885,14 @@ Those options can also be set via \cs{xsimsetup} using the module
 
 \begin{bewareofthedog}
   Please be aware that exercises are not used or printed while they are
-  collected.  Also their counters are \emph{not stepped} during the process.
-  This only happens when they are printed the first time, \cf\ the
-  \property{used} property.  At that time also the properties \property{page},
-  \property{section} and \property{chapter} are set.
+  collected.  Nonetheless the property \property{use} is set to \code{true}
+  (so that solutions can be printed even if the exercises are not) and the
+  property \property{print} is set to \code{false}.  Also their counters are
+  \emph{not stepped} during the process.  This only happens when they are
+  printed the first time, \cf~the \property{used} property.  At that time
+  also the properties \property{page}, \property{section} and
+  \property{chapter} are set and the property \property{print} is set to
+  \code{true}.
 \end{bewareofthedog}
 
 The usage should be clear:
@@ -884,14 +901,21 @@ The usage should be clear:
   \begin{exercise}
     This exercise is added to the collection `foo'.
   \end{exercise}
+  \begin{exercise}
+    This exercise is also added to the collection `foo'.
+  \end{exercise}
+  \begin{exercise}
+    So is this.
+  \end{exercise}
+  \begin{exercise}
+    As well as this one.
+  \end{exercise}
   \collectexercisesstop{foo}
 \end{example}
 Once the collection is closed it can be printed:
 \begin{example}
   \printcollection{foo}
 \end{example}
-Actually a collection can be printed \emph{before} it is opened, too.  This
-needs \emph{at least} two compilations, though.
 
 You can open several collections at the same time:
 \begin{sourcecode}
@@ -948,12 +972,52 @@ At last now an example using external files, collections and tags:
 \end{sourcecode}
 
 \begin{bewareofthedog}
-  The recommended usage is similar to the last example.  It is safer printing
-  a collection only once and only after it has been collected.  You probably
-  also will make sure that the exercises in a collection are unique, \ie, that
-  an exercises is not part of several collections -- at least not if both
-  collections are printed in the same document.
+  The recommended usage is similar to the last example.  Actually a collection
+  can be printed \emph{before} it is opened, too.  (This needs \emph{at least}
+  two compilations, though.)  However, it is safer printing a collection only
+  once and only \emph{after it has been collected}.  No guaranties are given
+  that properties are set correctly if you use the collection before.  You
+  usually also will make sure that the exercises in a collection are unique,
+  \ie, that an exercises is not part of several collections -- at least not if
+  both collections are printed in the same document.
 \end{bewareofthedog}
+
+\section{Printing Random Exercises From a Collection}
+\xsim\ provides the possibility of selecting random exercises from a
+collection (\cf~section~\vref{sec:collecting-exercises}).
+\begin{commands}
+  \command{printrandomexercises}[\oarg{options}\marg{number}]
+    This command prints \meta{number} random exercises from the collection
+    chosen with option \option{collection}, see below.  When this command is
+    used it generates a random list of integers which is written to the
+    \code{aux} file.  On the subsequent compilations the according exercises
+    are printed.  \emph{If you want to regenerate the random list you have to
+      delete the \code{aux} file before compiling.}
+\end{commands}
+Valid options for this command are:
+\begin{options}
+  \keybool{sort}\Module{random}\Default{true}
+    Determines wether the random chosen exercises should be sorted according
+    to their order of definition in the collection or not.
+  \keyval{collection}{collection}\Module{random}\Default{all exercises}
+    The collection from which the exercises are to be chosen from.
+  \keyval{exclude}{csv list of ids}\Module{random}
+    A list of \property{id}s or \property{ID}s of exercises \emph{not} to be
+    chosen.
+  \keychoice{print}{exercises,solutions,both}\Module{random}\Default{exercises}
+    Determines wether \cs{printrandomexercises} prints the exercises or the
+    solutions.  When you choose \code{both} exercises and solutions are
+    printed alternately.
+\end{options}
+
+\begin{example}
+  \printrandomexercises[collection=foo]{2}
+\end{example}
+
+The example above of course doesn't make much sense but if have a collection
+which collects exercises from an external file and the exercise haven't been
+printed in the document before then you will get a list of subsequently
+numbered exercises.
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
@@ -1149,6 +1213,14 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     current exercise.  Inside the \meta{true} branch you can refer to the
     retrieved value either with \code{\#1} or with \cs{PropertyValue}.
     \emph{This command expands its contents inside a group.}
+  \command{GetExerciseIdForProperty}[\marg{property}\marg{value}]
+    Retrieves the property \property{id} of the exercise where the property
+    \meta{property} has the value \meta{value}.  \emph{This only works for
+      \emph{unique} properties!}
+  \command{GetExerciseTypeForProperty}[\marg{property}\marg{value}]
+    Retrieves the property \property{type} of the exercise where the
+    property \meta{property} has the value \meta{value}.  \emph{This only
+      works for \emph{unique} properties!}
   \command{SetExerciseProperty}[\marg{type}\marg{id}\marg{property}\marg{value}]
     Set the property \meta{property} of exercise of type \meta{type} and id
     \meta{id} to \meta{value}.
@@ -1238,10 +1310,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \begin{itemize}
       \item \code{\#1}: the type of the exercise
       \item \code{\#2}: the id of the exercise
-      \item \code{\#3}: the counter of the exercise
-      \item \code{\#4}: the subtitle of the exercise
-      \item \code{\#5}: the points of the exercise
-      \item \code{\#6}: the bonus points of the exercise
+      \item \code{\#3}: the \property{counter} property of the exercise
+      \item \code{\#4}: the \property{subtitle} property of the exercise
+      \item \code{\#5}: the \property{points} property of the exercise
+      \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{ForEachUsedExerciseByType}[\marg{code}]
     Loops over each \emph{used} exercise ordered by the exercise types and
@@ -1250,10 +1322,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \begin{itemize}
       \item \code{\#1}: the type of the exercise
       \item \code{\#2}: the id of the exercise
-      \item \code{\#3}: the counter of the exercise
-      \item \code{\#4}: the subtitle of the exercise
-      \item \code{\#5}: the points of the exercise
-      \item \code{\#6}: the bonus points of the exercise
+      \item \code{\#3}: the \property{counter} property of the exercise
+      \item \code{\#4}: the \property{subtitle} property of the exercise
+      \item \code{\#5}: the \property{points} property of the exercise
+      \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{ForEachPrintedExerciseByID}
     Loops over each \emph{printed} exercise order by the exercise id.  Inside
@@ -1352,6 +1424,14 @@ The predefined templates are \enquote{\code{default}} and
 and~\vref{sec:table-templ-default*}.
 
 \subsection{Examples}\label{sec:template-examples}
+
+The repository of this package\footnote{GitHub:
+  \url{https://github.com/cgnieder/xsim/}, CTAN:
+  \url{http://www.ctan.org/pkg/xsim/}} includes a number of example documents
+demonstrating how different aspects of this package work or how different
+kinds of problems can be solved or how different kinds of layouts can be
+achieved as well as how solve concrete problems that have come up in different
+\LaTeX\ forums, see section~\vref{sec:example-files}.
 
 \subsubsection{The \code{default} Exercise Template}\label{sec:exercise-templ-default}
 
@@ -1735,8 +1815,8 @@ Similar to \pkg{exsheets} \xsim\ provides a command \cs{blank}:
     Creates a blank in normal text or in an exercise but fills the text of its
     argument if inside a solution.  If used at the \emph{begin of a paragraph}
     \cs{blank} will do two things: it will set the linespread according to an
-    option explained below and will insert \cs*{par} after the lines.  If you
-    don't want that use the starred version.
+    option explained below and will insert \cs*{par} after the lines.  The
+    starred version doesn't do these things.
 \end{commands}
 
 Those are the options for customization:
@@ -1798,7 +1878,6 @@ exercise and solution sections in books with the most freedom in layout
 already.  But still there are features which would be useful additions.  Below
 I list all ideas that I currently plan to add to \xsim:
 \begin{itemize}
-  \item random selection of exercises from a collection.
   \item a document class \code{xsim-exam} for creating exams; this class
     should itself feature the possibility of creating different versions of an
     exam, maybe already provide multiple choice questions and so on; one could
@@ -1852,21 +1931,15 @@ resolve your problems.
 
 \subsection{\code{! TeX capacity exceeded, sorry [text input levels=15].}
   Why?}
-You probably tried to use an exercise or solution in a macro of some sort.
-This generally will fail\footnote{The reasons are not entirely clear to me.}.
-A minimal example to reproduce the problem:
-\begin{sourcecode}
-  \documentclass{article}
-  \usepackage{xsim}
-  \begin{document}
-  \def\x{%
-  \begin{exercise}
-  \end{exercise}%
-  }\x
-  \end{document}
-\end{sourcecode}
-But there should never be the need to hide the environments inside of a macro,
+Did you try to use an exercise or solution in a macro of some sort?  This
+generally will fail\footnote{The reasons are not entirely clear to me.}.  But
+there should never be the need to hide the environments inside of a macro,
 anyway.
+
+\subsection{\code{Runaway argument? !File ended while scanning use of \^\^M.} Why?}
+Did you try to use an exercise or solution in a macro of some sort?  This
+generally will fail.  But there should never be the need to hide the
+environments inside of a macro, anyway.
 
 \subsection{\dots Put a Star (or Another Symbol) in Headings of Exercises That
   Are Special?}
@@ -1954,7 +2027,7 @@ The formal description of the commands:
   \command{xsimstyle}[\sarg\marg{style name}]
     The first command in a \xsim\ style file called \code{xsim.\meta{style
         name}.code.tex} which defines the \xsim\ style \meta{style name}.  The
-    starred version activates expl3 syntax\footnote{Those uses who want this
+    starred version activates expl3 syntax\footnote{Those users who want this
       will know what it means.  If you don't know what it means you will not
       need it.}.
   \command{loadxsimstyle}[\marg{csv list of style names}]
@@ -1985,7 +2058,7 @@ corresponding exercises are appearing in.
     }
 \end{sourcecode}
 For this manual we then get the following list\footnote{Taking care of the
-  fact that we're in the appendix now which means we can use
+  fact that we're in the appendix now which means we can't use
   \cs*{value}\Marg{section}.  Therefore this manual does
   \cs*{edef}\cs*{lastsection}\Marg{\cs*{arabic}\Marg{section}} right before
   \cs*{appendix}}.
@@ -2073,37 +2146,6 @@ three lines (if the file itself was called \code{test.tex}):
   % bye bye
 \end{sourcecode}
 
-\section{Example Documents Coming With This Package}
-The repository of this package\footnote{GitHub:
-  \url{https://github.com/cgnieder/xsim/}, CTAN:
-  \url{http://www.ctan.org/pkg/xsim/}} includes a number of example documents
-demonstrating how different aspects of this package work or how different
-kinds of problems can be solved or how different kinds of layouts can be
-achieved.  They include:
-\begin{itemize}
-  \item \code{boxed-headings.tex} -- the headings of exercises put in a
-    \pkg{tcolorbox};
-  \item \code{code-and-output.tex} -- an example for the \pkg{xsimverb}
-    package, see section~\vref{sec:xsimverb-package};
-  \item \code{collections.tex} -- demonstrating collections, see
-    section~\vref{sec:collecting-exercises};
-  \item \code{crossref.tex} -- hyperlinks from exercises to solutions and
-    back;
-  \item \code{description-list.tex} -- exercises as items in a
-    \env*{description} list;
-  \item \code{different-point-types.tex} -- defining custom point types and
-    using them, see section~\vref{sec:goals};
-  \item \code{difficulties.tex} -- defining custom tags and using them, see
-    section~\vref{sec:tags};
-  \item \code{floating.tex} -- exercises as floats;
-  \item \code{listings.tex} -- using code listings inside of exercises and
-    solutions;
-  \item \code{multiplechoice.tex} -- defining a multiple choice exercise type
-    with custom properties;
-  \item \code{various.tex} -- the original test file of the package author,
-    demonstrating various aspects of the package.
-\end{itemize}
-
 \section{All Exercise Examples}
 
 \begin{bewareofthedog}
@@ -2126,7 +2168,17 @@ The following list is created with this code:
 \section{All Solution Examples}
 \printsolutions
 
-\clearpage
+\section{Example Documents Coming With This Package}\label{sec:example-files}
+The repository of this package\footnote{GitHub:
+  \url{https://github.com/cgnieder/xsim/}, CTAN:
+  \url{http://www.ctan.org/pkg/xsim/}} includes a number of example documents
+demonstrating how different aspects of this package work or how different
+kinds of problems can be solved or how different kinds of layouts can be
+achieved as well as how solve concrete problems that have come up in different
+\LaTeX\ forums.
+
+\listexamplefiles
+
 \printbibliography
 
 \end{document}

@@ -45,7 +45,10 @@
   { \cs_new_protected:cpn {XSIMaux#1} }
 
 \cs_new_protected:Npn \xsim_add_cs_to_aux:nn #1#2
-  { \xsim_write_to_aux:x { \XSIM {#1} #2 } }
+  {
+    \xsim_verbose:n { Writing~ command~ \XSIM {#1}~ to~ aux~ file }
+    \xsim_write_to_aux:x { \XSIM {#1} #2 }
+  }
 
 % ----------------------------------------------------------------------------
 % list for recording values that need to be written to the aux file and

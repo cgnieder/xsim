@@ -36,6 +36,12 @@
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{xsim}
 
+\RequirePackage{geometry}
+\geometry{
+  left = 3.8cm ,
+  right = 2.8cm
+}
+
 \setcnltx{
   package  = {xsim},
   info     =
@@ -69,6 +75,7 @@
     DeclareExerciseTranslation ,
     DeclareExerciseTranslations ,
     DeclareExerciseType ,
+    DeclareGradeDistribution ,
     ExerciseCollection ,
     ExerciseGoalValuePrint ,
     ExerciseID ,
@@ -131,6 +138,7 @@
     printexercise ,
     printgoal ,
     printpoints ,
+    printrandomexercises ,
     printsolution ,
     printsolutions ,
     printsolutionstype ,
@@ -145,10 +153,12 @@
     TotalExerciseTypeGoals ,
     UseExerciseTags ,
     UseExerciseTagsX ,
+    UseExerciseTemplate ,
     XSIMexpandcode ,
     XSIMsetfilebegin ,
     XSIMfilewritestart ,
     XSIMfilewritestop ,
+    XSIMgobblechars ,
     XSIMsetfileend ,
     XSIMifblankT ,
     XSIMifblankF ,
@@ -169,19 +179,32 @@
   add-silent-cmds = {
     @percentchar ,
     bottomrule ,
+    choice ,
+    cs ,
+    DeclareFloatingEnvironment ,
+    enddescription ,
     endtcolorbox ,
+    iflist ,
     IfNoValueTF ,
     ifnumless ,
     lipsum ,
+    lstdefinestyle ,
+    lstset ,
     midrule ,
     Needspace ,
     NewDocumentCommand ,
     NewDocumentEnvironment ,
+    newlist ,
     numberofcolumns ,
     numberofproblems ,
     pkg ,
     pointsandbonus ,
+    printA, printC, printE ,
+    printcompletepoints ,
     printsumofpointsandbonus ,
+    setlist ,
+    settasks ,
+    tcbuselibrary ,
     tcolorbox ,
     toprule ,
     whileboolexpr ,
@@ -554,6 +577,8 @@
 
 \newrobustcmd\bang{!}
 
+\renewrobustcmd*\code[1]{\begingroup\codefont\let\^\textasciicircum#1\endgroup}
+
 \DeclareExerciseEnvironmentTemplate{tcolorbox}
   {%
     \tcolorbox[
@@ -667,5 +692,49 @@
 }
 
 \RequirePackage{hyperref,bookmark}
+
+\newcounter{examplefile}
+\newcommand*\xsim@add@example[1]{\listadd\xsim@examplefiles{#1}}
+\newcommand*\listexamplefiles{%
+  \def\do##1{%
+    \stepcounter{examplefile}%
+    \begin{cnltxcode}[
+      sidebyside align=top seam,sidebyside,
+      righthand width=\linewidth/4,
+      sidebyside gap=0pt,
+      lower separated=false,
+      title=Example~\theexamplefile\ \enquote{##1}
+        \href{../examples/##1.tex}{\color{white}[\TeX]}
+        \href{../examples/##1.pdf}{\color{white}[PDF]}%
+    ]
+    \lstinputlisting[style=cnltx,lastline=10]{../examples/##1.tex}
+    \tcblower
+    \fbox{\includegraphics[width=.8\linewidth]{../examples/##1.pdf}}%
+    \end{cnltxcode}
+  }%
+  \dolistloop\xsim@examplefiles
+}
+
+\xsim@add@example{blanks}
+\xsim@add@example{boxed-headings}
+\xsim@add@example{code-and-output}
+\xsim@add@example{collections}
+\xsim@add@example{crossref}
+\xsim@add@example{description-list}
+\xsim@add@example{different-point-types}
+\xsim@add@example{difficulties}
+\xsim@add@example{floating}
+\xsim@add@example{grade-distribution}
+\xsim@add@example{listings}
+\xsim@add@example{multiplechoice}
+\xsim@add@example{pointsums}
+\xsim@add@example{randomexercises}
+\xsim@add@example{various}
+\xsim@add@example{texsx-338165}
+\xsim@add@example{texsx-369065}
+\xsim@add@example{texsx-369636}
+\xsim@add@example{texsx-369803}
+\xsim@add@example{texwelt-6698}
+\xsim@add@example{texwelt-15093}
 
 \endinput

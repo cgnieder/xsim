@@ -1,0 +1,72 @@
+% http://tex.stackexchange.com/q/338165
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{leading,microtype}
+\usepackage[french]{babel}
+
+\usepackage{tasks}
+\usepackage{xsim}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins}
+\settasks{
+  counter-format = tsk.
+}
+
+\DeclareExerciseEnvironmentTemplate{boxed}
+  {%
+    \tcolorbox[
+      enhanced ,
+      attach boxed title to top center = {yshift=-7.5pt} ,
+      colback = white , colbacktitle = white ,
+      coltitle = black , colframe = black ,
+      boxed title style = { colframe = white } ,
+      fonttitle=\bfseries,
+      sharp corners=all,
+      breakable,
+      title=
+        \XSIMmixedcase{\GetExerciseName}%
+        \IfInsideSolutionF{%
+          ~\GetExerciseProperty{counter}%
+          \IfExercisePropertySetT{subtitle}{: \GetExerciseProperty{subtitle}}%
+        }%
+    ]
+  }
+  {\endtcolorbox}
+
+\xsimsetup{
+  exercise/template = boxed ,
+  solution/template = boxed ,
+  solution/print =  true
+}
+
+\leading{15pt}
+
+\newcommand*\complement{\overline}
+\newcommand*\union{\cup}
+\newcommand*\intersection{\cap}
+\newcommand*\set[1]{\{#1\}}
+
+\begin{document}
+
+\begin{exercise}[subtitle=Set Calculus]
+  Soient $E=\set{1,2,3,4,5,6,7}$ et $A$, $B$, $C$ et $D$ quatre parties de E
+  d\'efinies par $A=\set{1,2,3,4}$, $B=\set{4,5,6,7}$, $C=\set{1,3,5,7}$ et
+  $D=\set{2,3,4,5,6}$.
+  \begin{tasks}(2)
+    \task Calculer $\complement{A}$.
+    \task Calculer $(A\union B) \intersection (C\union D)$.
+    \task Calculer $(A\intersection B) \union (C\intersection D)$.
+    \task Calculer $\complement{(\complement{A}\union B)} \union
+      \complement{(C\intersection D)}$.
+  \end{tasks}
+\end{exercise}
+\begin{solution}
+  \begin{tasks}(2)
+    \task $\set{5,6,7}$
+    \task $E$
+    \task $\set{3,4,5}$
+    \task $\set{1,2,3,4,6,7}$
+  \end{tasks}
+\end{solution}
+
+\end{document}

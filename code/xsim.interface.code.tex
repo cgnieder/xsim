@@ -48,18 +48,18 @@
   { \xsim_declare_exercise_type:nn {#1} {#2} }
 \@onlypreamble \DeclareExerciseType
 
-\DeclareExpandableDocumentCommand \numberofusedexercises {}
+\NewExpandableDocumentCommand \numberofusedexercises {}
   { \int_use:N \g_xsim_max_id_int }
 
 % ----------------------------------------------------------------------------
 
-\DeclareExpandableDocumentCommand \IfInsideSolutionTF {+m+m}
+\NewExpandableDocumentCommand \IfInsideSolutionTF {+m+m}
   { \xsim_if_inside_solution:TF {#1} {#2} }
 
-\DeclareExpandableDocumentCommand \IfInsideSolutionT {+m}
+\NewExpandableDocumentCommand \IfInsideSolutionT {+m}
   { \IfInsideSolutionTF {#1} {} }
 
-\DeclareExpandableDocumentCommand \IfInsideSolutionF {+m}
+\NewExpandableDocumentCommand \IfInsideSolutionF {+m}
   { \IfInsideSolutionTF {} {#1} }
 
 % ----------------------------------------------------------------------------
@@ -131,13 +131,13 @@
 \NewDocumentCommand \SetExerciseProperty {mmm+m}
   { \xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
 
-\DeclareExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
+\NewExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
 
-\DeclareExpandableDocumentCommand \IfExercisePropertyExistT {+m+m}
+\NewExpandableDocumentCommand \IfExercisePropertyExistT {+m+m}
   { \IfExercisePropertyExistTF {#1} {#2} {} }
 
-\DeclareExpandableDocumentCommand \IfExercisePropertyExistF {+m+m}
+\NewExpandableDocumentCommand \IfExercisePropertyExistF {+m+m}
   { \IfExercisePropertyExistTF {#1} {} {#2} }
 
 \NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
@@ -149,10 +149,10 @@
 \NewDocumentCommand \IfExercisePropertySetF {m+m}
   { \IfExercisePropertySetTF {#1} {} {#2} }
 
-\DeclareExpandableDocumentCommand \GetExerciseProperty {m}
+\NewExpandableDocumentCommand \GetExerciseProperty {m}
   { \xsim_get_property:oon {\ExerciseType} {\ExerciseID} {#1} }
 
-\DeclareExpandableDocumentCommand \GetExerciseAliasProperty {m}
+\NewExpandableDocumentCommand \GetExerciseAliasProperty {m}
   {
     \xsim_get_property:oof
       {\ExerciseType}
@@ -172,16 +172,22 @@
 \NewDocumentCommand \GetExercisePropertyF {m+m+m}
   { \GetExercisePropertyTF {#1} {} {#2} }
 
-\DeclareExpandableDocumentCommand \IfExerciseBooleanPropertyTF {+m+m+m}
+\NewExpandableDocumentCommand \GetExerciseIdForProperty {mm}
+  { \xsim_get_id_for_property:nn {#1} {#2} }
+
+\NewExpandableDocumentCommand \GetExerciseTypeForProperty {mm}
+  { \xsim_get_type_for_property:nn {#1} {#2} }
+
+\NewExpandableDocumentCommand \IfExerciseBooleanPropertyTF {+m+m+m}
   {
     \xsim_if_boolean_property:oonTF {\ExerciseType} {\ExerciseID} {#1}
       {#2}
       {#3}
   }
 
-\DeclareExpandableDocumentCommand \IfExerciseBooleanPropertyT {+m+m}
+\NewExpandableDocumentCommand \IfExerciseBooleanPropertyT {+m+m}
   { \IfExerciseBooleanPropertyTF {#1} {#2} {} }
-\DeclareExpandableDocumentCommand \IfExerciseBooleanPropertyF {+m+m}
+\NewExpandableDocumentCommand \IfExerciseBooleanPropertyF {+m+m}
   { \IfExerciseBooleanPropertyTF {#1} {} {#2} }
 
 \NewDocumentCommand \SaveExerciseProperty {mm}
@@ -207,7 +213,7 @@
        }
    }
 
-\DeclareExpandableDocumentCommand \GetExerciseParameter {m}
+\NewExpandableDocumentCommand \GetExerciseParameter {m}
   { \xsim_get_parameter:on {\ExerciseType} {#1} }
 
 \NewDocumentCommand \SetExerciseParameter {mmm}
@@ -216,7 +222,7 @@
 \NewDocumentCommand \SetExerciseParameters {mm}
   { \xsim_set_parameters:nn {#1} {#2} }
 
-\DeclareExpandableDocumentCommand \GetExerciseName {}
+\NewExpandableDocumentCommand \GetExerciseName {}
   {
     \IfInsideSolutionTF
       { \GetExerciseParameter {solution-name} }
@@ -234,10 +240,10 @@
 \NewDocumentCommand \ExercisePropertyIfSetF {mmm+m}
   { \ExercisePropertyIfSetTF {#1} {#2} {#3} {} {#4} }
 
-\DeclareExpandableDocumentCommand \ExercisePropertyGet {mmm}
+\NewExpandableDocumentCommand \ExercisePropertyGet {mmm}
   { \xsim_get_property:nnn {#1} {#2} {#3} }
 
-\DeclareExpandableDocumentCommand \ExercisePropertyGetAlias {mm}
+\NewExpandableDocumentCommand \ExercisePropertyGetAlias {mm}
   { \xsim_get_property:nnf {#1} {#2} { \xsim_property_alias:n {#1} } }
 
 \NewDocumentCommand \ExercisePropertySave {mmmm}
@@ -246,39 +252,39 @@
 \NewDocumentCommand \ExercisePropertyGlobalSave {mmmm}
   { \xsim_gsave_property:nnnN {#1} {#2} {#3} #4 }
 
-\DeclareExpandableDocumentCommand \ExerciseParameterGet {mm}
+\NewExpandableDocumentCommand \ExerciseParameterGet {mm}
   { \xsim_get_parameter:nn {#1} {#2} }
 
 % ----------------------------------------------------------------------------
 
-\DeclareExpandableDocumentCommand \XSIMtranslate {m}
+\NewExpandableDocumentCommand \XSIMtranslate {m}
   { \xsim_translate:n {#1} }
 
 \NewDocumentCommand \XSIMexpandcode {+m}
   { \use:x {#1} }
 
-\DeclareExpandableDocumentCommand \XSIMmixedcase {m}
+\NewExpandableDocumentCommand \XSIMmixedcase {m}
   { \tl_mixed_case:f {#1} }
 
 \NewDocumentCommand \XSIMputright {mm}
   { \tl_put_right:Nn #1 {#2} }
 
-\DeclareExpandableDocumentCommand \XSIMifeqTF {+m+m+m+m}
+\NewExpandableDocumentCommand \XSIMifeqTF {+m+m+m+m}
   { \tl_if_eq:ffTF {#1} {#2} {#3} {#4} }
 
-\DeclareExpandableDocumentCommand \XSIMifeqT {+m+m+m}
+\NewExpandableDocumentCommand \XSIMifeqT {+m+m+m}
   { \XSIMifeqTF {#1} {#2} {#3} {} }
 
-\DeclareExpandableDocumentCommand \XSIMifeqF {+m+m+m}
+\NewExpandableDocumentCommand \XSIMifeqF {+m+m+m}
   { \XSIMifeqTF {#1} {#2} {} {#3} }
 
-\DeclareExpandableDocumentCommand \XSIMifblankTF {+m+m+m}
+\NewExpandableDocumentCommand \XSIMifblankTF {+m+m+m}
   { \tl_if_blank:fTF {#1} {#2} {#3} }
 
-\DeclareExpandableDocumentCommand \XSIMifblankT {+m+m}
+\NewExpandableDocumentCommand \XSIMifblankT {+m+m}
   { \XSIMifblankTF {#1} {#2} {} }
 
-\DeclareExpandableDocumentCommand \XSIMifblankF {+m+m}
+\NewExpandableDocumentCommand \XSIMifblankF {+m+m}
   { \XSIMifblankTF {#1} {} {#2} {} }
 
 % ----------------------------------------------------------------------------
@@ -440,7 +446,7 @@
   { \xsim_stop_collection:n {#1} }
 
 \NewDocumentCommand \printcollection {O{}m}
-  { \xsim_print_collection:nnn {#1} {#2} {exercise} }
+  { \xsim_print_collection:nn {#1} {#2} }
 
 \NewDocumentCommand \printrandomexercises {O{}m}
   {

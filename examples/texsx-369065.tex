@@ -1,0 +1,77 @@
+% https://tex.stackexchange.com/q/369065/
+\documentclass{article}
+\usepackage{xsim,tcolorbox,needspace}
+
+\xsimsetup{
+  exercise/within=section ,
+  exercise/the-counter = \thesection.\arabic{exercise} ,
+  exercise/template=cyan-box ,
+  exercise/name=Example ,
+  solution/template=red ,
+  solution/print=true
+}
+
+\DeclareExerciseEnvironmentTemplate{cyan-box}
+  {%
+    \begin{tcolorbox}[arc=0mm,boxrule=1pt,colback=white,colframe=cyan,leftrule=3mm]
+      \textsf{%
+        \MakeUppercase{%
+          \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}%
+        }%
+      }%
+      \GetExercisePropertyT{subtitle}{ \textit{#1}}%
+      \quad
+  }
+  {\end{tcolorbox}}
+
+\DeclareExerciseEnvironmentTemplate{red}
+  {%
+    \par
+    \Needspace*{2\baselineskip}
+    \noindent
+    \textsf{\textcolor{red}{\MakeUppercase{\XSIMmixedcase{\GetExerciseName}}}}%
+    \quad
+  }
+  {\par\bigskip}
+
+\begin{document}
+
+\section{My first set of exercises}
+\begin{exercise}
+  Prove that $\frac{1}{2}\Delta(f_{ij}f^{ij})
+  =\nabla^{k}f^{ij}+f^{ij}f^{k}[2\nabla_{i}R_{jk}-\nabla_{k}R_{ij}]$
+\end{exercise}
+\begin{solution}
+  From \dots
+\end{solution}
+
+\begin{exercise}
+  Prove that Paulinho is smart.
+\end{exercise}
+\begin{solution}
+  All ducks are smart. Paulinho is a duck. Therefore, Paulinho is smart.
+\end{solution}
+
+\begin{exercise}
+  Prove that Paulinho is smart.
+\end{exercise}
+\begin{solution}
+  All ducks are smart. Paulinho is a duck. Therefore, Paulinho is smart.
+\end{solution}
+
+\section{My second set of exercises}
+\begin{exercise}
+  Prove that Paulinho is smart.
+\end{exercise}
+\begin{solution}
+  All ducks are smart. Paulinho is a duck. Therefore, Paulinho is smart.
+\end{solution}
+
+\begin{exercise}
+  Prove that Paulinho is smart.
+\end{exercise}
+\begin{solution}
+  All ducks are smart. Paulinho is a duck. Therefore, Paulinho is smart.
+\end{solution}
+
+\end{document}

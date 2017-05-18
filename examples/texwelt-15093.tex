@@ -1,0 +1,133 @@
+% http://texwelt.de/wissen/fragen/15093/
+\documentclass[paper=a4]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{xsim,needspace}
+
+\DeclareExerciseTagging{AFB}
+\DeclareExerciseEnvironmentTemplate{myexam}
+  {
+    \par\vspace{\baselineskip}
+    \Needspace*{3\baselineskip}
+    \noindent
+    \textbf{\IfInsideSolutionTF{Lösung}{Aufgabe}~\GetExerciseProperty{counter}.}%
+    \GetExercisePropertyT{subtitle}{\quad\textit{#1}}%
+    \hfill
+    \GetExercisePropertyT{AFB}{Schwierigkeit: #1}%
+    \GetExercisePropertyT{points}{%
+      \marginpar{%
+        \PropertyValue
+        \GetExercisePropertyT{bonus-points}{+\PropertyValue}%
+        \,P.%
+      }%
+    }%
+    \par\noindent
+  }
+  {}
+
+\xsimsetup{exercise/template=myexam}
+
+\begin{document}
+
+\begin{exercise}[subtitle=Eine Frage, AFB=1, points=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[AFB=2, points=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[AFB=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[subtitle=Eine andere Frage, AFB=4, points=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[subtitle=Eine Frage, AFB=2]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\end{document}
+
+% andere Idee:
+\documentclass[paper=a4]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{xsim}
+
+\DeclareExerciseTagging{AFB}
+
+\DeclareExerciseEnvironmentTemplate{AFB}{%
+  \subsection*{%
+    \XSIMmixedcase{\GetExerciseName}\nobreakspace
+    \GetExerciseProperty{counter}%
+    \IfExercisePropertySetT{subtitle}%
+      { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+  }
+  \marginpar{%
+    \GetExercisePropertyT{AFB}{%
+      \leavevmode\llap{Schwierigkeit: \PropertyValue\hspace*{\marginparsep}}%
+    }%
+    \GetExercisePropertyT{points}{%
+      \PropertyValue
+      \nobreakspace\XSIMtranslate{points}%
+    }%
+  }%
+}{}
+
+\DeclareExerciseEnvironmentTemplate{AFBsol}{%
+  \subsection*{%
+    \XSIMmixedcase{\GetExerciseName}\nobreakspace
+    \GetExerciseProperty{counter}%
+    \IfExercisePropertySetT{subtitle}%
+      { {\normalfont\itshape\GetExerciseProperty{subtitle}}}%
+  }
+  \textit{\small
+    \GetExercisePropertyT{AFB}{Schwierigkeit: \PropertyValue}%
+    \GetExercisePropertyT{points}{%
+      \IfExercisePropertySetT{AFB}{ }%
+      (\PropertyValue\nobreakspace\XSIMtranslate{points})%
+    }%
+  }%
+  \par\noindent
+}{}
+
+\DeclareExerciseTranslation{German}{default-heading}{Lösungen}
+
+\xsimsetup{
+  exercise/template=AFB ,
+  solution/template=AFBsol ,
+  exercise/name=Aufgabe
+}
+
+\begin{document}
+
+\begin{exercise}[subtitle=Eine Frage, AFB=1, points=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+\begin{solution}
+  Das ist eine tolle Lösung!
+\end{solution}
+\begin{exercise}[AFB=2, points=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[AFB=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[subtitle=Eine andere Frage, AFB=4, points=3]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\begin{exercise}[subtitle=Eine Frage, AFB=2]
+  Das ist eine sehr tolle Frage.
+\end{exercise}
+
+\printsolutions
+
+\end{document}

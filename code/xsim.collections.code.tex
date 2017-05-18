@@ -51,6 +51,12 @@
     define~ it~ first!
   }
 
+\msg_new:nnn {xsim} {print-collection-choice}
+  {
+    The~ choice~ `#1'~ for~ the~ option~ `print-collection/print'~ does~ not~
+    exist.~ I'm~ using~ `exercises'~ instead~ \msg_line_context:
+  }
+
 % ----------------------------------------------------------------------------
 
 % #1: collection name
@@ -223,24 +229,43 @@
 % ----------------------------------------------------------------------------
 
 \bool_new:N \l__xsim_printcollection_headings_bool
-\tl_new:N  \l__xsim_printcollection_headings_template_tl
+\tl_new:N   \l__xsim_printcollection_headings_template_tl
+\tl_new:N   \l__xsim_print_collection_choice_tl
 
 \keys_define:nn {xsim/print-collection}
   {
-    headings .bool_set:N = \l__xsim_printcollection_headings_bool ,
-    headings .initial:n  = false ,
+    headings          .bool_set:N = \l__xsim_printcollection_headings_bool ,
+    headings          .initial:n  = false ,
     headings-template .tl_set:N  = \l__xsim_printcollection_headings_template_tl ,
-    headings-template .initial:n = collection
+    headings-template .initial:n = collection ,
+    print             .choice: ,
+    print/exercises   .code:n =
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {exercise} ,
+    print/solutions   .code:n =
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {solution} ,
+    print/both        .code:n =
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {both} ,
+    print/unknown     .code:n =
+      \msg_warning:nnn {xsim} {print-collection-choice} {#1}
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {exercise} ,
+    print             .initial:n = exercises
   }
 
 % #1: options
 % #2: collection name
-% #3: exercise|solution
-\cs_new_protected:Npn \xsim_print_collection:nnn #1#2#3
+\cs_new_protected:Npn \xsim_print_collection:nn #1#2
   {
     \xsim_if_collection_active:nTF {#2}
       { \msg_error:nnn {xsim} {collection-active} {#2} }
       {
+        \xsim_verbose:x
+          {
+            Printing~
+            \l__xsim_print_collection_choice_tl \c_space_tl
+            \str_if_eq:onT { \l__xsim_print_collection_choice_tl } {both}
+              { exercises~ and~ solutions~ }
+            of~ collection~ `#2'
+          }
         \group_begin:
           \keys_set:nn {xsim/print-collection} {#1} 
           \tl_set:Nn \ExerciseCollection {#2}
@@ -254,8 +279,24 @@
                     {
                       \xsim_if_in_collection:nnnT {#2} {##1} {####1}
                         {
-                          \use:c {xsim_if_#3_exists:nnT} {##1} {####1}
-                            { \bool_set_true:N \l__xsim_tmpa_bool }
+                          \tl_if_eq:VnTF
+                            \l__xsim_print_collection_choice_tl
+                            {both}
+                            {
+                              \xsim_if_exercise_exists:nnT {##1} {####1}
+                                { \bool_set_true:N \l__xsim_tmpa_bool }
+                            }
+                            {
+                              \use:c
+                                {
+                                  xsim_if_
+                                  \l__xsim_print_collection_choice_tl
+                                  _exists:nnT
+                                }
+                                {##1}
+                                {####1}
+                                { \bool_set_true:N \l__xsim_tmpa_bool }
+                            }
                         }
                     }
                   \bool_if:NT \l__xsim_tmpa_bool
@@ -269,8 +310,32 @@
                 {
                   \xsim_if_in_collection:nnnT {#2} {##1} {####1}
                     {
-                      \use:c {xsim_if_#3_exists:nnT} {##1} {####1}
-                        { \xsim_insert:nnnn {##1} {####1} {} {#3} }
+                      \tl_if_eq:VnTF
+                        \l__xsim_print_collection_choice_tl
+                        {both}
+                        {
+                          \xsim_if_exercise_exists:nnT {##1} {####1}
+                            { \xsim_insert:nnnn {##1} {####1} {} {exercise} }
+                          \xsim_if_solution_exists:nnT {##1} {####1}
+                            { \xsim_insert:nnnn {##1} {####1} {} {solution} }
+                        }
+                        {
+                          \use:c
+                            {
+                              xsim_if_
+                              \l__xsim_print_collection_choice_tl
+                              _exists:nnT
+                            }
+                            {##1}
+                            {####1}
+                            {
+                              \xsim_insert:nnnV
+                                {##1}
+                                {####1}
+                                {}
+                                \l__xsim_print_collection_choice_tl
+                            }
+                        }
                     }
                 }
             }

@@ -29,12 +29,16 @@
 
 \xsim_load_modules:n {collections}
 
-\tl_new:N   \l_xsim_random_collection_tl
-\tl_new:N   \l_xsim_random_exclude_list_tl
-\seq_new:N  \g__xsim_random_list_seq
-\seq_new:N  \l__xsim_allowed_exercise_ids_seq
-\int_new:N  \g__xsim_random_list_id_int
-\bool_new:N \l__xsim_sort_random_bool
+\tl_new:N    \l_xsim_random_collection_tl
+\tl_new:N    \l_xsim_random_exclude_list_tl
+\tl_new:N    \l__xsim_print_random_choice_tl
+\tl_const:Nn \c__xsim_print_random_both_tl {both}
+\tl_const:Nn \c__xsim_print_random_exercise_tl {exercise}
+\tl_const:Nn \c__xsim_print_random_solution_tl {solution}
+\seq_new:N   \g__xsim_random_list_seq
+\seq_new:N   \l__xsim_allowed_exercise_ids_seq
+\int_new:N   \g__xsim_random_list_id_int
+\bool_new:N  \l__xsim_sort_random_bool
 
 % #1: random list id
 % #2: csv list of integers
@@ -46,7 +50,10 @@
   }
 
 \cs_new_protected:Npn \xsim_new_random_list:n #1
-  { \seq_new:c {g__xsim_random_#1 _seq} }
+  {
+    \xsim_verbose:n {Defining~ new~ random~ list~ `#1'}
+    \seq_new:c {g__xsim_random_#1 _seq}
+  }
 
 \cs_new_protected:Npn \xsim_set_random_list:nn #1#2
   { \seq_gset_from_clist:cn {g__xsim_random_#1_seq} {#2} }
@@ -82,6 +89,7 @@
       { \xsim_new_random_list:n {#1} }
     \xsim_random_list_if_empty:nT {#1}
       { \xsim_set_random_list_from_seq:nN {#1} #2 }
+    \xsim_verbose:n {Saving~ random~ list~ `#1'}
     \xsim_add_cs_to_aux:nn {random}
       { {#1} { \xsim_use_random_list:nn {#1} {,} } }
   }
@@ -127,6 +135,12 @@
         \xsim_save_random_list:nN
           { \int_to_alph:n { \g__xsim_random_list_id_int } }
           \g__xsim_random_list_seq
+        \xsim_verbose:x
+          {
+            Printing~ exercises~ of~ random~ list~
+            `\int_to_alph:n { \g__xsim_random_list_id_int }'~ of~
+            collection~ `#1'
+          }
         \xsim_print_random_exercises:Nn
           \l__xsim_allowed_exercise_ids_seq
           { \int_to_alph:n { \g__xsim_random_list_id_int } }
@@ -148,6 +162,8 @@
         \xsim_random_list_if_empty_p:n {#1}
       }
       {
+        \xsim_verbose:n
+          {Generating~ random~ list~ `#1'~ with~ #3~ out~ of~ #2~ items}
         \seq_gclear:N #4
         \int_do_until:nNnn { \seq_count:N #4 } = {#3}
           {
@@ -180,21 +196,63 @@
         !\xsim_random_list_if_empty_p:n {#2}
       }
       {
+        \xsim_verbose:x
+          {
+            Printing~
+            \l__xsim_print_random_choice_tl \c_space_tl
+            \str_if_eq:onT { \l__xsim_print_random_choice_tl } {both}
+              { exercises~ and~ solutions~ }
+            of~ random~ list~ `#2'
+          }
         \xsim_map_random_list:nn {#2}
           {
             \tl_set:Nx \l__xsim_tmpa_tl
               { \seq_item:Nn #1 {##1} }
             \tl_set:Nx \l__xsim_tmpb_tl
               { \xsim_get_type_for_property:nV {id} \l__xsim_tmpa_tl }
-            \xsim_if_exercise_exists:VVT
-              \l__xsim_tmpb_tl
-              \l__xsim_tmpa_tl
+            \bool_if:nT
               {
-                \xsim_insert:VVnn
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_both_tl
+                ||
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_exercise_tl
+              }
+              {
+                \xsim_if_exercise_exists:VVT
                   \l__xsim_tmpb_tl
                   \l__xsim_tmpa_tl
-                  {}
-                  {exercise}
+                  {
+                    \xsim_insert:VVnn
+                      \l__xsim_tmpb_tl
+                      \l__xsim_tmpa_tl
+                      {}
+                      {exercise}
+                  }
+              }
+            \bool_if:nT
+              {
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_both_tl
+                ||
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_solution_tl
+              }
+              {
+                \xsim_if_solution_exists:VVT
+                  \l__xsim_tmpb_tl
+                  \l__xsim_tmpa_tl
+                  {
+                    \xsim_insert:VVnn
+                      \l__xsim_tmpb_tl
+                      \l__xsim_tmpa_tl
+                      {}
+                      {solution}
+                  }
               }
           }
       }
@@ -206,7 +264,18 @@
     sort       .initial:n  = true ,
     collection .tl_set:N   = \l_xsim_random_collection_tl ,
     collection .initial:n  = all~exercises ,
-    exclude    .code:n     = \__xsim_exclude_ids:n {#1}
+    exclude    .code:n     = \__xsim_exclude_ids:n {#1} ,
+    print             .choice: ,
+    print/exercises   .code:n =
+      \tl_set:Nn \l__xsim_print_random_choice_tl {exercise} ,
+    print/solutions   .code:n =
+      \tl_set:Nn \l__xsim_print_random_choice_tl {solution} ,
+    print/both        .code:n =
+      \tl_set:Nn \l__xsim_print_random_choice_tl {both} ,
+    print/unknown     .code:n =
+      \msg_warning:nnn {xsim} {print-collection-choice} {#1}
+      \tl_set:Nn \l__xsim_print_random_choice_tl {exercise} ,
+    print             .initial:n = exercises
   }
 
 \cs_new_protected:Npn \__xsim_exclude_ids:n #1
@@ -214,9 +283,16 @@
     \seq_clear:N \l__xsim_tmpa_seq
     \clist_map_inline:nn {#1}
       {
-        \seq_put_right:Nx \l__xsim_tmpa_seq
+        \tl_set:Nx \l__xsim_tmpa_tl
           { \xsim_get_id_for_property:nn {ID} {##1} }
+        \tl_if_blank:NTF \l__xsim_tmpa_tl
+          { \seq_put_right:Nn \l__xsim_tmpa_seq {##1} }
+          {
+            \seq_put_right:Nx \l__xsim_tmpa_seq
+              { \xsim_get_id_for_property:nn {ID} {##1} }
+          }
       }
+    \seq_remove_duplicates:N \l__xsim_tmpa_seq
     \tl_set:Nx \l_xsim_random_exclude_list_tl
       { \seq_use:Nn \l__xsim_tmpa_seq {,} }
   }

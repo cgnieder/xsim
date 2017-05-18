@@ -1,0 +1,86 @@
+% http://texwelt.de/wissen/fragen/6698/
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+
+\usepackage{needspace}
+\usepackage{xsim}
+\xsimsetup{
+  exercise/name = Aufgabe ,
+  solution/name = Lösung ,
+  exercise/within = section ,
+  exercise/the-counter = \thesection.\arabic{exercise} ,
+  exercise/template = mine
+}
+
+\newif\iflist
+
+\DeclareExerciseEnvironmentTemplate{mine}{
+  \par\vspace{\baselineskip}
+  \Needspace*{3\baselineskip}
+  \noindent
+  \textbf{\GetExerciseName~\GetExerciseProperty{counter}}%
+  \GetExercisePropertyT{subtitle}{\quad\textit{#1}}%
+  \iflist
+    \GetExercisePropertyT{page}{ (Seite~#1)}%
+  \fi
+  % not necessary if you don't use points:
+  \GetExercisePropertyT{points}{%
+    \marginpar{%
+      \PropertyValue
+      \GetExercisePropertyT{bonus-points}{+\PropertyValue}%
+      \,\XSIMtranslate{points-abbr}%
+    }%
+  }%
+  \par\noindent
+}
+{}
+
+\usepackage{multicol}
+
+\begin{document}
+
+\section{Erstes Kapitel}
+\begin{exercise}
+  Eine erste Aufgabe
+\end{exercise}
+\begin{exercise}
+  Eine zweite Aufgabe
+\end{exercise}
+
+\subsection{Erstes Unterkapitel}
+\begin{exercise}
+  Eine Aufgabe in einem Unterkapitel
+\end{exercise}
+\begin{exercise}
+  Noch eine Aufgabe in einem Unterkapitel
+\end{exercise}
+
+\subsubsection{Tiefer geschachteltes Unterkapitel}
+\begin{exercise}
+  Noch eine Aufgabe
+\end{exercise}
+
+\subsubsection{Weiter geschachtelt}
+\begin{exercise}
+  Eine weitere Aufgabe
+\end{exercise}
+
+\subsection{Zweites Unterkapitel}
+\begin{exercise}
+  Und eine weitere Aufgabe
+\end{exercise}
+
+\clearpage
+
+\section{Zweites Kapitel}
+\begin{exercise}
+  Eine Aufgabe in einem anderen Kapitel
+\end{exercise}
+
+\begin{multicols}{2}[\section{Aufgabenübersicht}]
+  \listtrue
+  \printcollection{all exercises}
+\end{multicols}
+
+\end{document}

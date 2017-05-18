@@ -79,6 +79,7 @@
       { \prg_return_true: }
       { \prg_return_false: }
   }
+\cs_generate_variant:Nn \xsim_if_solution_exists:nnT {VV}
 
 % #1: type
 % #2: options
@@ -86,7 +87,7 @@
   {
     \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
     \bool_set_true:N \l_xsim_inside_solution_bool
-    \refstepcounter { \xsim_get_parameter:nn {#1} {solution-env} }
+    \refstepcounter { \xsim_get_parameter:nn {#1} {solution-counter} }
   }
 
 \cs_new_protected:Npn \xsim_stop_solution:n #1 {}
@@ -96,7 +97,7 @@
 % per section condition:
 % #1: type
 % #2: id
-% #3: use|print
+% #3: boolean property
 \prg_new_protected_conditional:Npnn
   \__xsim_if_solutions_per_section:nnn #1#2#3 {T,F,TF}
   {
@@ -122,7 +123,7 @@
 % per chapter condition:
 % #1: type
 % #2: id
-% #3: use|print
+% #3: boolean property
 \prg_new_protected_conditional:Npnn
   \__xsim_if_solutions_per_chapter:nnn #1#2#3 {T,F,TF}
   {
@@ -148,7 +149,7 @@
 % per collection condition:
 % #1: type
 % #2: id
-% #3: use|print
+% #3: boolean property
 \prg_new_protected_conditional:Npnn
   \__xsim_if_solutions_in_collection:nnn #1#2#3 {T,F,TF}
   {
@@ -183,7 +184,7 @@
 
 % #1: type
 % #2: id
-% #3: print|use
+% #3: boolean property
 \prg_new_conditional:Npnn
   \__xsim_printsolutions_if_conditions:nnn #1#2#3 {T,F,TF}
   {
@@ -219,7 +220,7 @@
 % false if any condition is false for this solution:
 % #1: type
 % #2: id
-% #3: print|use
+% #3: boolean property
 \prg_new_protected_conditional:Npnn
   \__xsim_printsolutions_check_conditions:nnn #1#2#3 {T,F,TF}
   {
@@ -242,12 +243,21 @@
 
 % #1: type
 % #2: id
-% #3: print|use
+% #3: boolean property
 % #4: code
 \cs_new_protected:Npn \xsim_if_this_solution_do:nnnn #1#2#3#4
   {
     \xsim_if_solution_exists:nnT {#1} {#2}
       { \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4} }
+  }
+
+% #1: type
+% #2: boolean property
+% #3: code
+\cs_new_protected:Npn \xsim_if_solutions_do:nnn #1#2#3
+  {
+    \xsim_foreach_exercise_type_id:nn {#2}
+      { \xsim_if_this_solution_do:nnnn {#1} {##2} {#2} {#3} }
   }
 
 % ----------------------------------------------------------------------------
@@ -264,18 +274,12 @@
       \bool_set_false:N \l__xsim_tmpa_bool
       \bool_if:nTF {#1}
         {
-          \xsim_foreach_exercise_type_id:nn {print}
-            {
-              \xsim_if_this_solution_do:nnnn {#3} {##2} {print}
-                { \bool_set_true:N \l__xsim_tmpa_bool }
-            }
+          \xsim_if_solutions_do:nnn {#3} {print}
+            { \bool_set_true:N \l__xsim_tmpa_bool }
         }
         {
-          \xsim_foreach_exercise_type_id:nn {use}
-            {
-              \xsim_if_this_solution_do:nnnn {#3} {##2} {use}
-                { \bool_set_true:N \l__xsim_tmpa_bool }
-            }
+          \xsim_if_solutions_do:nnn {#3} {use}
+            { \bool_set_true:N \l__xsim_tmpa_bool }
         }
       \tl_set:Nn \ExerciseType {#3}
       \bool_if:NT \l__xsim_tmpa_bool
@@ -289,18 +293,12 @@
         }
       \bool_if:nTF {#1}
         {
-          \xsim_foreach_exercise_type_id:nn {print}
-            {
-              \xsim_if_this_solution_do:nnnn {#3} {##2} {print}
-                { \xsim_insert:nnnn {#3} {##2} {} {solution} }
-            }
+          \xsim_if_solutions_do:nnn {#3} {print}
+            { \xsim_insert:nnnn {#3} {##2} {} {solution} }
         }
         {
-          \xsim_foreach_exercise_type_id:nn {use}
-            {
-              \xsim_if_this_solution_do:nnnn {#3} {##2} {use}
-                { \xsim_insert:nnnn {#3} {##2} {} {solution} }
-            }
+          \xsim_if_solutions_do:nnn {#3} {use}
+            { \xsim_insert:nnnn {#3} {##2} {} {solution} }
         }
     \group_end:
   }

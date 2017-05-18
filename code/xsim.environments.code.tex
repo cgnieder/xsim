@@ -129,6 +129,8 @@
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_save_environment_body:nnn #1#2#3
   {
+    \xsim_verbose:n
+      { Starting~ to~ write~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \__xsim_set_file_signature:nnn {#1} {#2} {#3}
     \__xsim_file_info:nnnVV {#1} {#2} {#3}
       \l__xsim_file_name_tl
@@ -148,6 +150,7 @@
 % #3: hook
 \cs_new_protected:Npn \xsim_new_hook:nnn #1#2#3
   {
+    \xsim_verbose:n { Defining~ new~ #1~ (#2)~ hook~ `#3' }
     \tl_new:c {l__xsim_#1_#2_#3_hook_tl}
     \keys_define:nx {xsim}
       {
@@ -167,14 +170,20 @@
 % #3: hook
 % #4: code
 \cs_new_protected:Npn \xsim_set_hook:nnnn #1#2#3#4
-  { \tl_set:cn {l__xsim_#1_#2_#3_hook_tl} {#4} }
+  {
+    \xsim_verbose:n { Setting~ #1~ (#2)~ hook~ `#3' }
+    \tl_set:cn {l__xsim_#1_#2_#3_hook_tl} {#4}
+  }
 
 % #1: type
 % #2: exercise|solution
 % #3: hook
 % #4: code
 \cs_new_protected:Npn \xsim_addto_hook:nnnn #1#2#3#4
-  { \tl_put_right:cn {l__xsim_#1_#2_#3_hook_tl} {#4} }
+  {
+    \xsim_verbose:n { Adding~ to~ #1~ (#2)~ hook~ `#3' }
+    \tl_put_right:cn {l__xsim_#1_#2_#3_hook_tl} {#4}
+  }
 
 % ----------------------------------------------------------------------------
 
@@ -203,7 +212,7 @@
 \cs_new_protected:Npn \xsim_typeset_environment:nnn #1#2#3
   {
     \xsim_verbose:n
-      { Writing~ #3~ environment~ type~ `#1'~ id~ `#2'. }
+      { Typesetting~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \use:x
       {
         \exp_not:N \par
@@ -269,7 +278,6 @@
             }
           \use:x
             {
-              \exp_not:N \par
               \xsim_use_hook:nnn {#1} {#4} {pre}
               \xsim_use_template:nn
                 {begin}
@@ -281,7 +289,6 @@
                 {end}
                 { \xsim_get_parameter:nn {#1} {#4-template} }
               \xsim_use_hook:nnn {#1} {#4} {post}
-              \exp_not:N \par
             }
         \group_end:
       }
@@ -290,7 +297,7 @@
           { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
       }
   }
-\cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV}
+\cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV,nnnV}
 
 \prg_new_conditional:Npnn \xsim_if_insert_mode: {T,F,TF}
   {

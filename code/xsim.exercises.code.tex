@@ -193,9 +193,12 @@
 \cs_new_protected:Npn \xsim_foreach_exercise_id:n #1
   { \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int } {#1} }
 
+\cs_new:Npn \__xsim_loop_item:nnnnnn #1#2#3#4#5#6 {}
+\cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
+
 % #1: type
 % #2: id
-% #3: print|use
+% #3: boolean property
 \cs_new:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
   {
     \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
@@ -212,12 +215,11 @@
        }
   }
 
-% #1: print|use
+% #1: boolean property
 % #2: loop code
 \xsim_define_loop_macro:Nnn \xsim_foreach_exercise_type_id:nn
   {nnnnnn}
   {
-    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
     \xsim_foreach_exercise_type:n
       {
         \xsim_foreach_exercise_id:n
@@ -228,7 +230,6 @@
 \xsim_define_loop_macro:Nnn \xsim_foreach_exercise_id_type:nn
   {nnnnnn}
   {
-    \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
     \xsim_foreach_exercise_id:n
       {
         \xsim_foreach_exercise_type:n
@@ -246,9 +247,11 @@
 
 \cs_new_protected:Npn \xsim_define_counters:n #1
   {
+    \xsim_verbose:n { Defining~ counters~ for~ new~ exercise~ type~ `#1' }
     \cs_if_exist:cF { c@ \xsim_get_parameter:nn {#1} {counter} }
       { \newcounter { \xsim_get_parameter:nn {#1} {counter} } }
-    \newcounter { \xsim_get_parameter:nn {#1} {solution-env} }
+    \cs_if_exist:cF { c@ \xsim_get_parameter:nn {#1} {solution-counter} }
+      { \newcounter { \xsim_get_parameter:nn {#1} {solution-counter} } }
     \cs_if_exist:cF { c@ number of \xsim_get_parameter:nn {#1} {exercise-env} s }
       { \newcounter { number of \xsim_get_parameter:nn {#1} {exercise-env} s } }
   }
@@ -284,7 +287,13 @@
             \xsim_set_parameters:nx {#1}
               { counter =  \xsim_get_parameter:nn {#1} {exercise-env} }
           }
+        \xsim_if_parameter:nnF {#1} {solution-counter}
+          {
+            \xsim_set_parameters:nx {#1}
+              { solution-counter =  \xsim_get_parameter:nn {#1} {solution-env} }
+          }
         \xsim_define_counters:n {#1}
+        \xsim_verbose:n { Defining~ options~ for~ new~ exercise~ type~ `#1' }
         \keys_define:nx {xsim}
           {
             \xsim_get_parameter:nn {#1} {solution-env} / print
@@ -371,7 +380,12 @@
           {
             \stepcounter { \xsim_get_parameter:nn {#1} {number} }
             % don't step if in active collection:
-            \xsim_if_collections_active:F
+            \xsim_if_collections_active:TF
+              {
+                \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+                  {print}
+                  {false}
+              }
               {
                 \xsim_step_exercise_counter:nV {#1} \g_xsim_exercise_id_tl
                 \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl

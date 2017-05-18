@@ -1,0 +1,46 @@
+% https://tex.stackexchange.com/q/369686/
+\documentclass[a4paper,11pt]{article}
+\usepackage[top=2cm, bottom=3cm, left=4cm, right=4cm]{geometry}
+
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage{tgpagella}
+\usepackage[utf8]{inputenc}
+
+\usepackage{xsim,needspace,adjustbox,scrextend}
+
+\xsimsetup{
+  exercise/the-counter = \arabic{exercise}. ,
+  exercise/template    = square
+}
+
+\DeclareExerciseEnvironmentTemplate{square}
+  {%
+    \Needspace*{2\baselineskip}%
+    \addmargin[0pt]{.15\textwidth}%
+    \par\noindent
+    \adjustbox{
+      fbox = 1pt 0pt,
+      lap = {\textwidth},
+      valign = t,
+      set vsize = {0pt}{0pt}
+    }{\rule{0pt}{20pt}\hspace{20pt}}%
+    \textbf{\GetExerciseProperty{counter}} %
+  }
+  {\endaddmargin\vspace{\baselineskip}}
+
+\usepackage{lipsum}
+
+\begin{document}
+
+\noindent\hrulefill
+
+\begin{exercise}
+  \lipsum[1]
+\end{exercise}
+
+\begin{exercise}
+  \lipsum[2]
+\end{exercise}
+
+\end{document}
