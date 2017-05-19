@@ -1303,6 +1303,9 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     exercise type or -- if no type has been given -- to \meta{code}.
   \expandable\command{IfInsideSolution\TF}[\marg{true}\marg{false}]
     Tests if the template is used inside a solution environment or not.
+  \expandable\command{IfPrintSolution\TF}[\marg{true}\marg{false}]
+    Tests if the option \option{print} for the solutions of the current
+    \cs{ExerciseType} is set to \code{true} or \code{false}.
   \command{ForEachPrintedExerciseByType}[\marg{code}]
     Loops over each \emph{printed} exercise ordered by the exercise types and
     within each type by id.  Inside \meta{code} you can refer to several
@@ -1334,10 +1337,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \begin{itemize}
       \item \code{\#1}: the type of the exercise
       \item \code{\#2}: the id of the exercise
-      \item \code{\#3}: the counter of the exercise
-      \item \code{\#4}: the subtitle of the exercise
-      \item \code{\#5}: the points of the exercise
-      \item \code{\#6}: the bonus points of the exercise
+      \item \code{\#3}: the \property{counter} property of the exercise
+      \item \code{\#4}: the \property{subtitle} property of the exercise
+      \item \code{\#5}: the \property{points} property of the exercise
+      \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{ForEachUsedExerciseByID}
     Loops over each \emph{used} exercise order by the exercise id.  Inside
@@ -1346,10 +1349,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \begin{itemize}
       \item \code{\#1}: the type of the exercise
       \item \code{\#2}: the id of the exercise
-      \item \code{\#3}: the counter of the exercise
-      \item \code{\#4}: the subtitle of the exercise
-      \item \code{\#5}: the points of the exercise
-      \item \code{\#6}: the bonus points of the exercise
+      \item \code{\#3}: the \property{counter} property of the exercise
+      \item \code{\#4}: the \property{subtitle} property of the exercise
+      \item \code{\#5}: the \property{points} property of the exercise
+      \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \expandable\command{XSIMtranslate}[\marg{keyword}]
     Delivers the translation of \meta{keyword} according to the current
@@ -1427,11 +1430,12 @@ and~\vref{sec:table-templ-default*}.
 
 The repository of this package\footnote{GitHub:
   \url{https://github.com/cgnieder/xsim/}, CTAN:
-  \url{http://www.ctan.org/pkg/xsim/}} includes a number of example documents
-demonstrating how different aspects of this package work or how different
-kinds of problems can be solved or how different kinds of layouts can be
-achieved as well as how solve concrete problems that have come up in different
-\LaTeX\ forums, see section~\vref{sec:example-files}.
+  \url{http://www.ctan.org/pkg/xsim/}} currently includes
+\theexamplefiles~example documents demonstrating how different aspects of this
+package work or how different kinds of problems can be solved or how different
+kinds of layouts can be achieved as well as how solve concrete problems that
+have come up in different \LaTeX\ forums, see
+section~\vref{sec:example-files}.
 
 \subsubsection{The \code{default} Exercise Template}\label{sec:exercise-templ-default}
 
@@ -2171,11 +2175,11 @@ The following list is created with this code:
 \section{Example Documents Coming With This Package}\label{sec:example-files}
 The repository of this package\footnote{GitHub:
   \url{https://github.com/cgnieder/xsim/}, CTAN:
-  \url{http://www.ctan.org/pkg/xsim/}} includes a number of example documents
-demonstrating how different aspects of this package work or how different
-kinds of problems can be solved or how different kinds of layouts can be
-achieved as well as how solve concrete problems that have come up in different
-\LaTeX\ forums.
+  \url{http://www.ctan.org/pkg/xsim/}} currently includes
+\theexamplefiles~example documents demonstrating how different aspects of this
+package work or how different kinds of problems can be solved or how different
+kinds of layouts can be achieved as well as how solve concrete problems that
+have come up in different \LaTeX\ forums.
 
 \listexamplefiles
 

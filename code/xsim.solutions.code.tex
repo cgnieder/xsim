@@ -53,6 +53,13 @@
       { \prg_return_false: }
   }
 
+\prg_new_conditional:Npnn \xsim_if_solution_print:n #1 {p,T,F,TF}
+  {
+    \bool_if:cTF {l__xsim_#1_solution_print_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
 % #1: type
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_solution_if_print:nn #1#2 {T,F,TF}

@@ -62,6 +62,15 @@
 \NewExpandableDocumentCommand \IfInsideSolutionF {+m}
   { \IfInsideSolutionTF {} {#1} }
 
+\NewExpandableDocumentCommand \IfSolutionPrintTF {+m+m}
+  { \xsim_if_solution_print:nTF {\ExerciseType} {#1} {#2} }
+
+\NewExpandableDocumentCommand \IfSolutionPrintT {+m}
+  { \IfSolutionPrintTF {#1} {} }
+
+\NewExpandableDocumentCommand \IfSolutionPrintF {+m}
+  { \IfSolutionPrintTF {} {#1} }
+
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseProperty {t!st-m}

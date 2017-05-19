@@ -1,0 +1,131 @@
+% http://golatex.de/schueler-und-lehrerloesung-im-gleichen-texfile-t16824.html
+\documentclass[fontsize=12pt,parskip=half]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+
+\newlength\breite
+\setlength\breite{160mm}
+\newlength\hoehe
+\setlength\hoehe{80mm}
+
+\usepackage[
+  hdivide={3.0cm,\breite,},
+  vdivide={2.2cm,,2.2cm}]{geometry}
+\usepackage[bitstream-charter]{mathdesign}
+
+\usepackage[babel]{microtype}
+
+\usepackage[inline]{enumitem}
+
+\usepackage{amsmath,siunitx}
+\sisetup{
+  locale = DE ,
+  per-mode = fraction
+}
+
+\usepackage{xsim,needspace,tikz,tcolorbox}
+
+\xsimsetup{
+  exercise/template = gitter ,
+  solution/template = gitter
+}
+
+\DeclareExerciseEnvironmentTemplate{gitter}
+  {%
+    \IfInsideSolutionT{%
+      \tcolorbox[
+        detach title ,
+        title        = Lösung: ,
+        before upper = {\tcbtitle\space} ,
+        fonttitle    = \bfseries ,
+        fontupper    = \large ,
+        valign       = center ,
+        colframe     = black!50!white ,
+        colback      = black!12!white ,
+        coltext      = blue ,
+        coltitle     = blue ,
+        height       = \hoehe ,
+        width        = \breite ,
+        sharp corners
+      ]
+    }%
+  }
+  {%
+    \IfInsideSolutionTF
+      {\endtcolorbox}
+      {%
+        \IfSolutionPrintF{%
+        \par
+        \begin{tikzpicture}[semitransparent]
+          \draw[step=4mm, line width=0.15mm, black!60!white] (0,0) grid
+            (\breite,\hoehe);
+        \end{tikzpicture}
+        \par
+        }
+      }%
+  }
+
+\begin{document}
+
+\begin{exercise}
+  Für die \textbf{Schülerausgabe} sollen Häuschen (Grid) mit Seitenlänge
+  \SI{4}{\mm} gesetzt werden.
+\end{exercise}
+\begin{solution}
+  Hier soll die Lösung stehen: $E=m\cdot c^2$.
+\end{solution}
+
+\xsimsetup{solution/print=true}
+
+\begin{exercise}
+  Für die \textbf{Lehrerausgabe} sollen statt Häuschen die Lösung in
+  z.\,B. einer Box geschrieben werden. Dafür soll die Lösung (bezogen auf
+  dieses Beispiel) auch in einer Box mit der exakten Breite \SI{160}{\mm} und
+  der exakten Höhe \SI{80}{\mm} gesetzt werden. Weiter soll natürlich die
+  Position der Lösungsbox und der Häuschenbox exakt identisch sein.
+\end{exercise}
+\begin{solution}
+  Hier soll die Lösung stehen: $E=m\cdot c^2$.
+\end{solution}
+
+\clearpage
+
+\begin{exercise}
+  Beschreiben Sie die \textbf{Satzgruppe des Pythagoras}.
+\end{exercise}
+\begin{solution}
+  \begin{align*}
+    \left.\begin{aligned}
+      c^2   &=a^2+b^2\\
+      a^2   &=p\cdot c\;\wedge\; b^2=q\cdot c\\
+      h^2   &=p\cdot q
+    \end{aligned}\right\}
+    \begin{gathered}
+      \text{Satzgruppe}\\
+      \text{des Pythagoras}
+    \end{gathered}
+  \end{align*}
+\end{solution}
+
+\begin{exercise}
+  Geben Sie die Formel der \textbf{gleichförmigen Bewegung} wieder. Gehen Sie
+  davon aus, dass Sie 1000~Meter in
+  \SI[parse-numbers=false]{3\frac{1}{2}}{Minuten} laufen.
+  \begin{enumerate*}[label=\bfseries\alph*)]
+    \item Mit welcher Geschwindigkeit legen Sie die Strecke zurück?
+    \item Geben Sie die Geschwindigkeit in \si{\km\per\hour} an.
+  \end{enumerate*}
+  \textbf{Hinweis:} Nehmen Sie zur Berechnung die vereinfachte Form und gehen
+  Sie davon aus, dass Ihre Geschwindigkeit konstant ist.
+\end{exercise}
+\begin{solution}
+  \begin{align*}
+    s    &=v\cdot t+s_0 \\
+    1000 &=v\cdot 210 \\
+    v    &=\frac{\SI{1000}{\m}}{\SI{210}{\second}} \\
+    v    &=\SI{4.76}{\m\per\second} = \SI{17.1}{\km\per\hour}
+  \end{align*}
+\end{solution}
+
+\end{document}

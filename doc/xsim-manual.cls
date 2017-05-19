@@ -179,11 +179,13 @@
   add-silent-cmds = {
     @percentchar ,
     bottomrule ,
+    breite ,
     choice ,
     cs ,
     DeclareFloatingEnvironment ,
     enddescription ,
     endtcolorbox ,
+    hoehe ,
     iflist ,
     IfNoValueTF ,
     ifnumless ,
@@ -695,7 +697,11 @@
 \RequirePackage{hyperref,bookmark}
 
 \newcounter{examplefile}
-\newcommand*\xsim@add@example[1]{\listadd\xsim@examplefiles{#1}}
+\newcounter{examplefiles}
+\newcommand*\xsim@add@example[1]{%
+  \listadd\xsim@examplefiles{#1}%
+  \stepcounter{examplefiles}%
+}
 \newcommand*\listexamplefiles{%
   \def\do##1{%
     \stepcounter{examplefile}%
@@ -743,6 +749,7 @@
 \xsim@add@example{texsx-369803}
 \xsim@add@example{texwelt-6698}
 \xsim@add@example{texwelt-15093}
+\xsim@add@example{golatex-16824}
 \xsim@add@example{golatex-18844}
 
 \endinput

@@ -78,4 +78,4 @@ HISTORY:
                      printed
                    - new parameter `solution-counter' in order to avoid
                      possible conflicts with existing counters
-
+ v0.8a  2017/05/19 - \IfPrintSolutionTF
