@@ -711,14 +711,14 @@
       sidebyside gap=0pt,
       lower separated=false,
       title=Example~\theexamplefile\ \enquote{##1}
-        \href{../examples/##1.tex}{\color{white}[\TeX]}
-        \href{../examples/##1.pdf}{\color{white}[PDF]}%
+        \href{../examples/xsim.##1.tex}{\color{white}[\TeX]}
+        \href{../examples/xsim.##1.pdf}{\color{white}[PDF]}%
     ]
-    \lstinputlisting[style=cnltx,lastline=10]{../examples/##1.tex}
+    \lstinputlisting[style=cnltx,lastline=10]{../examples/xsim.##1.tex}
     \tcblower
     \fbox{%
-      \href{../examples/##1.pdf}{%
-        \includegraphics[width=.8\linewidth]{../examples/##1.pdf}}}%
+      \href{../examples/xsim.##1.pdf}{%
+        \includegraphics[width=.8\linewidth]{../examples/{xsim.##1}.pdf}}}%
     \end{cnltxcode}
   }%
   \dolistloop\xsim@examplefiles

@@ -50,33 +50,33 @@ The xsim package consists of the documentation files:
    xsim-manual.cls
 --------------------------------------------------------------------------
 The xsim package consists of the example files:
-   blanks.tex, blanks.pdf
-   boxed-headings.tex, boxed-headings.pdf
-   code-and-output.tex, code-and-output.pdf
-   collections.tex, collections.pdf
-   crossref.tex, crossref.pdf
-   description-list.tex, description-list.pdf
-   different-point-types.tex, different-point-types.pdf
-   difficulties.tex, difficulties.pdf
-   floating.tex, floating.pdf
-   grade-distribution.tex, grade-distribution.pdf
-   listings.tex, listings.pdf
-   multiplechoice.tex, multiplechoice.pdf
-   pointsums.tex, pointsums.pdf
-   randomexercises.tex, randomexercises.pdf
-   various.tex, various.pdf
-   texsx-199360.tex, texsx-199360.pdf
-   texsx-299534.tex, texsx-299534.pdf
-   texsx-305110.tex, texsx-305110.pdf
-   texsx-338165.tex, texsx-338165.pdf
-   texsx-350028.tex, texsx-350028.pdf
-   texsx-369065.tex, texsx-369065.pdf
-   texsx-369803.tex, texsx-369803.pdf
-   texsx-369686.tex, texsx-369686.pdf
-   texwelt-6698.tex, texwelt-6698.pdf
-   texwelt-15093.tex, texwelt-15093.pdf
-   golatex-16824.tex, golatex-16824.pdf
-   golatex-18844.tex, golatex-18844.pdf
+   xsim.blanks.tex, xsim.blanks.pdf
+   xsim.boxed-headings.tex, xsim.boxed-headings.pdf
+   xsim.code-and-output.tex, xsim.code-and-output.pdf
+   xsim.collections.tex, xsim.collections.pdf
+   xsim.crossref.tex, xsim.crossref.pdf
+   xsim.description-list.tex, xsim.description-list.pdf
+   xsim.different-point-types.tex, xsim.different-point-types.pdf
+   xsim.difficulties.tex, xsim.difficulties.pdf
+   xsim.floating.tex, xsim.floating.pdf
+   xsim.grade-distribution.tex, xsim.grade-distribution.pdf
+   xsim.listings.tex, xsim.listings.pdf
+   xsim.multiplechoice.tex, xsim.multiplechoice.pdf
+   xsim.pointsums.tex, xsim.pointsums.pdf
+   xsim.randomexercises.tex, xsim.randomexercises.pdf
+   xsim.various.tex, xsim.various.pdf
+   xsim.texsx-199360.tex, xsim.texsx-199360.pdf
+   xsim.texsx-299534.tex, xsim.texsx-299534.pdf
+   xsim.texsx-305110.tex, xsim.texsx-305110.pdf
+   xsim.texsx-338165.tex, xsim.texsx-338165.pdf
+   xsim.texsx-350028.tex, xsim.texsx-350028.pdf
+   xsim.texsx-369065.tex, xsim.texsx-369065.pdf
+   xsim.texsx-369803.tex, xsim.texsx-369803.pdf
+   xsim.texsx-369686.tex, xsim.texsx-369686.pdf
+   xsim.texwelt-6698.tex, xsim.texwelt-6698.pdf
+   xsim.texwelt-15093.tex, xsim.texwelt-15093.pdf
+   xsim.golatex-16824.tex, xsim.golatex-16824.pdf
+   xsim.golatex-18844.tex, xsim.golatex-18844.pdf
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please
 feel free to contact me.
