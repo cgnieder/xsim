@@ -1,0 +1,26 @@
+% https://tex.stackexchange.com/q/155630/
+\documentclass{article}
+\usepackage{xsim}
+
+\DeclareExerciseCollection{foo}
+
+\begin{document}
+
+\collectexercises{foo}
+\begin{exercise}
+  foo
+\end{exercise}
+\begin{exercise}
+  bar
+\end{exercise}
+\begin{exercise}
+  baz
+\end{exercise}
+\collectexercisesstop{foo}
+
+% shuffle around for a different version:
+\printexercise{exercise}{1}
+\printexercise{exercise}{3}
+\printexercise{exercise}{2}
+
+\end{document}

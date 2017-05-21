@@ -1,0 +1,25 @@
+% https://tex.stackexchange.com/q/370642/
+\documentclass[a4paper,12pt]{article}
+\usepackage{xsim}
+
+\DeclareExerciseEnvironmentTemplate{simple}
+  {\par\noindent\textbf{\GetExerciseProperty{counter}}. }
+  {\par}
+\xsimsetup{exercise/template=simple}
+
+\begin{document}
+
+\begin{exercise}\label{eq1}
+  Let $X$ be such that\dots
+\end{exercise}
+
+\begin{exercise}
+  In this exercise consider $Y=2$ \dots
+\end{exercise}
+
+\begin{exercise}
+  Consider $X$ as in exercise~\ref{eq1} (I would like to see the issue
+  number~1)
+\end{exercise}
+
+\end{document}
