@@ -680,10 +680,10 @@ This means that these options are available:
     Choose the set of tags whose associated exercises should be printed.
   \keyval{topics}{csv list of topics}
     Choose the set of tags whose associated exercises should be printed.
-  \keybool{ignore-tagging}\Module{tags}\Default{false}
+  \keybool{ignore-untagged}\Module{tags}\Default{false}
     If set to true exercises with no tags will be printed even if tags have
     been chosen with the option \option{tags}.
-  \keybool{ignore-tagging}\Module{topics}\Default{true}
+  \keybool{ignore-untagged}\Module{topics}\Default{true}
     If set to true exercises with no topics will be printed even if tags have
     been chosen with the option \option{topics}.
 \end{options}
@@ -1047,9 +1047,9 @@ There are different commands for printing the solutions to exercises:
 The options can be diveded into two groups.  The ones in the first group
 modify the layout.
 \begin{options}
-  \keybool{headings}\Default{true}
+  \keybool{headings}\Module{print-solutions}\Default{true}
     If true a heading for each exercise type is inserted.
-  \keyval{headings-template}{template}\Default{default}
+  \keyval{headings-template}{template}\Module{print-solutions}\Default{default}
     The heading template used when \keyis{headings}{true}.
 \end{options}
 
@@ -1057,15 +1057,18 @@ The ones in the second group set conditions selecting which solutions are
 printed.  If you combine those conditions a solution is printed if it meets
 either of the conditions.
 \begin{options}
-  \keychoice{section}{\default{true},false,\meta{integer}}\Default{false}
+  \keychoice{section}{\default{true},false,\meta{integer}}\Module{print-solutions}%
+    \Default{false}
     If you set \keyis{section}{true} only solutions of exercises of the
     current section are printed.  If you set \keyis{section}{4} only solutions
     of exercises in a section with number~$4$ are printed.
-  \keychoice{chapter}{\default{true},false,\meta{integer}}\Default{false}
+  \keychoice{chapter}{\default{true},false,\meta{integer}}\Module{print-solutions}%
+    \Default{false}
     If you set \keyis{chapter}{true} only solutions of exercises of the
     current chapter are printed.  If you set \keyis{chapter}{4} only solutions
     of exercises in a chapter with number~$4$ are printed.
-  \keychoice{collection}{false,\meta{collection name}}\Default{false}
+  \keychoice{collection}{false,\meta{collection name}}\Module{print-solutions}%
+    \Default{false}
     If used only solutions of exercises belonging to collection
     \meta{collection name} are printed.
 \end{options}
@@ -1459,8 +1462,8 @@ Below the definition of the \code{default} exercise template provided by
         \marginpar
           {%
             \IfInsideSolutionF{\rule{1.2cm}{1pt}\slash}%
-            \PropertyValue
-            \GetExercisePropertyT{bonus-points}{~(+\PropertyValue)}%
+            \printgoal{\PropertyValue}
+            \GetExercisePropertyT{bonus-points}{~(+\printgoal{\PropertyValue})}%
             ~\XSIMtranslate {point-abbr}%
           }%
       }%

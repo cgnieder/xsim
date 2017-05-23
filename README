@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/05/19 v0.8a
+XSIM 2017/05/19 v0.8b
 
   eXercise Sheets IMproved
 
@@ -65,14 +65,18 @@ The xsim package consists of the example files:
    xsim.pointsums.tex, xsim.pointsums.pdf
    xsim.randomexercises.tex, xsim.randomexercises.pdf
    xsim.various.tex, xsim.various.pdf
+   xsim.texsx-13635.tex, xsim.texsx-13635.pdf
+   xsim.texsx-155630.tex, xsim.texsx-155630.pdf
    xsim.texsx-199360.tex, xsim.texsx-199360.pdf
    xsim.texsx-299534.tex, xsim.texsx-299534.pdf
    xsim.texsx-305110.tex, xsim.texsx-305110.pdf
+   xsim.texsx-308883.tex, xsim.texsx-308883.pdf
    xsim.texsx-338165.tex, xsim.texsx-338165.pdf
    xsim.texsx-350028.tex, xsim.texsx-350028.pdf
    xsim.texsx-369065.tex, xsim.texsx-369065.pdf
    xsim.texsx-369803.tex, xsim.texsx-369803.pdf
    xsim.texsx-369686.tex, xsim.texsx-369686.pdf
+   xsim.texsx-370642.tex, xsim.texsx-370642.pdf
    xsim.texwelt-6698.tex, xsim.texwelt-6698.pdf
    xsim.texwelt-15093.tex, xsim.texwelt-15093.pdf
    xsim.golatex-16824.tex, xsim.golatex-16824.pdf

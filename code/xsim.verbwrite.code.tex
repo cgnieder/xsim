@@ -189,7 +189,7 @@
 \NewDocumentCommand \XSIMfilewritestart {sm}
   {
     \IfBooleanTF {#1}
-      { \xsim_file_write_start:nn { \c_false_bool  } {#2} }
+      { \xsim_file_write_start:nn { \c_false_bool } {#2} }
       { \xsim_file_write_start:nn { \c_true_bool } {#2} }
   }
 

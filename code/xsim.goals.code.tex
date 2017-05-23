@@ -139,7 +139,7 @@
 % #3: value != 1
 \cs_new_protected:Npn \xsim_print_goal:nnn #1#2#3
   {
-    \__xsim_print_goal:n { \fp_to_decimal:n {#1} }
+    \__xsim_print_goal:x { \fp_to_decimal:n {#1} }
     \fp_compare:nTF { (#1) = 1 } {#2} {#3}
   }
 

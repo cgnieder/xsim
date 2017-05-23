@@ -1,0 +1,70 @@
+% https://tex.stackexchange.com/q/13635/
+\documentclass{article}
+\usepackage{xsim}
+
+\DeclareExerciseEnvironmentTemplate{theorem:remark}
+  {
+    \par\addvspace{\baselineskip}
+    \noindent
+    \textit{%
+      \IfInsideSolutionF{\XSIMmixedcase{\GetExerciseName}~}%
+      \GetExerciseProperty{counter}}%
+    \GetExercisePropertyT{subtitle}{ \textup{(#1)}}%
+    . %
+  }
+  {\par\addvspace{\baselineskip}}
+
+\DeclareExerciseHeadingTemplate{exercises}{\subsection*{Exercises}}
+
+\xsimsetup{
+  exercise/template = theorem:remark ,
+  exercise/within = section ,
+  exercise/the-counter = \thesection.\arabic{exercise} ,
+  print-collection/headings = true ,
+  print-collection/headings-template = exercises
+}
+
+\DeclareExerciseCollection{prime numbers}
+\DeclareExerciseCollection{Zeta function}
+
+\begin{document}
+
+\collectexercises{prime numbers}
+\section{Prime Numbers}
+
+A \emph{prime number} is a positive integer other than $1$ that is only
+divisible by $1$ and itself.
+
+\begin{exercise}[subtitle=Euclid's Theorem]
+  \label{ex:euclid}
+  Show that there are infinitely many prime numbers.
+\end{exercise}
+
+As you will show in Exercise \ref{ex:euclid}, there are infinitely many
+primes.  The number of primes that are smaller than a given natural number $n$
+is denoted $\pi(n)$.
+
+\begin{exercise}
+  Find an asymptotic formula for $\pi(n)$. \emph{Hint:} You might find
+  Exercise \ref{ex:zeta} helpful.
+\end{exercise}
+\collectexercisesstop{prime numbers}
+
+\printcollection{prime numbers}
+
+\collectexercises{Zeta function}
+\section{Zeta function}
+
+The zeta function is given by $\zeta(s) = \sum_{n=1}^\infty n^{-s}$, where $s$
+is a complex number with real part bigger than $1$.
+\begin{exercise}\label{ex:zeta}
+  Extend $\zeta$ as far as possible and find all zeros
+  of the function.
+\end{exercise}
+For example $\zeta(2) = \frac{\pi^2}{6}$.
+
+\collectexercisesstop{Zeta function}
+
+\printcollection{Zeta function}
+
+\end{document}

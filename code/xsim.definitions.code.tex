@@ -183,9 +183,9 @@
         \marginpar
           {
             \IfInsideSolutionF { \rule {1.2cm} {1pt} \slash }
-            \PropertyValue
+            \printgoal {\PropertyValue}
             \GetExercisePropertyT {bonus-points}
-              { \nobreakspace ( + \PropertyValue ) }
+              { \nobreakspace ( + \printgoal {\PropertyValue} ) }
             \nobreakspace\XSIMtranslate {point-abbr}
           }
       }

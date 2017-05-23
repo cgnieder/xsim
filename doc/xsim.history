@@ -79,3 +79,5 @@ HISTORY:
                    - new parameter `solution-counter' in order to avoid
                      possible conflicts with existing counters
  v0.8a  2017/05/19 - \IfPrintSolutionTF
+ v0.8b  2017/05/23 - use \printgoal in default environment template
+                   - \xsim_print_goal:nnn now expands input to a number
