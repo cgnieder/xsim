@@ -582,6 +582,9 @@
 
 \renewrobustcmd*\code[1]{\begingroup\codefont\let\^\textasciicircum#1\endgroup}
 
+% ----------------------------------------------------------------------------
+\loadxsimstyle{layouts}
+
 \DeclareExerciseEnvironmentTemplate{tcolorbox}
   {%
     \tcolorbox[
@@ -603,7 +606,7 @@
         \IfInsideSolutionF{%
           \GetExercisePropertyT{points}
             { % notice the space
-              (\PropertyValue
+              (\printgoal{\PropertyValue}
               \IfExerciseGoalSingularTF{points}
                 {\XSIMtranslate{point}}
                 {\XSIMtranslate{points}})%
@@ -612,50 +615,6 @@
     ]%
   }
   {\endtcolorbox}
-
-\RequirePackage{needspace}
-  
-\DeclareExerciseEnvironmentTemplate{runin}
-  {%
-    \par\vspace{\baselineskip}
-    \Needspace*{2\baselineskip}
-    \noindent
-    \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
-    \GetExercisePropertyT{subtitle}{ \textit{#1}} %
-    \GetExercisePropertyT{points}{%
-      \marginpar{%
-        \PropertyValue
-        \GetExercisePropertyT{bonus-points}{+\PropertyValue}%
-        \,\IfExerciseGoalSingularTF{points}
-            {\XSIMtranslate{point}}
-            {\XSIMtranslate{points}}%
-      }%
-    }%
-  }
-  {}
-
-\DeclareExerciseEnvironmentTemplate{margin}
-  {%
-    \par\vspace{\baselineskip}
-    \Needspace*{2\baselineskip}
-    \noindent
-    \llap{%
-      \smash{%
-        \tabular[t]{@{}r@{}}
-          \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
-          \IfExercisePropertySetT{points}{%
-            \tabularnewline
-            (%
-              \GetExerciseProperty{points}%
-              \GetExercisePropertyT{bonus-points}{+#1}%
-              \,\XSIMtranslate{point-abbr}%
-            )%
-          }%
-        \endtabular
-      } % notice the space
-    }%
-  }
-  {}
 
 \DeclareExerciseProperty*{bonus}
 \DeclareExerciseEnvironmentTemplate{bonus}
@@ -684,6 +643,8 @@
       }%
   }
   {}
+
+% ----------------------------------------------------------------------------
 
 \DeclareExerciseType{problem}{
   exercise-env = problem ,
@@ -736,6 +697,7 @@
 \xsim@add@example{grade-distribution}
 \xsim@add@example{listings}
 \xsim@add@example{multiplechoice}
+\xsim@add@example{listofexercises}
 \xsim@add@example{pointsums}
 \xsim@add@example{randomexercises}
 \xsim@add@example{various}

@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2017/05/23 v0.8b
+XSIM 2017/05/30 v0.9pre
 
   eXercise Sheets IMproved
 
@@ -34,6 +34,7 @@ The xsim package consists of the code files:
    xsim.goals.code.tex
    xsim.grades.code.tex
    xsim.interface.code.tex
+   xsim.layouts.code.tex
    xsim.modules.code.tex
    xsim.properties.code.tex
    xsim.random.code.tex
@@ -62,6 +63,7 @@ The xsim package consists of the example files:
    xsim.grade-distribution.tex, xsim.grade-distribution.pdf
    xsim.listings.tex, xsim.listings.pdf
    xsim.multiplechoice.tex, xsim.multiplechoice.pdf
+   xsim.listofexercises.tex, xsim.listofexercises.pdf
    xsim.pointsums.tex, xsim.pointsums.pdf
    xsim.randomexercises.tex, xsim.randomexercises.pdf
    xsim.various.tex, xsim.various.pdf

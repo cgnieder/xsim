@@ -1,0 +1,81 @@
+% https://tex.stackexchange.com/q/94766/
+\documentclass[a4paper,10pt]{book}
+\usepackage[utf8]{inputenc}
+
+\usepackage{xsim}
+\xsimsetup{
+  exercise/within=chapter,
+  exercise/template=theorem ,
+  exercise/the-counter=\thechapter.\arabic{exercise}
+}
+
+\DeclareExerciseEnvironmentTemplate{theorem}
+  {%
+    \par\addvspace{\baselineskip}
+    \noindent
+    \XSIMexpandcode{\noexpand\label{\ExerciseType:\ExerciseID}}
+    \Large\textbf{%
+      \space\GetExerciseProperty{counter}%
+      \GetExercisePropertyT{subtitle}{ (\PropertyValue)}%
+    } \normalsize\itshape
+  }
+  {\par\addvspace{\baselineskip}}
+
+\usepackage{multicol}
+  
+\newcommand\listofexercises{
+  \chapter*{List of Exercises}
+  \def\CurrentExerciseChapter{}%
+  \ForEachPrintedExerciseByType{
+    \global\let\LastExerciseChapter\CurrentExerciseChapter
+    \xdef\CurrentExerciseChapter{\ExercisePropertyGet{##1}{##2}{chapter}}%
+    \XSIMifeqF{\LastExerciseChapter}{\CurrentExerciseChapter}
+      {
+        \XSIMifblankF{\LastExerciseChapter}{\end{multicols}}
+        \begin{multicols}{2}%
+          [\contentsline{chapter}{Chapter \CurrentExerciseChapter}{}{}]
+      }
+    \contentsline
+      {section}
+      {%
+        Exercise \ExercisePropertyGet{##1}{##2}{counter}%
+        \XSIMifblankF{##4}{ (##4)}%
+      }
+      {\pageref{##1:##2}}{}%
+  }
+  \end{multicols}
+}
+
+% \usepackage{hyperref}
+% \newcommand\theHexercise{\thechapter.\arabic{exercise}}
+
+\begin{document}
+
+\chapter{kinetic}
+\begin{exercise}
+  435-1
+\end{exercise}
+\begin{exercise}[subtitle=Foo Bar]
+  435-2
+\end{exercise}
+\begin{exercise}
+  435-3
+\end{exercise}
+
+\chapter{momentum}
+\begin{exercise}
+  436-1
+\end{exercise}
+\begin{exercise}
+  436-2
+\end{exercise}
+\begin{exercise}
+  436-3
+\end{exercise}
+\begin{exercise}
+  436-4
+\end{exercise}
+
+\listofexercises
+
+\end{document}

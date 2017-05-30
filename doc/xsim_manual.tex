@@ -1172,6 +1172,21 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   section~\vref{sec:template-examples} but at the time of writing this is still
   up in the air.}.
 
+\subsection{Templates Provided by the Package}
+\xsim\ comes with a few predefined layouts:
+\begin{description}
+  \item[\code{default}] The template activated per default and the only one
+    available without further action.
+  \item[\code{runin}] A layout rather similar to the one by package
+    \pkg{exsheets}, see section~\vref{sec:runin-template}.  Available through
+    the style file \code{layouts} (see section~\vref{sec:style-files} for more
+    information on styles).
+  \item[\code{margin}] A layout rather similar to the one by package
+    \pkg{exsheets}, see section~\ref{sec:margin-template}.  Available through
+    the style file \code{layouts} (see section~\vref{sec:style-files} for more
+    information on styles).
+\end{description}
+
 \subsection{Commands for Usage in Template Definitions}
 \subsubsection{Goals}
 \begin{commands}
@@ -1496,7 +1511,7 @@ problems in this manual have been defined:
           \IfInsideSolutionF{%
             \GetExercisePropertyT{points}{ % notice the space
               (%
-                \PropertyValue
+                \printgoal{\PropertyValue}
                 \IfExerciseGoalSingularTF{points}
                   {\XSIMtranslate{point}}
                   {\XSIMtranslate{points}}%
@@ -1528,6 +1543,7 @@ See it in action:
 \end{example}
 
 \subsubsection{Mimicking \pkg*{exsheets}' \code{runin} Template}
+\label{sec:runin-template}
 
 The following example shows how you could mimick \pkg*{exsheets}' \code{runin}
 template.  The outcome isn't exactly the same since \pkg{exsheets} doesn't use
@@ -1542,14 +1558,16 @@ would use a real sectioning command for the title.
       \Needspace*{2\baselineskip}
       \noindent
       \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
-      \GetExercisePropertyT{subtitle}{ \textit{#1}} %
-      \GetExercisePropertyT{points}{%
-        \marginpar{%
-          \PropertyValue
-          \GetExercisePropertyT{bonus-points}{+\PropertyValue}%
-          \,\IfExerciseGoalSingularTF{points}
-              {\XSIMtranslate{point}}
-              {\XSIMtranslate{points}}%
+      \GetExercisePropertyT{subtitle}{ \textit{#1}} % <<< notice the space
+      \IfInsideSolutionF{%
+        \GetExercisePropertyT{points}{%
+          \marginpar{%
+            \printgoal{\PropertyValue}%
+            \GetExercisePropertyT{bonus-points}{+\printgoal{\PropertyValue}}%
+            \,\IfExerciseGoalSingularTF{points}
+                {\XSIMtranslate{point}}
+                {\XSIMtranslate{points}}%
+          }%
         }%
       }%
     }
@@ -1566,6 +1584,7 @@ See it in action:
 \end{example}
 
 \subsubsection{Mimicking \pkg*{exsheets}' \code{margin} Template}
+\label{sec:margin-template}
 
 The following example shows how you could mimick \pkg*{exsheets}'
 \code{margin} template.
@@ -1584,13 +1603,13 @@ The following example shows how you could mimick \pkg*{exsheets}'
             \IfExercisePropertySetT{points}{%
               \tabularnewline
               (%
-                \GetExerciseProperty{points}%
-                \GetExercisePropertyT{bonus-points}{+#1}%
+                \printgoal{\GetExerciseProperty{points}}%
+                \GetExercisePropertyT{bonus-points}{+\printgoal{#1}}%
                 \,\XSIMtranslate{point-abbr}%
               )%
             }%
           \endtabular
-        } % notice the space
+        } % <<< notice the space
       }%
     }
     {}
@@ -1996,7 +2015,7 @@ The usage is now as follows:
   \end{exercise}
 \end{example}
 
-\subsection{\dots Create and Use \xsim\ Style Files?}
+\subsection{\dots Create and Use \xsim\ Style Files?}\label{sec:style-files}
 
 \xsim\ offers you the possibility to create own \emph{style files}.  Let's say
 you want to have a style called \code{math-exam}.  Then you need to save all
