@@ -1,0 +1,59 @@
+% https://tex.stackexchange.com/q/224408/
+\documentclass{article}
+\usepackage{xsim}
+
+\usepackage{needspace}
+
+\DeclareExerciseProperty{hint}
+
+% we'll use a description list for the hints:
+\newcommand\printhints{%
+  \begin{description}
+    \ForEachUsedExerciseByType{%
+      \def\ExerciseType{##1}%
+      \def\ExerciseID{##2}%
+      \GetExercisePropertyT{hint}
+        {%
+          \item[\XSIMmixedcase{\GetExerciseName}~##3]
+           ####1%
+        }%
+    }%
+  \end{description}
+}
+
+\newcommand\hint[1]{\SetExerciseProperty{\ExerciseType}{\ExerciseID}{hint}{#1}}
+
+\begin{document}
+
+\section{Problems}
+% set hint through option:
+\begin{exercise}[subtitle=Pythagoras,hint=This is a hint to the first problem.]
+  This is the first problem.
+\end{exercise}
+\begin{solution}
+  This is the solution to the first problem.
+\end{solution}
+
+\begin{exercise}[subtitle=Another Problem]
+  This is the second problem.
+\end{exercise}
+\begin{solution}
+  This is the solution to the second problem.
+\end{solution}
+
+% set hint with custom command:
+\begin{exercise}[subtitle=Yet Another Problem]
+  This is the third problem.
+  \hint{This is a hint to the third problem.}
+\end{exercise}
+\begin{solution}
+  This is the solution to the third problem.
+\end{solution}
+
+\section{Hints}
+\printhints
+
+\section{Solutions}
+\printsolutions[headings=false]
+
+\end{document}

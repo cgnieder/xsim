@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage{xsim}
+
+\DeclareExerciseType{subquestion}{
+  exercise-env = question ,
+  solution-env = answer ,
+  exercise-name = Question ,
+  solution-name = Answer ,
+  exercise-template = item ,
+  solution-template = item
+}
+
+\DeclareExerciseProperty{title}
+
+\DeclareExerciseEnvironmentTemplate{named}
+  {\subsection*{\GetExercisePropertyTF{title}{#1}{??}}}
+  {}
+
+\DeclareExerciseEnvironmentTemplate{item}
+  {\item}
+  {}
+
+\DeclareExerciseCollection{exercise-pool}
+
+\xsimsetup{
+  exercise/template = named
+}
+
+\begin{filecontents*}{\jobname-exercises.tex}
+\begin{question}
+  Who is the Defence Minister?
+\end{question}
+\begin{question}
+  Who is the Home Minister?
+\end{question}
+\begin{question}
+  Who is the Finance Minister?
+\end{question}
+\begin{question}
+  Who is the External Affairs Minister?
+\end{question}
+\end{filecontents*}
+
+\begin{document}
+
+\collectexercises{exercise-pool}
+\input{\jobname-exercises.tex}
+\collectexercisesstop{exercise-pool}
+
+\begin{exercise}[title=Answer the following in one sentence:]
+  \begin{enumerate}
+    \item Who is the President?
+    \item Who is the Prime Minister?
+    \printrandomexercises[collection=exercise-pool]{2}
+  \end{enumerate}
+\end{exercise}
+
+\end{document}

@@ -1,0 +1,1262 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.8.27)  15 SEP 2017 11:44
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**\input xsim.hints.tex
+(./xsim.hints.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2017/07/19 L3 programming layer (loader) 
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/l3kernel/expl3-code.tex
+Package: expl3 2017/07/19 L3 programming layer (code)
+\c_max_int=\count87
+\l_tmpa_int=\count88
+\l_tmpb_int=\count89
+\g_tmpa_int=\count90
+\g_tmpb_int=\count91
+\g__intarray_font_int=\count92
+\g__prg_map_int=\count93
+\c_log_iow=\count94
+\l_iow_line_count_int=\count95
+\l__iow_line_target_int=\count96
+\l__iow_one_indent_int=\count97
+\l__iow_indent_int=\count98
+\c_zero_dim=\dimen103
+\c_max_dim=\dimen104
+\l_tmpa_dim=\dimen105
+\l_tmpb_dim=\dimen106
+\g_tmpa_dim=\dimen107
+\g_tmpb_dim=\dimen108
+\c_zero_skip=\skip43
+\c_max_skip=\skip44
+\l_tmpa_skip=\skip45
+\l_tmpb_skip=\skip46
+\g_tmpa_skip=\skip47
+\g_tmpb_skip=\skip48
+\c_zero_muskip=\muskip10
+\c_max_muskip=\muskip11
+\l_tmpa_muskip=\muskip12
+\l_tmpb_muskip=\muskip13
+\g_tmpa_muskip=\muskip14
+\g_tmpb_muskip=\muskip15
+\l_keys_choice_int=\count99
+\c__fp_leading_shift_int=\count100
+\c__fp_middle_shift_int=\count101
+\c__fp_trailing_shift_int=\count102
+\c__fp_big_leading_shift_int=\count103
+\c__fp_big_middle_shift_int=\count104
+\c__fp_big_trailing_shift_int=\count105
+\c__fp_Bigg_leading_shift_int=\count106
+\c__fp_Bigg_middle_shift_int=\count107
+\c__fp_Bigg_trailing_shift_int=\count108
+\c__fp_rand_size_int=\count109
+\c__fp_rand_four_int=\count110
+\c__fp_rand_eight_int=\count111
+\l__sort_length_int=\count112
+\l__sort_min_int=\count113
+\l__sort_top_int=\count114
+\l__sort_max_int=\count115
+\l__sort_true_max_int=\count116
+\l__sort_block_int=\count117
+\l__sort_begin_int=\count118
+\l__sort_end_int=\count119
+\l__sort_A_int=\count120
+\l__sort_B_int=\count121
+\l__sort_C_int=\count122
+\l__tl_build_start_index_int=\count123
+\l__tl_build_index_int=\count124
+\l__tl_analysis_normal_int=\count125
+\l__tl_analysis_index_int=\count126
+\l__tl_analysis_nesting_int=\count127
+\l__tl_analysis_type_int=\count128
+\l__regex_internal_a_int=\count129
+\l__regex_internal_b_int=\count130
+\l__regex_internal_c_int=\count131
+\l__regex_balance_int=\count132
+\l__regex_group_level_int=\count133
+\l__regex_mode_int=\count134
+\c__regex_cs_in_class_mode_int=\count135
+\c__regex_cs_mode_int=\count136
+\l__regex_catcodes_int=\count137
+\l__regex_default_catcodes_int=\count138
+\c__regex_catcode_D_int=\count139
+\c__regex_catcode_S_int=\count140
+\c__regex_catcode_L_int=\count141
+\c__regex_catcode_O_int=\count142
+\c__regex_catcode_A_int=\count143
+\c__regex_all_catcodes_int=\count144
+\l__regex_show_lines_int=\count145
+\l__regex_min_state_int=\count146
+\l__regex_max_state_int=\count147
+\l__regex_left_state_int=\count148
+\l__regex_right_state_int=\count149
+\l__regex_capturing_group_int=\count150
+\l__regex_min_pos_int=\count151
+\l__regex_max_pos_int=\count152
+\l__regex_curr_pos_int=\count153
+\l__regex_start_pos_int=\count154
+\l__regex_success_pos_int=\count155
+\l__regex_curr_char_int=\count156
+\l__regex_curr_catcode_int=\count157
+\l__regex_last_char_int=\count158
+\l__regex_case_changed_char_int=\count159
+\l__regex_curr_state_int=\count160
+\l__regex_step_int=\count161
+\l__regex_min_active_int=\count162
+\l__regex_max_active_int=\count163
+\l__regex_replacement_csnames_int=\count164
+\l__regex_match_count_int=\count165
+\l__regex_min_submatch_int=\count166
+\l__regex_submatch_int=\count167
+\l__regex_zeroth_submatch_int=\count168
+\g__debug_trace_regex_int=\count169
+\c_empty_box=\box26
+\l_tmpa_box=\box27
+\l_tmpb_box=\box28
+\g_tmpa_box=\box29
+\g_tmpb_box=\box30
+\l__box_top_dim=\dimen109
+\l__box_bottom_dim=\dimen110
+\l__box_left_dim=\dimen111
+\l__box_right_dim=\dimen112
+\l__box_top_new_dim=\dimen113
+\l__box_bottom_new_dim=\dimen114
+\l__box_left_new_dim=\dimen115
+\l__box_right_new_dim=\dimen116
+\l__box_internal_box=\box31
+\l__coffin_internal_box=\box32
+\l__coffin_internal_dim=\dimen117
+\l__coffin_offset_x_dim=\dimen118
+\l__coffin_offset_y_dim=\dimen119
+\l__coffin_x_dim=\dimen120
+\l__coffin_y_dim=\dimen121
+\l__coffin_x_prime_dim=\dimen122
+\l__coffin_y_prime_dim=\dimen123
+\c_empty_coffin=\box33
+\l__coffin_aligned_coffin=\box34
+\l__coffin_aligned_internal_coffin=\box35
+\l_tmpa_coffin=\box36
+\l_tmpb_coffin=\box37
+\l__coffin_display_coffin=\box38
+\l__coffin_display_coord_coffin=\box39
+\l__coffin_display_pole_coffin=\box40
+\l__coffin_display_offset_dim=\dimen124
+\l__coffin_display_x_dim=\dimen125
+\l__coffin_display_y_dim=\dimen126
+\l__coffin_bounding_shift_dim=\dimen127
+\l__coffin_left_corner_dim=\dimen128
+\l__coffin_right_corner_dim=\dimen129
+\l__coffin_bottom_corner_dim=\dimen130
+\l__coffin_top_corner_dim=\dimen131
+\l__coffin_scaled_total_height_dim=\dimen132
+\l__coffin_scaled_width_dim=\dimen133
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/l3kernel/l3pdfmode.def
+File: l3pdfmode.def 2017/03/18 v L3 Experimental driver: PDF mode
+\l__driver_color_stack_int=\count170
+\l__driver_tmp_box=\box41
+))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2017/07/19 L3 Experimental document command parser
+\l__xparse_current_arg_int=\count171
+\g__xparse_grabber_int=\count172
+\l__xparse_m_args_int=\count173
+\l__xparse_mandatory_args_int=\count174
+\l__xparse_v_nesting_int=\count175
+)
+Package: xsim 2017/09/14 v0.10 eXercise Sheets IMproved
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.modules.code.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/koma-script/scrlfile.sty
+Package: scrlfile 2017/09/07 v3.24 KOMA-Script package (loading files)
+)
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMmodule with sig. 'mm' on line 195.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \xsimstyle with sig. 'smO{}' on line 203.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \loadxsimstyle with sig. 'm' on line 208.
+.................................................
+)
+\g__file_internal_ior=\read1
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `definitions' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.definitions.code.tex
+File: xsim.definitions.code.tex 2017/09/14 v0.10 xsim module `definitions' (def
+inition of user commands)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `base' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.base.code.tex
+File: xsim.base.code.tex 2017/09/14 v0.10 xsim module `base' (basic functionali
+ty of the package)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `auxfile' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.auxfile.code.tex
+File: xsim.auxfile.code.tex 2017/09/14 v0.10 xsim module `auxfile' (writing stu
+ff to the aux file)
+)
+\l__xsim_tmpa_dim=\dimen134
+\l__xsim_tmpb_dim=\dimen135
+\l__xsim_tmpc_dim=\dimen136
+\l__xsim_tmpa_int=\count176
+\l__xsim_tmpb_int=\count177
+\l__xsim_tmpc_int=\count178
+\l__xsim_tmpa_box=\box42
+\l__xsim_tmpb_box=\box43
+\l__xsim_tmpc_box=\box44
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `exercises' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.exercises.code.tex
+File: xsim.exercises.code.tex 2017/09/14 v0.10 xsim module `exercises' (main ex
+ercises definitions)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `properties' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.properties.code.tex
+File: xsim.properties.code.tex 2017/09/14 v0.10 xsim module `properties' (prope
+rties of exercises)
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `environments' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.environments.code.tex
+File: xsim.environments.code.tex 2017/09/14 v0.10 xsim module `environments' (g
+eneric code for exercise and solution environments)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `templates' ...
+.................................................
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.templates.code.tex
+File: xsim.templates.code.tex 2017/09/14 v0.10 xsim module `templates' (propert
+ies of exercises)
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `verbwrite' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.verbwrite.code.tex
+File: xsim.verbwrite.code.tex 2017/09/14 v0.10 xsim module `verbwrite' (write c
+ontents of environments verbatim to files)
+\l_xsim_line_gobble_int=\count179
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMfilewritestart with sig. 'sm' on line 194.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMfilewritestop with sig. '' on line 197.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMsetfilebegin with sig. '+m' on line 200.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMsetfileend with sig. '+m' on line 203.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMgobblechars with sig. 'm' on line 206.
+.................................................
+))
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `solutions' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.solutions.code.tex
+File: xsim.solutions.code.tex 2017/09/14 v0.10 xsim module `solutions' (managin
+g solutions)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `tags' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.tags.code.tex
+File: xsim.tags.code.tex 2017/09/14 v0.10 xsim module `tags' (tagging of exerci
+ses)
+)
+\l_xsim_printsolutions_section_int=\count180
+\l_xsim_printsolutions_chapter_int=\count181
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `goals' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.goals.code.tex
+File: xsim.goals.code.tex 2017/09/14 v0.10 xsim module `goals' (counting of poi
+nts and bonus points)
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `collections' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.collections.code.tex
+File: xsim.collections.code.tex 2017/09/14 v0.10 xsim module `collections' (col
+lect exercises and print collected exercises)
+)
+\g_xsim_id_int=\count182
+\g_xsim_max_id_int=\count183
+(/usr/local/texlive/2017/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2017/01/02 v2.4 e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count184
+))
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `blanks' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.blanks.code.tex
+File: xsim.blanks.code.tex 2017/09/14 v0.10 xsim module `blanks' (add blanks, c
+loze)
+\l__xsim_blank_dim=\dimen137
+\l__xsim_blank_line_increment_dim=\dimen138
+\l__xsim_blank_line_minimum_length_dim=\dimen139
+\l__xsim_blank_box=\box45
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `translations' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.translations.code.tex
+File: xsim.translations.code.tex 2017/09/14 v0.10 xsim module `translations' (l
+anguage settings for XSIM)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/translations/translations.sty
+Package: translations 2017/08/31 v1.7a internationalization of LaTeX2e packages
+ (CN)
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2017/03/19 v0.25 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)))
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `interface' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.interface.code.tex
+File: xsim.interface.code.tex 2017/09/14 v0.10 xsim module `interface' (user in
+terface)
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseEnvironmentTemplate with sig. 'm+m+m' on
+. line 31.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseHeadingTemplate with sig. 'm+m' on line 35.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseTableTemplate with sig. 'm+m' on line 39.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \UseExerciseTemplate with sig. 'mm' on line 43.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseType with sig. 'mm' on line 48.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \numberofusedexercises with sig. '' on line 52.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExistSolutionTF with sig. '+m+m' on line 57.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExistSolutionT with sig. '+m' on line 60.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExistSolutionF with sig. '+m' on line 63.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfInsideSolutionTF with sig. '+m+m' on line 66.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfInsideSolutionT with sig. '+m' on line 69.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfInsideSolutionF with sig. '+m' on line 72.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfSolutionPrintTF with sig. '+m+m' on line 75.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfSolutionPrintT with sig. '+m' on line 78.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfSolutionPrintF with sig. '+m' on line 81.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseProperty with sig. 't!st-m' on line 142.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExercisePropertyAlias with sig. 'mm' on line 146.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \SetExerciseProperty with sig. 'mmm+m' on line 150.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \SetExpandedExerciseProperty with sig. 'mmm+m' on line 153.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseSetProperty with sig. 'mmm+m' on line 156.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseSetExpandedProperty with sig. 'mmm+m' on line 159.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExercisePropertyExistTF with sig. '+m+m+m' on line 162.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExercisePropertyExistT with sig. '+m+m' on line 165.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExercisePropertyExistF with sig. '+m+m' on line 168.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExercisePropertySetTF with sig. 'm+m+m' on line 171.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExercisePropertySetT with sig. 'm+m' on line 174.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExercisePropertySetF with sig. 'm+m' on line 177.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseProperty with sig. 'm' on line 180.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseAliasProperty with sig. 'm' on line 188.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExercisePropertyTF with sig. 'm+m+m' on line 195.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExercisePropertyT with sig. 'm+m' on line 198.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExercisePropertyF with sig. 'm+m+m' on line 200.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseIdForProperty with sig. 'mm' on line 203.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseTypeForProperty with sig. 'mm' on line 206.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseBooleanPropertyTF with sig. '+m+m+m' on line
+. 213.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseBooleanPropertyT with sig. '+m+m' on line 216.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseBooleanPropertyF with sig. '+m+m' on line 218.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \SaveExerciseProperty with sig. 'mm' on line 221.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GlobalSaveExerciseProperty with sig. 'mm' on line 224.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseParameter with sig. 'st!m' on line 241.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseParameter with sig. 'm' on line 244.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \SetExerciseParameter with sig. 'mmm' on line 247.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \SetExerciseParameters with sig. 'mm' on line 250.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseName with sig. '' on line 257.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseBody with sig. 'm' on line 260.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseParameterSetTF with sig. '+m+m+m' on line 263.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseParameterSetT with sig. '+m+m' on line 266.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseParameterSetF with sig. '+m+m' on line 269.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseParameterIfSetTF with sig. '+m+m+m+m' on line 272.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseParameterIfSetT with sig. '+m+m+m' on line 275.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseParameterIfSetF with sig. '+m+m+m' on line 278.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseParameterTF with sig. 'm+m+m' on line 281.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseParameterT with sig. 'm+m' on line 284.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetExerciseParameterF with sig. 'm+m+m' on line 287.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertyIfSetTF with sig. 'mmm+m+m' on line 292.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertyIfSetT with sig. 'mmm+m' on line 295.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertyIfSetF with sig. 'mmm+m' on line 298.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertyGet with sig. 'mmm' on line 301.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertyGetAlias with sig. 'mm' on line 304.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertySave with sig. 'mmmm' on line 307.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExercisePropertyGlobalSave with sig. 'mmmm' on line 310.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseParameterGet with sig. 'mm' on line 313.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMtranslate with sig. 'm' on line 318.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMexpandcode with sig. '+m' on line 321.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMmixedcase with sig. 'm' on line 324.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMputright with sig. 'mm' on line 327.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifeqTF with sig. '+m+m+m+m' on line 330.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifeqT with sig. '+m+m+m' on line 333.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifeqF with sig. '+m+m+m' on line 336.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifblankTF with sig. '+m+m+m' on line 339.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifblankT with sig. '+m+m' on line 342.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifblankF with sig. '+m+m' on line 345.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseGoal with sig. 'm' on line 350.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalTF with sig. 'mm+m+m' on line 359.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalT with sig. 'mm+m' on line 362.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalF with sig. 'mm+m' on line 365.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalSingularTF with sig. 'mmm' on line 368.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalSingularT with sig. 'mm' on line 371.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalSingularF with sig. 'mm' on line 374.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseTypeGoalsSumTF with sig. 'mmm+m+m' on line 377.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseTypeGoalsSumT with sig. 'mmm+m' on line 380.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseTypeGoalsSumF with sig. 'mmm+m' on line 383.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalsSumTF with sig. 'mm+m+m' on line 386.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalsSumT with sig. 'mm+m' on line 389.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \IfExerciseGoalsSumF with sig. 'mm+m' on line 392.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \TotalExerciseTypeGoal with sig. 'mmmm' on line 395.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \TotalExerciseTypeGoals with sig. 'mmmm' on line 398.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \TotalExerciseGoal with sig. 'mmm' on line 401.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \TotalExerciseGoals with sig. 'mmm' on line 404.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \AddtoExerciseTypeGoal with sig. 'mmmm' on line 407.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \AddtoExerciseGoal with sig. 'mm' on line 410.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ExerciseGoalValuePrint with sig. 'mmm' on line 413.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \AddtoExerciseTypeGoalPrint with sig. 'mmmmmm' on line 419.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \AddtoExerciseGoalPrint with sig. 'mmmm' on line 425.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareGradeDistribution with sig. 'm' on line 429.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetGradeRequirementForGoal with sig. 'mmmm' on line 432.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetGradeRequirementForGoals with sig. 'mmmm' on line 435.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \GetGradeRequirement with sig. 'mmm' on line 438.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseTagging with sig. 'm' on line 443.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ForEachExerciseTag with sig. 'm+m' on line 447.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ListExerciseTags with sig. 'mm' on line 450.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \UseExerciseTags with sig. 'mmmm' on line 461.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ForEachPrintedExerciseByType with sig. '+m' on line 466.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ForEachPrintedExerciseByID with sig. '+m' on line 469.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ForEachUsedExerciseByType with sig. '+m' on line 472.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ForEachUsedExerciseByID with sig. '+m' on line 475.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseTranslations with sig. 'mm' on line 480.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseTranslation with sig. 'mmm' on line 484.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \ForEachExerciseTranslation with sig. '+m' on line 488.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \DeclareExerciseCollection with sig. 'm' on line 493.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \collectexercisestype with sig. 'mm' on line 497.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \collectexercises with sig. 'm' on line 500.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \collectexercisesstop with sig. 'm' on line 503.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printcollection with sig. 'O{}m' on line 506.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printrandomexercises with sig. 'O{}m' on line 517.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \blank with sig. 'som' on line 537.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \examspace with sig. 'sm' on line 544.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \gradingtable with sig. 'O{}' on line 564.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printsolution with sig. 'O{}mm' on line 569.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printexercise with sig. 'O{}mm' on line 572.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printsolutionstype with sig. 'sO{}m' on line 581.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printsolutions with sig. 'sO{}' on line 588.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printallsolutions with sig. 'sO{}' on line 595.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printforexercises with sig. 'sO{}+mO{}' on line 610.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \xsimsetup with sig. 'm' on line 615.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifchapterTF with sig. '+m+m' on line 619.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifchapterT with sig. '+m' on line 622.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \XSIMifchapterF with sig. '+m' on line 625.
+.................................................
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `grades' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.grades.code.tex
+File: xsim.grades.code.tex 2017/09/14 v0.10 xsim module `grades' (distribute go
+al sums to grades)
+)
+.................................................
+. xsim info: "loading-module"
+. 
+. Loading module `random' ...
+.................................................
+
+(/usr/local/texlive/texmf-local/tex/latex/local/xsim/xsim.random.code.tex
+File: xsim.random.code.tex 2017/09/14 v0.10 xsim module `random' (randomly sele
+ct exercises from collections)
+\g__xsim_random_list_id_int=\count185
+)
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printgoal with sig. 'm' on line 86.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \points with sig. 'm' on line 93.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \addpoints with sig. 'sm' on line 99.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printpoints with sig. 'm' on line 106.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printtotalpoints with sig. '' on line 113.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \addbonus with sig. 'sm' on line 119.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printbonus with sig. 'm' on line 126.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \printtotalbonus with sig. '' on line 133.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \pointsforgrade with sig. 'm' on line 141.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \goalsforgrade with sig. 'mm' on line 148.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-command"
+. 
+. Defining command \totalgoalforgrade with sig. 'm' on line 155.
+.................................................
+\c@exercise=\count186
+\c@solution=\count187
+\c@numberofexercises=\count188
+.................................................
+. LaTeX info: "xparse/define-environment"
+. 
+. Defining environment 'exercise' with sig. 'o' on line 166.
+.................................................
+.................................................
+. LaTeX info: "xparse/define-environment"
+. 
+. Defining environment 'solution' with sig. 'o' on line 166.
+.................................................
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/array.sty
+Package: array 2016/10/06 v2.4d Tabular extension package (FMi)
+\col@sep=\dimen140
+\extrarowheight=\dimen141
+\NC@list=\toks14
+\extratabsurround=\skip49
+\backup@length=\skip50
+)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2016/04/27 v1.618033 publication quality tables
+\heavyrulewidth=\dimen142
+\lightrulewidth=\dimen143
+\cmidrulewidth=\dimen144
+\belowrulesep=\dimen145
+\belowbottomsep=\dimen146
+\aboverulesep=\dimen147
+\abovetopsep=\dimen148
+\cmidrulesep=\dimen149
+\cmidrulekern=\dimen150
+\defaultaddspace=\dimen151
+\@cmidla=\count189
+\@cmidlb=\count190
+\@aboverulesep=\dimen152
+\@belowrulesep=\dimen153
+\@thisruleclass=\count191
+\@lastruleclass=\count192
+\@thisrulewidth=\dimen154
+)))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/needspace/needspace.sty
+Package: needspace 2010/09/12 v1.3d reserve vertical space
+)
+Package translations Info: No language package found. I am going to use `englis
+h' as default language. on input line 26.
+
+(./xsim.hints.aux)
+\openout1 = `xsim.hints.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/translations/translations-basic-d
+ictionary-english.trsl
+File: translations-basic-dictionary-english.trsl (english translation file `tra
+nslations-basic-dictionary')
+)
+Package translations Info: loading dictionary `translations-basic-dictionary' f
+or `english'. on input line 26.
+\l__file_contents_iow=\write3
+\openout3 = `xsim.hints-exercise-1-exercise-body.tex'.
+
+ (./xsim.hints-exercise-1-exercise-body.tex)
+\openout3 = `xsim.hints-exercise-1-solution-body.tex'.
+
+\openout3 = `xsim.hints-exercise-2-exercise-body.tex'.
+
+
+(./xsim.hints-exercise-2-exercise-body.tex)
+\openout3 = `xsim.hints-exercise-2-solution-body.tex'.
+
+\openout3 = `xsim.hints-exercise-3-exercise-body.tex'.
+
+
+(./xsim.hints-exercise-3-exercise-body.tex)
+\openout3 = `xsim.hints-exercise-3-solution-body.tex'.
+
+
+(./xsim.hints-exercise-1-exercise-body.tex)
+(./xsim.hints-exercise-1-solution-body.tex)
+(./xsim.hints-exercise-2-exercise-body.tex)
+(./xsim.hints-exercise-2-solution-body.tex)
+(./xsim.hints-exercise-3-exercise-body.tex)
+(./xsim.hints-exercise-3-solution-body.tex) [1
+
+{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./xsim
+.hints.aux) ) 
+Here is how much of TeX's memory you used:
+ 11840 strings out of 492990
+ 262706 string characters out of 6132621
+ 284159 words of memory out of 5000000
+ 15336 multiletter control sequences out of 15000+600000
+ 532137 words of font info for 28 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 72i,4n,72p,10334b,411s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmbx10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmt
+i12.pfb>
+Output written on xsim.hints.pdf (1 page, 45719 bytes).
+PDF statistics:
+ 24 PDF objects out of 1000 (max. 8388607)
+ 16 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

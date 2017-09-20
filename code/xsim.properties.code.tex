@@ -178,7 +178,7 @@
       }
       { \msg_error:nnn {xsim} {unknown-property} {#3} }  
   }
-\cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx}
+\cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx,xx,xxnx}
 
 \cs_new_protected:Npn \__xsim_set_boolean_property:nnnn #1#2#3#4
   {
@@ -416,9 +416,6 @@
   { \prop_item:Nn \g__xsim_properties_prop { #2 ! #1 ! #3 } }
 \cs_generate_variant:Nn \xsim_get_property:nnn {nx,xx,oo,no,nnf,nf,oof,nV}
 
-\cs_new:Npn \__xsim_get_property_tmp:n #1 {}
-\cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
-
 % #1: property
 % #2: value
 \cs_new:Npn \xsim_get_id_for_property:nn #1#2
@@ -429,6 +426,9 @@
 \cs_new:Npn \xsim_get_type_for_property:nn #1#2
   { \prop_item:cn {g__xsim_property_#1_type_prop} {#2} }
 \cs_generate_variant:Nn \xsim_get_type_for_property:nn {nV}
+
+\cs_new:Npn \__xsim_get_property_tmp:n #1 {}
+\cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
 
 % #1: type
 % #2: id
@@ -467,7 +467,8 @@
           {
             \xsim_if_property_set:nnnTF {#1} {#2} {#3}
               {
-                \bool_if:cTF { c_ \xsim_get_property:nnn {#1} {#2} {#3} _bool}
+                \bool_if:cTF
+                  {c_ \xsim_get_property:nnn {#1} {#2} {#3} _bool}
                   { \prg_return_true: }
                   { \prg_return_false: }
               }
@@ -492,4 +493,4 @@
 \cs_generate_variant:Nn \xsim_gsave_property:nnnN {nx,xx}
 
 % ----------------------------------------------------------------------------
-\tex_endinput:D
+\file_input_stop:

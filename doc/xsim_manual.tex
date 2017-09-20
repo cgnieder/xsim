@@ -1,8 +1,8 @@
-% !arara: pdflatex: { action: nonstopmode }
+% arara: pdflatex: { action: nonstopmode }
 % !arara: biber
 % arara: pdflatex: { action: nonstopmode }
 % arara: pdflatex: { action: nonstopmode }
-% arara: pdflatex: { action: nonstopmode }
+% !arara: pdflatex: { action: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -282,7 +282,19 @@ order to deal with this somehow \xsim\ offers the following option:
     given.  Exercises will be written to and included from this path.
     \emph{The path must exist on your system before you can use it!} This
     document uses \keyis{path}{exercises}.
+  \keyval{file-extension}{string}\Default{\code{tex}}
+    \sinceversion{0.10}This option let's you choose the extension of the
+    auxiliary files.
 \end{options}
+
+Another thing to keep in mind: the environment in many ways works the same way
+as the \env{filecontents}. \emph{This also means that you \emph{cannot} have
+  comments on the first line of the environments:}
+\begin{sourcecode}
+  \begin{exercise}[points=2] % this will cause trouble
+    Lorem ipsum
+  \end{exercise}
+\end{sourcecode}
 
 \begin{bewareofthedog}
   \xsim\ writes a lot of stuff to the auxfile for re-using information on
@@ -486,17 +498,18 @@ others can be set using the optional argument of the exercise environment.
   \command{DeclareExerciseProperty}[\barg\sarg\narg\marg{property}]
     Declares the property \meta{property}.
     
-    If used with the optional \barg\ star a unique property is defined which
-    means that each exercise must have a property value distinct from all
-    other exercises (all means all -- \emph{independent from the exercise type}).
+    If used with the optional \barg\ a \textbf{unique property} is defined
+    which means that each exercise must have a property value distinct from
+    all other exercises (all means all -- \emph{independent from the exercise
+      type}).
 
-    If used with the optional \sarg\ a boolean property is defined which
-    means that it only should get the values \code{true} or \code{false} and
-    if used without value it gets the value \code{true} instead of an empty
-    value.  If any other value is used the property is set to
-    \code{false}.  A boolean option obviously cannot be unique.  The optional
-    \sarg\ takes precedence over the optional \barg, \ie, if both are present
-    the property is boolean \emph{but not} unique.
+    If used with the optional \sarg\ a \textbf{boolean property} is defined
+    which means that it only should get the values \code{true} or \code{false}
+    and if used without value it gets the value \code{true} instead of an
+    empty value.  If any other value is used the property is set to
+    \code{false}.  A boolean property obviously cannot be unique.  The
+    optional \sarg\ takes precedence over the optional \barg, \ie, if both are
+    present the property is boolean \emph{but not} unique.
 
     If used with the optional \narg\ a property is defined which won't get
     updated through subsequent compilation runs but is only set when the
@@ -527,7 +540,7 @@ This is better demonstrated with an example:
 The power of properties will get more clear when reading
 section~\vref{sec:styl-exerc-templ} about templates.
 
-\subsection{A Special Kind of Property: Exercise Goals}\label{sec:goals}
+\subsection[Exercise Goals]{A Special Kind of Property: Exercise Goals}\label{sec:goals}
 
 Exercise goals are a generic concept in \xsim\ for exercise properties like
 \property{points} or \property{bonus-points}.  Those are properties which can
@@ -652,7 +665,7 @@ Here is how you could mimick the command \cs*{totalpoints} from
 \end{sourcecode}
 
 
-\subsection{A Special Kind of Property: Exercise Tags}\label{sec:tags}
+\subsection[Exercise Tags]{A Special Kind of Property: Exercise Tags}\label{sec:tags}
 
 Exercise tags are a generic concept in \xsim\ for exercise properties like
 \property{tags} or \property{topics}.  Those are properties which can (only)
@@ -679,13 +692,13 @@ This means that these options are available:
   \keyval{tags}{csv list of tags}
     Choose the set of tags whose associated exercises should be printed.
   \keyval{topics}{csv list of topics}
-    Choose the set of tags whose associated exercises should be printed.
+    Choose the set of topics whose associated exercises should be printed.
   \keybool{ignore-untagged}\Module{tags}\Default{false}
     If set to true exercises with no tags will be printed even if tags have
     been chosen with the option \option{tags}.
   \keybool{ignore-untagged}\Module{topics}\Default{true}
-    If set to true exercises with no topics will be printed even if tags have
-    been chosen with the option \option{topics}.
+    If set to true exercises with no topics will be printed even if topics
+    have been chosen with the option \option{topics}.
 \end{options}
 
 It may happen that you choose certain tags for printing and want one or two
@@ -978,7 +991,7 @@ At last now an example using external files, collections and tags:
   once and only \emph{after it has been collected}.  No guaranties are given
   that properties are set correctly if you use the collection before.  You
   usually also will make sure that the exercises in a collection are unique,
-  \ie, that an exercises is not part of several collections -- at least not if
+  \ie, that an exercise is not part of several collections -- at least not if
   both collections are printed in the same document.
 \end{bewareofthedog}
 
@@ -1014,10 +1027,10 @@ Valid options for this command are:
   \printrandomexercises[collection=foo]{2}
 \end{example}
 
-The example above of course doesn't make much sense but if have a collection
-which collects exercises from an external file and the exercise haven't been
-printed in the document before then you will get a list of subsequently
-numbered exercises.
+The example above of course doesn't make much sense but if you have a
+collection which collects exercises from an external file and the exercises
+haven't been printed in the document before then you will get a list of
+subsequently numbered exercises.
 
 \section{Printing Solutions}\label{sec:printing-solutions}
 
@@ -1044,7 +1057,7 @@ There are different commands for printing the solutions to exercises:
   \printsolutionstype{exercise}
 \end{example}
 
-The options can be diveded into two groups.  The ones in the first group
+The options can be divided into two groups.  The ones in the first group
 modify the layout.
 \begin{options}
   \keybool{headings}\Module{print-solutions}\Default{true}
@@ -1180,12 +1193,25 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \item[\code{runin}] A layout rather similar to the one by package
     \pkg{exsheets}, see section~\vref{sec:runin-template}.  Available through
     the style file \code{layouts} (see section~\vref{sec:style-files} for more
-    information on styles).
+    information on style files\index{style file}).
   \item[\code{margin}] A layout rather similar to the one by package
     \pkg{exsheets}, see section~\ref{sec:margin-template}.  Available through
     the style file \code{layouts} (see section~\vref{sec:style-files} for more
-    information on styles).
+    information on style files\index{style file}).
 \end{description}
+
+\collectexercises{layouts}
+\begin{exercise}[subtitle=The Subtitle,points=2.5,ID=showlayout]
+  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit,
+  vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum
+  gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a,
+  magna. Donec vehicula augue eu neque. Pellentesque habitant morbi tristique
+  senectus et netus et malesuada fames ac turpis egestas. Mauris ut leo. Cras
+  viverra metus rhoncus sem.
+\end{exercise}
+\collectexercisesstop{layouts}
+
+\listlayouts
 
 \subsection{Commands for Usage in Template Definitions}
 \subsubsection{Goals}
@@ -1231,7 +1257,11 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     current exercise.  Inside the \meta{true} branch you can refer to the
     retrieved value either with \code{\#1} or with \cs{PropertyValue}.
     \emph{This command expands its contents inside a group.}
-  \command{GetExerciseIdForProperty}[\marg{property}\marg{value}]
+  \command{GetExerciseBody}[\Marg{exercise\textnormal{|}solution}]
+    \sinceversion{0.10}Retrieves the environment body of either the
+    \code{exercise} or the corresponding \code{solution} of the current
+    exercise.
+  \expandable\command{GetExerciseIdForProperty}[\marg{property}\marg{value}]
     Retrieves the property \property{id} of the exercise where the property
     \meta{property} has the value \meta{value}.  \emph{This only works for
       \emph{unique} properties!}
@@ -1239,9 +1269,19 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Retrieves the property \property{type} of the exercise where the
     property \meta{property} has the value \meta{value}.  \emph{This only
       works for \emph{unique} properties!}
-  \command{SetExerciseProperty}[\marg{type}\marg{id}\marg{property}\marg{value}]
-    Set the property \meta{property} of exercise of type \meta{type} and id
-    \meta{id} to \meta{value}.
+  \command{SetExerciseProperty}[\marg{property}\marg{value}]
+    \changedversion{0.9}Set the property \meta{property} of the current
+    exercise to \meta{value}.
+  \command{SetExpandedExerciseProperty}[\marg{property}\marg{value}]
+    \sinceversion{0.9}Expand \meta{value} \cs*{edef}-like and set the property
+    \meta{property} of the current exercise to the result of the expansion.
+  \command{ExerciseSetProperty}[\marg{type}\marg{id}\marg{property}\marg{value}]
+    \sinceversion{0.9}Set the property \meta{property} of the exercise of type
+    \meta{type} and id \meta{id} to \meta{value}.
+  \command{ExerciseSetExpandedProperty}[\marg{type}\marg{id}\marg{property}\marg{value}]
+    \sinceversion{0.9}Expand \meta{value} \cs*{edef}-like and set the property
+    \meta{property} of the exercise of type \meta{type} and id \meta{id} to
+    the result of the expansion.
   \expandable\command{IfExerciseBooleanProperty\TF}[\marg{property}%
     \marg{true}\marg{false}]
     Checks wether the boolean property \meta{property} has value \code{true}
@@ -1277,14 +1317,28 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
 \subsubsection{Parameters}
 \begin{commands}
   \expandable\command{GetExerciseParameter}[\marg{parameter}]
-    Retrieves the value of the parameter \meta{paramater} for the current exercise.
+    Retrieves the value of the parameter \meta{paramater} for the current
+    exercise type.
+  \command{GetExerciseParameter\TF}[\marg{parameter}\marg{true}\marg{false}]
+    \sinceversion{0.9}Retrieves the value of the parameter \meta{paramater}
+    for the current exercise type. Inside the \meta{true} branch you can refer
+    to the retrieved value either with \code{\#1} or with \cs{ParameterValue}.
+    \emph{This command expands its contents inside a group.}
   \expandable\command{GetExerciseName}
     Retrieves the value of the parameter \parameter{exercise-name} for the
     current exercise or of the parameter \parameter{solution-name} for the
     current solution.
-  \expandable\command{ExerciseParameterGet}[\marg{type}\marg{id}\marg{parameter}]
+  \expandable\command{ExerciseParameterGet}[\marg{type}\marg{parameter}]
     Retrieves the value of the parameter \meta{parameter} for the exercise of type
     \meta{type} with id \meta{id}.
+  \expandable\command{IfExerciseParameterSet\TF}[\marg{parameter}%
+    \marg{true}\marg{false}]
+    \sinceversion{0.9}Test if the parameter \meta{parameter} has been set for
+    the current exercise type.
+  \expandable\command{ExerciseParameterIfSet\TF}[\marg{type}\marg{parameter}%
+    \marg{true}\marg{false}]
+    \sinceversion{0.9}Test if the parameter \meta{parameter} has been set for
+    the exercise type \meta{type}.
 \end{commands}
 
 \subsubsection{Tags}
@@ -1306,6 +1360,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
 
 \subsubsection{Further Commands for Usage in Template Definitions}
 \begin{commands}
+  \command{UseExerciseTemplate}[\marg{type}\marg{name}]
+    Retrieve template \meta{name} of type \meta{type}.  This can be useful if
+    you want to define a template which just adds some code to an existing
+    template (an automated \cs*{label}, say).
   \expandable\command{ExerciseType}
     Can be used to refer to the current exercise type.
   \expandable\command{ExerciseID}
@@ -1324,6 +1382,8 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \expandable\command{IfPrintSolution\TF}[\marg{true}\marg{false}]
     Tests if the option \option{print} for the solutions of the current
     \cs{ExerciseType} is set to \code{true} or \code{false}.
+  \command{IfExistSolution\TF}[\marg{true}\marg{false}]
+    \sinceversion{0.9}Tests if a solution for the current exercise exists.
   \command{ForEachPrintedExerciseByType}[\marg{code}]
     Loops over each \emph{printed} exercise ordered by the exercise types and
     within each type by id.  Inside \meta{code} you can refer to several
@@ -1574,15 +1634,6 @@ would use a real sectioning command for the title.
     {}
 \end{sourcecode}
 
-See it in action:
-\begin{example}
-  \xsimsetup{exercise/template=runin}
-  \renewcommand*\theexercise{\arabic{exercise}.}
-  \begin{exercise}[subtitle=exsheets' runin,points=2.5]
-    \lipsum[4]
-  \end{exercise}
-\end{example}
-
 \subsubsection{Mimicking \pkg*{exsheets}' \code{margin} Template}
 \label{sec:margin-template}
 
@@ -1590,13 +1641,10 @@ The following example shows how you could mimick \pkg*{exsheets}'
 \code{margin} template.
 
 \begin{sourcecode}
-  \usepackage{needspace}
   \DeclareExerciseEnvironmentTemplate{margin}
     {%
-      \par\vspace{\baselineskip}
-      \Needspace*{2\baselineskip}
-      \noindent
-      \llap{%
+      \trivlist
+      \item[\llap{%
         \smash{%
           \tabular[t]{@{}r@{}}
             \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
@@ -1609,20 +1657,11 @@ The following example shows how you could mimick \pkg*{exsheets}'
               )%
             }%
           \endtabular
-        } % <<< notice the space
-      }%
+        }%
+      }]\relax
     }
-    {}
+    {\endtrivlist}
 \end{sourcecode}
-
-See it in action:
-\begin{example}
-  \xsimsetup{exercise/template=margin}
-  \renewcommand*\theexercise{\arabic{exercise}.}
-  \begin{exercise}[subtitle=exsheets' margin,points=2.5]
-    \lipsum[4]
-  \end{exercise}
-\end{example}
 
 \subsubsection{The Headings Templates}\label{sec:headings-templates}
 \xsim\ defines four heading templates which only differ by which text they
@@ -1780,7 +1819,7 @@ exercise type or to \meta{code}.
 \section{Exercise Translations}\label{sec:exerc-transl}
 
 \begin{commands}
-  \command{DeclareExerciseTranslation}[\marg{keyword}\marg{language}\marg{translation}]
+  \command{DeclareExerciseTranslation}[\marg{language}\marg{keyword}\marg{translation}]
     Declare the translation of \meta{keyword} for language \meta{language}.
   \command{DeclareExerciseTranslations}[\marg{keyword}\marg{translations}]
     Declare the translations of \meta{keyword} for several languages at once.
@@ -1958,11 +1997,11 @@ resolve your problems.
 \subsection{\code{! TeX capacity exceeded, sorry [text input levels=15].}
   Why?}
 Did you try to use an exercise or solution in a macro of some sort?  This
-generally will fail\footnote{The reasons are not entirely clear to me.}.  But
-there should never be the need to hide the environments inside of a macro,
-anyway.
+generally will fail\footnote{The reasons are similar to the ones given here:
+  \url{https://tex.stackexchange.com/a/295422/}.}.  But there should never be
+the need to hide the environments inside of a macro, anyway.
 
-\subsection{\code{Runaway argument? !File ended while scanning use of \^\^M.} Why?}
+\subsection{\code{Runaway argument? !File ended while scanning use of \^{}\^{}M.} Why?}
 Did you try to use an exercise or solution in a macro of some sort?  This
 generally will fail.  But there should never be the need to hide the
 environments inside of a macro, anyway.
@@ -2016,6 +2055,7 @@ The usage is now as follows:
 \end{example}
 
 \subsection{\dots Create and Use \xsim\ Style Files?}\label{sec:style-files}
+\index{style file|(}
 
 \xsim\ offers you the possibility to create own \emph{style files}.  Let's say
 you want to have a style called \code{math-exam}.  Then you need to save all
@@ -2065,6 +2105,8 @@ The formal description of the commands:
   package or simply \cs*{input}ing a file.  Future versions might provide
   additional features.
 \end{bewareofthedog}
+
+\index{style file|)}
 
 \subsection{\dots Print All Solutions Grouped by Section?}
 Here is an idea how to get a list of all solutions grouped by the section the

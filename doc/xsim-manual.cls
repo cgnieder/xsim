@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2017/04/14]
+\ProvidesClass{xsim-manual}[2017/09/18]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -185,6 +185,7 @@
     DeclareFloatingEnvironment ,
     enddescription ,
     endtcolorbox ,
+    hint ,
     hoehe ,
     iflist ,
     IfNoValueTF ,
@@ -202,12 +203,14 @@
     pkg ,
     pointsandbonus ,
     printA, printC, printE ,
+    printhints ,
     printcompletepoints ,
     printsumofpointsandbonus ,
     setlist ,
     settasks ,
     tcbuselibrary ,
     tcolorbox ,
+    thechapter ,
     thesection ,
     toprule ,
     whileboolexpr ,
@@ -221,6 +224,21 @@
   makeindex-setup = { columns = 2 , columnsep = 1em } ,
   module-sep = {\texttt{/}}%
 }
+
+
+\RequirePackage[en-US]{datetime2}
+\newrobustcmd*\xsim@add@version[2]{\csdef{xsimversion#1}{\DTMdate{#2}}}
+\renewrobustcmd*\sinceversion[1]{%
+  \cnltx@version@note{\GetTranslation{cnltx-introduced}~#1 (\csuse{xsimversion#1})}%
+}
+\renewrobustcmd*\changedversion[1]{%
+  \cnltx@version@note{\GetTranslation{cnltx-changed}~#1 (\csuse{xsimversion#1})}%
+}
+
+\newnote*\sincechanged[2]{\GetTranslation{cnltx-introduced}~#1
+  (\csuse{xsimversion#1}), changed with version~#2 (\csuse{xsimversion#2})}
+
+\renewcommand*\versionnoteformat{\scriptsize\sffamily\RaggedRight}
 
 \renewcommand*\cnltx@module@text[2]{%
   \begingroup
@@ -569,6 +587,7 @@
 }
 
 \DeclareExerciseCollection{foo}
+\DeclareExerciseCollection{layouts}
 
 \newrobustcmd*\TF{%
   \colorlet{outside}{.}%
@@ -657,6 +676,8 @@
 
 \RequirePackage{hyperref,bookmark}
 
+% ----------------------------------------------------------------------------
+
 \newcounter{examplefile}
 \newcounter{examplefiles}
 \newcommand*\xsim@add@example[1]{%
@@ -664,22 +685,25 @@
   \stepcounter{examplefiles}%
 }
 \newcommand*\listexamplefiles{%
+  \def\xsim@example@texfile@path##1{./examples/xsim.##1.tex}%
+  \def\xsim@example@pdffile@path##1{./examples/{xsim.##1}.pdf}%
   \def\do##1{%
-    \stepcounter{examplefile}%
     \begin{cnltxcode}[
+      step and label={examplefile}{example:##1} ,
       sidebyside align=top seam,sidebyside,
       righthand width=\linewidth/4,
       sidebyside gap=0pt,
       lower separated=false,
-      title=Example~\theexamplefile\ \enquote{##1}
-        \href{../examples/xsim.##1.tex}{\color{white}[\TeX]}
-        \href{../examples/xsim.##1.pdf}{\color{white}[PDF]}%
+      title=Example~\theexamplefile\ \enquote{\texttt{##1}}
+        \href{\xsim@example@texfile@path{##1}}{\color{white}[\TeX]}
+        \href{\xsim@example@pdffile@path{##1}}{\color{white}[PDF]}%
     ]
-    \lstinputlisting[style=cnltx,lastline=10]{../examples/xsim.##1.tex}
+    \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{Example~\theexamplefile\ (##1)}%
+    \lstinputlisting[style=cnltx,lastline=10]{\xsim@example@texfile@path{##1}}
     \tcblower
     \fbox{%
-      \href{../examples/xsim.##1.pdf}{%
-        \includegraphics[width=.8\linewidth]{../examples/{xsim.##1}.pdf}}}%
+      \href{\xsim@example@pdffile@path{##1}}{%
+        \includegraphics[width=.8\linewidth]{\xsim@example@pdffile@path{##1}}}}%
     \end{cnltxcode}
   }%
   \dolistloop\xsim@examplefiles
@@ -693,6 +717,7 @@
 \xsim@add@example{description-list}
 \xsim@add@example{different-point-types}
 \xsim@add@example{difficulties}
+\xsim@add@example{hints}
 \xsim@add@example{floating}
 \xsim@add@example{grade-distribution}
 \xsim@add@example{listings}
@@ -713,9 +738,44 @@
 \xsim@add@example{texsx-369636}
 \xsim@add@example{texsx-369803}
 \xsim@add@example{texsx-370642}
+\xsim@add@example{texsx-391530}
 \xsim@add@example{texwelt-6698}
 \xsim@add@example{texwelt-15093}
 \xsim@add@example{golatex-16824}
 \xsim@add@example{golatex-18844}
 
+% ----------------------------------------------------------------------------
+
+\newcommand*\listlayouts{%
+  \def\do##1{%
+    \begin{cnltxcode}[{title=Layout \enquote{\texttt{##1}}}]
+      \ifcsdef{xsim@layout@extra@##1}
+        {\csuse{xsim@layout@extra@##1}}
+        {}%
+      \xsimsetup{exercise/template={##1}}
+      \let\marginpar\marginnote
+      \XSIMexpandcode{%
+        \printexercise{exercise}{\GetExerciseIdForProperty{ID}{showlayout}}
+      }%
+    \end{cnltxcode}
+  }%
+  \dolistloop\xsim@layouts
+}
+
+\NewDocumentCommand\xsim@add@layout{mo}{%
+  \listadd\xsim@layouts{#1}%
+  \IfNoValueF{#2}{\csdef{xsim@layout@extra@#1}{#2}}%
+}
+
+\xsim@add@layout{default}
+\xsim@add@layout{runin}[\renewcommand*\theexercise{\arabic{exercise}.}]
+\xsim@add@layout{margin}[\renewcommand*\theexercise{\arabic{exercise}.}]
+
+\xsim@add@version{0.8}  {2017-05-18}
+\xsim@add@version{0.8a} {2017-05-19}
+\xsim@add@version{0.8b} {2017-05-23}
+\xsim@add@version{0.9}  {2017-06-20}
+\xsim@add@version{0.10} {2017-09-19}
+
+% ----------------------------------------------------------------------------
 \endinput

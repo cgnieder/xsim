@@ -65,6 +65,13 @@
     exercise~ type~ `#2'.
   }
 
+\msg_new:nnn {xsim} {unknown-parameter}
+  {
+    You~ tried~ to~ retrieve~ the~ parameter~ `#1'~ \msg_line_context: . \\
+    This~ parameter~ does~ not~ exist.~ Check~ for~ a~ typo~ or~ \\
+    define~ the~ parameter~ yourself.
+  }
+
 % ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
@@ -126,7 +133,7 @@
   {
     \seq_map_inline:Nn \l__xsim_mandatory_parameters_seq
       {
-        \xsim_if_parameter:nnF {#1} {##1}
+        \xsim_if_parameter_set:nnF {#1} {##1}
           { \msg_error:nnnn {xsim} {mandatory-parameter} {##1} {#1} }
       }
   }
@@ -148,7 +155,7 @@
       {
         \xsim_if_parameter_fixed:nTF {#1}
           {
-            \xsim_if_parameter:nnTF {#1} {#2}
+            \xsim_if_parameter_set:nnTF {#1} {#2}
               {
                 \msg_warning:nnnn {xsim} {parameter-fixed} {#1} {#2}
                 \xsim_verbose:n
@@ -178,12 +185,40 @@
   { \prop_item:cn {l__xsim_#1_type_parameters_prop} {#2} }
 \cs_generate_variant:Nn \xsim_get_parameter:nn {o}
 
-\prg_new_conditional:Npnn \xsim_if_parameter:nn #1#2 {p,T,F,TF}
+\prg_new_conditional:Npnn \xsim_if_parameter_set:nn #1#2 {p,T,F,TF}
   {
     \prop_if_in:cnTF {l__xsim_#1_type_parameters_prop} {#2}
       { \prg_return_true: }
       { \prg_return_false: }
   }
+
+\cs_new:Npn \__xsim_get_parameter_tmp:n #1 {}
+\cs_generate_variant:Nn \__xsim_get_parameter_tmp:n {V}
+
+% #1: type
+% #2: parameter
+\cs_new_protected:Npn \xsim_get_parameter_if_set:nnTF #1#2#3#4
+  {
+    \group_begin:
+      \xsim_if_parameter_exist:nTF {#2}
+        {
+          \xsim_if_parameter_set:nnTF {#1} {#2}
+            {    
+              \tl_set:Nx \ParameterValue
+                { \xsim_get_parameter:nn {#1} {#2} }
+              \cs_set:Npn \__xsim_get_parameter_tmp:n ##1 {#3}
+              \__xsim_get_parameter_tmp:V \ParameterValue
+            }
+            {#4}
+        }
+        { \msg_error:nnn {xsim} {unknown-parameter} {#2} }
+    \group_end:
+  }
+\cs_new_protected:Npn \xsim_get_parameter_if_set:nnT #1#2#3
+  { \xsim_get_parameter_if_set:nnTF {#1} {#2} {#3} {} }
+\cs_new_protected:Npn \xsim_get_parameter_if_set:nnF #1#2#3
+  { \xsim_get_parameter_if_set:nnTF {#1} {#2} {} {#3} }
+\cs_generate_variant:Nn \xsim_get_parameter_if_set:nnTF {o}
 
 % ----------------------------------------------------------------------------
 % inside the argument `#1' refers to the type
@@ -282,12 +317,12 @@
         \xsim_set_parameter:nnx {#1} {number}
           { number of \xsim_get_parameter:nn {#1} {exercise-env} s }
         \xsim_check_mandatory_parameters:n {#1}
-        \xsim_if_parameter:nnF {#1} {counter}
+        \xsim_if_parameter_set:nnF {#1} {counter}
           {
             \xsim_set_parameters:nx {#1}
               { counter =  \xsim_get_parameter:nn {#1} {exercise-env} }
           }
-        \xsim_if_parameter:nnF {#1} {solution-counter}
+        \xsim_if_parameter_set:nnF {#1} {solution-counter}
           {
             \xsim_set_parameters:nx {#1}
               { solution-counter =  \xsim_get_parameter:nn {#1} {solution-env} }
@@ -355,6 +390,12 @@
             section-value = \arabic{section} ,
             section = \thesection ,
             page-value = \arabic{page} ,
+            sectioning =
+              { \cs_if_exist:NTF \chapter { \arabic{chapter} } {0} }
+              { \arabic {section} }
+              { \arabic {subsection} }
+              { \arabic {subsubsection} }
+              { \arabic {paragraph} } ,
             page = \thepage ,
             used = false
           }
@@ -512,4 +553,4 @@
   }
 
 % ----------------------------------------------------------------------------  
-\tex_endinput:D
+\file_input_stop:

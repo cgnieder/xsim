@@ -29,6 +29,7 @@
 
 \bool_new:N \l__xsim_blank_width_bool
 \bool_new:N \l__xsim_blank_linespread_bool
+\bool_new:N \l__xsim_fill_blank_bool
 \tl_new:N   \l__xsim_blank_linespread_tl
 \tl_new:N   \l__xsim_blank_scale_tl
 \dim_new:N  \l__xsim_blank_dim
@@ -41,32 +42,34 @@
 
 \keys_define:nn {xsim/blank}
   {
-    blank-style         .code:n    =
+    blank-style         .code:n     =
       \cs_set_protected:Npn \xsim_write_cloze_blank:n ##1 {#1} ,
-    blank-style         .initial:n = \underline {#1} ,
-    filled-style        .code:n    =
+    blank-style         .initial:n  = \underline {#1} ,
+    filled-style        .code:n     =
       \cs_set_protected:Npn \xsim_write_cloze_filled:n ##1 {#1} ,
-    filled-style        .initial:n = \underline {#1} ,
-    style               .meta:n    =
+    filled-style        .initial:n  = \underline {#1} ,
+    style               .meta:n     =
       {
         blank-style = #1 ,
         filled-style = #1
       } ,
-    scale               .tl_set:N  = \l__xsim_blank_scale_tl ,
-    scale               .initial:n = 1 ,
-    width               .code:n    =
+    fill                .bool_set:N = \l__xsim_fill_blank_bool ,
+    fill                .initial:n  = false ,
+    scale               .tl_set:N   = \l__xsim_blank_scale_tl ,
+    scale               .initial:n  = 1 ,
+    width               .code:n     =
       {
         \bool_set_true:N \l__xsim_blank_width_bool
         \dim_set:Nn \l__xsim_blank_dim {#1}
       } ,
-    linespread          .code:n    =
+    linespread          .code:n     =
       \bool_set_true:N \l__xsim_blank_linespread_bool
       \tl_set:Nn \l__xsim_blank_linespread_tl {#1} ,
-    linespread          .initial:n = 1 ,
-    line-increment      .dim_set:N = \l__xsim_blank_line_increment_dim ,
-    line-increment      .initial:n = 1pt ,
-    line-minimum-length .dim_set:N = \l__xsim_blank_line_minimum_length_dim ,
-    line-minimum-length .initial:n = 2em
+    linespread          .initial:n  = 1 ,
+    line-increment      .dim_set:N  = \l__xsim_blank_line_increment_dim ,
+    line-increment      .initial:n  = 1pt ,
+    line-minimum-length .dim_set:N  = \l__xsim_blank_line_minimum_length_dim ,
+    line-minimum-length .initial:n  = 2em
   }
 
 \cs_new_protected:Npn \xsim_blank:n #1
@@ -75,7 +78,8 @@
     \mode_if_math:TF
       { \hbox_set:Nn \l__xsim_blank_box { $ \m@th \mathpalette{}{#1} $ } }
       { \hbox_set:Nn \l__xsim_blank_box {#1} }
-    \xsim_if_inside_solution:TF
+    \bool_if:nTF
+      { \xsim_if_inside_solution_p: || \l__xsim_fill_blank_bool }
       { \xsim_write_cloze_filled:n {#1} }
       {
         \bool_if:NTF \l__xsim_blank_width_bool
@@ -103,9 +107,9 @@
               {
                 % I wonder what the correct l3 way would be -- if there is
                 % one, yet:
-                \tex_hfil:D
+                % \tex_hfil:D
                 \tex_penalty:D \hyphenpenalty
-                \tex_hfilneg:D
+                % \tex_hfilneg:D
                 \dim_compare:nTF
                   { \l__xsim_tmpa_dim < \l__xsim_blank_line_increment_dim }
                   { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
@@ -117,12 +121,15 @@
               }
           }
       }
-      { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
+      {
+        \xsim_write_cloze_blank:n
+          { \skip_horizontal:N \l__xsim_blank_line_minimum_length_dim }
+      }
   }
 \cs_generate_variant:Nn \__xsim_blank_skip:n { V }
 
 % ----------------------------------------------------------------------------
-\tex_endinput:D
+\file_input_stop:
 
 the following code from Heiko Oberdieck in d.c.t.t served as inspiration
 and basis for the \blank command:

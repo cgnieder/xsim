@@ -30,6 +30,7 @@
 \xsim_load_modules:n {tags,properties}
 
 \bool_new:N \l_xsim_inside_solution_bool
+\bool_new:N \l__xsim_include_question_bool
 \bool_new:N \l__xsim_printsolutions_headings_bool
 \bool_new:N \l__xsim_printsolutions_conditions_bool
 \bool_new:N \l____xsim_this_condition_bool
@@ -79,14 +80,15 @@
 
 % #1: type
 % #2: id
-\prg_new_conditional:Npnn \xsim_if_solution_exists:nn #1#2 {T,F,TF}
+\prg_new_protected_conditional:Npnn \xsim_if_solution_exists:nn #1#2 {T,F,TF}
   {
     \__xsim_set_file_signature:nnn {#1} {#2} {solution}
     \file_if_exist:VTF \l__xsim_file_path_and_name_tl
       { \prg_return_true: }
       { \prg_return_false: }
   }
-\cs_generate_variant:Nn \xsim_if_solution_exists:nnT {VV}
+\cs_generate_variant:Nn \xsim_if_solution_exists:nnT  {VV,oo}
+\cs_generate_variant:Nn \xsim_if_solution_exists:nnTF {oo}
 
 % #1: type
 % #2: options
@@ -101,84 +103,65 @@
 
 % ----------------------------------------------------------------------------
 
-% per section condition:
-% #1: type
-% #2: id
-% #3: boolean property
-\prg_new_protected_conditional:Npnn
-  \__xsim_if_solutions_per_section:nnn #1#2#3 {T,F,TF}
+% #1: conditional base function (three n args)% #2: name
+% #3: code (refer to type and id with `#1' and `#2'), #3 refers to the boolean
+%     properties use/print
+\cs_new_protected:Npn \xsim_new_solutions_condition:Nnn #1#2#3
   {
-    \xsim_if_in_list:nnTF {#3} {#1-#2=={true}}
+    \prg_new_protected_conditional:Npnn #1 ##1##2##3 {T,F,TF}
       {
-        \__xsim_printsolutions_if_condition:nTF {per-section}
+        \xsim_if_in_list:nnTF {##3} {##1-##2=={true}}
           {
-            \__xsim_printsolutions_condition_true:
-            \xsim_if_in_list:nxTF {section-value}
-              { #1-#2 == { \int_use:N \l_xsim_printsolutions_section_int } }
-              {
-                \tl_set:Nx \ExerciseSection
-                  { \xsim_get_property:nnn {#1} {#2} {section} }
-                \prg_return_true:   
-              }
+            \__xsim_printsolutions_if_condition:nTF {#2}
+              { \__xsim_printsolutions_condition_true: #3 }
               { \prg_return_false: }
           }
           { \prg_return_false: }
+      }
+  }
+
+% per section condition:
+\xsim_new_solutions_condition:Nnn \__xsim_if_solutions_per_section:nnn
+  {per-section}
+  {
+    \xsim_if_in_list:nxTF {section-value}
+      { #1-#2 == { \int_use:N \l_xsim_printsolutions_section_int } }
+      {
+        \tl_set:Nx \ExerciseSection
+          { \xsim_get_property:nnn {#1} {#2} {section} }
+        \prg_return_true:   
       }
       { \prg_return_false: }
   }
 
 % per chapter condition:
-% #1: type
-% #2: id
-% #3: boolean property
-\prg_new_protected_conditional:Npnn
-  \__xsim_if_solutions_per_chapter:nnn #1#2#3 {T,F,TF}
+\xsim_new_solutions_condition:Nnn \__xsim_if_solutions_per_chapter:nnn
+  {per-chapter}
   {
-    \xsim_if_in_list:nnTF {#3} {#1-#2=={true}}
+    \xsim_if_in_list:nxTF {chapter-value}
+      { #1-#2 == { \int_use:N \l_xsim_printsolutions_chapter_int } }
       {
-        \__xsim_printsolutions_if_condition:nTF {per-chapter}
-          {
-            \__xsim_printsolutions_condition_true:
-            \xsim_if_in_list:nxTF {chapter-value}
-              { #1-#2 == { \int_use:N \l_xsim_printsolutions_chapter_int } }
-              {
-                \tl_set:Nx \ExerciseChapter
-                  { \xsim_get_property:nnn {#1} {#2} {chapter} }
-                \prg_return_true:   
-              }
-              { \prg_return_false: }
-          }
-          { \prg_return_false: }
+        \tl_set:Nx \ExerciseChapter
+          { \xsim_get_property:nnn {#1} {#2} {chapter} }
+        \prg_return_true:   
       }
       { \prg_return_false: }
   }
 
 % per collection condition:
-% #1: type
-% #2: id
-% #3: boolean property
-\prg_new_protected_conditional:Npnn
-  \__xsim_if_solutions_in_collection:nnn #1#2#3 {T,F,TF}
+\xsim_new_solutions_condition:Nnn \__xsim_if_solutions_in_collection:nnn
+  {per-collection}
   {
-    \xsim_if_in_list:nnTF {#3} {#1-#2=={true}}
+    \tl_if_blank:VTF \l__xsim_printsolutions_collection_tl
+      { \prg_return_false: }
       {
-        \__xsim_printsolutions_if_condition:nTF {per-collection}
-          {
-            \__xsim_printsolutions_condition_true:
-            \tl_if_blank:VTF \l__xsim_printsolutions_collection_tl
-              { \prg_return_false: }
-              {
-                \xsim_if_in_collection:VnnTF
-                  \l__xsim_printsolutions_collection_tl
-                  {#1}
-                  {#2}
-                  { \prg_return_true: }
-                  { \prg_return_false: }
-              }
-          }
+        \xsim_if_in_collection:VnnTF
+          \l__xsim_printsolutions_collection_tl
+          {#1}
+          {#2}
+          { \prg_return_true: }
           { \prg_return_false: }
       }
-      { \prg_return_false: }
   }
 
 % ----------------------------------------------------------------------------
@@ -206,7 +189,7 @@
 
 % #1: name
 % #2: condition
-\cs_new_protected:Npn \__xsim_declare_printsolutions_condition:nn #1#2
+\cs_new_protected:Npn \xsim_declare_printsolutions_condition:nn #1#2
   {
     \bool_new:c {l__xsim_printsolutions_#1_condition_bool}
     \prop_put:Nnn \l__xsim_printsolutions_conditions_prop {#1} {#2}
@@ -270,25 +253,26 @@
 % ----------------------------------------------------------------------------
 % #1: boolean -- if true only the solutions of printed exercises will be
 %     output
-% #2: options
-% #3: type
-\cs_new_protected:Npn \xsim_print_type_solutions:nnn #1#2#3
+% #2: pre
+% #3: post
+% #4: type
+% #5: code (refer to type with #1 and id with #2)
+\cs_new_protected:Npn \xsim_print_type_code:nnnnn #1#2#3#4#5
   {
-    \xsim_verbose:n
-      { Printing~ solutions~ for~ exercise~ type~ `#3'. }
     \group_begin:
-      \keys_set:nn {xsim/print-solutions} {#2}
+      \cs_set_protected:Npn \__xsim_print_entry:nn ##1##2 {#5}
+      #2
       \bool_set_false:N \l__xsim_tmpa_bool
       \bool_if:nTF {#1}
         {
-          \xsim_if_solutions_do:nnn {#3} {print}
+          \xsim_if_solutions_do:nnn {#4} {print}
             { \bool_set_true:N \l__xsim_tmpa_bool }
         }
         {
-          \xsim_if_solutions_do:nnn {#3} {use}
+          \xsim_if_solutions_do:nnn {#4} {use}
             { \bool_set_true:N \l__xsim_tmpa_bool }
         }
-      \tl_set:Nn \ExerciseType {#3}
+      \tl_set:Nn \ExerciseType {#4}
       \bool_if:NT \l__xsim_tmpa_bool
         {
           \bool_if:NT \l__xsim_printsolutions_headings_bool
@@ -300,14 +284,33 @@
         }
       \bool_if:nTF {#1}
         {
-          \xsim_if_solutions_do:nnn {#3} {print}
-            { \xsim_insert:nnnn {#3} {##2} {} {solution} }
+          \xsim_if_solutions_do:nnn {#4} {print}
+            { \__xsim_print_entry:nn {#4} {##2} }
         }
         {
-          \xsim_if_solutions_do:nnn {#3} {use}
-            { \xsim_insert:nnnn {#3} {##2} {} {solution} }
+          \xsim_if_solutions_do:nnn {#4} {use}
+            { \__xsim_print_entry:nn {#4} {##2} }
         }
+      #3
     \group_end:
+  }
+
+% #1: boolean -- if true only the solutions of printed exercises will be
+%     output
+% #2: options
+% #3: type
+\cs_new_protected:Npn \xsim_print_type_solutions:nnn #1#2#3
+  {
+    \xsim_print_type_code:nnnnn
+      {#1}
+      {
+        \xsim_verbose:n
+          { Printing~ solutions~ for~ exercise~ type~ `#3'. }
+        \keys_set:nn {xsim/print-solutions} {#2}
+      }
+      {}
+      {#3}
+      { \xsim_insert:nnnn {##1} {##2} {} {solution} }
   }
 
 % #1: boolean -- if true only the solutions of printed exercises will be
@@ -348,11 +351,11 @@
 
 % ----------------------------------------------------------------------------
 
-\__xsim_declare_printsolutions_condition:nn {per-section}
+\xsim_declare_printsolutions_condition:nn {per-section}
   { \__xsim_if_solutions_per_section:nnnTF }
-\__xsim_declare_printsolutions_condition:nn {per-chapter}
+\xsim_declare_printsolutions_condition:nn {per-chapter}
   { \__xsim_if_solutions_per_chapter:nnnTF }
-\__xsim_declare_printsolutions_condition:nn {per-collection}
+\xsim_declare_printsolutions_condition:nn {per-collection}
   { \__xsim_if_solutions_in_collection:nnnTF }
 
 % ----------------------------------------------------------------------------
@@ -363,6 +366,8 @@
     headings .initial:n  = true ,
     headings-template .tl_set:N  = \l__xsim_printsolutions_headings_template_tl ,
     headings-template .initial:n = default ,
+    include-exercise  .bool_set:N = \l__xsim_include_question_bool ,
+    include-exercise  .initial:n = false ,
     section           .choice: ,
     section/true      .code:n    =
       \__xsim_printsolutions_condition:nn  {per-section} {true}
@@ -399,4 +404,4 @@
 
 % ----------------------------------------------------------------------------
   
-\tex_endinput:D
+\file_input_stop:

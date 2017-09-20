@@ -25,7 +25,7 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\xsimstyle{layouts}[2017/05/30]
+\xsimstyle{layouts}[2017/09/14]
 
 \RequirePackage{needspace}
 
@@ -54,10 +54,8 @@
 
 \DeclareExerciseEnvironmentTemplate{margin}
   {%
-    \par\vspace{\baselineskip}
-    \Needspace*{2\baselineskip}
-    \noindent
-    \llap{%
+    \trivlist
+    \item[\llap{%
       \smash{%
         \tabular[t]{@{}r@{}}
           \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}
@@ -70,10 +68,10 @@
             )%
           }%
         \endtabular
-      } % <<< notice the space
-    }%
+      }%
+    }]\relax
   }
-  {}
+  {\endtrivlist}
 
 % ----------------------------------------------------------------------------
 \endinput

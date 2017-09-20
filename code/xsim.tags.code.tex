@@ -61,7 +61,7 @@
       { \c_false_bool }
       { \c_false_bool }
       {#1}
-    \__xsim_declare_printsolutions_condition:nn {#1}
+    \xsim_declare_printsolutions_condition:nn {#1}
       { \__xsim_printsolutions_if_tagged:nnnnTF {#1}  }
     \keys_define:nn {xsim/print-solutions}
       {
@@ -89,7 +89,6 @@
         \__xsim_printsolutions_if_condition:nTF {#1}
           {
             \__xsim_printsolutions_condition_true:
-            % TODO: doesn't return anything
             \xsim_if_tagged:nnnTF {#2} {#3} {#1}
               { \prg_return_true: }
               { \prg_return_false: }
@@ -192,4 +191,4 @@
 \cs_generate_variant:Nn \xsim_exercise_tags_use:nnnnnn {oo}
 
 % ----------------------------------------------------------------------------
-\tex_endinput:D
+\file_input_stop:

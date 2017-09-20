@@ -205,7 +205,7 @@
 \cs_new_protected:Npn \xsim_style_options:nn #1#2
   { \keys_define:nn {xsim/#1} {#2} }
 
-\NewDocumentCommand \loadxsimstyle {m} { \xsim_load_module:n {#1} }
+\NewDocumentCommand \loadxsimstyle {m} { \xsim_load_modules:n {#1} }
 
 % --------------------------------------------------------------------------
-\tex_endinput:D
+\file_input_stop:

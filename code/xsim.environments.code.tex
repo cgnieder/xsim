@@ -33,13 +33,29 @@
 \tl_new:N   \l__xsim_file_path_tl
 \tl_new:N   \l__xsim_file_path_and_name_tl
 \tl_new:N   \l__xsim_file_name_tl
+\tl_new:N   \l__xsim_file_extension_tl
 \bool_new:N \l__xsim_options_given_bool
 \bool_new:N \l__xsim_insert_mode_bool
+
+\tl_new:N  \ExerciseText
+\tl_set:Nn \ExerciseText { \msg_error:nn {xsim} {only-in-solution} }
+
+% ----------------------------------------------------------------------------
+
+\msg_new:nnn {xsim} {only-in-solution}
+  {
+    You~ can't~ use~ \token_to_str:N \ExerciseText \c_space_tl inside~ an~
+    exercise.~ It~ is~ only~ allowed~ inside~ solution~ environments!
+  }
 
 % ----------------------------------------------------------------------------
 
 \keys_define:nn {xsim}
-  { path .tl_set:N = \l__xsim_file_path_tl }
+  {
+    path .tl_set:N = \l__xsim_file_path_tl ,
+    file-extension .tl_set:N  = \l__xsim_file_extension_tl ,
+    file-extension .initial:n = tex
+  }
 
 % ----------------------------------------------------------------------------
 
@@ -68,7 +84,7 @@
 \cs_generate_variant:Nn \__xsim_set_file_signature:nnn {nx,nV}
 
 \tl_set:Nn \l__xsim_file_name_tl
-  { \c_sys_jobname_str - \l__xsim_file_name_signature_tl -body.tex }
+  { \c_sys_jobname_str - \l__xsim_file_name_signature_tl -body . \l__xsim_file_extension_tl }
 
 \tl_set:Nn \l__xsim_file_path_and_name_tl
   {
@@ -276,6 +292,13 @@
               \xsim_set_properties:nnn {#1} {#2}
                 { print=true , used=true }
             }
+          \str_if_eq:nnT {#4} {solution}
+            {
+              \__xsim_set_file_signature:nnn {#1} {#2} {exercise}
+              \tl_set_from_file:Nnn \ExerciseText {}
+                {\l__xsim_file_path_and_name_tl}
+              \tl_trim_spaces:N \ExerciseText
+            }
           \use:x
             {
               \xsim_use_hook:nnn {#1} {#4} {pre}
@@ -283,7 +306,7 @@
                 {begin}
                 { \xsim_get_parameter:nn {#1} {#4-template} }
               \xsim_use_hook:nnn {#1} {#4} {begin}
-              \file_input:n { \exp_not:V \l__xsim_file_path_and_name_tl }
+              \xsim_input:nnn {#1} {#2} {#4}
               \xsim_use_hook:nnn {#1} {#4} {end}
               \xsim_use_template:nn
                 {end}
@@ -293,11 +316,23 @@
         \group_end:
       }
       {
-        \xsim_verbose:n
+        \xsim_verbose:x
           { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
       }
   }
 \cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV,nnnV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_input:nnn #1#2#3
+  {
+    \group_begin:
+      \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+      \file_input:n { \l__xsim_file_path_and_name_tl }
+    \group_end:
+  }
+\cs_generate_variant:Nn \xsim_input:nnn {oo}
 
 \prg_new_conditional:Npnn \xsim_if_insert_mode: {T,F,TF}
   {
@@ -342,4 +377,4 @@
   }
 
 % ----------------------------------------------------------------------------
-\tex_endinput:D
+\file_input_stop:
