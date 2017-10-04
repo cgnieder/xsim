@@ -544,12 +544,12 @@
   }
 
 % ----------------------------------------------------------------------------
-  
+
 \NewDocumentCommand \gradingtable {O{}}
   {
     \group_begin:
-      \keys_set:nn {xsim/grading-table} { template = default , type = , #1}
-      \xsim_setup_template:nnV {table} \l_xism_grading_table_template_tl
+      \keys_set:nn {xsim/grading-table} {#1}
+      \xsim_setup_template:nVn {table} \l_xism_grading_table_template_tl
         {
           \providecommand* \ExerciseTableCode {}
           \providecommand* \ExerciseTableType [1] {}

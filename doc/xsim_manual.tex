@@ -479,6 +479,10 @@ Exercise like the \env{exercise} environment and possibly others defined with
     Holds the chapter counter value of an exercise (\ie, what you usually know
     as \cs*{arabic}\Marg{chapter}).  \emph{Only if a command \cs*{chapter}
       \emph{and} a counter \code{chapter} exist.}
+  \propval{sectioning}{section numbers}
+    Holds five brace groups which in turn hold the section numbers (integers)
+    of the exercise in the order
+    \marg{chapter}\marg{section}\marg{subsection}\marg{subsubsection}\marg{paragraph}.
 \end{properties}
 
 Some of these \acsp*{prop} are fixed and cannot be set by the user.  Those
@@ -2242,8 +2246,8 @@ The repository of this package\footnote{GitHub:
   \url{http://www.ctan.org/pkg/xsim/}} currently includes
 \theexamplefiles~example documents demonstrating how different aspects of this
 package work or how different kinds of problems can be solved or how different
-kinds of layouts can be achieved as well as how solve concrete problems that
-have come up in different \LaTeX\ forums.
+kinds of layouts can be achieved as well as how to solve concrete problems
+that have come up in different \LaTeX\ forums.
 
 \listexamplefiles
 

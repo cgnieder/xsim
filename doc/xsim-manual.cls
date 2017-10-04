@@ -771,11 +771,12 @@
 \xsim@add@layout{runin}[\renewcommand*\theexercise{\arabic{exercise}.}]
 \xsim@add@layout{margin}[\renewcommand*\theexercise{\arabic{exercise}.}]
 
-\xsim@add@version{0.8}  {2017-05-18}
-\xsim@add@version{0.8a} {2017-05-19}
-\xsim@add@version{0.8b} {2017-05-23}
-\xsim@add@version{0.9}  {2017-06-20}
-\xsim@add@version{0.10} {2017-09-19}
+\xsim@add@version{0.8}   {2017-05-18}
+\xsim@add@version{0.8a}  {2017-05-19}
+\xsim@add@version{0.8b}  {2017-05-23}
+\xsim@add@version{0.9}   {2017-06-20}
+\xsim@add@version{0.10}  {2017-09-19}
+\xsim@add@version{0.10a} {2017-10-04}
 
 % ----------------------------------------------------------------------------
 \endinput
