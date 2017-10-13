@@ -99,3 +99,9 @@ HISTORY:
                    - bug fix in \xsim_start_collection:nn
                    - added further examples to package
                    - new option `file-extension'
+ v0.10a 2017/10/01 - bug fix: grading table options can now be set with
+                     \xsimsetup (issue 15)
+ v0.11  2017/10/12 - change name requirement for style files in order to
+                     prevent possible name clashes with module files
+                   - fix bug in \SetExerciseProperty and
+                     \SetExpandedExerciseProperty 

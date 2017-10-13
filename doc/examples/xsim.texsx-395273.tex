@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage{xsim,tcolorbox,needspace}
+
+% declare a boolean property:
+\DeclareExerciseProperty*{short}
+% declare a tag like property:
+\DeclareExerciseTagging{level}
+
+% declare a template which typesets exercises differently according to given
+% properties:
+\DeclareExerciseEnvironmentTemplate{exercise}
+  {%
+    \renewcommand*\theenumi{\theexercise.\arabic{enumi}}%
+    \par\addvspace{\baselineskip}
+    \Needspace*{2\baselineskip}
+    \noindent
+    \GetExercisePropertyT{level}{\marginpar{\sffamily Level: #1}}%
+    \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}.} %
+    \GetExercisePropertyT{subtitle}{\textit{#1}}%
+    \IfExerciseBooleanPropertyF{short}{\par\noindent}%
+  }
+  {}
+
+% declare a tcolorbox template for the solutions:
+\DeclareExerciseEnvironmentTemplate{solution}
+  {\tcolorbox[colback=yellow,colframe=red]}
+  {\endtcolorbox}
+
+% declare a user command for short answers:
+\NewDocumentCommand\answer{m}{%
+  \IfSolutionPrintT{%
+    \UseExerciseTemplate{begin}{solution}%
+      #1%
+    \UseExerciseTemplate{end}{solution}%
+  }{}%
+}
+
+% setup exercises and solutions:
+\SetExerciseParameters{exercise}{
+  exercise-template = exercise ,
+  solution-template = solution
+}
+
+% remove this option to hide the answers:
+\xsimsetup{solution/print=true}
+
+\usepackage{lipsum}
+
+\begin{document}
+
+\begin{exercise}[level=hard,short]
+  Just a short exercise
+\end{exercise}
+\begin{solution}
+  The somewhat longer solution to the short exercise. \lipsum[1]
+\end{solution}
+
+\begin{exercise}[subtitle=This one has a title,level=easy]
+  Answer the following questions.
+  \begin{enumerate}
+    \item question \answer{answer}
+    \item question \answer{answer}
+  \end{enumerate}
+\end{exercise}
+
+\begin{exercise}
+  A long exercise. \lipsum[4]\answer{The answer}
+\end{exercise}
+
+\begin{exercise}[level=medium,short]
+  Another short exercise.\answer{The answer}
+\end{exercise}
+
+\end{document}

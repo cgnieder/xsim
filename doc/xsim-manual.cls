@@ -678,6 +678,38 @@
 
 % ----------------------------------------------------------------------------
 
+\ExplSyntaxOn
+\cs_set:Npn \__xsim_get_texsx_number:w   texsx-   #1 \q_stop: {#1}
+\cs_set:Npn \__xsim_get_texwelt_number:w texwelt- #1 \q_stop: {#1}
+\cs_set:Npn \__xsim_get_golatex_number:w golatex- #1 \q_stop: {#1}
+
+\newcommand* \xsim@example@links [1] {
+  \href { \xsim@example@texfile@path {#1} } { \color{white} [\TeX] } ~
+  \href { \xsim@example@pdffile@path {#1} } { \color{white} [PDF] }
+  \tl_if_in:nnT {#1} {texsx}
+    {
+      \tl_set:Nx \l_tmpa_tl { \__xsim_get_texsx_number:w #1 \q_stop: }
+      ~ \href
+        { https \c_colon_str //tex.stackexchange.com/q/ \l_tmpa_tl / }
+        { \color {white} [forum] }
+    }
+  \tl_if_in:nnT {#1} {texwelt}
+    {
+      \tl_set:Nx \l_tmpa_tl { \__xsim_get_texwelt_number:w #1 \q_stop: }
+      ~ \href
+        { http \c_colon_str //texwelt.de/wissen/fragen/ \l_tmpa_tl / }
+        { \color {white} [forum] }
+    }
+  \tl_if_in:nnT {#1} {golatex}
+    {
+      \tl_set:Nx \l_tmpa_tl { \__xsim_get_golatex_number:w #1 \q_stop: }
+      ~ \href
+        { http \c_colon_str //golatex.de/viewtopic,p, \l_tmpa_tl .html }
+        { \color {white} [forum] }
+    }
+}
+\ExplSyntaxOff
+
 \newcounter{examplefile}
 \newcounter{examplefiles}
 \newcommand*\xsim@add@example[1]{%
@@ -695,8 +727,7 @@
       sidebyside gap=0pt,
       lower separated=false,
       title=Example~\theexamplefile\ \enquote{\texttt{##1}}
-        \href{\xsim@example@texfile@path{##1}}{\color{white}[\TeX]}
-        \href{\xsim@example@pdffile@path{##1}}{\color{white}[PDF]}%
+        \xsim@example@links{##1}%
     ]
     \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{Example~\theexamplefile\ (##1)}%
     \lstinputlisting[style=cnltx,lastline=10]{\xsim@example@texfile@path{##1}}
@@ -739,10 +770,11 @@
 \xsim@add@example{texsx-369803}
 \xsim@add@example{texsx-370642}
 \xsim@add@example{texsx-391530}
+\xsim@add@example{texsx-395273}
 \xsim@add@example{texwelt-6698}
 \xsim@add@example{texwelt-15093}
-\xsim@add@example{golatex-16824}
-\xsim@add@example{golatex-18844}
+\xsim@add@example{golatex-80640}
+\xsim@add@example{golatex-91339}
 
 % ----------------------------------------------------------------------------
 
@@ -777,6 +809,7 @@
 \xsim@add@version{0.9}   {2017-06-20}
 \xsim@add@version{0.10}  {2017-09-19}
 \xsim@add@version{0.10a} {2017-10-04}
+\xsim@add@version{0.11}  {2017-10-12}
 
 % ----------------------------------------------------------------------------
 \endinput

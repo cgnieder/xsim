@@ -146,11 +146,11 @@
   { \xsim_make_property_alias:nn {#1} {#2} }
 \@onlypreamble \DeclareExercisePropertyAlias
 
-\NewDocumentCommand \SetExerciseProperty {mmm+m}
-  { \xsim_set_property:xxnn {\ExerciseType} {\ExerciseID} {#3} {#4} }
+\NewDocumentCommand \SetExerciseProperty {m+m}
+  { \xsim_set_property:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
-\NewDocumentCommand \SetExpandedExerciseProperty {mmm+m}
-  { \xsim_set_property:xxnx {\ExerciseType} {\ExerciseID} {#3} {#4} }
+\NewDocumentCommand \SetExpandedExerciseProperty {m+m}
+  { \xsim_set_property:xxnx {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \ExerciseSetProperty {mmm+m}
   { \xsim_set_property:nnnn {#1} {#2} {#3} {#4} }

@@ -1383,7 +1383,7 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     exercise type or -- if no type has been given -- to \meta{code}.
   \expandable\command{IfInsideSolution\TF}[\marg{true}\marg{false}]
     Tests if the template is used inside a solution environment or not.
-  \expandable\command{IfPrintSolution\TF}[\marg{true}\marg{false}]
+  \expandable\command{IfSolutionPrint\TF}[\marg{true}\marg{false}]
     Tests if the option \option{print} for the solutions of the current
     \cs{ExerciseType} is set to \code{true} or \code{false}.
   \command{IfExistSolution\TF}[\marg{true}\marg{false}]
@@ -2061,11 +2061,12 @@ The usage is now as follows:
 \subsection{\dots Create and Use \xsim\ Style Files?}\label{sec:style-files}
 \index{style file|(}
 
-\xsim\ offers you the possibility to create own \emph{style files}.  Let's say
-you want to have a style called \code{math-exam}.  Then you need to save all
-necessary definitions in a file called:
+\xsim\changedversion{0.11} offers you the possibility to create own
+\emph{style files}.  Let's say you want to have a style called
+\code{math-exam}.  Then you need to save all necessary definitions in a file
+called:
 \begin{center}
-  \code{xsim.math-exam.code.tex}
+  \code{xsim.style.math-exam.code.tex}
 \end{center}
 The first command in the file should be \cs{xsimstyle}\Marg{math-exam}.  This
 file can now be loaded into your document using
@@ -2095,11 +2096,11 @@ code~11 (letter).
 The formal description of the commands:
 \begin{commands}
   \command{xsimstyle}[\sarg\marg{style name}]
-    The first command in a \xsim\ style file called \code{xsim.\meta{style
-        name}.code.tex} which defines the \xsim\ style \meta{style name}.  The
-    starred version activates expl3 syntax\footnote{Those users who want this
-      will know what it means.  If you don't know what it means you will not
-      need it.}.
+    The\changedversion{0.11} first command in a \xsim\ style file called
+    \code{xsim.style.\meta{style name}.code.tex} which defines the \xsim\
+    style \meta{style name}.  The starred version activates expl3
+    syntax\footnote{Those users who want this will know what it means.  If you
+      don't know what it means you will not need it.}.
   \command{loadxsimstyle}[\marg{csv list of style names}]
     Load one or more styles into the document.
 \end{commands}

@@ -198,14 +198,15 @@
 % style files
 \NewDocumentCommand \xsimstyle   {smO{}}
   {
-    \__xsim_module:nn {#2} {#3}
+    \__xsim_module:nn {style.#2} {#3}
     \IfBooleanT {#1} { \ExplSyntaxOn }
   }
 
 \cs_new_protected:Npn \xsim_style_options:nn #1#2
   { \keys_define:nn {xsim/#1} {#2} }
 
-\NewDocumentCommand \loadxsimstyle {m} { \xsim_load_modules:n {#1} }
+\NewDocumentCommand \loadxsimstyle {m}
+  { \clist_map_inline:nn {#1} { \xsim_load_module:n {style.##1} } }
 
 % --------------------------------------------------------------------------
 \file_input_stop:
