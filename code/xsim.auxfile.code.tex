@@ -54,6 +54,13 @@
 % list for recording values that need to be written to the aux file and
 % updated at begin document
 
+\str_new:N \l__xsim_split_aux_lists_str
+\keys_define:nn {xsim}
+  {
+    split-aux-lists .code:n    = \str_set:Nn \l__xsim_split_aux_lists_str {#1} ,
+    split-aux-lists .initial:n = ||
+  }
+
 % define list:
 % #1: name
 \cs_new_protected:Npn \xsim_new_list:n #1
@@ -67,7 +74,8 @@
         \prop_gclear:c {g__xsim_list_#1_prop}
         \tl_if_blank:nF {##1}
           {
-            \seq_gset_split:cnx {g__xsim_list_#1_seq} {|}
+            \seq_gset_split:cVx {g__xsim_list_#1_seq}
+              \l__xsim_split_aux_lists_str
               { \tl_to_str:n {##1} }
             \seq_map_inline:cn {g__xsim_list_#1_seq}
               { \prop_gput:cnn {g__xsim_list_#1_prop} {####1} {} }
@@ -99,10 +107,6 @@
     \seq_gput_right:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str
   }
 \cs_generate_variant:Nn \xsim_add_to_list:nn {nx}
-\cs_generate_variant:Nn \seq_if_in:NnT {cV}
-\cs_generate_variant:Nn \seq_gremove_all:Nn {cV}
-\cs_generate_variant:Nn \seq_gput_right:Nn {cV}
-\cs_generate_variant:Nn \seq_gset_split:Nnn {cnx}
 
 % #1: name
 % #2: entry
@@ -154,7 +158,7 @@
     \bool_if:NF \l__xsim_empty_lists_bool
       {
         \xsim_add_cs_to_aux:nn {#1}
-          { { \seq_use:cn {g__xsim_list_#1_seq} {|} } }
+          { { \seq_use:cV {g__xsim_list_#1_seq} \l__xsim_split_aux_lists_str } }
       }
   }
 

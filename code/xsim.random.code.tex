@@ -27,6 +27,16 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{random}{randomly select exercises from collections}
 
+\msg_new:nnn {xsim} {random-numbers-unavailable}
+  {
+    You~ are~ compiling~ your~ document~ using ~XeLaTeX.~ Please~ be~ aware~
+    that~ random~ selection~ of~ exercises~ is~ unavailable~ in~ XeLaTeX.~ If~
+    you~ use~ this~ feature~ you~ can~ safely~ ignore~ this~ message.
+  }
+
+\sys_if_engine_xetex:T
+  { \msg_warning:nn {xsim} {random-numbers-unavailable} }
+
 \xsim_load_modules:n {collections}
 
 \tl_new:N    \l_xsim_random_collection_tl
