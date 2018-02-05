@@ -8,7 +8,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017 Clemens Niederberger
+% Copyright 2017--2018 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -809,7 +809,7 @@
 \xsim@add@version{0.9}   {2017-06-20}
 \xsim@add@version{0.10}  {2017-09-19}
 \xsim@add@version{0.10a} {2017-10-04}
-\xsim@add@version{0.11}  {2017-10-12}
+\xsim@add@version{0.11}  {2018-02-05}
 
 % ----------------------------------------------------------------------------
 \endinput
