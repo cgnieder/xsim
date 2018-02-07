@@ -32,13 +32,7 @@
 \seq_new:N \l__xsim_tag_types_seq
 \bool_new:N \l____xsim_tagged_bool
 
-\cs_new_protected:Npn \xsim_set_seq_from_clist:Nn #1#2
-  {
-    \seq_clear:N #1
-    \clist_map_inline:nn {#2}
-      { \tl_if_blank:nF {##1} { \seq_put_right:Nn #1 {##1} } }
-  }
-\cs_generate_variant:Nn \xsim_set_seq_from_clist:Nn {c,Nx}
+\cs_generate_variant:Nn \seq_set_from_clist:Nn {Nx}
 
 % #1: name
 \cs_new_protected:Npn \xsim_new_tag_type:n #1
@@ -54,7 +48,7 @@
         #1/ingore-untagged .bool_set:c = {l__xsim_ignore_untagged_#1_bool} ,
         #1/ignore-untagged .initial:n  = true ,
         #1                 .code:n     =
-          \xsim_set_seq_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
+          \seq_set_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
       }
     \prg_new_protected_conditional:cpnn {xsim_if_#1_value:n} ##1 {T,F,TF}
       {
@@ -113,7 +107,7 @@
     \seq_if_empty:cTF {l__xsim_chosen_tags_#3_seq}
       { \bool_set_true:c {l____xsim_tagged_#3_bool} }
       {
-        \xsim_set_seq_from_clist:Nx
+        \seq_set_from_clist:Nx
           \l__xsim_tmpa_seq
           { \xsim_get_property:nnn {#1} {#2} {#3} }
         \seq_if_empty:NTF \l__xsim_tmpa_seq
@@ -163,7 +157,7 @@
 % #4: code
 \cs_new_protected:Npn \xsim_foreach_exercise_tag:nnnn #1#2#3#4
   {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+    \seq_set_from_clist:Nx \l__xsim_tmpa_seq
       { \xsim_get_property:nnn {#1} {#2} {#3} }
     \seq_map_inline:Nn \l__xsim_tmpa_seq {#4}
   }
@@ -175,7 +169,7 @@
 % #4: sep
 \cs_new_protected:Npn \xsim_exercise_tags_use:nnnn #1#2#3#4
   {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+    \seq_set_from_clist:Nx \l__xsim_tmpa_seq
       { \xsim_get_property:nnn {#1} {#2} {#3} }
     \seq_use:Nn \l__xsim_tmpa_seq {#4}
   }
@@ -189,7 +183,7 @@
 % #6: sep between last two
 \cs_new_protected:Npn \xsim_exercise_tags_use:nnnnnn #1#2#3#4#5#6
   {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+    \seq_set_from_clist:Nx \l__xsim_tmpa_seq
       { \xsim_get_property:nnn {#1} {#2} {#3} }
     \seq_use:Nnnn \l__xsim_tmpa_seq {#4} {#5} {#6}
   }
