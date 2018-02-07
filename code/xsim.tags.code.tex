@@ -37,43 +37,45 @@
 % #1: name
 \cs_new_protected:Npn \xsim_new_tag_type:n #1
   {
-    \xsim_verbose:n { Declaring~ new~ tag~ type~ `#1'. }
-    \seq_put_right:Nn \l__xsim_tag_types_seq {#1}
-    \seq_remove_duplicates:N \l__xsim_tag_types_seq
-    \seq_new:c  {l__xsim_chosen_tags_#1_seq}
-    \bool_new:c {l__xsim_ignore_untagged_#1_bool}
-    \bool_new:c {l____xsim_tagged_#1_bool}
-    \keys_define:nn {xsim}
+    \seq_if_in:NnF \l__xsim_tag_types_seq {#1}
       {
-        #1/ingore-untagged .bool_set:c = {l__xsim_ignore_untagged_#1_bool} ,
-        #1/ignore-untagged .initial:n  = true ,
-        #1                 .code:n     =
-          \seq_set_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
-      }
-    \prg_new_protected_conditional:cpnn {xsim_if_#1_value:n} ##1 {T,F,TF}
-      {
-        \seq_if_in:cnTF {l__xsim_chosen_tags_#1_seq} {##1}
-          { \prg_return_true: }
-          { \prg_return_false: }
-      }
-    \xsim_declare_property:nnnn
-      { \c_false_bool }
-      { \c_false_bool }
-      { \c_false_bool }
-      {#1}
-    \xsim_declare_printsolutions_condition:nn {#1}
-      { \__xsim_printsolutions_if_tagged:nnnnTF {#1}  }
-    \keys_define:nn {xsim/print-solutions}
-      {
-        #1         .choice: ,
-        #1/false   .code:n    =
-          \__xsim_printsolutions_condition:nn {#1} {false} ,
-        #1/true    .code:n    =
-          \__xsim_printsolutions_condition:nn {#1} {true} ,
-        #1/unknown .code:n    =
-          \keys_set:nn {xsim} { #1 = ##1 }
-          \__xsim_printsolutions_condition:nn {#1} {true} ,
-        #1         .initial:n = false
+        \xsim_verbose:n { Declaring~ new~ tag~ type~ `#1'. }
+        \seq_put_right:Nn \l__xsim_tag_types_seq {#1}
+        \seq_new:c  {l__xsim_chosen_tags_#1_seq}
+        \bool_new:c {l__xsim_ignore_untagged_#1_bool}
+        \bool_new:c {l____xsim_tagged_#1_bool}
+        \keys_define:nn {xsim}
+          {
+            #1/ingore-untagged .bool_set:c = {l__xsim_ignore_untagged_#1_bool} ,
+            #1/ignore-untagged .initial:n  = true ,
+            #1                 .code:n     =
+              \seq_set_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
+          }
+        \prg_new_protected_conditional:cpnn {xsim_if_#1_value:n} ##1 {T,F,TF}
+          {
+            \seq_if_in:cnTF {l__xsim_chosen_tags_#1_seq} {##1}
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+        \xsim_declare_property:nnnn
+          { \c_false_bool }
+          { \c_false_bool }
+          { \c_false_bool }
+          {#1}
+        \xsim_declare_printsolutions_condition:nn {#1}
+          { \__xsim_printsolutions_if_tagged:nnnnTF {#1}  }
+        \keys_define:nn {xsim/print-solutions}
+          {
+            #1         .choice: ,
+            #1/false   .code:n    =
+              \__xsim_printsolutions_condition:nn {#1} {false} ,
+            #1/true    .code:n    =
+              \__xsim_printsolutions_condition:nn {#1} {true} ,
+            #1/unknown .code:n    =
+              \keys_set:nn {xsim} { #1 = ##1 }
+              \__xsim_printsolutions_condition:nn {#1} {true} ,
+            #1         .initial:n = false
+          }
       }
   }
 
