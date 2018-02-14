@@ -443,6 +443,13 @@
   { \xsim_new_tag_type:n {#1} }
 \@onlypreamble \DeclareExerciseTagging
 
+\NewDocumentCommand \ProvideExerciseTagging {m}
+  {
+    \xsim_if_tag_type_exists:nTF {#1}
+      { \msg_warning:nnn {xsim} {tag-exists} {#1} }
+      { \xsim_new_tag_type:n {#1} }
+  }
+
 \NewDocumentCommand \ForEachExerciseTag {m+m}
   { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
@@ -460,18 +467,18 @@
       {#4}
   }
 
-\NewDocumentCommand \IfTagSetTF {m+m+m}
+\NewDocumentCommand \IfExerciseTagSetTF {m+m+m}
   { \xsim_if_tags_value:nTF {#1} {#2} {#3} }
-\NewDocumentCommand \IfTagSetT {m+m}
+\NewDocumentCommand \IfExerciseTagSetT {m+m}
   { \xsim_if_tags_value:nT {#1} {#2} }
-\NewDocumentCommand \IfTagSetF {m+m}
+\NewDocumentCommand \IfExerciseTagSetF {m+m}
   { \xsim_if_tags_value:nF {#1} {#2} }
 
-\NewDocumentCommand \IfTopicSetTF {m+m+m}
+\NewDocumentCommand \IfExerciseTopicSetTF {m+m+m}
   { \xsim_if_topic_value:nTF {#1} {#2} {#3} }
-\NewDocumentCommand \IfTopicSetT {m+m}
+\NewDocumentCommand \IfExerciseTopicSetT {m+m}
   { \xsim_if_topic_value:nT {#1} {#2} }
-\NewDocumentCommand \IfTopicSetF {m+m}
+\NewDocumentCommand \IfExerciseTopicSetF {m+m}
   { \xsim_if_topic_value:nF {#1} {#2} }
 
 % ----------------------------------------------------------------------------

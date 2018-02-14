@@ -101,12 +101,13 @@ HISTORY:
                    - new option `file-extension'
  v0.10a 2017/10/01 - bug fix: grading table options can now be set with
                      \xsimsetup (issue 15)
- v0.11  2018/02/05 - change name requirement for style files in order to
+ v0.11  2018/02/12 - change name requirement for style files in order to
                      prevent possible name clashes with module files
                    - fix bug in \SetExerciseProperty and
                      \SetExpandedExerciseProperty
                    - fix bug when xsimverb is used standalone (issue 21)
                    - add option `split-aux-lists' (issue 18)
-                   - \IfTagSetTF and \IfTopicSetTF
+                   - \IfExerciseTagSetTF and \IfExerciseTopicSetTF
                    - introduce a \xsim_if_<tagging>_value:nTF for each tag
                      kind
+                   - \ProvideExerciseTagging

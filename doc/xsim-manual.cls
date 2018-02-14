@@ -126,6 +126,12 @@
     IfExerciseTypeGoalsSumF ,
     IfExerciseTypeGoalsSumT ,
     IfExerciseTypeGoalsSumTF ,
+    IfExerciseTagSetF ,
+    IfExerciseTagSetT ,
+    IfExerciseTagSetTF ,
+    IfExerciseTopicSetF ,
+    IfExerciseTopicSetT ,
+    IfExerciseTopicSetTF ,
     IfInsideSolutionF ,
     IfInsideSolutionT ,
     IfInsideSolutionTF ,
@@ -143,6 +149,7 @@
     printsolutions ,
     printsolutionstype ,
     PropertyValue ,
+    ProvideExerciseTagging ,
     SaveExerciseProperty ,
     SetExerciseParameter ,
     SetExerciseParameters ,
@@ -689,21 +696,21 @@
   \tl_if_in:nnT {#1} {texsx}
     {
       \tl_set:Nx \l_tmpa_tl { \__xsim_get_texsx_number:w #1 \q_stop: }
-      ~ \href
+      \space \href
         { https \c_colon_str //tex.stackexchange.com/q/ \l_tmpa_tl / }
         { \color {white} [forum] }
     }
   \tl_if_in:nnT {#1} {texwelt}
     {
       \tl_set:Nx \l_tmpa_tl { \__xsim_get_texwelt_number:w #1 \q_stop: }
-      ~ \href
+      \space \href
         { http \c_colon_str //texwelt.de/wissen/fragen/ \l_tmpa_tl / }
         { \color {white} [forum] }
     }
   \tl_if_in:nnT {#1} {golatex}
     {
       \tl_set:Nx \l_tmpa_tl { \__xsim_get_golatex_number:w #1 \q_stop: }
-      ~ \href
+      \space \href
         { http \c_colon_str //golatex.de/viewtopic,p, \l_tmpa_tl .html }
         { \color {white} [forum] }
     }
@@ -809,7 +816,7 @@
 \xsim@add@version{0.9}   {2017-06-20}
 \xsim@add@version{0.10}  {2017-09-19}
 \xsim@add@version{0.10a} {2017-10-04}
-\xsim@add@version{0.11}  {2018-02-05}
+\xsim@add@version{0.11}  {2018-02-12}
 
 % ----------------------------------------------------------------------------
 \endinput

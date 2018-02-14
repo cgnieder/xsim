@@ -51,7 +51,7 @@
 
 \begin{document}
 
-\section{Licence, Requirements and \textsc{readme}}
+\section{Licence, Requirements and \texorpdfstring{\textsc{readme}}{README}}
 \license
 
 \xsim\ loads the packages \pkg{expl3}~\cite{bnd:l3kernel},
@@ -76,7 +76,7 @@ using an up to date \TeX\ distribution, anyway.
 It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in June 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
-shows (103~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
+shows (119~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
 questions, bug reports and feature requests improved it over the time.  It
 still has a version number starting with a zero, though, which in my
 versioning system means I still consider it experimental.
@@ -244,8 +244,8 @@ More details on those two environments can be found in
 section~\vref{sec:using-printing}.
 
 \section{How the Exercise Environments Work}\label{sec:how-exerc-envir}
-Both enviroments write the contents of their bodies verbatim to external files
-following a certain naming structure:
+Both the exercise and the solution enviroments write the contents of their
+bodies verbatim to external files following a certain naming structure:
 \begin{itemize}
   \item
   \code{\meta{jobname}-\meta{type}-\meta{id}-exercise|solution-body.tex} 
@@ -258,18 +258,18 @@ example have been written to files named
   \item \verbcode+xsim_manual-exercise-1-exercise-body.tex+ and
   \item \verbcode+xsim_manual-exercise-1-solution-body.tex+, respectively.
 \end{itemize}
-Details on the \meta{type} of an exercise will be given in
-section~\vref{sec:new-exercise-types}.  \emph{The \meta{id} of an exercise is
-  a positive integer unique to each exercise environment regardless if the
-  exercise is being printed or used at all.}
-
 These external files are input when the respective exercise or solution is
 printed.  An advantage of using external files is that \emph{verbatim material
-  is allowed} inside the environments.  Each of those files contains some
-information about itself and where and why it was generated\footnote{In this
-  example the sourcecode line number is misleading as the example where the
-  file was generated itself was an external file where the \env{exercise}
-  environment indeed \emph{was} on line~1.}:
+  is allowed} inside the environments.  Details on the \meta{type} of an
+exercise will be given in section~\vref{sec:new-exercise-types}.  \emph{The
+  \meta{id} of an exercise is a positive integer unique to each exercise
+  environment regardless if the exercise is being printed or used at all.}
+
+Each of those files contains some information about itself and where and why
+it was generated\footnote{In this example the sourcecode line number is
+  misleading as the example where the file was generated itself was an
+  external file where the \env{exercise} environment indeed \emph{was} on
+  line~1.}:
 
 \inputsourcecode{exercises/xsim_manual-exercise-1-exercise-body.tex}
 
@@ -288,10 +288,10 @@ order to deal with this somehow \xsim\ offers the following option:
 \end{options}
 
 Another thing to keep in mind: the environment in many ways works the same way
-as the \env{filecontents}. \emph{This also means that you \emph{cannot} have
-  comments on the first line of the environments:}
+as the \env{filecontents} environment. \emph{This also means that you
+  \emph{cannot} have comments on the first line of the environments:}
 \begin{sourcecode}
-  \begin{exercise}[points=2] % this will cause trouble
+  \begin{exercise}[points=2] % this comment will cause trouble
     Lorem ipsum
   \end{exercise}
 \end{sourcecode}
@@ -315,7 +315,7 @@ as the \env{filecontents}. \emph{This also means that you \emph{cannot} have
 
 \begin{bewareofthedog}
   A lot of the lines \xsim\ writes to the auxfile and reads in a subsequent
-  run looks like this:
+  run look like this:
 \begin{sourcecode}
   \XSIM {points}{exercise-2=={4}|exercise-10=={2.5}|problem-11=={5}}
 \end{sourcecode}
@@ -700,6 +700,9 @@ and how to use exercise tags for selection.
     property named \meta{tag}.  In addition two options are defined: an option
     named \code{\meta{tag}} which can be used for selection and an boolean
     option \code{\meta{tag}/ignore-untagged}.
+  \command{ProvideExerciseTagging}[\marg{tag}]
+    The\sinceversion{0.11} same as \cs{DeclareExerciseTagging} but does
+    nothing when \meta{tag} already exists.
 \end{commands}
 The two existing tagging groups have been defined and preset with the
 following code:
@@ -1380,13 +1383,14 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \meta{between} as a separator and \meta{between last two} as separator
     between the last two tags of the list.  If the list only consists of two
     tags \meta{between two} is used as separator.
-  \command{IfTagSet\TF}[\marg{value}\marg{true}\marg{false}]
-    It\sinceversion{0.11} can be that want to insert text \emph{outside} of
-    exercises depending on the chosen tags.  With this command you can check
-    if for \property{tags} value \meta{value} has been set.
-  \command{IfTopicSet\TF}[\marg{value}\marg{true}\marg{false}]
-    With\sinceversion{0.11} this command you can check if for
-    \property{topics} value \meta{value} has been set.
+  \command{IfExerciseTagSet\TF}[\marg{value}\marg{true}\marg{false}]
+    In\sinceversion{0.11} order to insert text (also \emph{outside} of
+    exercises) depending on the chosen tags this command lets you check if
+    value \meta{value} has been set for \property{tags}.
+  \command{IfExerciseTopicSet\TF}[\marg{value}\marg{true}\marg{false}]
+    In\sinceversion{0.11} order to insert text (also \emph{outside} of
+    exercises) depending on the chosen tags this command lets you check if
+    value \meta{value} has been set for \property{topics}.
 \end{commands}
 
 \subsubsection{Further Commands for Usage in Template Definitions}
