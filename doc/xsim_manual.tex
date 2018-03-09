@@ -218,7 +218,7 @@ As can be seen in the example a solution is not printed with the default
 setup.  This can be changed using the following option.
 \begin{options}
   \keybool{print}\Module{solution}\Default{false}
-    Set if solutions are printed or or not.
+    Set if solutions are printed or not.
 \end{options}
 
 The option (belonging to the module \module*{solution}) can either be set
@@ -238,13 +238,13 @@ or with the setup command for all following solutions:
 There is an completely analoguous option for the \env{exercise} environment:
 \begin{options}
   \keybool{print}\Module{exercise}\Default{true}
-    Set if exercises are printed or or not.
+    Set if exercises are printed or not.
 \end{options}
 More details on those two environments can be found in
 section~\vref{sec:using-printing}.
 
 \section{How the Exercise Environments Work}\label{sec:how-exerc-envir}
-Both the exercise and the solution enviroments write the contents of their
+Both the exercise and the solution environments write the contents of their
 bodies verbatim to external files following a certain naming structure:
 \begin{itemize}
   \item
@@ -252,7 +252,7 @@ bodies verbatim to external files following a certain naming structure:
 \end{itemize}
 The name starts with the name of the job (which is the name of the document
 itself) followed by type and id of the corresponding exercise and then
-followed by the environment type.  For example both enviroments from the first
+followed by the environment type.  For example both environments from the first
 example have been written to files named
 \begin{itemize}
   \item \verbcode+xsim_manual-exercise-1-exercise-body.tex+ and
@@ -446,7 +446,7 @@ Exercise like the \env{exercise} environment and possibly others defined with
     Holds the user id of an exercise if defined.  Otherwise it is equal to
     \property{id}.
   \propval{counter}{text}
-    Holds the counter value represenation of an exercise (\ie, what you
+    Holds the counter value representation of an exercise (\ie, what you
     usually know as \cs*{the\meta{counter}}).  \emph{Cannot be set by the
       user}.
   \propval{counter-value}{integer}
@@ -477,19 +477,19 @@ Exercise like the \env{exercise} environment and possibly others defined with
   \propval{topics}{csv list of topics}
     Holds the list of topics the exercise should be associated with.
   \propval{page}{text}
-    Holds the page counter value represenation of an exercise (\ie, what you
+    Holds the page counter value representation of an exercise (\ie, what you
     usually know as \cs*{thepage}).
   \propval{page-value}{integer}
     Holds the page counter value of an exercise (\ie, what you usually know as
     \cs*{arabic}\Marg{page}).
   \propval{section}{text}
-    Holds the section counter value represenation of an exercise (\ie, what
+    Holds the section counter value representation of an exercise (\ie, what
     you usually know as \cs*{thesection}).
   \propval{section-value}{integer}
     Holds the section counter value of an exercise (\ie, what you usually know
     as \cs*{arabic}\Marg{section}).
   \propval{chapter}{text}
-    Holds the chapter counter value represenation of an exercise (\ie, what
+    Holds the chapter counter value representation of an exercise (\ie, what
     you usually know as \cs*{thechapter}).  \emph{Only if a command
       \cs*{chapter} \emph{and} a counter \code{chapter} exist.}
   \propval{chapter-value}{integer}
@@ -631,7 +631,7 @@ available (after a compilation) throughout the document.
     respectively.  The starred version prints nothing.  Defined in terms of
     \cs{AddtoExerciseGoal} and \cs{AddtoExerciseGoalPrint}.
   \command{points}[\marg{value}]
-    Print \meta{value}followed by an appropriate translation of the words
+    Print \meta{value} followed by an appropriate translation of the words
     \enquote{point} or \enquote{points}, respectively.  Defined in terms of
     \cs{ExerciseGoalValuePrint}.
   \command{printbonus}[\marg{type}]
