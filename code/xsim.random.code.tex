@@ -295,7 +295,7 @@
       {
         \tl_set:Nx \l__xsim_tmpa_tl
           { \xsim_get_id_for_property:nn {ID} {##1} }
-        \tl_if_blank:NTF \l__xsim_tmpa_tl
+        \tl_if_blank:VTF \l__xsim_tmpa_tl
           { \seq_put_right:Nn \l__xsim_tmpa_seq {##1} }
           {
             \seq_put_right:Nx \l__xsim_tmpa_seq
