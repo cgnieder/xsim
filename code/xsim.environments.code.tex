@@ -295,8 +295,7 @@
           \str_if_eq:nnT {#4} {solution}
             {
               \__xsim_set_file_signature:nnn {#1} {#2} {exercise}
-              \tl_set_from_file:Nnn \ExerciseText {}
-                {\l__xsim_file_path_and_name_tl}
+              \file_get:nnN {\l__xsim_file_path_and_name_tl} {} \ExerciseText
               \tl_trim_spaces:N \ExerciseText
             }
           \use:x
@@ -378,3 +377,5 @@
 
 % ----------------------------------------------------------------------------
 \file_input_stop:
+
+2019/02/17 - fix issue #43

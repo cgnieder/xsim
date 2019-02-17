@@ -1938,7 +1938,7 @@ Those are the options for customization:
   \keyval{linespread}{decimal number}\Module{blank}\Default{\code{1}}
     Set the linespread for the blank lines. This only has an effect if
     \cs{blank} is used at the begin of a paragraph.
-  \keyval{line-increment}{dim}\Module{blank}\Default{\code{1pt}}
+  \keyval{line-increment}{dim}\Module{blank}\Default{\code{0.001\cs*{linewidth}}}
     The blank line is built in multiples of this value.  If the value is too
     large you may end up with uneven lines.  If the value is too small you may
     end up with a non-ending compilation.  Experiment with values to find the
