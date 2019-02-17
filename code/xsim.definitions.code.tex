@@ -396,14 +396,14 @@
   French   = \XSIMmixedcase { \GetExerciseParameter {solution-name} s~
              des~ \GetExerciseParameter {exercise-name} s} ,
   German   = \XSIMmixedcase { \GetExerciseParameter {solution-name} en }~
-             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercise-name} en}
+             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercise-name} n}
 }
 
 \DeclareExerciseTranslations {collection-heading} {
   Fallback = \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } ,
   English  = \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } ,
   French   = \XSIMmixedcase { \GetExerciseParameter {exercise-name} s } ,
-  German   = \XSIMmixedcase { \GetExerciseParameter {exercise-name} en }
+  German   = \XSIMmixedcase { \GetExerciseParameter {exercise-name} n }
 }
 
 \DeclareExerciseTranslations {per-section-heading} {
@@ -417,7 +417,7 @@
              des~ \GetExerciseParameter {exercise-name} s~ de~ la~
              section \nobreakspace \ExerciseSection } ,
   German   = \XSIMmixedcase { \GetExerciseParameter {solution-name} en }~
-             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercise-name} en}~
+             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercise-name} n}~
              in~ Abschnitt \nobreakspace \ExerciseSection
 }
 
@@ -432,9 +432,11 @@
              des~ \GetExerciseParameter {exercise-name} s~
              du~ chapitre \nobreakspace \ExerciseChapter } ,
   German   = \XSIMmixedcase { \GetExerciseParameter {solution-name} en }~
-             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercise-name} en}~
+             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercise-name} n}~
              in~ Kapitel \nobreakspace \ExerciseChapter
 }
 
 % ----------------------------------------------------------------------------
 \file_input_stop:
+
+2019/02/17 fixed error in German translations
