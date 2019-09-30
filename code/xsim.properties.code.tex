@@ -182,7 +182,7 @@
 
 \cs_new_protected:Npn \__xsim_set_boolean_property:nnnn #1#2#3#4
   {
-    \str_case_x:nnTF { \str_lower_case:n {#4} }
+    \str_case_e:nnTF { \str_lower_case:n {#4} }
       {
         {} {}
         {true} {}

@@ -66,7 +66,7 @@
 \cs_new_protected:Npn \xsim_load_module:n #1
   {
     \tl_set:Nx \l_tmpa_tl { \tl_trim_spaces:n {#1} }
-    \str_if_eq_x:nnTF { \l_tmpa_tl } {modules}
+    \str_if_eq:eeTF { \l_tmpa_tl } {modules}
       { \msg_error:nn {xsim} {forbidden-module} }
       {  \__xsim_load_module:V \l_tmpa_tl }
   }
@@ -167,7 +167,7 @@
   {
     \seq_gput_right:Nn \g__xsim_loaded_modules_seq {#1}
     \prop_gput:Nnn \g__xsim_loaded_modules_prop {#1} {#2}
-    \str_if_eq_x:nnF
+    \str_if_eq:eeF
       {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
       {\@currname.\@currext}
       {
