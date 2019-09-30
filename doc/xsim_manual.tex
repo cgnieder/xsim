@@ -13,7 +13,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2018 Clemens Niederberger
+% Copyright 2017--2019 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -287,9 +287,12 @@ order to deal with this somehow \xsim\ offers the following option:
     auxiliary files.
 \end{options}
 
-Another thing to keep in mind: the environment in many ways works the same way
-as the \env{filecontents} environment. \emph{This also means that you
-  \emph{cannot} have comments on the first line of the environments:}
+\begin{bewareofthedog}
+  Another thing to keep in mind: the environment in many ways works the same
+  way as the \env{filecontents} environment. \emph{This also means that you
+    \emph{cannot} have comments or \cs*{label}s or anything else on the first
+    line of the environments!}
+\end{bewareofthedog}
 \begin{sourcecode}
   \begin{exercise}[points=2] % this comment will cause trouble
     Lorem ipsum
@@ -357,7 +360,9 @@ Declaring a new exercise type will also define a new command:
     exercise-env      = exercise ,
     solution-env      = solution ,
     exercise-name     = \XSIMtranslate{exercise} ,
+    exercises-name    = \XSIMtranslate{exercises} ,
     solution-name     = \XSIMtranslate{solution} ,
+    solutions-name    = \XSIMtranslate{solutions} ,
     exercise-template = default ,
     solution-template = default
   }
@@ -375,9 +380,17 @@ must) be set.  Here is the complete list:
   \paraval{exercise-name}{exercise name}
     The name of the exercises of type \meta{type} -- used for typesetting.
     \emph{This parameter is mandatory.}
+  \paraval{exercises-name}{exercises name}
+    The\sinceversion{0.12} plural name of the exercises of type \meta{type} --
+    used for typesetting.  If this is not set explicitly an \code{s} is
+    appended to the singular name.
   \paraval{solution-name}{solution name}
     The name of the solutions of type \meta{type} -- used for typesetting.
     \emph{This parameter is mandatory.}
+  \paraval{solutions-name}{solutions name}
+    The\sinceversion{0.12} plural name of the solutions of type \meta{type} --
+    used for typesetting.  If this is not set explicitly an \code{s} is
+    appended to the singular name.
   \paraval{exercise-template}{exercise template}
     The template used for typesetting the exercises of type \meta{type}.
     \emph{This parameter is mandatory.} See
@@ -709,7 +722,7 @@ following code:
 \begin{sourcecode}
   \DeclareExerciseTagging{tags}
   \DeclareExerciseTagging{topics}
-  \xsimsetup{tags/ingore-untagged=false}
+  \xsimsetup{tags/ignore-untagged=false}
 \end{sourcecode}
 This means that these options are available:
 \begin{options}
@@ -1536,7 +1549,7 @@ Table templates are used by \cs{gradingtable}.  Those are the templates set
 with the option \option{template} of module \module{grading-table}
 
 The predefined templates are \enquote{\code{default}} and
-\enquote{\code{default}}, see sections~\vref{sec:table-templ-default}
+\enquote{\code{default*}}, see sections~\vref{sec:table-templ-default}
 and~\vref{sec:table-templ-default*}.
 
 \subsection{Examples}\label{sec:template-examples}
@@ -2280,6 +2293,9 @@ The repository of this package\footnote{GitHub:
 package work or how different kinds of problems can be solved or how different
 kinds of layouts can be achieved as well as how to solve concrete problems
 that have come up in different \LaTeX\ forums.
+
+Besides showing excerpts of the code and the resulting pdf the examples below
+also link to both the \code{tex} source the resulting pdf.
 
 \listexamplefiles
 

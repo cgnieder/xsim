@@ -8,7 +8,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2018 Clemens Niederberger
+% Copyright 2017--2019 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2017/09/18]
+\ProvidesClass{xsim-manual}[2019/09/27]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -286,6 +286,7 @@
   style=cnltx,
   sortlocale=en_US,
   indexing=cite]{biblatex}
+\RequirePackage{csquotes}
 \addbibresource{cnltx.bib}
 
 \RequirePackage[biblatex]{embrac}
@@ -452,20 +453,6 @@
     tables.}
 }
 
-\ExplSyntaxOn
-\NewAcroCommand \Acs
-  {
-    \acro_first_upper:
-    \acro_short:n {#1}
-  }
-\NewAcroCommand \Acsp
-  {
-    \acro_first_upper:
-    \acro_plural:
-    \acro_short:n {#1}
-  }
-\ExplSyntaxOff
-
 \newcommand*\environ{\@ifstar\environ@star\environ@nostar}
 \newcommand*\environ@star[1]{\beginenv*\Marg{\env*{#1}}}
 \newcommand*\environ@nostar[1]{\beginenv*\Marg{\env{#1}}}
@@ -494,23 +481,36 @@
   #1%
 }
 
-\RenewDocumentEnvironment{sourcecode}{O{}}
+\newcommand*\xsimman@readoptions[1]{%
+  \catcode`\^^M=13
+  \xsimman@read@options{#1}%
+}
+
+\begingroup
+\catcode`\^^M=13
+\gdef\xsimman@read@options#1#2^^M{%
+  \ifblank{#2}{}{\xsimman@read@options@#2}%
+  #1%
+  \XSIMfilewritestart*{\jobname.tmp}%
+}%
+\endgroup
+\def\xsimman@read@options@[#1]{\pgfqkeys{/cnltx}{#1}}
+
+\RenewDocumentEnvironment{sourcecode}{}
   {%
-    \pgfqkeys{/cnltx}{#1}%
-    \setlength\cnltx@sidebysidewidth
-      {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
-    \XSIMexpandcode{%
-      \noexpand\lstset{
-        style=cnltx,
-        \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
-          {linewidth=\cnltx@sidebysidewidth,}{}%
-        \expandonce\cnltx@local@listings@options
+    \xsimman@readoptions{%
+      \setlength\cnltx@sidebysidewidth
+        {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
+      \XSIMexpandcode{%
+        \noexpand\lstset{
+          style=cnltx,
+          \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
+            {linewidth=\cnltx@sidebysidewidth,}{}%
+          \expandonce\cnltx@local@listings@options
+        }%
       }%
+      \XSIMgobblechars{2}%
     }%
-    \XSIMgobblechars{2}%
-    \XSIMifblankTF{#1}
-      {\XSIMfilewritestart*{\jobname.tmp}}
-      {\XSIMfilewritestart{\jobname.tmp}}%
   }
   {%
     \XSIMfilewritestop
@@ -519,23 +519,21 @@
     \endcnltxcode
   }
 
-\RenewDocumentEnvironment{example} {O{}}
+\RenewDocumentEnvironment{example}{}
   {%
-    \pgfqkeys{/cnltx}{#1}%
-    \setlength\cnltx@sidebysidewidth
-      {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
-    \XSIMexpandcode{%
-      \noexpand\lstset{
-        style=cnltx,
-        \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
-          {linewidth=\cnltx@sidebysidewidth,}{}%
-        \expandonce\cnltx@local@listings@options
+    \xsimman@readoptions{%
+      \setlength\cnltx@sidebysidewidth
+        {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
+      \XSIMexpandcode{%
+        \noexpand\lstset{
+          style=cnltx,
+          \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
+            {linewidth=\cnltx@sidebysidewidth,}{}%
+          \expandonce\cnltx@local@listings@options
+        }%
       }%
+      \XSIMgobblechars{2}%
     }%
-    \XSIMgobblechars{2}%
-    \XSIMifblankTF{#1}
-      {\XSIMfilewritestart*{\jobname.tmp}}
-      {\XSIMfilewritestart{\jobname.tmp}}%
   }
   {%
     \XSIMfilewritestop
@@ -730,18 +728,29 @@
     \begin{cnltxcode}[
       step and label={examplefile}{example:##1} ,
       sidebyside align=top seam,sidebyside,
-      righthand width=\linewidth/4,
-      sidebyside gap=0pt,
+      righthand width=.3\linewidth,
+      sidebyside gap=1em,
       lower separated=false,
+      bottom=1mm,
+      % rightlower=0pt,
+      % halign lower=flush right,
+      % clip lower,
       title=Example~\theexamplefile\ \enquote{\texttt{##1}}
         \xsim@example@links{##1}%
     ]
     \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{Example~\theexamplefile\ (##1)}%
-    \lstinputlisting[style=cnltx,lastline=10]{\xsim@example@texfile@path{##1}}
+    \lstinputlisting[style=cnltx,firstline=7,lastline=16]{\xsim@example@texfile@path{##1}}
     \tcblower
     \fbox{%
-      \href{\xsim@example@pdffile@path{##1}}{%
-        \includegraphics[width=.8\linewidth]{\xsim@example@pdffile@path{##1}}}}%
+      \href
+        {\xsim@example@pdffile@path{##1}}
+        {%
+          \includegraphics[
+            pagebox=cropbox,
+            viewport=4.5cm 18cm 8.7cm 23.3cm,
+            clip]{\xsim@example@pdffile@path{##1}}%
+        }%
+    }%
     \end{cnltxcode}
   }%
   \dolistloop\xsim@examplefiles
@@ -817,6 +826,7 @@
 \xsim@add@version{0.10}  {2017-09-19}
 \xsim@add@version{0.10a} {2017-10-04}
 \xsim@add@version{0.11}  {2018-02-12}
+\xsim@add@version{0.12}  {2019-09-26}
 
 % ----------------------------------------------------------------------------
 \endinput

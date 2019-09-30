@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2018/02/12 v0.11
+XSIM 2019/09/30 v0.12
 
   eXercise Sheets IMproved
 
@@ -8,7 +8,7 @@ Clemens Niederberger
 Web:    https://github.com/cgnieder/xsim
 E-Mail: contact@mychemistry.eu
 --------------------------------------------------------------------------
-Copyright 2017--2018 Clemens Niederberger
+Copyright 2017--2019 Clemens Niederberger
 
 This work may be distributed and/or modified under the
 conditions of the LaTeX Project Public License, either version 1.3
@@ -25,6 +25,7 @@ The Current Maintainer of this work is Clemens Niederberger.
 The xsim package consists of the code files:
    xsim.sty
    xsimverb.sty
+   xsim.auxfile.code.tex
    xsim.base.code.tex
    xsim.blanks.code.tex
    xsim.collections.code.tex
@@ -34,11 +35,11 @@ The xsim package consists of the code files:
    xsim.goals.code.tex
    xsim.grades.code.tex
    xsim.interface.code.tex
-   xsim.layouts.code.tex
    xsim.modules.code.tex
    xsim.properties.code.tex
    xsim.random.code.tex
    xsim.solutions.code.tex
+   xsim.style.layouts.code.tex
    xsim.tags.code.tex
    xsim.templates.code.tex
    xsim.translations.code.tex
@@ -63,8 +64,8 @@ The xsim package consists of the example files:
    xsim.grade-distribution.tex, xsim.grade-distribution.pdf
    xsim.hints.tex, xsim.hints.pdf
    xsim.listings.tex, xsim.listings.pdf
-   xsim.multiplechoice.tex, xsim.multiplechoice.pdf
    xsim.listofexercises.tex, xsim.listofexercises.pdf
+   xsim.multiplechoice.tex, xsim.multiplechoice.pdf
    xsim.pointsums.tex, xsim.pointsums.pdf
    xsim.randomexercises.tex, xsim.randomexercises.pdf
    xsim.various.tex, xsim.various.pdf

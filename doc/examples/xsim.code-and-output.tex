@@ -10,7 +10,7 @@
 }
 
 \makeatletter
-\NewDocumentEnvironment{example}{o}
+\NewDocumentEnvironment{example}{!o}
   {%
     \XSIMgobblechars{2}%
     \XSIMsetfilebegin{\@percentchar\space file `\jobname.tmp'}%
@@ -25,7 +25,7 @@
     \input{\jobname.tmp}
   }
 
-\NewDocumentEnvironment{code}{o}
+\NewDocumentEnvironment{code}{!o}
   {%
     \XSIMgobblechars{2}%
     \IfNoValueTF{#1}
@@ -46,7 +46,7 @@
 
 \bigskip
 
-\begin{code}
+\begin{code}[]
   blubber \LaTeX
 \end{code}
 
