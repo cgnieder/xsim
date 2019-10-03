@@ -688,7 +688,7 @@
 \cs_set:Npn \__xsim_get_texwelt_number:w texwelt- #1 \q_stop: {#1}
 \cs_set:Npn \__xsim_get_golatex_number:w golatex- #1 \q_stop: {#1}
 
-\newcommand* \xsim@example@links [1] {
+\cs_new_protected:Npn \xsim@example@links #1 {
   \href { \xsim@example@texfile@path {#1} } { \color{white} [\TeX] } ~
   \href { \xsim@example@pdffile@path {#1} } { \color{white} [PDF] }
   \tl_if_in:nnT {#1} {texsx}
@@ -717,13 +717,20 @@
 
 \newcounter{examplefile}
 \newcounter{examplefiles}
-\newcommand*\xsim@add@example[1]{%
+\newcommand*\xsim@add@example[2]{%
   \listadd\xsim@examplefiles{#1}%
+  \csdef{xsim@example@texfile@desc@#1}{#2}%
   \stepcounter{examplefiles}%
 }
 \newcommand*\listexamplefiles{%
   \def\xsim@example@texfile@path##1{./examples/xsim.##1.tex}%
   \def\xsim@example@pdffile@path##1{./examples/{xsim.##1}.pdf}%
+  \def\xsim@example@desc##1{\csuse{xsim@example@texfile@desc@##1}}%
+  \def\xsim@example@title##1{%
+    Example~\theexamplefile\ \xsim@example@desc{##1}
+    \\Links: \xsim@example@links{##1} (\code{xsim.##1.tex})%
+  }%
+  \def\xsim@example@bookmark##1{Example~\theexamplefile\ (\xsim@example@desc{##1})}%
   \def\do##1{%
     \begin{cnltxcode}[
       step and label={examplefile}{example:##1} ,
@@ -735,11 +742,10 @@
       % rightlower=0pt,
       % halign lower=flush right,
       % clip lower,
-      title=Example~\theexamplefile\ \enquote{\texttt{##1}}
-        \xsim@example@links{##1}%
+      title=\xsim@example@title{##1}%
     ]
-    \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{Example~\theexamplefile\ (##1)}%
-    \lstinputlisting[style=cnltx,firstline=7,lastline=16]{\xsim@example@texfile@path{##1}}
+    \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{\xsim@example@bookmark{##1}}%
+    \lstinputlisting[style=cnltx,firstline=7,lastline=15,firstnumber=7]{\xsim@example@texfile@path{##1}}
     \tcblower
     \fbox{%
       \href
@@ -747,7 +753,7 @@
         {%
           \includegraphics[
             pagebox=cropbox,
-            viewport=4.5cm 18cm 8.7cm 23.3cm,
+            viewport=4.5cm 18.6cm 8.7cm 23cm,
             clip]{\xsim@example@pdffile@path{##1}}%
         }%
     }%
@@ -756,41 +762,41 @@
   \dolistloop\xsim@examplefiles
 }
 
-\xsim@add@example{blanks}
-\xsim@add@example{boxed-headings}
-\xsim@add@example{code-and-output}
-\xsim@add@example{collections}
-\xsim@add@example{crossref}
-\xsim@add@example{description-list}
-\xsim@add@example{different-point-types}
-\xsim@add@example{difficulties}
-\xsim@add@example{hints}
-\xsim@add@example{floating}
-\xsim@add@example{grade-distribution}
-\xsim@add@example{listings}
-\xsim@add@example{multiplechoice}
-\xsim@add@example{listofexercises}
-\xsim@add@example{pointsums}
-\xsim@add@example{randomexercises}
-\xsim@add@example{various}
-\xsim@add@example{texsx-13635}
-\xsim@add@example{texsx-155630}
-\xsim@add@example{texsx-199360}
-\xsim@add@example{texsx-299534}
-\xsim@add@example{texsx-305110}
-\xsim@add@example{texsx-308883}
-\xsim@add@example{texsx-338165}
-\xsim@add@example{texsx-350028}
-\xsim@add@example{texsx-369065}
-\xsim@add@example{texsx-369636}
-\xsim@add@example{texsx-369803}
-\xsim@add@example{texsx-370642}
-\xsim@add@example{texsx-391530}
-\xsim@add@example{texsx-395273}
-\xsim@add@example{texwelt-6698}
-\xsim@add@example{texwelt-15093}
-\xsim@add@example{golatex-80640}
-\xsim@add@example{golatex-91339}
+\xsim@add@example{blanks}{Creat blank lines}
+\xsim@add@example{boxed-headings}{Put headings in a box}
+\xsim@add@example{code-and-output}{Create code examples}
+\xsim@add@example{collections}{How to use collections}
+\xsim@add@example{crossref}{Crossreferencing between problems and answers}
+\xsim@add@example{description-list}{Exercises as a \code{description} list}
+\xsim@add@example{different-point-types}{A custom point scheme}
+\xsim@add@example{difficulties}{Difficulty levels}
+\xsim@add@example{floating}{Floating exercises and a list of exercises}
+\xsim@add@example{grade-distribution}{Using the grade distribution macros}
+\xsim@add@example{hints}{Give hints}
+\xsim@add@example{listings}{Use listings in exercises}
+\xsim@add@example{listofexercises}{A custom list of exercises}
+\xsim@add@example{multiplechoice}{Multiplechoice exercises}
+\xsim@add@example{pointsums}{Sum of points}
+\xsim@add@example{randomexercises}{Random exercises from a collection}
+\xsim@add@example{various}{Various aspects of \xsim}
+\xsim@add@example{texsx-13635}{Exercises like theorems}
+\xsim@add@example{texsx-155630}{Random/custom order of exercises}
+\xsim@add@example{texsx-199360}{Exercises and solutions in a \pkg*{tcolorbox}}
+\xsim@add@example{texsx-299534}{Using \pkg*{pythontex}}
+\xsim@add@example{texsx-305110}{Print solutions per chapter/section}
+\xsim@add@example{texsx-308883}{Adapt how points are printed}
+\xsim@add@example{texsx-338165}{Another \pkg*{tcolorbox} example}
+\xsim@add@example{texsx-350028}{Fancy \pkg*{tcolorbox} and crossreferencing}
+\xsim@add@example{texsx-369065}{Custom layout}
+\xsim@add@example{texsx-369636}{An empty box for points}
+\xsim@add@example{texsx-369803}{Layout adjustments}
+\xsim@add@example{texsx-370642}{Minimalistic layout}
+\xsim@add@example{texsx-391530}{Exercises and sub-exercises}
+\xsim@add@example{texsx-395273}{Different aspects of exercises. Highlighted solutions}
+\xsim@add@example{texwelt-6698}{Custom list of exercises}
+\xsim@add@example{texwelt-15093}{Indicate difficulty level}
+\xsim@add@example{golatex-80640}{Different versions for students and teachers}
+\xsim@add@example{golatex-91339}{Another custom layout with rules}
 
 % ----------------------------------------------------------------------------
 

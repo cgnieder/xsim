@@ -25,14 +25,14 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\RequirePackage {expl3,xparse}
+\RequirePackage {expl3,xparse,l3keys2e}
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2019/09/30}
+\tl_const:Nn \c_xsim_date_tl                 {2019/10/03}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
 \tl_const:Nn \c_xsim_version_minor_number_tl {12}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {a}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -58,24 +58,24 @@
 \bool_new:N \g_xsim_final_bool
 \bool_new:N \g_xsim_verbose_bool
 \bool_new:N \g_xsim_clear_aux_bool
+\bool_new:N \l__xsim_write_to_file_bool
 
-\keys_define:nn {xsim}
+\keys_define:nn {xsim/package}
   {
-    final .bool_gset:N = \g_xsim_final_bool ,
-    verbose .bool_gset:N = \g_xsim_verbose_bool ,
-    clear-aux .bool_gset:N = \g_xsim_clear_aux_bool
+    final     .bool_gset:N         = \g_xsim_final_bool ,
+    verbose   .bool_gset:N         = \g_xsim_verbose_bool ,
+    clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
+    no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool
   }
 
-\DeclareOption {final}
-  { \bool_gset_true:N \g_xsim_final_bool }
+\ProcessKeysPackageOptions {xsim/package}
 
-\DeclareOption {verbose}
-  { \bool_gset_true:N \g_xsim_verbose_bool }
-
-\DeclareOption {clear-aux}
-  { \bool_gset_true:N \g_xsim_clear_aux_bool }
-
-\ProcessOptions \scan_stop:
+\prg_new_conditional:Npnn \xsim_if_write_to_files: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_write_to_file_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
 
 % --------------------------------------------------------------------------
 
