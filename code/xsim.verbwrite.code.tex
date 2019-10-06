@@ -103,9 +103,17 @@
     % see http://tex.stackexchange.com/q/9035/5049 reasons
     \use:nx
       { \__xsim_file_write_start:n {#2} }
-      { \bool_if:nF {#1} { \c__xsim_active_eol_tl } }
+      { \bool_if:nF {#1} { \exp_not:V \c__xsim_active_eol_tl } }
   }
 \cs_generate_variant:Nn \xsim_file_write_start:nn {nV}
+
+\cs_new_protected:Npn \__xsim_set_verb_catcodes:
+  {
+    \seq_map_inline:Nn \l_char_special_seq
+      { \char_set_catcode_other:N ##1 }
+    \int_step_inline:nnnn {128} {1} {255}
+      { \char_set_catcode_letter:n {##1} }
+  }
 
 \group_begin:
 \char_set_catcode_active:n {13} % ^^M (carriage return, endlinechar)
@@ -130,10 +138,7 @@
               { \l_xsim_file_begin_tl } %
           } %
       } %
-    \seq_map_inline:Nn \l_char_special_seq %
-      { \char_set_catcode_other:N ##1 } %
-    \int_step_inline:nnnn {128} {1} {255} %
-      { \char_set_catcode_letter:n {##1} } %
+    \__xsim_set_verb_catcodes: %
     \tl_set:Nx \l__xsim_tmpa_tl %
       { \c__xsim_backslash_char_tl end \cs_to_str:N \{ \@currenvir \cs_to_str:N \} } %
     \use:x %

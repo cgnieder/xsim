@@ -129,10 +129,10 @@ meaning in this manual.
     The \option{final} option automatically disables this option.  See also
     sections~\vref{sec:how-exerc-envir} and~\vref{sec:resolve-getting}.
   \opt{no-files}
-    \sinceversion{0.12a}This option prevents \xsim\ from writing the exercises
+    \sinceversion{0.13}This option prevents \xsim\ from writing the exercises
     and solutions to external files.  This will keep your working folder
     ``clean'' but will also prevent using verbatim material in exercises and
-    solutions and will probably slow processing further down.  \emph{This
+    solutions and will possibly slow processing further down.  \emph{This
       option is considered experimental.  Feedback is very welcome.}
 \end{options}
 
@@ -304,6 +304,19 @@ order to deal with this somehow \xsim\ offers the following option:
     Lorem ipsum
   \end{exercise}
 \end{sourcecode}
+
+If\sinceversion{0.13} you don't like all the external files and the problems
+which come with them \emph{and} if you don't need any verbatim or similar
+material inside the exercises and solutions then you can use the following
+package option:
+\begin{options}
+  \opt{no-files}
+    This option prevents \xsim\ from writing the exercises and solutions to
+    external files.  This will keep your working folder ``clean'' but will
+    also prevent using verbatim material in exercises and solutions and will
+    possibly slow processing further down.  \emph{This option is considered
+      experimental.  Feedback is very welcome.}
+\end{options}
 
 \begin{bewareofthedog}
   \xsim\ writes a lot of stuff to the auxfile for re-using information on

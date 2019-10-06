@@ -65,7 +65,8 @@
     final     .bool_gset:N         = \g_xsim_final_bool ,
     verbose   .bool_gset:N         = \g_xsim_verbose_bool ,
     clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
-    no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool
+    no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool ,
+    no-files  .initial:n           = false
   }
 
 \ProcessKeysPackageOptions {xsim/package}

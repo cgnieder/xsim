@@ -263,6 +263,9 @@
 }
 
 \def\libertine@figurestyle{LF}
+\RequirePackage{amsmath}
+\undef\lvert \undef\lVert
+\undef\rvert \undef\rVert
 \RequirePackage[libertine]{newtxmath}
 \def\libertine@figurestyle{OsF}
 
@@ -587,7 +590,7 @@
 \RequirePackage{bookmark}
 
 \xsimsetup{
-  clear-aux ,
+  % clear-aux ,
   path = exercises
 }
 
@@ -724,11 +727,11 @@
 }
 \newcommand*\listexamplefiles{%
   \def\xsim@example@texfile@path##1{./examples/xsim.##1.tex}%
-  \def\xsim@example@pdffile@path##1{./examples/{xsim.##1}.pdf}%
+  \def\xsim@example@pdffile@path{./examples/xsim}%
   \def\xsim@example@desc##1{\csuse{xsim@example@texfile@desc@##1}}%
   \def\xsim@example@title##1{%
-    Example~\theexamplefile\ \xsim@example@desc{##1}
-    \\Links: \xsim@example@links{##1} (\code{xsim.##1.tex})%
+    Example~\theexamplefile: \xsim@example@desc{##1}
+    \\Links: \xsim@example@links{##1}\hfill File: \code{xsim.##1.tex}%
   }%
   \def\xsim@example@bookmark##1{Example~\theexamplefile\ (\xsim@example@desc{##1})}%
   \def\do##1{%
@@ -739,9 +742,6 @@
       sidebyside gap=1em,
       lower separated=false,
       bottom=1mm,
-      % rightlower=0pt,
-      % halign lower=flush right,
-      % clip lower,
       title=\xsim@example@title{##1}%
     ]
     \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{\xsim@example@bookmark{##1}}%
@@ -749,12 +749,15 @@
     \tcblower
     \fbox{%
       \href
-        {\xsim@example@pdffile@path{##1}}
+        {\xsim@example@pdffile@path.##1.pdf}
         {%
           \includegraphics[
+            type=pdf,
+            ext=.##1.pdf,
+            read=.##1.pdf,
             pagebox=cropbox,
             viewport=4.5cm 18.6cm 8.7cm 23cm,
-            clip]{\xsim@example@pdffile@path{##1}}%
+            clip]{\xsim@example@pdffile@path}%
         }%
     }%
     \end{cnltxcode}
@@ -762,7 +765,7 @@
   \dolistloop\xsim@examplefiles
 }
 
-\xsim@add@example{blanks}{Creat blank lines}
+\xsim@add@example{blanks}{Create blank lines}
 \xsim@add@example{boxed-headings}{Put headings in a box}
 \xsim@add@example{code-and-output}{Create code examples}
 \xsim@add@example{collections}{How to use collections}
@@ -833,6 +836,7 @@
 \xsim@add@version{0.10a} {2017-10-04}
 \xsim@add@version{0.11}  {2018-02-12}
 \xsim@add@version{0.12}  {2019-09-26}
+\xsim@add@version{0.13}  {2019-10-06}
 
 % ----------------------------------------------------------------------------
 \endinput
