@@ -82,8 +82,7 @@
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_if_solution_exists:nn #1#2 {T,F,TF}
   {
-    \__xsim_set_file_signature:nnn {#1} {#2} {solution}
-    \file_if_exist:VTF \l__xsim_file_path_and_name_tl
+    \xsim_if_exists:nnnTF {#1} {#2} {solution}
       { \prg_return_true: }
       { \prg_return_false: }
   }
