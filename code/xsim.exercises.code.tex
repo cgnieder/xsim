@@ -364,7 +364,11 @@
             \xsim_get_parameter:nn {#1} {exercise-env} / name
               .code:n = \xsim_set_parameter:nnn {#1} {exercise-name} {####1} ,
             \xsim_get_parameter:nn {#1} {solution-env} / name
-              .code:n = \xsim_set_parameter:nnn {#1} {solution-name} {####1}
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / heading
+              .code:n = \xsim_set_parameter:nnn {#1} {exercise-heading} {####1} ,
+            \xsim_get_parameter:nn {#1} {solution-env} / heading
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-heading} {####1}
           }
         \xsim_new_environment:nn {#1} {exercise}
         \xsim_new_environment:nn {#1} {solution}

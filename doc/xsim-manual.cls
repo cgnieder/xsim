@@ -80,6 +80,9 @@
     ExerciseGoalValuePrint ,
     ExerciseID ,
     ExerciseParameterGet ,
+    ExerciseParameterIfSetF ,
+    ExerciseParameterIfSetT ,
+    ExerciseParameterIfSetTF ,
     ExercisePropertyGet ,
     ExercisePropertyGetAlias ,
     ExercisePropertyGlobalSave ,
@@ -87,6 +90,8 @@
     ExercisePropertyIfSetT ,
     ExercisePropertyIfSetTF ,
     ExercisePropertySave ,
+    ExerciseSetExpandedProperty ,
+    ExerciseSetProperty ,
     ExerciseTableType ,
     ExerciseTableCode ,
     ExerciseType ,
@@ -97,6 +102,7 @@
     ForEachUsedExerciseByType ,
     ForEachUsedExerciseByID ,
     GetExerciseAliasProperty ,
+    GetExerciseHeadingF ,
     GetExerciseName ,
     GetExerciseParameter ,
     GetExerciseProperty ,
@@ -153,6 +159,8 @@
     SaveExerciseProperty ,
     SetExerciseParameter ,
     SetExerciseParameters ,
+    SetExerciseProperty ,
+    SetExpandedExerciseProperty ,
     theexercise ,
     TotalExerciseGoal ,
     TotalExerciseGoals ,
@@ -693,7 +701,7 @@
 
 \cs_new_protected:Npn \xsim@example@links #1 {
   \href { \xsim@example@texfile@path {#1} } { \color{white} [\TeX] } ~
-  \href { \xsim@example@pdffile@path {#1} } { \color{white} [PDF] }
+  \href { \xsim@example@pdffile@path.#1.pdf } { \color{white} [PDF] }
   \tl_if_in:nnT {#1} {texsx}
     {
       \tl_set:Nx \l_tmpa_tl { \__xsim_get_texsx_number:w #1 \q_stop: }
@@ -765,6 +773,32 @@
   \dolistloop\xsim@examplefiles
 }
 
+% ----------------------------------------------------------------------------
+
+\newcommand*\listlayouts{%
+  \def\do##1{%
+    \begin{cnltxcode}[{title=Layout \enquote{\texttt{##1}}}]
+      \ifcsdef{xsim@layout@extra@##1}
+        {\csuse{xsim@layout@extra@##1}}
+        {}%
+      \xsimsetup{exercise/template={##1}}
+      \let\marginpar\marginnote
+      \XSIMexpandcode{%
+        \printexercise{exercise}{\GetExerciseIdForProperty{ID}{showlayout}}
+      }%
+    \end{cnltxcode}
+  }%
+  \dolistloop\xsim@layouts
+}
+
+\NewDocumentCommand\xsim@add@layout{mo}{%
+  \listadd\xsim@layouts{#1}%
+  \IfNoValueF{#2}{\csdef{xsim@layout@extra@#1}{#2}}%
+}
+
+% ----------------------------------------------------------------------------
+% examples:
+
 \xsim@add@example{blanks}{Create blank lines}
 \xsim@add@example{boxed-headings}{Put headings in a box}
 \xsim@add@example{code-and-output}{Create code examples}
@@ -798,35 +832,20 @@
 \xsim@add@example{texsx-395273}{Different aspects of exercises. Highlighted solutions}
 \xsim@add@example{texwelt-6698}{Custom list of exercises}
 \xsim@add@example{texwelt-15093}{Indicate difficulty level}
+\xsim@add@example{texwelt-23968}{Long and short solutions}
 \xsim@add@example{golatex-80640}{Different versions for students and teachers}
 \xsim@add@example{golatex-91339}{Another custom layout with rules}
 
 % ----------------------------------------------------------------------------
-
-\newcommand*\listlayouts{%
-  \def\do##1{%
-    \begin{cnltxcode}[{title=Layout \enquote{\texttt{##1}}}]
-      \ifcsdef{xsim@layout@extra@##1}
-        {\csuse{xsim@layout@extra@##1}}
-        {}%
-      \xsimsetup{exercise/template={##1}}
-      \let\marginpar\marginnote
-      \XSIMexpandcode{%
-        \printexercise{exercise}{\GetExerciseIdForProperty{ID}{showlayout}}
-      }%
-    \end{cnltxcode}
-  }%
-  \dolistloop\xsim@layouts
-}
-
-\NewDocumentCommand\xsim@add@layout{mo}{%
-  \listadd\xsim@layouts{#1}%
-  \IfNoValueF{#2}{\csdef{xsim@layout@extra@#1}{#2}}%
-}
+% layouts:
 
 \xsim@add@layout{default}
 \xsim@add@layout{runin}[\renewcommand*\theexercise{\arabic{exercise}.}]
 \xsim@add@layout{margin}[\renewcommand*\theexercise{\arabic{exercise}.}]
+\xsim@add@layout{minimal}[\renewcommand*\theexercise{\arabic{exercise}.}]
+
+% ----------------------------------------------------------------------------
+% versions:
 
 \xsim@add@version{0.8}   {2017-05-18}
 \xsim@add@version{0.8a}  {2017-05-19}
@@ -837,6 +856,7 @@
 \xsim@add@version{0.11}  {2018-02-12}
 \xsim@add@version{0.12}  {2019-09-26}
 \xsim@add@version{0.13}  {2019-10-06}
+\xsim@add@version{0.14}  {2019-10-13}
 
 % ----------------------------------------------------------------------------
 \endinput

@@ -144,14 +144,15 @@ or as global option
 \begin{sourcecode}
   \documentclass[verbose]{article}
 \end{sourcecode}
-or via the setup command:
+or via the setup\changedversion{0.13} command as options belonging to the
+\module{package}:
 \begin{commands}
   \command{xsimsetup}[\marg{options}]
     Set up \xsim's package options and all other options described at
     other places in the manual.
 \end{commands}
 
-\subsection{Setting Options}
+\subsection{Setting Options}\label{sec:setting-options}
 Apart from the package options already described in
 section~\vref{sec:package-options} \xsim\ has further options. Those can be
 \enquote{toplevel} options or options belonging to a module.
@@ -373,7 +374,8 @@ Declaring a new exercise type will also define a new command:
   There are \numberofexercises~exercises and \numberofproblems~problem in this
   manual.
 \end{example}
-\xsim's pre-defined environment pair has been defined as follows:
+\xsim's pre-defined environment pair\changedversion{0.14} has been defined as
+follows:
 \begin{sourcecode}
   \DeclareExerciseType{exercise}{
     exercise-env      = exercise ,
@@ -383,7 +385,9 @@ Declaring a new exercise type will also define a new command:
     solution-name     = \XSIMtranslate{solution} ,
     solutions-name    = \XSIMtranslate{solutions} ,
     exercise-template = default ,
-    solution-template = default
+    solution-template = default ,
+    exercise-heading  = \subsection* ,
+    solution-heading  = \subsection*
   }
 \end{sourcecode}
 
@@ -439,13 +443,26 @@ must) be set.  Here is the complete list:
     An internal parameter that is used to keep track of the number of
     exercises of a type.  This parameter cannot be set or changed by the
     user.
+  \paraval{exercise-heading}{exercise heading command}
+    The\sinceversion{0.14} command used for typesetting of the heading of
+    exercises of type \meta{type} -- used for typesetting with the command
+    \cs{GetExerciseHeadingF}.
+  \paraval{solution-heading}{solution heading command}
+    The\sinceversion{0.14} command used for typesetting of the heading of
+    solutions of type \meta{type} -- used for typesetting with the command
+    \cs{GetExerciseHeadingF}.
 \end{parameters}
 
 It is possible to change some of the parameters after an exercise type has
 been defined.  Those include \parameter{exercise-name},
 \parameter{solution-name}, \parameter{exercise-template}, and
-\parameter{solution-template}:
+\parameter{solution-template}.  It is also possible to define new parameters.
 \begin{commands}
+  \command{DeclareExerciseParameter}[\sarg\marg{parameter}]
+    Declares the new parameter \meta{parameter}.  The optional star declares a
+    fixed parameter which cannot be changed once it is set.  \emph{You
+      probably will never need this command.  Most tasks can be solved using
+      properties (see section~\vref{sec:exercise-properties}) instead.}
   \command{SetExerciseParameter}[\marg{type}\marg{parameter}\marg{value}]
     Usable to set a single parameter to a new value.
   \command{SetExerciseParameters}[\marg{type}\marg{parameters}]
@@ -483,7 +500,7 @@ Exercise like the \env{exercise} environment and possibly others defined with
       user}.
   \propval{counter-value}{integer}
     Holds the counter value of an exercise (\ie, what you usually know as
-    \cs*{arabic}\marg{counter}).  \emph{Cannot be set by the user}.
+    \cs*{the}\cs*{value}\marg{counter}).  \emph{Cannot be set by the user}.
   \propval{subtitle}{text}
     Holds the subtitle of an exercise.
   \propval{points}{number}
@@ -513,25 +530,32 @@ Exercise like the \env{exercise} environment and possibly others defined with
     usually know as \cs*{thepage}).
   \propval{page-value}{integer}
     Holds the page counter value of an exercise (\ie, what you usually know as
-    \cs*{arabic}\Marg{page}).
+    \cs*{the}\cs*{value}\Marg{page}).
   \propval{section}{text}
     Holds the section counter value representation of an exercise (\ie, what
     you usually know as \cs*{thesection}).
   \propval{section-value}{integer}
     Holds the section counter value of an exercise (\ie, what you usually know
-    as \cs*{arabic}\Marg{section}).
+    as \cs*{the}\cs*{value}\Marg{section}).
   \propval{chapter}{text}
     Holds the chapter counter value representation of an exercise (\ie, what
     you usually know as \cs*{thechapter}).  \emph{Only if a command
       \cs*{chapter} \emph{and} a counter \code{chapter} exist.}
   \propval{chapter-value}{integer}
     Holds the chapter counter value of an exercise (\ie, what you usually know
-    as \cs*{arabic}\Marg{chapter}).  \emph{Only if a command \cs*{chapter}
+    as \cs*{the}\cs*{value}\Marg{chapter}).  \emph{Only if a command \cs*{chapter}
       \emph{and} a counter \code{chapter} exist.}
   \propval{sectioning}{section numbers}
     Holds five brace groups which in turn hold the section numbers (integers)
     of the exercise in the order
     \marg{chapter}\marg{section}\marg{subsection}\marg{subsubsection}\marg{paragraph}.
+  \propval{exercise-body}{\TeX code}
+    When\sinceversion{0.13} the package option \option{no-files} is set this
+    property is defined and holds the environment body of an exercise.
+  \propval{solution-body}{\TeX code}
+    When\sinceversion{0.13} the package option \option{no-files} is set this
+    property is defined and holds the environment body of the corresponding
+    solution.
 \end{properties}
 
 Some of these \acsp*{prop} are fixed and cannot be set by the user.  Those
@@ -851,6 +875,12 @@ the environments' names are the module names for the options (here using the
   \keyval{name}{name}\Module{solution}
     An interface for \cs{SetExerciseParameter}\Marg{exercise}%
     \Marg{solution-name}\marg{name}.
+  \keyval{heading}{heading command}\Module{exercise}
+    An\sinceversion{0.14} interface for \cs{SetExerciseParameter}%
+    \Marg{exercise}\Marg{exercise-heading}\marg{heading command}.
+  \keyval{heading}{heading command}\Module{solution}
+    An\sinceversion{0.14} interface for \cs{SetExerciseParameter}%
+    \Marg{exercise}\Marg{solution-heading}\marg{heading command}.
   \keyval{pre-hook}{code}\Module{exercise}\Default
     The code for the \emph{pre exercise hook} for exercises of the type
     \enquote{exercise}.
@@ -1258,6 +1288,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \pkg{exsheets}, see section~\ref{sec:margin-template}.  Available through
     the style file \code{layouts} (see section~\vref{sec:style-files} for more
     information on style files\index{style file}).
+  \item[\code{minimal}] A\sinceversion{0.13a} minimalistic layout, see
+    section~\ref{sec:minimal-template}.  Available through the style file
+    \code{layouts} (see section~\vref{sec:style-files} for more information on
+    style files\index{style file}).
 \end{description}
 
 \collectexercises{layouts}
@@ -1388,6 +1422,11 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Retrieves the value of the parameter \parameter{exercise-name} for the
     current exercise or of the parameter \parameter{solution-name} for the
     current solution.
+  \expandable\command{GetExerciseHeadingF}[\marg{false}]
+    \sinceversion{0.14}Retrieves the value of the parameter
+    \parameter{exercise-heading} for the current exercise or of the parameter
+    \parameter{solution-heading} for the current solution.  Inserts
+    \meta{false} if the corresponding parameter has not been set.
   \expandable\command{ExerciseParameterGet}[\marg{type}\marg{parameter}]
     Retrieves the value of the parameter \meta{parameter} for the exercise of type
     \meta{type} with id \meta{id}.
@@ -1585,21 +1624,21 @@ section~\vref{sec:example-files}.
 
 \subsubsection{The \code{default} Exercise Template}\label{sec:exercise-templ-default}
 
-Below the definition of the \code{default} exercise template provided by
-\xsim\ is shown:
+Below the definition\changedversion{0.14} of the \code{default} exercise
+template provided by \xsim\ is shown:
 
 \begin{sourcecode}
   \DeclareExerciseEnvironmentTemplate{default}{%
-    \subsection*
-      {%
-        \XSIMmixedcase{\GetExerciseName}\nobreakspace
-        \GetExerciseProperty{counter}%
-        \IfInsideSolutionF
-          {%
-            \GetExercisePropertyT{subtitle}
-              { {\normalfont\itshape\PropertyValue}}%
-          }%
-      }
+    \GetExerciseHeadingF{\subsection*}%
+    {%
+      \XSIMmixedcase{\GetExerciseName}\nobreakspace
+      \GetExerciseProperty{counter}%
+      \IfInsideSolutionF
+        {%
+          \GetExercisePropertyT{subtitle}
+            { {\normalfont\itshape\PropertyValue}}%
+        }%
+    }
     \GetExercisePropertyT{points}
       {%
         \marginpar
@@ -1611,7 +1650,7 @@ Below the definition of the \code{default} exercise template provided by
           }%
       }%
   }
-  {}
+  {\par}
 \end{sourcecode}
 
 \subsubsection{A New Exercise Type Using \pkg*{tcolorbox}}
@@ -1729,6 +1768,26 @@ The following example shows how you could mimick \pkg*{exsheets}'
       }]\relax
     }
     {\endtrivlist}
+\end{sourcecode}
+
+\subsubsection{A \code{minimal} Template}
+\label{sec:minimal-template}
+
+This shows the implementation of the \code{minimal} template:
+\begin{sourcecode}
+  \DeclareExerciseEnvironmentTemplate{minimal}
+    {%
+      \textbf{\GetExerciseProperty{counter}}%
+      \IfInsideSolutionF{%
+        \GetExercisePropertyT{points}{%
+          \GetExercisePropertyT{bonus-points}{+\printgoal{\PropertyValue}}%
+          \,\IfExerciseGoalSingularTF{points}
+              {\XSIMtranslate{point}}
+              {\XSIMtranslate{points}}%
+        }%
+      }%
+    }
+    {}
 \end{sourcecode}
 
 \subsubsection{The Headings Templates}\label{sec:headings-templates}
@@ -2134,7 +2193,8 @@ called:
 \end{center}
 The first command in the file should be \cs{xsimstyle}\Marg{math-exam}.  This
 file can now be loaded into your document using
-\cs{loadxsimstyle}\Marg{math-exam}:
+\cs{loadxsimstyle}\Marg{math-exam} or by using
+\cs{xsimsetup}\Marg{load-style=math-exam}:
 \begin{sourcecode}
   \documentclass[DIV=18,parskip=half]{scrartcl}
   \usepackage[T1]{fontenc}
@@ -2168,6 +2228,11 @@ The formal description of the commands:
   \command{loadxsimstyle}[\marg{csv list of style names}]
     Load one or more styles into the document.
 \end{commands}
+\begin{options}
+  \keyval{load-style}{csv list of style names}
+    Another\sinceversion{0.14} interface for \cs{loadxsimstyle}\marg{csv list
+      of style names}.
+\end{options}
 
 \begin{bewareofthedog}
   At the moment this mechanism offers no advantages over creating a custom

@@ -42,6 +42,11 @@
 \DeclareExerciseParameter* {solution-counter}
 \DeclareExerciseParameter* {number}
 
+% these are additional - but are used in the `default' environment
+% template:
+\DeclareExerciseParameter  {exercise-heading}
+\DeclareExerciseParameter  {solution-heading}
+
 % ----------------------------------------------------------------------------
 
 % not exactly a user choice, must be present at various places:
@@ -63,7 +68,9 @@
 \DeclareExerciseProperty  {sectioning}
 
 % those are additional and wouldn't *need* to be present except for
-% pre-defined templates which make use of them:
+% pre-defined templates which make use of them (the page and page-value
+% property actually needs to be defined for xsim to be able to save the
+% corresponding values):
 \DeclareExerciseProperty  {subtitle}
 \DeclareExerciseProperty  {points}
 \DeclareExerciseProperty  {bonus-points}
@@ -166,23 +173,25 @@
   solution-name     = \XSIMtranslate {solution} ,
   solutions-name    = \XSIMtranslate {solutions} ,
   exercise-template = default ,
-  solution-template = default
+  solution-template = default ,
+  exercise-heading  = \subsection* ,
+  solution-heading  = \subsection*
 }
 
 % ----------------------------------------------------------------------------
 
 \DeclareExerciseEnvironmentTemplate {default}
   {
-    \subsection*
-      {
-        \XSIMmixedcase { \GetExerciseName } \nobreakspace
-        \GetExerciseProperty {counter}
-        \IfInsideSolutionF
-          {
-            \IfExercisePropertySetT {subtitle}
-              { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
-          }
-      }
+    \GetExerciseHeadingF { \subsection* }
+    {
+      \XSIMmixedcase { \GetExerciseName } \nobreakspace
+      \GetExerciseProperty {counter}
+      \IfInsideSolutionF
+        {
+          \IfExercisePropertySetT {subtitle}
+            { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
+        }
+    }
     \GetExercisePropertyT {points}
       {
         \marginpar
@@ -195,7 +204,7 @@
           }
       }
   }
-  {}
+  { \par }
 
 % ----------------------------------------------------------------------------
 

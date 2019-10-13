@@ -204,11 +204,17 @@
     \IfBooleanT {#1} { \ExplSyntaxOn }
   }
 
-\cs_new_protected:Npn \xsim_style_options:nn #1#2
-  { \keys_define:nn {xsim/#1} {#2} }
+% \cs_new_protected:Npn \xsim_style_options:nn #1#2
+%   { \keys_define:nn {xsim/#1} {#2} }
+
+\cs_new_protected:Npn \xsim_load_style:n #1
+  { \clist_map_inline:nn {#1} { \xsim_load_module:n {style.##1} } }
+
+\keys_define:nn {xsim}
+  { load-style .code:n = \xsim_load_style:n {#1} }
 
 \NewDocumentCommand \loadxsimstyle {m}
-  { \clist_map_inline:nn {#1} { \xsim_load_module:n {style.##1} } }
+  { \xsim_load_style:n {#1} }
 
 % --------------------------------------------------------------------------
 \file_input_stop:

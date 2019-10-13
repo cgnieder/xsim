@@ -350,9 +350,9 @@
                   \xsim_step_exercise_counter:nn {#1} {#2}
                   \xsim_set_properties:nnx {#1} {#2}
                     {
-                      page-value = \arabic{page} ,
+                      page-value = \the\value{page} ,
                       page = \thepage ,
-                      section-value = \arabic{section} ,
+                      section-value = \the\value{section} ,
                       section = \thesection
                     }
                 }
@@ -360,7 +360,7 @@
                 {
                   \xsim_set_properties:nnx {#1} {#2}
                     {
-                      chapter-value = \arabic{chapter} ,
+                      chapter-value = \the\value{chapter} ,
                       chapter = \thechapter
                     }
                 }

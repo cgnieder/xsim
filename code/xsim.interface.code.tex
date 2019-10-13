@@ -256,6 +256,21 @@
       { \GetExerciseParameter {exercise-name} }
   }
 
+\NewExpandableDocumentCommand \GetExerciseHeadingF {m}
+  {
+    \IfInsideSolutionTF
+      {
+        \IfExerciseParameterSetTF {solution-heading}
+          { \GetExerciseParameter {solution-heading} }
+          {#1}
+      }
+      {
+        \IfExerciseParameterSetTF {exercise-heading}
+          { \GetExerciseParameter {exercise-heading} }
+          {#1}
+      }
+  }
+
 \NewDocumentCommand \GetExerciseBody {m}
   { \xsim_input:oon { \ExerciseType } { \ExerciseID } {#1} }
   
@@ -632,7 +647,7 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \xsimsetup {m}
+\NewDocumentCommand \xsimsetup {+m}
   { \xsim_setup:n {#1} }
 
 % ----------------------------------------------------------------------------

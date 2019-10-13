@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM 2019/10/06 v0.13
+XSIM 2019/10/13 v0.14
 
   eXercise Sheets IMproved
 
@@ -85,6 +85,7 @@ The xsim package consists of the example files:
    xsim.texsx-395273.tex, xsim.texsx-395273.pdf
    xsim.texwelt-6698.tex, xsim.texwelt-6698.pdf
    xsim.texwelt-15093.tex, xsim.texwelt-15093.pdf
+   xsim.texwelt-23968.tex, xsim.texwelt-23968.pdf
    xsim.golatex-16824.tex, xsim.golatex-16824.pdf
    xsim.golatex-18844.tex, xsim.golatex-18844.pdf
 --------------------------------------------------------------------------
