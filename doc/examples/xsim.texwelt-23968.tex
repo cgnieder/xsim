@@ -1,0 +1,66 @@
+% http://texwelt.de/wissen/fragen/23968/
+\documentclass{article}
+\usepackage{xsim}
+
+% new property:
+\DeclareExerciseProperty{shortsolution}
+
+% new environment:
+\NewDocumentEnvironment{shortsolution}{+b}
+  {\SetExerciseProperty{shortsolution}{#1}}
+  {}
+
+% we'll use a description list for the list of short solutions:
+\newcommand\printshortsolutions{%
+  \begin{description}
+    \ForEachUsedExerciseByType{%
+      \def\ExerciseType{##1}%
+      \def\ExerciseID{##2}%
+      \GetExercisePropertyT{shortsolution}
+        {%
+          \item[Short Solution ##3]
+           ####1%
+        }%
+    }%
+  \end{description}
+}
+
+\begin{document}
+
+\section{Problems}
+% set shortsolution through option:
+\begin{exercise}[subtitle=Pythagoras]
+  This is the first problem.
+\end{exercise}
+\begin{shortsolution}
+  This is a shortsolution to the first problem.
+\end{shortsolution}
+\begin{solution}
+  This is the solution to the first problem.
+\end{solution}
+
+\begin{exercise}[subtitle=Another Problem]
+  This is the second problem.
+\end{exercise}
+\begin{solution}
+  This is the solution to the second problem.
+\end{solution}
+
+% set shortsolution with custom command:
+\begin{exercise}[subtitle=Yet Another Problem]
+  This is the third problem.
+\end{exercise}
+\begin{shortsolution}
+  This is a shortsolution to the third problem.
+\end{shortsolution}
+\begin{solution}
+  This is the solution to the third problem.
+\end{solution}
+
+\section{Shortsolutions}
+\printshortsolutions
+
+\section{Solutions}
+\printsolutions[headings=false]
+
+\end{document}
