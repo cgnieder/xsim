@@ -77,11 +77,12 @@
   {%
     \textbf{\GetExerciseProperty{counter}}%
     \IfInsideSolutionF{%
-      \GetExercisePropertyT{points}{%
+      \GetExercisePropertyT{points}{ % <<< notice the space
+        (\printgoal{\PropertyValue}%
         \GetExercisePropertyT{bonus-points}{+\printgoal{\PropertyValue}}%
         \,\IfExerciseGoalSingularTF{points}
             {\XSIMtranslate{point}}
-            {\XSIMtranslate{points}}%
+            {\XSIMtranslate{points}})%
       }%
     } % <<< notice the space
   }

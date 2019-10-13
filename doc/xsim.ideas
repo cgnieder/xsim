@@ -26,7 +26,4 @@ IDEAS:
 
 - a document class `xsim-exam' for creating exams
 - a mechanism for providing variants of an exam
-- provide a switch: either write the environments to an external file
-  or save it to an auxiliary file ? (not really sure about this one --
-  probably not)
 - some kind of `subexercise' mechanism

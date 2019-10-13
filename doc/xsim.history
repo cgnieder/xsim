@@ -115,9 +115,7 @@ HISTORY:
                      and solution names
 		   - bug fixes (issues 37, 39, 43, 47)
  v0.13  2019/10/06 - experimental package option `no-files'
- v0.14  2019/10/13 - add \par to end code of the `default' template
-                   - make the argument of \xsimsetup long
-                   - new exercise parameters `exercise-heading' and
+ v0.14  2019/10/13 - new exercise parameters `exercise-heading' and
                      `solution-heading'
 		   - new options `exercise/heading' and `solution/heading' as
                      interface for setting the new parameters
