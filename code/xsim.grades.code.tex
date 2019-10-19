@@ -100,7 +100,7 @@
 % #4: code after grade requirement if != 1
 \cs_new_protected:Npn \xsim_get_grade_goal:nnnn #1#2#3#4
   {
-    \xsim_if_goal_exists:nTF {#2}
+    \xsim_if_goal_exist:nTF {#2}
       {
         \xsim_get_grade:nnnn
           {#1}

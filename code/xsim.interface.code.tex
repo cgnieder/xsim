@@ -54,7 +54,7 @@
 % ----------------------------------------------------------------------------
 
 \ProvideDocumentCommand \IfExistSolutionTF {+m+m}
-  { \xsim_if_solution_exists:ooTF {\ExerciseType} {\ExerciseID} {#1} {#2} }
+  { \xsim_if_solution_exist:ooTF {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \IfExistSolutionT {+m}
   { \IfExistSolutionTF {#1} {} }
@@ -460,7 +460,7 @@
 
 \NewDocumentCommand \ProvideExerciseTagging {m}
   {
-    \xsim_if_tag_type_exists:nTF {#1}
+    \xsim_if_tag_type_exist:nTF {#1}
       { \msg_warning:nnn {xsim} {tag-exists} {#1} }
       { \xsim_new_tag_type:n {#1} }
   }

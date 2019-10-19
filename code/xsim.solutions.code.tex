@@ -80,14 +80,14 @@
 
 % #1: type
 % #2: id
-\prg_new_protected_conditional:Npnn \xsim_if_solution_exists:nn #1#2 {T,F,TF}
+\prg_new_protected_conditional:Npnn \xsim_if_solution_exist:nn #1#2 {T,F,TF}
   {
-    \xsim_if_exists:nnnTF {#1} {#2} {solution}
+    \xsim_if_exist:nnnTF {#1} {#2} {solution}
       { \prg_return_true: }
       { \prg_return_false: }
   }
-\cs_generate_variant:Nn \xsim_if_solution_exists:nnT  {VV,oo}
-\cs_generate_variant:Nn \xsim_if_solution_exists:nnTF {oo}
+\cs_generate_variant:Nn \xsim_if_solution_exist:nnT  {VV,oo}
+\cs_generate_variant:Nn \xsim_if_solution_exist:nnTF {oo}
 
 % #1: type
 % #2: options
@@ -236,7 +236,7 @@
 % #4: code
 \cs_new_protected:Npn \xsim_if_this_solution_do:nnnn #1#2#3#4
   {
-    \xsim_if_solution_exists:nnT {#1} {#2}
+    \xsim_if_solution_exist:nnT {#1} {#2}
       { \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4} }
   }
 
@@ -393,7 +393,7 @@
     collection/false  .code:n     =
       \__xsim_printsolutions_condition:nn  {per-collection} {false} ,
     collection/unknown .code:n    =
-      \xsim_if_collection_exists:nT {#1}
+      \xsim_if_collection_exist:nT {#1}
         {
           \__xsim_printsolutions_condition:nn  {per-collection} {true}
           \tl_set:Nn \l__xsim_printsolutions_collection_tl {#1}

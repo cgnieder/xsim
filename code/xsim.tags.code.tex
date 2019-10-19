@@ -87,7 +87,7 @@
   }
 
 % #1: tag type
-\prg_new_protected_conditional:Npnn \xsim_if_tag_type_exists:n #1 {T,F,TF}
+\prg_new_protected_conditional:Npnn \xsim_if_tag_type_exist:n #1 {T,F,TF}
   {
     \seq_if_in:NnTF \l__xsim_tag_types_seq {#1}
       { \prg_return_true: }

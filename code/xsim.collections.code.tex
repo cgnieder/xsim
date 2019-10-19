@@ -62,7 +62,7 @@
 % #1: collection name
 \cs_new_protected:Npn \xsim_new_collection:n #1
   {
-    \xsim_if_collection_exists:nTF {#1}
+    \xsim_if_collection_exist:nTF {#1}
       { \msg_error:nnn {xsim} {collection-exists} {#1} }
       {
         \xsim_verbose:n { Declaring~ new~ collection~ `#1'. }
@@ -73,7 +73,7 @@
   }
 
 % #1: collection name
-\prg_new_conditional:Npnn \xsim_if_collection_exists:n #1 {T,F,TF}
+\prg_new_conditional:Npnn \xsim_if_collection_exist:n #1 {T,F,TF}
   {
     \prop_if_in:NnTF \g__xsim_collections_prop {#1}
       { \prg_return_true: }
@@ -124,7 +124,7 @@
 \cs_new_protected:Npn \xsim_start_collection:nn #1#2
   {
     \group_begin:
-    \xsim_if_collection_exists:nF {#1}
+    \xsim_if_collection_exist:nF {#1}
       { \msg_error:nnn {xsim} {unknown-collection} {#1} }
     \xsim_activate_collection:nn {#1} {#2}
     \xsim_setup:x { \xsim_get_parameter:nn {#2} {exercise-env} /print = false }
@@ -136,7 +136,7 @@
 \cs_new_protected:Npn \xsim_start_collection:n #1
   {
     \group_begin:
-    \xsim_if_collection_exists:nF {#1}
+    \xsim_if_collection_exist:nF {#1}
       { \msg_error:nnn {xsim} {unknown-collection} {#1} }
     \xsim_activate_collection:n {#1}
     \xsim_foreach_exercise_type:n
@@ -284,7 +284,7 @@
                             \l__xsim_print_collection_choice_tl
                             {both}
                             {
-                              \xsim_if_exercise_exists:nnT {##1} {####1}
+                              \xsim_if_exercise_exist:nnT {##1} {####1}
                                 { \bool_set_true:N \l__xsim_tmpa_bool }
                             }
                             {
@@ -292,7 +292,7 @@
                                 {
                                   xsim_if_
                                   \l__xsim_print_collection_choice_tl
-                                  _exists:nnT
+                                  _exist:nnT
                                 }
                                 {##1}
                                 {####1}
@@ -315,9 +315,9 @@
                         \l__xsim_print_collection_choice_tl
                         {both}
                         {
-                          \xsim_if_exercise_exists:nnT {##1} {####1}
+                          \xsim_if_exercise_exist:nnT {##1} {####1}
                             { \xsim_insert:nnnn {##1} {####1} {} {exercise} }
-                          \xsim_if_solution_exists:nnT {##1} {####1}
+                          \xsim_if_solution_exist:nnT {##1} {####1}
                             { \xsim_insert:nnnn {##1} {####1} {} {solution} }
                         }
                         {
@@ -325,7 +325,7 @@
                             {
                               xsim_if_
                               \l__xsim_print_collection_choice_tl
-                              _exists:nnT
+                              _exist:nnT
                             }
                             {##1}
                             {####1}

@@ -127,3 +127,5 @@ HISTORY:
 		   - new template `minimal'
 		   - new option `load-style'
 		   - new example `texwelt-23968' (long and short solutions)
+ v0.14a 2019/10/19 - fix \xsim_if_exercise_exist:nnTF to obey the `no-files'
+                     option

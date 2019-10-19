@@ -109,7 +109,7 @@
 % #3: csv list of excluded ids
 \cs_new_protected:Npn \xsim_print_random_list:nnn #1#2#3
   {
-    \xsim_if_collection_exists:nTF {#1}
+    \xsim_if_collection_exist:nTF {#1}
       {
         \int_gincr:N \g__xsim_random_list_id_int
         \int_compare:nNnTF { \xsim_collection_count:n {#1} } = {0}
@@ -231,7 +231,7 @@
                   \c__xsim_print_random_exercise_tl
               }
               {
-                \xsim_if_exercise_exists:VVT
+                \xsim_if_exercise_exist:VVT
                   \l__xsim_tmpb_tl
                   \l__xsim_tmpa_tl
                   {
@@ -253,7 +253,7 @@
                   \c__xsim_print_random_solution_tl
               }
               {
-                \xsim_if_solution_exists:VVT
+                \xsim_if_solution_exist:VVT
                   \l__xsim_tmpb_tl
                   \l__xsim_tmpa_tl
                   {

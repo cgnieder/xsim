@@ -53,7 +53,7 @@
     \prop_put:cnn {l__xsim_#1_template_prop} {#2} {#3}
   }
 
-\prg_new_conditional:Npnn \xsim_if_template_exists:nn #1#2 {T,F,TF}
+\prg_new_conditional:Npnn \xsim_if_template_exist:nn #1#2 {T,F,TF}
   {
     \prop_if_in:cnTF {l__xsim_#1_template_prop} {#2}
       { \prg_return_true: }
@@ -159,7 +159,7 @@
 % #2: template name
 \cs_new_protected:Npn \xsim_use_template:nn #1#2
   {
-    \xsim_if_template_exists:nnTF {#1} {#2}
+    \xsim_if_template_exist:nnTF {#1} {#2}
       { \__xsim_get_template:nn {#1} {#2} }
       {
         \msg_warning:nnnnn {xsim} {unknown-template} {#1} {#2} {default}

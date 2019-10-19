@@ -308,7 +308,7 @@
 % #1: type
 % #2: id
 % #3: exercise|solution
-\prg_new_protected_conditional:Npnn \xsim_if_exists:nnn #1#2#3 {T,F,TF}
+\prg_new_protected_conditional:Npnn \xsim_if_exist:nnn #1#2#3 {T,F,TF}
   {
     \xsim_if_write_to_files:TF
       {
@@ -334,7 +334,7 @@
 % #4: exercise|solution
 \cs_new_protected:Npn \xsim_insert:nnnn #1#2#3#4
   {
-    \xsim_if_exists:nnnTF {#1} {#2} {#4}
+    \xsim_if_exist:nnnTF {#1} {#2} {#4}
       {
         \xsim_verbose:n
           { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
