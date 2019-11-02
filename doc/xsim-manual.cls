@@ -464,9 +464,9 @@
     tables.}
 }
 
-\newcommand*\environ{\@ifstar\environ@star\environ@nostar}
-\newcommand*\environ@star[1]{\beginenv*\Marg{\env*{#1}}}
-\newcommand*\environ@nostar[1]{\beginenv*\Marg{\env{#1}}}
+\providecommand*\environ{\@ifstar\environ@star\environ@nostar}
+\providecommand*\environ@star[1]{\beginenv*\Marg{\env*{#1}}}
+\providecommand*\environ@nostar[1]{\beginenv*\Marg{\env{#1}}}
 
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
@@ -857,6 +857,25 @@
 \xsim@add@version{0.12}  {2019-09-26}
 \xsim@add@version{0.13}  {2019-10-06}
 \xsim@add@version{0.14}  {2019-10-13}
+\xsim@add@version{0.15}  {2019-11-02}
 
 % ----------------------------------------------------------------------------
+\newrobustcmd*\xsimauxfileinfo{%
+  \xsim\ writes a lot of stuff to an auxiliary file called
+  \cs*{jobname}\code{.xsim} (or the common \cs*{jobname}\code{.aux} if you use
+  option \option{use-aux}) for re-using information on subsequent
+  compilations.  If you add exercises, change properties \etc\ it might happen
+  that wrong information is staying in the auxiliary file and is wrongly used
+  by \xsim.  In such cases deleting the auxiliary file and doing a few fresh
+  compilations may resolve your problems.
+
+  Sometimes the \emph{existence of exercise or solution files from earlier
+    compilations} may lead to wrong lists of exercises or solutions.  In such
+  cases it can be useful to delete all those files and doing a fresh
+  compilation.  It may be helpful to use a subfolder for those exernal files
+  which will make deleting them a little bit easier. (Don't forget to both
+  create the subfolder and set \option{path} accordingly then.)
+
+  Using the \option{clear-aux} option might help to reduce erroneous exercises.%
+}
 \endinput

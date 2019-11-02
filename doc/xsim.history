@@ -117,15 +117,17 @@ HISTORY:
  v0.13  2019/10/06 - experimental package option `no-files'
  v0.14  2019/10/13 - new exercise parameters `exercise-heading' and
                      `solution-heading'
-		   - new options `exercise/heading' and `solution/heading' as
+                   - new options `exercise/heading' and `solution/heading' as
                      interface for setting the new parameters
-		   - new command \GetExerciseHeadingF for using the new
+                   - new command \GetExerciseHeadingF for using the new
                      parameters in environment templates
-		   - change the environment template `default' to use the new
+                   - change the environment template `default' to use the new
                      \GetExerciseHeadingF and output a \par at the end
-		   - make argument of \xsimsetup long
-		   - new template `minimal'
-		   - new option `load-style'
-		   - new example `texwelt-23968' (long and short solutions)
+                   - make argument of \xsimsetup long
+                   - new template `minimal'
+                   - new option `load-style'
+                   - new example `texwelt-23968' (long and short solutions)
  v0.14a 2019/10/19 - fix \xsim_if_exercise_exist:nnTF to obey the `no-files'
                      option
+ v0.15  2019/11/02 - use own auxiliary file per default and add option
+                     `use-aux'

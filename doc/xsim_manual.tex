@@ -121,9 +121,9 @@ meaning in this manual.
     environment body files.
   \opt{clear-aux}
     If used every time the  total number of exercise changes \xsim\ will write
-    \emph{less} information to the auxfile on the next run and only if the
-    number of exercises stays stable between compilations the needed
-    information will be written to the auxfile. \emph{This needs more
+    \emph{less} information to the auxiliary file on the next run and only if
+    the number of exercises stays stable between compilations the needed
+    information will be written to the auxiliary file. \emph{This needs more
       compilations until everything stabilizes but should reduce the
       probability of possibly faulty exercises after changes to the document.}
     The \option{final} option automatically disables this option.  See also
@@ -134,6 +134,10 @@ meaning in this manual.
     ``clean'' but will also prevent using verbatim material in exercises and
     solutions and will possibly slow processing further down.  \emph{This
       option is considered experimental.  Feedback is very welcome.}
+  \opt{use-aux}
+    \sinceversion{0.15}With this option enabled \xsim\ will use the regular
+    auxiliary file \cs*{jobname}\code{.aux} instead of its own auxiliary file
+    \cs*{jobname}\code{.xsim}.
 \end{options}
 
 Those options are used the usual way as package option
@@ -145,24 +149,28 @@ or as global option
   \documentclass[verbose]{article}
 \end{sourcecode}
 or via the setup\changedversion{0.13} command as options belonging to the
-\module{package}:
+\module{package}, see also section~\vref{sec:setting-options}:
+\begin{sourcecode}
+  \xsimsetup{package/verbose}
+\end{sourcecode}
+
+\subsection{Setting Options}\label{sec:setting-options}
+Apart from the package options already described in
+section~\vref{sec:package-options} \xsim\ has further options.  All those
+options are set using the following command:
 \begin{commands}
   \command{xsimsetup}[\marg{options}]
     Set up \xsim's package options and all other options described at
     other places in the manual.
 \end{commands}
-
-\subsection{Setting Options}\label{sec:setting-options}
-Apart from the package options already described in
-section~\vref{sec:package-options} \xsim\ has further options. Those can be
-\enquote{toplevel} options or options belonging to a module.
+Options can be \enquote{toplevel} options or options belonging to a module:
 \begin{options}
   \keyval*{toplevel}{value}
     A toplevel option.
   \keyval*{sublevel}{value}\Module*{module}
     A sublevel option belonging to the module \module*{module}
 \end{options}
-Both kinds of options are set with \cs{xsimsetup}:
+Both kinds of options are set with the setup command:
 \begin{sourcecode}
   \xsimsetup{
     toplevel = {value} ,
@@ -196,7 +204,6 @@ also means two additional commands exist:
     The same as \cs*{SomeCommandTF} but only with the \meta{false} argument and
     no \meta{true} argument.
 \end{commands}
-
 
 \section{Exercises and Solutions}
 
@@ -291,7 +298,7 @@ order to deal with this somehow \xsim\ offers the following option:
     document uses \keyis{path}{exercises}.
   \keyval{file-extension}{string}\Default{\code{tex}}
     \sinceversion{0.10}This option let's you choose the extension of the
-    auxiliary files.
+    external files.
 \end{options}
 
 \begin{bewareofthedog}
@@ -312,35 +319,22 @@ material inside the exercises and solutions then you can use the following
 package option:
 \begin{options}
   \opt{no-files}
-    This option prevents \xsim\ from writing the exercises and solutions to
-    external files.  This will keep your working folder ``clean'' but will
-    also prevent using verbatim material in exercises and solutions and will
-    possibly slow processing further down.  \emph{This option is considered
-      experimental.  Feedback is very welcome.}
+    This package option prevents \xsim\ from writing the exercises and
+    solutions to external files.  This will keep your working folder ``clean''
+    but will also prevent using verbatim material in exercises and solutions
+    and will possibly slow processing further down.  \emph{This option is
+      considered experimental.  Feedback is very welcome.}
 \end{options}
 
 \begin{bewareofthedog}
-  \xsim\ writes a lot of stuff to the auxfile for re-using information on
-  subsequent compilations.  If you add exercises, change properties \etc\ it
-  might happen that wrong information is staying in the auxfile and is wrongly
-  used by \xsim.  In such cases deleting the auxfile and doing a few fresh
-  compilations may resolve your problems.
-
-  Sometimes the \emph{existence of exercise or solution files from earlier
-    compilations} may lead to wrong lists of exercises or solutions.  In such
-  cases it can be useful to delete all those files and doing a fresh
-  compilation.  It may be helpful to use a subfolder for those exernal files
-  which will make deleting them a little bit easier. (Don't forget to both
-  create the subfolder and set \option{path} accordingly then.)
-
-  Using the \option{clear-aux} option might help to reduce erroneous exercises.
+  \xsimauxfileinfo
 \end{bewareofthedog}
 
 \begin{bewareofthedog}
-  A lot of the lines \xsim\ writes to the auxfile and reads in a subsequent
-  run look like this:
+  A lot of the lines \xsim\ writes to the auxiliary file and reads in a
+  subsequent run look like this:
 \begin{sourcecode}
-  \XSIM {points}{exercise-2=={4}|exercise-10=={2.5}|problem-11=={5}}
+  \XSIM{points}{exercise-2=={4}|exercise-10=={2.5}|problem-11=={5}}
 \end{sourcecode}
   As you can see different entries of the various properties of exercises are
   separated with a \code{|}.  This means that you cannot use this symbol
@@ -350,7 +344,7 @@ package option:
 \begin{options}
   \keyval{split-aux-lists}{string}\Default{\code{|}}
     Set\sinceversion{0.11} the string that is used to separate the property
-    entries in the auxfile.
+    entries in the auxiliary file.
 \end{options}
 
 \section{New Exercise Types}\label{sec:new-exercise-types}
@@ -2101,25 +2095,12 @@ keep your eyes open.
 
 \subsection{\dots Resolve Getting Repeatedly Wrong Exercise Properties or
   Wrong Exercise Lists?}\label{sec:resolve-getting}
-\xsim\ writes a lot of stuff to the auxfile for re-using information on
-subsequent compilations.  If you add exercises, change properties \etc\ it
-might happen that wrong information is staying in the auxfile and is wrongly
-used by \xsim.  In such cases deleting the auxfile and doing a few fresh
-compilations may resolve your problems.
-
-Sometimes the \emph{existence of exercise or solution files from earlier
-  compilations} may lead to wrong lists of exercises or solutions.  In such
-cases it can be useful to delete all those files and doing a fresh
-compilation.  It may be helpful to use a subfolder for those exernal files
-which will make deleting them a little bit easier. (Don't forget to both
-create the subfolder and set \option{path} accordingly then.)
-
-Using the \option{clear-aux} option might help to reduce erroneous exercises.
+\xsimauxfileinfo
 
 \subsection{\dots Resolve Strange Errors After Updating?}
-\xsim\ writes a lot of stuff to the auxfile.  An update may well change how
-this is done so deleting the auxfile and doing a few fresh compilations may
-resolve your problems.
+\xsim\ writes a lot of stuff to the auxiliary file.  An update may well change
+how this is done so deleting the auxiliary file and doing a few fresh
+compilations may resolve your problems.
 
 \subsection{\code{! TeX capacity exceeded, sorry [text input levels=15].}
   Why?}

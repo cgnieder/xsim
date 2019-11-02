@@ -25,21 +25,29 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\XSIMmodule{auxfile}{writing stuff to the aux file}
+\XSIMmodule{auxfile}{writing stuff to an auxiliary file}
+
+\prg_new_conditional:Npnn \xsim_if_use_aux: {p,T,F,TF}
+  {
+    \bool_if:NTF \g_xsim_use_aux_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
 
 \cs_new_protected:Npn \xsim_write_to_aux:n #1
-  { \iow_now:Nn \@auxout {#1} }
+  {
+    \legacy_if:nT {@filesw}
+      {
+        \xsim_if_use_aux:TF
+          { \iow_now:Nn \@auxout {#1} }
+          { \iow_now:Nn \l__xsim_aux_file_iow {#1} }
+      }
+  }
 \cs_generate_variant:Nn \xsim_write_to_aux:n {x}
 
 % --------------------------------------------------------------------------
 
 \cs_new_protected:Npn \XSIM #1 { \use:c {XSIMaux#1} }
-
-\AtBeginDocument
-  {
-    \xsim_write_to_aux:x
-      { \token_to_str:N \providecommand \token_to_str:N \XSIM [1] {} }
-  }
 
 \cs_new_protected:Npn \xsim_new_aux_cs:cpn #1
   { \cs_new_protected:cpn {XSIMaux#1} }
@@ -47,8 +55,36 @@
 \cs_new_protected:Npn \xsim_add_cs_to_aux:nn #1#2
   {
     \xsim_verbose:n { Writing~ command~ \XSIM {#1}~ to~ aux~ file }
-    \xsim_write_to_aux:x { \XSIM {#1} #2 }
+    \xsim_write_to_aux:x { \token_to_str:N \XSIM {#1} #2 }
   }
+
+\AtBeginDocument
+  {
+    \iow_now:Nx \@auxout
+      { \token_to_str:N \providecommand \token_to_str:N \XSIM [1] {} }
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_if_use_aux:F
+  {
+    \iow_new:N \l__xsim_aux_file_iow
+    \AtBeginDocument
+      { \iow_open:Nn \l__xsim_aux_file_iow { \c_sys_jobname_str .xsim } }
+  }
+
+\cs_new_protected:Npn \xsim_close_aux:
+  {
+    \xsim_if_use_aux:F
+      {
+        \iow_close:N \l__xsim_aux_file_iow
+        \legacy_if:nT {@filesw}
+          { \iow_now:Nx \@auxout { \token_to_str:N \XSIM {readaux} } }
+      }
+  }
+
+\xsim_new_aux_cs:cpn {readaux}
+  { \file_input:n { \c_sys_jobname_str .xsim } }
 
 % ----------------------------------------------------------------------------
 % list for recording values that need to be written to the aux file and

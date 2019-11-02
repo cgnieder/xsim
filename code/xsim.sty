@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2019/10/19}
+\tl_const:Nn \c_xsim_date_tl                 {2019/11/02}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
-\tl_const:Nn \c_xsim_version_minor_number_tl {14}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {a}
+\tl_const:Nn \c_xsim_version_minor_number_tl {15}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -58,7 +58,9 @@
 \bool_new:N \g_xsim_final_bool
 \bool_new:N \g_xsim_verbose_bool
 \bool_new:N \g_xsim_clear_aux_bool
-\bool_new:N \l__xsim_write_to_file_bool
+\bool_new:N \g__xsim_write_to_file_bool
+\bool_new:N \g_xsim_use_aux_bool
+\bool_new:N \g__xsim_rerun_bool
 
 \keys_define:nn {xsim/package}
   {
@@ -66,7 +68,9 @@
     verbose   .bool_gset:N         = \g_xsim_verbose_bool ,
     clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
     no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool ,
-    no-files  .initial:n           = false
+    no-files  .initial:n           = false ,
+    use-aux   .bool_gset:N         = \g_xsim_use_aux_bool ,
+    use-aux   .initial:n           = false
   }
 
 \ProcessKeysPackageOptions {xsim/package}
@@ -87,11 +91,9 @@
     synchronized.
   }
 
-\msg_new:nnn {xsim} {verbose} { #1 ~(\msg_line_context:) }
+\msg_new:nnn {xsim} {verbose} { #1 ~( \msg_line_context: ) }
 
 % --------------------------------------------------------------------------
-
-\bool_new:N \g__xsim_rerun_bool
 
 \cs_new_protected:Npn \xsim_do_rerun:
   { \xsim_if_rerun:T { \msg_warning:nn {xsim} {rerun} } }
@@ -105,6 +107,10 @@
 % --------------------------------------------------------------------------
 \xsim_load_modules:n {definitions}
 
-\AtEndDocument { \xsim_do_rerun: }
-
+\AtEndDocument
+  {
+    \xsim_do_rerun:
+    \xsim_close_aux:
+  }
+  
 \file_input_stop:
