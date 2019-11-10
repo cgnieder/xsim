@@ -498,6 +498,14 @@
 
 % ----------------------------------------------------------------------------
 
+\NewDocumentCommand \XSIMatbegindocument {+m}
+  { \xsim_at_begin_document:n {#1} }
+
+\NewDocumentCommand \XSIMatenddocument {+m}
+  { \xsim_at_end_document:n {#1} }
+
+% ----------------------------------------------------------------------------
+
 \NewDocumentCommand \ForEachPrintedExerciseByType {+m}
   { \xsim_foreach_exercise_type_id:nn {print} {#1} }
 
@@ -601,11 +609,23 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \printsolution {O{}mm}
-  { \xsim_insert:nnnn {#2} {#3} {#1} {solution} }
+\NewDocumentCommand \XSIMprint {mO{}mm}
+  { \xsim_insert:nnnn {#3} {#4} {#2} {#1} }
+
+\NewDocumentCommand \XSIMxprint {mO{}mm}
+  { \xsim_insert:xxnn {#3} {#4} {#2} {#1} }
 
 \NewDocumentCommand \printexercise {O{}mm}
   { \xsim_insert:nnnn {#2} {#3} {#1} {exercise} }
+
+\NewDocumentCommand \xprintexercise {O{}mm}
+  { \xsim_insert:xxnn {#2} {#3} {#1} {exercise} }
+
+\NewDocumentCommand \printsolution {O{}mm}
+  { \xsim_insert:nnnn {#2} {#3} {#1} {solution} }
+  
+\NewDocumentCommand \xprintsolution {O{}mm}
+  { \xsim_insert:xxnn {#2} {#3} {#1} {solution} }
   
 % ----------------------------------------------------------------------------
   

@@ -94,8 +94,8 @@
           }
         \bool_if:nF {#3}
           {
-            \AtEndDocument { \xsim_update_list:n {#4} }
-            \AtBeginDocument { \__xsim_set_property_from_list:n {#4} }
+            \xsim_at_end_document:n { \xsim_update_list:n {#4} }
+            \xsim_at_begin_document:n { \__xsim_set_property_from_list:n {#4} }
           }
       }
   }

@@ -58,7 +58,7 @@
     \xsim_write_to_aux:x { \token_to_str:N \XSIM {#1} #2 }
   }
 
-\AtBeginDocument
+\xsim_at_begin_document:n
   {
     \iow_now:Nx \@auxout
       { \token_to_str:N \providecommand \token_to_str:N \XSIM [1] {} }
@@ -69,7 +69,7 @@
 \xsim_if_use_aux:F
   {
     \iow_new:N \l__xsim_aux_file_iow
-    \AtBeginDocument
+    \xsim_at_begin_document:n
       { \iow_open:Nn \l__xsim_aux_file_iow { \c_sys_jobname_str .xsim } }
   }
 
@@ -117,7 +117,7 @@
               { \prop_gput:cnn {g__xsim_list_#1_prop} {####1} {} }
           }
       }
-    \AtBeginDocument
+    \xsim_at_begin_document:n
       {
         \seq_gclear:c {g__xsim_list_recorded_#1_seq}
         \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
@@ -178,7 +178,7 @@
 \cs_new_protected:Npn \xsim_empty_lists:
   { \bool_set_true:N \l__xsim_empty_lists_bool }
 
-% update list -- should be used inside \AtEndDocument:
+% update list (should be used inside \xsim_at_end_document:n):
 % #1: name
 \cs_new_protected:Npn \xsim_update_list:n #1
   {

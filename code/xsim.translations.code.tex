@@ -65,18 +65,19 @@
       }
   }
 
-\AtBeginDocument{
-  \bool_if:NTF \l__xsim_language_auto_bool
-    {
-      \tl_set:Nx \l_xsim_language_tl
-        { \@trnslt@language{\@trnslt@current@language} }
-    }
-    {
-      \tl_set_eq:NN
-        \l_xsim_language_tl
-        \l__xsim_current_language_tl
-    }   
-}
+\xsim_at_begin_document:n
+  {
+    \bool_if:NTF \l__xsim_language_auto_bool
+      {
+        \tl_set:Nx \l_xsim_language_tl
+          { \@trnslt@language{\@trnslt@current@language} }
+      }
+      {
+        \tl_set_eq:NN
+          \l_xsim_language_tl
+          \l__xsim_current_language_tl
+      }
+  }
 
 % ----------------------------------------------------------------------------
 % #1: keyword

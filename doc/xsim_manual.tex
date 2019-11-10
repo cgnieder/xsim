@@ -911,6 +911,9 @@ existing exercise, \ie, every exercise whose external file exists.
   \command{printexercise}[\marg{type}\marg{id}]
     Inserts the exercise of type \meta{type} with the \property{id}
     \meta{id}.
+  \command{xprintexercise}[\marg{type}\marg{id}]
+    \sinceversion{0.16}The same as \cs{printexercise} but expands \meta{type}
+    and \meta{id} before it uses them.
 \end{commands}
 \begin{example}
   \printexercise{exercise}{5}
@@ -1135,6 +1138,9 @@ There are different commands for printing the solutions to exercises:
   \command{printsolution}[\oarg{options}\marg{type}\marg{id}]
     Prints the solution of the exercise of type \meta{type} with the
     \property{id} \meta{id}.
+  \command{xprintsolution}[\marg{type}\marg{id}]
+    \sinceversion{0.16}The same as \cs{printsolution} but expands \meta{type}
+    and \meta{id} before it uses them.
 \end{commands}
 
 \begin{example}
@@ -1509,7 +1515,7 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
       \item \code{\#5}: the \property{points} property of the exercise
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
-  \command{ForEachPrintedExerciseByID}
+  \command{ForEachPrintedExerciseByID}[\marg{code}]
     Loops over each \emph{printed} exercise order by the exercise id.  Inside
     \meta{code} you can refer to several properties of the corresponding
     exercise:
@@ -1521,7 +1527,7 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
       \item \code{\#5}: the \property{points} property of the exercise
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
-  \command{ForEachUsedExerciseByID}
+  \command{ForEachUsedExerciseByID}[\marg{code}]
     Loops over each \emph{used} exercise order by the exercise id.  Inside
     \meta{code} you can refer to several properties of the corresponding
     exercise:
@@ -1533,6 +1539,12 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
       \item \code{\#5}: the \property{points} property of the exercise
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
+  \command{XSIMprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
+    \sinceversion{0.16}Inserts the either the exercise or the solution of type
+    \meta{type} with the \property{id} \meta{id}.
+  \command{XSIMxprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
+    \sinceversion{0.16}The same as \cs{XSIMprint} but expands \meta{type} and
+    \meta{id} before it uses them.
   \expandable\command{XSIMtranslate}[\marg{keyword}]
     Delivers the translation of \meta{keyword} according to the current
     document language (in the meaning of a \pkg{babel}~\cite{pkg:babel} or
@@ -1562,7 +1574,13 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     \meta{code 2} is the same tokenlist.
   \expandable\command{XSIMifblank\TF}[\marg{code}\marg{true}\marg{false}]
     Checks if the full expansion\footref{fn:romannumeral} of \meta{code} is
-    blank (\ie, if it is empty or only consists of spaces). 
+    blank (\ie, if it is empty or only consists of spaces).
+  \command{XSIMatbegindocument}[\marg{code}]
+    \sinceversion{0.15a}Adds \meta{code} to \xsim's begin document hook.
+    Should be used inside style files instead of \cs*{AtBeginDocument}.
+  \command{XSIMatenddocument}[\marg{code}]
+    \sinceversion{0.15a}Adds \meta{code} to \xsim's end document hook.
+    Should be used inside style files instead of \cs*{AtEndDocument}.
 \end{commands}
 
 \subsection{Declaring Templates}

@@ -54,7 +54,7 @@
           { \fp_new:c {g__xsim_total_goal_#1_fp} }
         \fp_if_exist:cF {g__xsim_total_goal_recorded_#1_fp}
           { \fp_new:c {g__xsim_total_goal_recorded_#1_fp} }
-        \AtBeginDocument
+        \xsim_at_begin_document:n
           {
             \xsim_foreach_exercise_type:n
               {
@@ -262,7 +262,7 @@
 \xsim_new_aux_cs:cpn {totalgoal} #1#2
   { \fp_gset:cn {g__xsim_total_goal_#1_fp} {#2} }
 
-\AtBeginDocument
+\xsim_at_begin_document:n
   {
     \seq_map_inline:Nn \l__xsim_goals_seq
       {
@@ -272,7 +272,7 @@
       }
   }
   
-\AtEndDocument
+\xsim_at_end_document:n
   {
     \seq_map_inline:Nn \l__xsim_goals_seq
       {

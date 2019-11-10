@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2019/09/27]
+\ProvidesClass{xsim-manual}[2019/11/10]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -169,6 +169,10 @@
     UseExerciseTags ,
     UseExerciseTagsX ,
     UseExerciseTemplate ,
+    xprintexercise ,
+    xprintsolution ,
+    XSIMatbegindocument ,
+    XSIMatenddocument ,
     XSIMexpandcode ,
     XSIMsetfilebegin ,
     XSIMfilewritestart ,
@@ -185,10 +189,12 @@
     XSIMifeqT ,
     XSIMifeqTF ,
     XSIMmixedcase ,
+    xsimprint ,
     XSIMputright ,
     xsimsetup ,
     xsimstyle ,
-    XSIMtranslate
+    XSIMtranslate ,
+    xsimxprint
   } ,
   add-envs = { exercise , solution } ,
   add-silent-cmds = {
@@ -829,7 +835,8 @@
 \xsim@add@example{texsx-369803}{Layout adjustments}
 \xsim@add@example{texsx-370642}{Minimalistic layout}
 \xsim@add@example{texsx-391530}{Exercises and sub-exercises}
-\xsim@add@example{texsx-395273}{Different aspects of exercises. Highlighted solutions}
+\xsim@add@example{texsx-395273}{Different aspects of exercises, highlighted solutions}
+\xsim@add@example{texsx-498299}{Multiple choice questions with automated solutions}
 \xsim@add@example{texwelt-6698}{Custom list of exercises}
 \xsim@add@example{texwelt-15093}{Indicate difficulty level}
 \xsim@add@example{texwelt-23968}{Long and short solutions}
@@ -858,6 +865,7 @@
 \xsim@add@version{0.13}  {2019-10-06}
 \xsim@add@version{0.14}  {2019-10-13}
 \xsim@add@version{0.15}  {2019-11-02}
+\xsim@add@version{0.16}  {2019-11-10}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

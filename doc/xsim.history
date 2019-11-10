@@ -131,3 +131,6 @@ HISTORY:
                      option
  v0.15  2019/11/02 - use own auxiliary file per default and add option
                      `use-aux'
+ v0.16  2019/11/10 - fix issue due to usage of own auxiliary file
+                   - \XSIMatbegindocument and \XSIMatenddocument
+		   - \xprintexercise, \xprintsolution, \xsimprint, \xsimxprint

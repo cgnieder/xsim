@@ -27,6 +27,20 @@
 % ----------------------------------------------------------------------------
 \XSIMmodule{base}{basic functionality of the package}
 
+\tl_new:N \g_xsim_end_document_hook_tl
+\tl_new:N \g_xsim_begin_document_hook_tl
+
+\AtBeginDocument { \tl_use:N \g_xsim_begin_document_hook_tl }
+\AtEndDocument   { \tl_use:N \g_xsim_end_document_hook_tl }
+
+\cs_new_protected:Npn \xsim_at_begin_document:n #1
+  { \tl_gput_right:Nn \g_xsim_begin_document_hook_tl {#1} }
+
+\cs_new_protected:Npn \xsim_at_end_document:n #1
+  { \tl_gput_right:Nn \g_xsim_end_document_hook_tl {#1} }
+
+% ----------------------------------------------------------------------------
+
 \xsim_load_modules:n {auxfile}
 
 % ----------------------------------------------------------------------------

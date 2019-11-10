@@ -380,13 +380,13 @@
 
 % ----------------------------------------------------------------------------
 
-\AtBeginDocument
+\xsim_at_begin_document:n
   {
     \xsim_get_collections:
     \xsim_activate_collection:n   {all~ exercises}
   }
 
-\AtEndDocument
+\xsim_at_end_document:n
   {
     \xsim_deactivate_collection:n {all~ exercises}
     \xsim_foreach_collection:n { \xsim_update_list:n {collection:#1} }

@@ -1,0 +1,75 @@
+\documentclass{article}
+\usepackage[no-files]{xsim}
+\usepackage{tasks}
+
+\DeclareExerciseEnvironmentTemplate{item}
+  {\item[\GetExerciseProperty{counter}]}
+  {}
+
+\DeclareExerciseProperty{answer}
+
+\newcommand*\answer[1]{%
+  \XSIMexpandcode{%
+    \SetExerciseProperty{answer}
+      { (\noexpand\textit{\alph{task}}) \unexpanded{#1}}}%
+  #1%
+}
+
+\newcommand*\getanswers{%
+  \def\betweenanswers{\def\betweenanswers{\hspace{2em}}}%
+  \ForEachUsedExerciseByID{%
+    \betweenanswers##3\ExercisePropertyGet{##1}{##2}{answer}%
+  }%
+}
+
+\xsimsetup{
+  exercise/template = item,
+  exercise/the-counter = \arabic{exercise}.
+}
+
+\NewTasksEnvironment[
+  label = (\textit{\alph*}) ,
+  label-width = 14pt
+]{choice}[\choice]
+
+\newenvironment{questions}
+   {\itemize}
+   {\enditemize}
+
+\begin{document}
+
+\section{Problems}
+\begin{questions}
+  \begin{exercise}
+    What is the product of $-2$ and $3$?
+    \begin{choice}(4)
+      \choice \answer{$-6$}
+      \choice $6$
+      \choice $5$
+      \choice $-5$
+    \end{choice}
+  \end{exercise}
+  \begin{exercise}
+    What is the sum of the sides of a polygon called?
+    \begin{choice}(2)
+      \choice Leg
+      \choice \answer{Perimeter}
+      \choice Area
+      \choice Volume
+    \end{choice}
+  \end{exercise}
+  \begin{exercise}
+    What is the sum of $-2$ and $-3$?
+    \begin{choice}(4)
+      \choice $-6$
+      \choice $6$
+      \choice $5$
+      \choice \answer{$-5$}
+    \end{choice}
+  \end{exercise}
+\end{questions}
+
+\section{Answers}
+\getanswers
+
+\end{document}
