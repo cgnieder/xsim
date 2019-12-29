@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2019/11/10]
+\ProvidesClass{xsim-manual}[2019/12/29]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -258,6 +258,17 @@
 
 \newnote*\sincechanged[2]{\GetTranslation{cnltx-introduced}~#1
   (\csuse{xsimversion#1}), changed with version~#2 (\csuse{xsimversion#2})}
+
+\RequirePackage{xsimverb}
+\ExplSyntaxOn
+\tl_replace_all:Nnn \c_xsimverb_date_tl {/} {-}
+\ExplSyntaxOff
+
+\newnote*\xsimverbversion{%
+  \pkg{xsimverb} version~\csname c_xsimverb_version_tl\endcsname\
+  (\expandafter\expandafter\expandafter\DTMdate
+   \expandafter\expandafter\expandafter{\csname c_xsimverb_date_tl\endcsname})%
+}
 
 \renewcommand*\versionnoteformat{\scriptsize\sffamily\RaggedRight}
 

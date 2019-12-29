@@ -134,3 +134,4 @@ HISTORY:
  v0.16  2019/11/10 - fix issue due to usage of own auxiliary file
                    - \XSIMatbegindocument and \XSIMatenddocument
 		   - \xprintexercise, \xprintsolution, \xsimprint, \xsimxprint
+        2019/12/29 - bugfix in `xsimverb'

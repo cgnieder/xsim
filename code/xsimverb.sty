@@ -26,8 +26,7 @@
 % feel free to contact me.
 % ----------------------------------------------------------------------------
 
-\@ifpackageloaded{xsim}{\endinput}{}
-\RequirePackage {expl3,xparse,l3keys2e}
+\RequirePackage {expl3}
 \ExplSyntaxOn
 
 \tl_const:Nn \c_xsimverb_date_tl                 {2019/12/29}
@@ -51,6 +50,9 @@
   {\c_xsimverb_date_tl}
   {\c_xsimverb_version_tl}
   {\c_xsimverb_info_tl}
+
+\@ifpackageloaded {xsim} { \file_input_stop: } {}
+\RequirePackage {xparse,l3keys2e}
 
 % options, information
 

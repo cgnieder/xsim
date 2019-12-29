@@ -2274,10 +2274,11 @@ For this manual we then get the following list\footnote{Taking care of the
   }
     
 \section{The \pkg*{xsimverb} package}\label{sec:xsimverb-package}
-\xsim\ comes bundled with another package called \pkg{xsimverb}.  This package
-loads a very small subset of \xsim\ which allows to create environments which
-write their contents verbatim to external files.  It provides the following
-commands (which of course are also available in \xsim, too):
+\xsim\ comes bundled with another package called
+\pkg{xsimverb}\xsimverbversion.  This package loads a very small subset of
+\xsim\ which allows to create environments that write their contents verbatim
+to external files.  It provides the following commands (which of course are
+also available in \xsim, too):
 
 \begin{commands}
   \command{XSIMfilewritestart}[\sarg\marg{file name}]
@@ -2309,7 +2310,7 @@ commands (which of course are also available in \xsim, too):
     value is~$0$.
 \end{commands}
 
-An example of how to use those commands:
+The following code shows an example of how to use those commands:
 \begin{sourcecode}
   \documentclass{article}
   \usepackage{xsimverb,listings}
