@@ -75,13 +75,6 @@
 
 \ProcessKeysPackageOptions {xsim/package}
 
-\prg_new_conditional:Npnn \xsim_if_write_to_files: {p,T,F,TF}
-  {
-    \bool_if:NTF \g__xsim_write_to_file_bool
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
-
 % --------------------------------------------------------------------------
 
 % messages:
