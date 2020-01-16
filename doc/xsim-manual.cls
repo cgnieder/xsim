@@ -8,7 +8,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2019 Clemens Niederberger
+% Copyright 2017--2020 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -34,7 +34,7 @@
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
 \RequirePackage[utf8]{inputenc}
-\RequirePackage{xsim}
+\RequirePackage{xsim,xsimverb}
 
 \RequirePackage{geometry}
 \geometry{
