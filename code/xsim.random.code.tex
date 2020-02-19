@@ -52,7 +52,7 @@
 
 % #1: random list id
 % #2: csv list of integers
-\xsim_new_aux_cs:cpn {random} #1#2
+\xsim_new_aux_property:cpn {random} #1#2
   {
     \xsim_random_list_if_exist:nF {#1}
       { \xsim_new_random_list:n {#1} }
@@ -100,7 +100,7 @@
     \xsim_random_list_if_empty:nT {#1}
       { \xsim_set_random_list_from_seq:nN {#1} #2 }
     \xsim_verbose:n {Saving~ random~ list~ `#1'}
-    \xsim_add_cs_to_aux:nn {random}
+    \xsim_add_property_to_aux:nn {random}
       { {#1} { \xsim_use_random_list:nn {#1} {,} } }
   }
 
@@ -165,12 +165,9 @@
 % #4: seq variable
 \cs_new_protected:Npn \xsim_generate_random_list:nnnN #1#2#3#4
   {
-    \bool_if:nT
-      {
-        !\xsim_random_list_if_exist_p:n {#1}
-        ||
-        \xsim_random_list_if_empty_p:n {#1}
-      }
+    \bool_lazy_or:nnT
+      { !\xsim_random_list_if_exist_p:n {#1} }
+      { \xsim_random_list_if_empty_p:n {#1} }
       {
         \xsim_verbose:n
           {Generating~ random~ list~ `#1'~ with~ #3~ out~ of~ #2~ items}
@@ -199,12 +196,9 @@
 % #2: random list id
 \cs_new_protected:Npn \xsim_print_random_exercises:Nn #1#2
   {
-    \bool_if:nT
-      {
-        \xsim_random_list_if_exist_p:n {#2}
-        &&
-        !\xsim_random_list_if_empty_p:n {#2}
-      }
+    \bool_lazy_and:nnT
+      { \xsim_random_list_if_exist_p:n {#2} }
+      { !\xsim_random_list_if_empty_p:n {#2} }
       {
         \xsim_verbose:x
           {
@@ -220,12 +214,13 @@
               { \seq_item:Nn #1 {##1} }
             \tl_set:Nx \l__xsim_tmpb_tl
               { \xsim_get_type_for_property:nV {id} \l__xsim_tmpa_tl }
-            \bool_if:nT
+            \bool_lazy_or:nnT
               {
                 \tl_if_eq_p:NN
                   \l__xsim_print_random_choice_tl
                   \c__xsim_print_random_both_tl
-                ||
+              }
+              {
                 \tl_if_eq_p:NN
                   \l__xsim_print_random_choice_tl
                   \c__xsim_print_random_exercise_tl
@@ -242,12 +237,13 @@
                       {exercise}
                   }
               }
-            \bool_if:nT
+            \bool_lazy_or:nnT
               {
                 \tl_if_eq_p:NN
                   \l__xsim_print_random_choice_tl
                   \c__xsim_print_random_both_tl
-                ||
+              }
+              {
                 \tl_if_eq_p:NN
                   \l__xsim_print_random_choice_tl
                   \c__xsim_print_random_solution_tl

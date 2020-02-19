@@ -396,21 +396,30 @@
           { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
         \xsim_set_properties:nxx {#1} { \int_use:N \g_xsim_id_int }
           {
+            % preset options so the user doesn't has to:
             print = true ,
             use = true ,
+            % options set by the user:
             \exp_not:n {#2} ,
+            % options which need to have certain values:
             id = \int_use:N \g_xsim_id_int ,
             section-value = \arabic{section} ,
             section = \thesection ,
             page-value = \arabic{page} ,
             sectioning =
-              { \cs_if_exist:NTF \chapter { \arabic{chapter} } {0} }
+              { \cs_if_exist:NTF \thechapter { \arabic {chapter} } {0} }
               { \arabic {section} }
               { \arabic {subsection} }
               { \arabic {subsubsection} }
               { \arabic {paragraph} } ,
             page = \thepage ,
+            % this cannot be set, yet (see below):
             used = false
+          }
+        \xsim_foreach_goal:n
+          {
+            \xsim_if_property_given:nT {##1}
+              { \xsim_goal_given:n {##1} }
           }
         \xsim_if_property_exist:nT {chapter}
           {
@@ -524,7 +533,7 @@
 
 % ----------------------------------------------------------------------------
 
-\xsim_new_aux_cs:cpn {total-number} #1
+\xsim_new_aux_property:cpn {total-number} #1
   { \int_gset:Nn \g_xsim_max_id_int {#1} }
 
 \RequirePackage {etoolbox}
@@ -535,7 +544,7 @@
       {
         \tl_new:c { number of #1 s }
         \tl_set:cn { number of #1 s } {0}
-        \xsim_new_aux_cs:cpn {#1} ##1
+        \xsim_new_aux_property:cpn {#1} ##1
           { \tl_gset:cn { number of #1 s } {##1} }
       }
   }
@@ -556,10 +565,10 @@
         \int_compare:nNnF { \g_xsim_max_id_int } = { \g_xsim_id_int }
           { \xsim_empty_lists: }
       }
-    \xsim_add_cs_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
+    \xsim_add_property_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
     \xsim_foreach_exercise_type:n
       {
-        \xsim_add_cs_to_aux:nn {#1}
+        \xsim_add_property_to_aux:nn {#1}
           { { \arabic { \xsim_get_parameter:nn {#1} {number} } } }
       }
     \xsim_update_list:n {types}

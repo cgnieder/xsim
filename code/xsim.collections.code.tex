@@ -351,11 +351,9 @@
   {
     \prop_if_in:NnTF \g__xsim_collections_prop {#1}
       {
-        \bool_if:nTF
-          {
-            !\str_if_eq_p:en {#1} {all~ exercises} &&
-            \prop_item:Nn \g__xsim_collections_prop {#1}
-          }
+        \bool_lazy_and:nnTF
+          { !\str_if_eq_p:en {#1} {all~ exercises} }
+          { \prop_item:Nn \g__xsim_collections_prop {#1} }
           { \prg_return_true: }
           { \prg_return_false: }
       }

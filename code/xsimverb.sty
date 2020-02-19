@@ -59,8 +59,8 @@
 \cs_new_protected:Npn \xsimverb_bool_provide:N #1
   { \bool_if_exist:NF #1 { \bool_new:N #1 } }
   
-\xsimverb_bool_provide:N \g_xsim_final_bool
-\xsimverb_bool_provide:N \g_xsim_verbose_bool
+\xsimverb_bool_provide:N \g__xsim_final_bool
+\xsimverb_bool_provide:N \g__xsim_verbose_bool
 \xsimverb_bool_provide:N \g_xsim_clear_aux_bool
 \xsimverb_bool_provide:N \g__xsim_write_to_file_bool
 \xsimverb_bool_provide:N \g_xsim_use_aux_bool
@@ -68,8 +68,8 @@
 
 \keys_define:nn {xsimverb}
   {
-    final     .bool_gset:N         = \g_xsim_final_bool ,
-    verbose   .bool_gset:N         = \g_xsim_verbose_bool ,
+    final     .bool_gset:N         = \g__xsim_final_bool ,
+    verbose   .bool_gset:N         = \g__xsim_verbose_bool ,
     clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
     no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool ,
     no-files  .initial:n           = false ,

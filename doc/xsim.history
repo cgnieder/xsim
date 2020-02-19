@@ -136,3 +136,7 @@ HISTORY:
 		   - \xprintexercise, \xprintsolution, \xsimprint, \xsimxprint
         2019/12/29 - bugfix in `xsimverb'
  v0.16a 2020/01/16 - adapt to renaming of string case changing functions
+ v0.16b 2020/02/?? - prefer lazy boolean evaluation if possible
+                   - remove spurious \par at the beginning of typeset
+                     exercises
+		   - add `blank' option, implements issue #31

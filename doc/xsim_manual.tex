@@ -334,15 +334,15 @@ package option:
   A lot of the lines \xsim\ writes to the auxiliary file and reads in a
   subsequent run look like this:
 \begin{sourcecode}
-  \XSIM{points}{exercise-2=={4}|exercise-10=={2.5}|problem-11=={5}}
+  \XSIM{points}{exercise-2=={4}||exercise-10=={2.5}||problem-11=={5}}
 \end{sourcecode}
   As you can see different entries of the various properties of exercises are
-  separated with a \code{|}.  This means that you cannot use this symbol
-  inside properties.  This is why \xsim\ provides an option to change this
-  marker.
+  separated with \code{||}.  This means that you cannot use this symbol
+  combination inside properties.  For this reason \xsim\ provides an option to
+  change the marker.
 \end{bewareofthedog}
 \begin{options}
-  \keyval{split-aux-lists}{string}\Default{\code{|}}
+  \keyval{split-aux-lists}{string}\Default{\code{||}}
     Set\sinceversion{0.11} the string that is used to separate the property
     entries in the auxiliary file.
 \end{options}

@@ -52,11 +52,11 @@
     \file_if_exist:nTF {#2}
       { \xsim_if_final:F { \iow_open:Nn #1 {#2} } }
       {
-        % \g_xsim_final_bool is a global variable; however, if it is true and
+        % \g__xsim_final_bool is a global variable; however, if it is true and
         % the exercise file doesn't exist, yet, we need to set it locally to
         % false in order to ensure that the file is correctly written and the
         % stream closed afterwards
-        \bool_set_false:N \g_xsim_final_bool
+        \bool_set_false:N \g__xsim_final_bool
         \iow_open:Nn #1 {#2}
       }
   }

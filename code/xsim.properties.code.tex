@@ -54,6 +54,7 @@
 \seq_new:N \l__xsim_boolean_properties_seq
 \seq_new:N \l__xsim_unique_properties_seq
 \seq_new:N \l__xsim_noupdate_properties_seq
+\seq_new:N \l__xsim_given_properties_seq
 \prop_new:N \g__xsim_properties_prop
 
 % new property:
@@ -127,6 +128,13 @@
 \prg_new_conditional:Npnn \xsim_if_property_unique:n #1 {p,T,F,TF}
   {
     \seq_if_in:NnTF \l__xsim_unique_properties_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_property_given:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_given_properties_seq {#1}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -309,6 +317,7 @@
 % #3: csv list of properties
 \cs_new_protected:Npn \xsim_set_properties:nnn #1#2#3
   {
+    \seq_clear:N \l__xsim_given_properties_seq
     \clist_map_inline:nn {#3}
       {
         \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
@@ -317,6 +326,8 @@
           {#2}
           { \seq_item:Nn \l__xsim_tmpa_seq {1} }
           { \seq_item:Nn \l__xsim_tmpa_seq {2} }
+        \seq_put_right:Nx \l__xsim_given_properties_seq
+          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
       }
     \xsim_property_set_aliases:nn {#1} {#2}
   }

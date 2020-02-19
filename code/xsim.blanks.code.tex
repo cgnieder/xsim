@@ -78,8 +78,9 @@
     \mode_if_math:TF
       { \hbox_set:Nn \l__xsim_blank_box { $ \m@th \mathpalette{}{#1} $ } }
       { \hbox_set:Nn \l__xsim_blank_box {#1} }
-    \bool_if:nTF
-      { \xsim_if_inside_solution_p: || \l__xsim_fill_blank_bool }
+    \bool_lazy_or:nnTF
+      { \xsim_if_inside_solution_p: }
+      { \l__xsim_fill_blank_bool }
       { \xsim_write_cloze_filled:n {#1} }
       {
         \bool_if:NTF \l__xsim_blank_width_bool

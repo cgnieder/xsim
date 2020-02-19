@@ -280,7 +280,6 @@
       { Typesetting~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \use:x
       {
-        \exp_not:N \par
         \xsim_use_hook:nnn {#1} {#3} {pre}
         \xsim_use_template:nn
           {begin}
@@ -492,3 +491,5 @@
 
 2019/02/17 - fix issue #43
 2019/10/03 - add possibility to save environment bodies to property list
+2020/02/15 - remove spurious \par at the beginning of typeset exercises and
+             solutions

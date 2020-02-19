@@ -124,14 +124,21 @@
 
 \prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
   {
-    \bool_if:NTF \g_xsim_final_bool
+    \bool_if:NTF \g__xsim_final_bool
       { \prg_return_true: }
       { \prg_return_false: }
   }
 
 \prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
   {
-    \bool_if:NTF \g_xsim_verbose_bool
+    \bool_if:NTF \g__xsim_verbose_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_blank: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_blank_bool
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -170,8 +177,9 @@
 
 \prg_new_conditional:Npnn \xsim_if_chapter: {p,T,F,TF}
   {
-    \bool_if:nTF
-      { \cs_if_exist_p:N \chapter && \cs_if_exist_p:N \c@chapter }
+    \bool_lazy_and:nnTF
+      { \cs_if_exist_p:N \chapter }
+      { \cs_if_exist_p:N \c@chapter }
       { \prg_return_true: }
       { \prg_return_false: }
   }
