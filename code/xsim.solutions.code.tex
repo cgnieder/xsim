@@ -82,7 +82,9 @@
 % #2: id
 \prg_new_protected_conditional:Npnn \xsim_if_solution_exist:nn #1#2 {T,F,TF}
   {
-    \xsim_if_exist:nnnTF {#1} {#2} {solution}
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {solution}
+      { \xsim_if_exist:nnnTF {#1} {#2} {exercise} }
+      { \xsim_if_exist:nnnTF {#1} {#2} {solution} }
       { \prg_return_true: }
       { \prg_return_false: }
   }

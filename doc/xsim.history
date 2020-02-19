@@ -140,3 +140,4 @@ HISTORY:
                    - remove spurious \par at the beginning of typeset
                      exercises
 		   - add `blank' option, implements issue #31
+		   - add `solution' property, implements issue #33
