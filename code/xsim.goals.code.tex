@@ -110,6 +110,28 @@
 \cs_new_protected:Npn \xsim_foreach_goal:n #1
   { \seq_map_inline:Nn \l__xsim_goals_seq {#1} }
 
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_synchronize_goals:nn #1#2
+  {
+    \xsim_foreach_goal:n
+      { % \__xsim_temporary_goal_show:nnn {#1} {#2} {##1}
+        \xsim_if_property_set:nnnTF {#1} {#2} {##1}
+          {
+            \xsim_set_property:nnnx {#1} {#2} {##1}
+              { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} }
+          }
+          {
+            \fp_compare:nNnT
+              { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} } > {0}
+              {
+                \xsim_set_property:nnnx {#1} {#2} {##1}
+                  { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} }
+              }
+          }
+      }
+  }
+
 % #1: exercise type
 % #2: id
 % #3: goal
@@ -119,9 +141,10 @@
     \xsim_if_goal_exist:nT {#3}
       {
         \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
-        \fp_gadd:cn {g__xsim_goal_#3_fp} {#4}
-        \fp_gadd:cn {g__xsim_#1_goal_#3_fp} {#4}
-        \fp_add:cn {l__xsim_current_goal_#3_fp} {#4}
+        % \fp_gadd:cn {g__xsim_goal_#3_fp} {#4}
+        % \fp_gadd:cn {g__xsim_#1_goal_#3_fp} {#4}
+        % \fp_add:cn {l__xsim_current_goal_#3_fp} {#4}
+        \xsim_temporary_goal_add:nnnn {#1} {#2} {#3} {#4}
       }
   }
 \cs_generate_variant:Nn \xsim_addto_goal:nnnn {xx,nVnx}
@@ -138,6 +161,46 @@
       { \prg_return_false: }
   }
 \cs_generate_variant:Nn \xsim_if_goal_value:nnnnTF {xx}
+
+% ----------------------------------------------------------------------------
+% we need some kind of temporary variable to be able to set goals both as
+% option to exercises and within the exercise body
+
+% #1: type
+% #2: id
+% #3: goal
+\cs_new_protected:Npn \xsim_temporary_goal_new:nnn #1#2#3
+  { \fp_new:c {g__xsim_goal_#3_#1_#2_fp} }
+\cs_generate_variant:Nn \xsim_temporary_goal_new:nnn {ne}
+
+% #1: type
+% #2: id
+% #3: goal
+% #4: value
+\cs_new_protected:Npn \xsim_temporary_goal_set:nnnn #1#2#3#4
+  { \fp_gset:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
+\cs_generate_variant:Nn \xsim_temporary_goal_set:nnnn {ne}
+
+% #1: type
+% #2: id
+% #3: goal
+% #4: value
+\cs_new_protected:Npn \xsim_temporary_goal_add:nnnn #1#2#3#4
+  { \fp_gadd:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
+\cs_generate_variant:Nn \xsim_temporary_goal_add:nnnn {ne}
+
+% #1: type
+% #2: id
+% #3: goal
+\cs_new:Npn \xsim_temporary_goal_get:nnn #1#2#3
+  { \fp_to_decimal:c {g__xsim_goal_#3_#1_#2_fp} }
+\cs_generate_variant:Nn \xsim_temporary_goal_get:nnn {ne}
+
+% #1: type
+% #2: id
+% #3: goal
+\cs_new_protected:Npn \__xsim_temporary_goal_show:nnn #1#2#3
+  { \fp_show:c {g__xsim_goal_#3_#1_#2_fp} }
 
 % ----------------------------------------------------------------------------
 % a function which can be used to modify how the numbers of a goal are
@@ -317,4 +380,6 @@
 % ----------------------------------------------------------------------------
 \file_input_stop:
 
-2019/01/30 bug fix (cf. https://texwelt.de/wissen/fragen/24101/)
+2019/01/30 - bug fix (cf. https://texwelt.de/wissen/fragen/24101/)
+2020/02/20 - add temporary variables for the whole subpoint thing
+             (cf. issue #2)

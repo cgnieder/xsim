@@ -394,6 +394,19 @@
         \int_gincr:N \g_xsim_id_int
         \int_compare:nF { \g_xsim_max_id_int > \g_xsim_id_int }
           { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
+        % save the goal values from the auxiliary files:
+        \xsim_foreach_goal:n
+          {
+            \xsim_temporary_goal_new:nen {#1} { \int_use:N \g_xsim_id_int } {##1}
+            \xsim_if_property_set:nxnT {#1} { \int_use:N \g_xsim_id_int } {##1}
+              {
+                \xsim_temporary_goal_set:nenn
+                  {#1}
+                  { \int_use:N \g_xsim_id_int }
+                  {##1}
+                  { \xsim_get_property:nen {exercise} { \int_use:N \g_xsim_id_int } {##1} }
+              }
+          }
         \xsim_set_properties:nxx {#1} { \int_use:N \g_xsim_id_int }
           {
             % preset options so the user doesn't has to:
@@ -413,13 +426,37 @@
               { \arabic {subsubsection} }
               { \arabic {paragraph} } ,
             page = \thepage ,
-            % this cannot be set, yet (see below):
+            % this cannot yet be set (see below):
             used = false
           }
+        % temporary goal now: either 0 or equal the complete property
+        % property: equal to the given value
         \xsim_foreach_goal:n
           {
-            \xsim_if_property_given:nT {##1}
-              { \xsim_goal_given:n {##1} }
+            \fp_set:Nn \l__xsim_tmpa_fp
+              { \xsim_temporary_goal_get:nen {#1} { \int_use:N \g_xsim_id_int } {##1} }
+            % set temporary goal to given property:
+            \xsim_if_property_given:nTF {##1}
+              {
+                \xsim_temporary_goal_set:nenn
+                  {#1}
+                  { \int_use:N \g_xsim_id_int }
+                  {##1}
+                  { \xsim_get_property:nen {exercise} { \int_use:N \g_xsim_id_int } {##1} }
+              }
+              {
+                \xsim_temporary_goal_set:nenn
+                  {#1}
+                  { \int_use:N \g_xsim_id_int }
+                  {##1}
+                  {0}
+              }
+            % update to property to complete value:
+            \xsim_if_property_set:nxnT {#1} { \int_use:N \g_xsim_id_int } {##1}
+              {
+                \xsim_set_property:nxnx {#1} { \int_use:N \g_xsim_id_int } {##1}
+                  { \fp_to_decimal:N \l__xsim_tmpa_fp }
+              }
           }
         \xsim_if_property_exist:nT {chapter}
           {
@@ -458,7 +495,6 @@
             \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
               {use}
               {true}
-            % \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
           }
           {
             \xsim_set_properties:nVn {#1} \g_xsim_exercise_id_tl
@@ -576,3 +612,5 @@
 
 % ----------------------------------------------------------------------------  
 \file_input_stop:
+
+2020/02/20 - implement issue #2

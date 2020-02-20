@@ -141,3 +141,4 @@ HISTORY:
                      exercises
 		   - add `blank' option, implements issue #31
 		   - add `solution' property, implements issue #33
+		   - fix issue #27
