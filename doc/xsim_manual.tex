@@ -138,6 +138,9 @@ meaning in this manual.
     \sinceversion{0.15}With this option enabled \xsim\ will use the regular
     auxiliary file \cs*{jobname}\code{.aux} instead of its own auxiliary file
     \cs*{jobname}\code{.xsim}.
+  \opt{blank}
+    \sinceversion{0.17}With this option enabled \xsim\ will not define the
+    default environments \env{exercise} and \env{solution}.
 \end{options}
 
 Those options are used the usual way as package option
@@ -208,7 +211,8 @@ also means two additional commands exist:
 \section{Exercises and Solutions}
 
 The two predefined environments for exercises and solutions are the following
-ones:
+ones\footnote{When you load \xsim\ with the \option{blank} those environments
+  will \emph{not} be defined!}:
 \begin{environments}
   \environment{exercise}[\oarg{\acsp*{prop}}]
     Input and typeset an exercise.  See section~\vref{sec:exercise-properties}
@@ -515,6 +519,11 @@ Exercise like the \env{exercise} environment and possibly others defined with
     True if an exercise has been used at least once.  For an existing exercise
     this is only false for exercises that have been collected
     (\cf~section~\vref{sec:collecting-exercises}).
+  \propbool{solution}
+    \sinceversion{0.17}Holds the solution boolean of an exercise.  If this is
+    true then a solution has the same text/environment body as the
+    corresponding exercise. (This might be useful for multiple choice
+    questions for example.)
   \propval{tags}{csv list of tags}
     Holds the list of tags the exercise should be associated with.
   \propval{topics}{csv list of topics}

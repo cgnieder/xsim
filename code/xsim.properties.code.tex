@@ -132,6 +132,8 @@
       { \prg_return_false: }
   }
 
+% true if property #1 has been set in the /last/ call of
+% \xsim_set_properties:nnn
 \prg_new_conditional:Npnn \xsim_if_property_given:n #1 {p,T,F,TF}
   {
     \seq_if_in:NnTF \l__xsim_given_properties_seq {#1}

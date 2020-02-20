@@ -279,6 +279,8 @@
   {
     \xsim_if_exchange:nnnT {#1} {#2} {#3}
       { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+    \str_if_eq:nnT {#3} {exercise}
+      { \xsim_update_goals:nn {#1} {#2} }
     \xsim_verbose:n
       { Typesetting~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \use:x
@@ -377,6 +379,7 @@
                       section-value = \the\value{section} ,
                       section = \thesection
                     }
+                  \xsim_update_goals:nn {#1} {#2}
                 }
               \xsim_if_property_exist:nT {chapter}
                 {
