@@ -190,6 +190,10 @@
   }
 \cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx,xx,xxnx,nxnx}
 
+% #1: type
+% #2: id
+% #3: property
+% #4: value
 \cs_new_protected:Npn \__xsim_set_boolean_property:nnnn #1#2#3#4
   {
     \str_case_e:nnTF { \str_lowercase:n {#4} }
@@ -201,6 +205,10 @@
       { \__xsim_set_property:nnnn {#1} {#2} {#3} {false} }
   }
 
+% #1: type
+% #2: id
+% #3: property
+% #4: value
 \cs_new_protected:Npn \__xsim_set_unique_property:nnnn #1#2#3#4
   {
     \__xsim_set_property:nnnn {#1} {#2} {#3} {#4}
@@ -502,7 +510,7 @@
     \xsim_save_property:nnnN {#1} {#2} {#3} #4
     \tl_gset:NV #4 #4
   }
-\cs_generate_variant:Nn \xsim_gsave_property:nnnN {nx,xx}
+\cs_generate_variant:Nn \xsim_gsave_property:nnnN {nx,xx,nV}
 
 % ----------------------------------------------------------------------------
 \file_input_stop:

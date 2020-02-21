@@ -394,20 +394,21 @@
         \int_gincr:N \g_xsim_id_int
         \int_compare:nF { \g_xsim_max_id_int > \g_xsim_id_int }
           { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
+        \tl_gset:Nx \g_xsim_exercise_id_tl { \int_use:N \g_xsim_id_int }
         % save the goal values from the auxiliary files:
         \xsim_foreach_goal:n
           {
-            \xsim_temporary_goal_new:nen {#1} { \int_use:N \g_xsim_id_int } {##1}
-            \xsim_if_property_set:nxnT {#1} { \int_use:N \g_xsim_id_int } {##1}
+            \xsim_temporary_goal_new:nVn {#1} \g_xsim_exercise_id_tl {##1}
+            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
               {
-                \xsim_temporary_goal_set:nenn
+                \xsim_temporary_goal_set:nVnn
                   {#1}
-                  { \int_use:N \g_xsim_id_int }
+                  \g_xsim_exercise_id_tl
                   {##1}
-                  { \xsim_get_property:nen {exercise} { \int_use:N \g_xsim_id_int } {##1} }
+                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
               }
           }
-        \xsim_set_properties:nxx {#1} { \int_use:N \g_xsim_id_int }
+        \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
           {
             % preset options so the user doesn't has to:
             print = true ,
@@ -415,7 +416,7 @@
             % options set by the user:
             \exp_not:n {#2} ,
             % options which need to have certain values:
-            id = \int_use:N \g_xsim_id_int ,
+            id = \g_xsim_exercise_id_tl ,
             section-value = \arabic{section} ,
             section = \thesection ,
             page-value = \arabic{page} ,
@@ -434,41 +435,41 @@
         \xsim_foreach_goal:n
           {
             \fp_set:Nn \l__xsim_tmpa_fp
-              { \xsim_temporary_goal_get:nen {#1} { \int_use:N \g_xsim_id_int } {##1} }
+              { \xsim_temporary_goal_get:nVn {#1} \g_xsim_exercise_id_tl {##1} }
             % set temporary goal to given property:
             \xsim_if_property_given:nTF {##1}
               {
-                \xsim_temporary_goal_set:nenn
+                \xsim_temporary_goal_set:nVnn
                   {#1}
-                  { \int_use:N \g_xsim_id_int }
+                  \g_xsim_exercise_id_tl
                   {##1}
-                  { \xsim_get_property:nen {exercise} { \int_use:N \g_xsim_id_int } {##1} }
+                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
               }
               {
-                \xsim_temporary_goal_set:nenn
+                \xsim_temporary_goal_set:nVnn
                   {#1}
-                  { \int_use:N \g_xsim_id_int }
+                  \g_xsim_exercise_id_tl
                   {##1}
                   {0}
               }
             % update to property to complete value:
-            \xsim_if_property_set:nxnT {#1} { \int_use:N \g_xsim_id_int } {##1}
+            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
               {
-                \xsim_set_property:nxnx {#1} { \int_use:N \g_xsim_id_int } {##1}
+                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
                   { \fp_to_decimal:N \l__xsim_tmpa_fp }
               }
           }
         \xsim_if_property_exist:nT {chapter}
           {
-            \xsim_set_properties:nxx {#1} { \int_use:N \g_xsim_id_int }
+            \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
               {
                 chapter-value = \arabic{chapter} ,
                 chapter = \thechapter
               }
           }
-        \tl_gclear:N \g_xsim_exercise_id_tl
-        \xsim_gsave_property:nxnN {#1} { \int_use:N \g_xsim_id_int } {id}
-          \g_xsim_exercise_id_tl
+        % \tl_gclear:N \g_xsim_exercise_id_tl
+        % \xsim_gsave_property:nVnN {#1} \l__xsim_tmpa_tl {id}
+        %   \g_xsim_exercise_id_tl
         \tl_gset_eq:NN \ExerciseID \g_xsim_exercise_id_tl
         \tl_gset:Nn \ExerciseType {#1}
         \xsim_verbose:x
@@ -613,4 +614,4 @@
 % ----------------------------------------------------------------------------  
 \file_input_stop:
 
-2020/02/20 - implement issue #2
+2020/02/21 - implement issue #2

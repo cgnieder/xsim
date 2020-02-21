@@ -29,9 +29,9 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2020/02/15}
+\tl_const:Nn \c_xsim_date_tl                 {2020/02/21}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
-\tl_const:Nn \c_xsim_version_minor_number_tl {16b}
+\tl_const:Nn \c_xsim_version_minor_number_tl {17}
 \tl_const:Nn \c_xsim_version_subrelease_tl   {}
 \tl_const:Nx \c_xsim_version_number_tl
   {
@@ -78,9 +78,26 @@
 
 \ProcessKeysPackageOptions {xsim/package}
 
+\keys_define:nn {xsim/package}
+  {
+    final     .code:n = \msg_error:nnn {xsim} {load-time-option} {final} ,
+    verbose   .code:n = \msg_error:nnn {xsim} {load-time-option} {verbose} ,
+    clear-aux .code:n = \msg_error:nnn {xsim} {load-time-option} {clear-aux} ,
+    no-files  .code:n = \msg_error:nnn {xsim} {load-time-option} {no-files} ,
+    use-aux   .code:n = \msg_error:nnn {xsim} {load-time-option} {use-aux} ,
+    blank     .code:n = \msg_error:nnn {xsim} {load-time-option} {blank}
+  }
+
 % --------------------------------------------------------------------------
 
 % messages:
+\msg_new:nnn {xsim} {load-time-option}
+  {
+    `#1'~ is~ a~ load-time~ option! \\
+    You~ cannot~ set~ it~ with~ \token_to_str:N \xsimsetup ! \\
+    You~ need~ to~ use~ \token_to_str:N \usepackage [#1] {xsim} .
+  }
+
 \msg_new:nnn {xsim} {rerun}
   {
     Exercise~ properties~ may~ have~ changed.~ Rerun~ to~ get~ them~
@@ -113,3 +130,4 @@
 \file_input_stop:
   
 2020/02/20 - implement issue #31 (blank package option)
+2020/02/21 - don't allow package options to be set with \xsimsetup

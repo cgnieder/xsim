@@ -115,7 +115,7 @@
 \cs_new_protected:Npn \xsim_synchronize_goals:nn #1#2
   {
     \xsim_foreach_goal:n
-      { % \__xsim_temporary_goal_show:nnn {#1} {#2} {##1}
+      {
         \xsim_if_property_set:nnnTF {#1} {#2} {##1}
           {
             \xsim_set_property:nnnx {#1} {#2} {##1}
@@ -171,7 +171,7 @@
 % #3: goal
 \cs_new_protected:Npn \xsim_temporary_goal_new:nnn #1#2#3
   { \fp_new:c {g__xsim_goal_#3_#1_#2_fp} }
-\cs_generate_variant:Nn \xsim_temporary_goal_new:nnn {ne}
+\cs_generate_variant:Nn \xsim_temporary_goal_new:nnn {nV}
 
 % #1: type
 % #2: id
@@ -179,7 +179,7 @@
 % #4: value
 \cs_new_protected:Npn \xsim_temporary_goal_set:nnnn #1#2#3#4
   { \fp_gset:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
-\cs_generate_variant:Nn \xsim_temporary_goal_set:nnnn {ne}
+\cs_generate_variant:Nn \xsim_temporary_goal_set:nnnn {nV}
 
 % #1: type
 % #2: id
@@ -187,14 +187,14 @@
 % #4: value
 \cs_new_protected:Npn \xsim_temporary_goal_add:nnnn #1#2#3#4
   { \fp_gadd:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
-\cs_generate_variant:Nn \xsim_temporary_goal_add:nnnn {ne}
+\cs_generate_variant:Nn \xsim_temporary_goal_add:nnnn {nV}
 
 % #1: type
 % #2: id
 % #3: goal
 \cs_new:Npn \xsim_temporary_goal_get:nnn #1#2#3
   { \fp_to_decimal:c {g__xsim_goal_#3_#1_#2_fp} }
-\cs_generate_variant:Nn \xsim_temporary_goal_get:nnn {ne}
+\cs_generate_variant:Nn \xsim_temporary_goal_get:nnn {nV}
 
 % #1: type
 % #2: id

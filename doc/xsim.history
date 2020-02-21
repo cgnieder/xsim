@@ -113,7 +113,7 @@ HISTORY:
                    - \ProvideExerciseTagging
  v0.12  2019/09/30 - add parameter versions for the plural forms of exercise
                      and solution names
-		   - bug fixes (issues 37, 39, 43, 47)
+                   - bug fixes (issues 37, 39, 43, 47)
  v0.13  2019/10/06 - experimental package option `no-files'
  v0.14  2019/10/13 - new exercise parameters `exercise-heading' and
                      `solution-heading'
@@ -133,12 +133,14 @@ HISTORY:
                      `use-aux'
  v0.16  2019/11/10 - fix issue due to usage of own auxiliary file
                    - \XSIMatbegindocument and \XSIMatenddocument
-		   - \xprintexercise, \xprintsolution, \xsimprint, \xsimxprint
+                   - \xprintexercise, \xprintsolution, \xsimprint, \xsimxprint
         2019/12/29 - bugfix in `xsimverb'
  v0.16a 2020/01/16 - adapt to renaming of string case changing functions
- v0.17  2020/02/?? - prefer lazy boolean evaluation if possible
+ v0.17  2020/02/21 - prefer lazy boolean evaluation if possible
                    - remove spurious \par at the beginning of typeset
                      exercises
-		   - add `blank' option, implements issue #31
-		   - add `solution' property, implements issue #33
-		   - fix issue #27
+                   - add `blank' option, implements issue #31
+                   - add `solution' property, implements issue #33
+                   - fix issue #27
+                   - implement issue #2
+                   - don't allow package options to be set with \xsimsetup

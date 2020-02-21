@@ -1,8 +1,8 @@
-% !arara: pdflatex: { action: nonstopmode }
+% !arara: pdflatex: { interaction: nonstopmode }
 % !arara: biber
-% !arara: pdflatex: { action: nonstopmode }
-% arara: pdflatex: { action: nonstopmode }
-% arara: pdflatex: { action: nonstopmode }
+% arara: pdflatex: { interaction: nonstopmode }
+% arara: pdflatex: { interaction: nonstopmode }
+% arara: pdflatex: { interaction: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -32,8 +32,7 @@
 % ----------------------------------------------------------------------------
 \documentclass{xsim-manual}
 
-\usepackage{filecontents}
-\begin{filecontents*}{\jobname.bib}
+\begin{filecontents*}[overwrite]{\jobname.bib}
 @online{texsx:romannumeral,
   author = {Bruno Le Floch} ,
   title = {Cunning (La)TeX tricks} ,
@@ -44,7 +43,7 @@
   title = {Questions tagged `exsheets'} ,
   author = {various} ,
   url = {http://tex.stackexchange.com/questions/tagged/exsheets} ,
-  urldate = {2017-05-15}
+  urldate = {2020-02-21}
 }
 \end{filecontents*}
 \addbibresource{\jobname.bib}
@@ -76,7 +75,7 @@ using an up to date \TeX\ distribution, anyway.
 It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in June 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
-shows (119~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
+shows (143~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
 questions, bug reports and feature requests improved it over the time.  It
 still has a version number starting with a zero, though, which in my
 versioning system means I still consider it experimental.
@@ -143,19 +142,16 @@ meaning in this manual.
     default environments \env{exercise} and \env{solution}.
 \end{options}
 
-Those options are used the usual way as package option
+Those options are load-time options and are used the usual way as package
+options:
 \begin{sourcecode}
   \usepackage[verbose]{xsim}
 \end{sourcecode}
-or as global option
-\begin{sourcecode}
-  \documentclass[verbose]{article}
-\end{sourcecode}
-or via the setup\changedversion{0.13} command as options belonging to the
-\module{package}, see also section~\vref{sec:setting-options}:
-\begin{sourcecode}
-  \xsimsetup{package/verbose}
-\end{sourcecode}
+\begin{bewareofthedog}
+  Although those options technically belong to the \module{package} module
+  (see also section~\vref{sec:setting-options}) it is \emph{not} possible to
+  set them via \cs{xsimsetup}.
+\end{bewareofthedog}
 
 \subsection{Setting Options}\label{sec:setting-options}
 Apart from the package options already described in
@@ -521,7 +517,7 @@ Exercise like the \env{exercise} environment and possibly others defined with
     (\cf~section~\vref{sec:collecting-exercises}).
   \propbool{solution}
     \sinceversion{0.17}Holds the solution boolean of an exercise.  If this is
-    true then a solution has the same text/environment body as the
+    true then a solution has the same text\slash environment body as the
     corresponding exercise. (This might be useful for multiple choice
     questions for example.)
   \propval{tags}{csv list of tags}
@@ -529,25 +525,27 @@ Exercise like the \env{exercise} environment and possibly others defined with
   \propval{topics}{csv list of topics}
     Holds the list of topics the exercise should be associated with.
   \propval{page}{text}
-    Holds the page counter value representation of an exercise (\ie, what you
-    usually know as \cs*{thepage}).
+    Holds the page counter value representation of an exercise \\
+    (\ie, what you usually know as \cs*{thepage}).
   \propval{page-value}{integer}
-    Holds the page counter value of an exercise (\ie, what you usually know as
-    \cs*{the}\cs*{value}\Marg{page}).
+    Holds the page counter value of an exercise \\
+    (\ie, what you usually know as \cs*{the}\cs*{value}\Marg{page}).
   \propval{section}{text}
-    Holds the section counter value representation of an exercise (\ie, what
-    you usually know as \cs*{thesection}).
+    Holds the section counter value representation of an exercise \\
+    (\ie, what you usually know as \cs*{thesection}).
   \propval{section-value}{integer}
-    Holds the section counter value of an exercise (\ie, what you usually know
-    as \cs*{the}\cs*{value}\Marg{section}).
+    Holds the section counter value of an exercise \\
+    (\ie, what you usually know as \cs*{the}\cs*{value}\Marg{section}).
   \propval{chapter}{text}
-    Holds the chapter counter value representation of an exercise (\ie, what
-    you usually know as \cs*{thechapter}).  \emph{Only if a command
-      \cs*{chapter} \emph{and} a counter \code{chapter} exist.}
+    Holds the chapter counter value representation of an exercise \\
+    (\ie, what you usually know as \cs*{thechapter}). \\
+    \emph{Only if a command \cs*{chapter} \emph{and} a counter \code{chapter}
+      exist.}
   \propval{chapter-value}{integer}
-    Holds the chapter counter value of an exercise (\ie, what you usually know
-    as \cs*{the}\cs*{value}\Marg{chapter}).  \emph{Only if a command \cs*{chapter}
-      \emph{and} a counter \code{chapter} exist.}
+    Holds the chapter counter value of an exercise \\
+    (\ie, what you usually know as \cs*{the}\cs*{value}\Marg{chapter}). \\
+    \emph{Only if a command \cs*{chapter} \emph{and} a counter \code{chapter}
+      exist.}
   \propval{sectioning}{section numbers}
     Holds five brace groups which in turn hold the section numbers (integers)
     of the exercise in the order
@@ -603,15 +601,12 @@ others can be set using the optional argument of the exercise environment.
 
 This is better demonstrated with an example:
 \begin{example}
-  % \lipsum is provided by package `lipsum'
   \begin{exercise}
-    \lipsum[4]
     \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id} \par
     \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID} \par
     \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}
   \end{exercise}
   \begin{exercise}[ID=foo-bar]
-    \lipsum[4]
     \verb+\GetExerciseProperty{id}+: \GetExerciseProperty{id} \par
     \verb+\GetExerciseAliasProperty{ID}+: \GetExerciseAliasProperty{ID} \par
     \verb+\GetExerciseProperty{ID}+: \GetExerciseProperty{ID}

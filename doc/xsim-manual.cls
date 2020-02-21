@@ -522,6 +522,7 @@
   \XSIMfilewritestart*{\jobname.tmp}%
 }%
 \endgroup
+
 \def\xsimman@read@options@[#1]{\pgfqkeys{/cnltx}{#1}}
 
 \RenewDocumentEnvironment{sourcecode}{}
@@ -565,6 +566,7 @@
   }
   {%
     \XSIMfilewritestop
+    \catcode`\^^M=5
     \ifbool{cnltx@sidebyside}
       {%
         \cnltxcode
@@ -865,6 +867,16 @@
 % ----------------------------------------------------------------------------
 % versions:
 
+\xsim@add@version{0.0}   {2017-02-09}
+\xsim@add@version{0.1}   {2017-03-19}
+\xsim@add@version{0.2}   {2017-03-21}
+\xsim@add@version{0.4}   {2017-03-24}
+\xsim@add@version{0.5}   {2017-03-30}
+\xsim@add@version{0.5a}  {2017-04-15}
+\xsim@add@version{0.5b}  {2017-04-16}
+\xsim@add@version{0.6}   {2017-04-27}
+\xsim@add@version{0.6a}  {2017-04-28}
+\xsim@add@version{0.7}   {2017-05-09}
 \xsim@add@version{0.8}   {2017-05-18}
 \xsim@add@version{0.8a}  {2017-05-19}
 \xsim@add@version{0.8b}  {2017-05-23}
@@ -875,8 +887,11 @@
 \xsim@add@version{0.12}  {2019-09-26}
 \xsim@add@version{0.13}  {2019-10-06}
 \xsim@add@version{0.14}  {2019-10-13}
+\xsim@add@version{0.14a} {2019-10-19}
 \xsim@add@version{0.15}  {2019-11-02}
 \xsim@add@version{0.16}  {2019-11-10}
+\xsim@add@version{0.16a} {2020-01-16}
+\xsim@add@version{0.17}  {2020-02-21}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%
