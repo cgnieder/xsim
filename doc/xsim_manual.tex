@@ -1291,14 +1291,17 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     information on style files\index{style file}).
   \item[\code{margin}] A layout rather similar to the one by package
     \pkg{exsheets}, see section~\ref{sec:margin-template}.  Available through
-    the style file \code{layouts} (see section~\vref{sec:style-files} for more
-    information on style files\index{style file}).
-  \item[\code{minimal}] A\sinceversion{0.13a} minimalistic layout, see
-    section~\ref{sec:minimal-template}.  Available through the style file
-    \code{layouts} (see section~\vref{sec:style-files} for more information on
-    style files\index{style file}).
+    the style file \code{layouts}.
+  \item[\code{minimal}] A\sinceversion{0.13} minimalistic layout, see
+    section~\ref{sec:minimal-template}.  As the others inspired by an
+    \pkg{exsheets} layout. Available through the style file \code{layouts}.
+  \item[\code{inline}] A\sinceversion{0.18} minimalistic layout, the same as
+    \code{minimal} but doesn't add \cs*{par} at the beginning and end.
+    Available through the style file \code{layouts}.
+  \item[\code{centered}] A\sinceversion{0.18} layout with a centered heading.
+    Available through the style file \code{layouts}.
 \end{description}
-
+  
 \collectexercises{layouts}
 \begin{exercise}[subtitle=The Subtitle,points=2.5,ID=showlayout]
   Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit,
@@ -1855,6 +1858,7 @@ This shows the implementation of the \code{minimal} template:
 \begin{sourcecode}
   \DeclareExerciseEnvironmentTemplate{minimal}
     {%
+      \par
       \textbf{\GetExerciseProperty{counter}}%
       \IfInsideSolutionF{%
         \GetExercisePropertyT{points}{%
@@ -1865,7 +1869,7 @@ This shows the implementation of the \code{minimal} template:
         }%
       }%
     }
-    {}
+    {\par}
 \end{sourcecode}
 
 \subsubsection{The Headings Templates}\label{sec:headings-templates}
