@@ -73,7 +73,7 @@
   }
   {\endtrivlist}
 
-\DeclareExerciseEnvironmentTemplate{minimal}
+\DeclareExerciseEnvironmentTemplate{inline}
   {%
     \textbf{\GetExerciseProperty{counter}}%
     \IfInsideSolutionF{%
@@ -88,5 +88,34 @@
   }
   {}
 
+\DeclareExerciseEnvironmentTemplate{minimal}
+  {\par\UseExerciseTemplate{begin}{inline}}
+  {\UseExerciseTemplate{end}{inline}\par}
+
+\DeclareExerciseEnvironmentTemplate{centered}
+  {%
+    \par\vspace{\baselineskip}
+    \Needspace*{2\baselineskip}
+    \noindent
+    \hfil\textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
+    \GetExercisePropertyT{subtitle}{ \textit{#1}}\hfil
+    \par\noindent
+    \IfInsideSolutionF{%
+      \GetExercisePropertyT{points}{%
+        \marginpar{%
+          \printgoal{\PropertyValue}%
+          \GetExercisePropertyT{bonus-points}{+\printgoal{\PropertyValue}}%
+          \,\IfExerciseGoalSingularTF{points}
+              {\XSIMtranslate{point}}
+              {\XSIMtranslate{points}}%
+        }%
+      }%
+    }%
+  }
+  {}
+
 % ----------------------------------------------------------------------------
 \endinput
+
+2020/02/23 - added: inline, centered
+           - adapt to removed \par from the generic environments

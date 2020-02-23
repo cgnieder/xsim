@@ -1628,6 +1628,67 @@ The predefined templates are \enquote{\code{default}} and
 \enquote{\code{default*}}, see sections~\vref{sec:table-templ-default}
 and~\vref{sec:table-templ-default*}.
 
+\subsection{Create and Use \xsim\ Style Files}\label{sec:style-files}
+\index{style file|(}
+
+\xsim\changedversion{0.11} offers you the possibility to create own
+\emph{style files}.  Let's say you want to have a style called
+\code{math-exam}.  Then you need to save all necessary definitions in a file
+called:
+\begin{center}
+  \code{xsim.style.math-exam.code.tex}
+\end{center}
+The first command in the file should be \cs{xsimstyle}\Marg{math-exam}.  This
+file can now be loaded into your document using
+\cs{loadxsimstyle}\Marg{math-exam} or by using
+\cs{xsimsetup}\Marg{load-style=math-exam}:
+\begin{sourcecode}
+  \documentclass[DIV=18,parskip=half]{scrartcl}
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+
+  \usepackage[clear-aux]{xsim}
+  \loadxsimstyle{math-exam}
+
+  \title{Math Exam \#3}
+  \date{2017-03-28}
+\end{sourcecode}
+
+In this style file stuff like template and property definitions should
+happen.  This is more or less a convenient way to
+\begin{itemize}
+  \item keep the preamble \enquote{clean} and
+  \item define re-usable styles without the need of copying the document
+    preamble to another document.
+\end{itemize}
+A style file is like a package or class file, \ie, \code{@} has category
+code~11 (letter).
+
+The formal description of the commands:
+\begin{commands}
+  \command{xsimstyle}[\sarg\marg{style name}]
+    The\changedversion{0.11} first command in a \xsim\ style file called
+    \code{xsim.style.\meta{style name}.code.tex} which defines the \xsim\
+    style \meta{style name}.  The starred version activates expl3
+    syntax\footnote{Those users who want this will know what it means.  If you
+      don't know what it means you will not need it.}.
+  \command{loadxsimstyle}[\marg{csv list of style names}]
+    Load one or more styles into the document.
+\end{commands}
+\begin{options}
+  \keyval{load-style}{csv list of style names}
+    Another\sinceversion{0.14} interface for \cs{loadxsimstyle}\marg{csv list
+      of style names}.
+\end{options}
+
+\begin{bewareofthedog}
+  At the moment this mechanism offers no advantages over creating a custom
+  package or simply \cs*{input}ing a file.  Future versions might provide
+  additional features.
+\end{bewareofthedog}
+
+\index{style file|)}
+
 \subsection{Examples}\label{sec:template-examples}
 
 The repository of this package\footnote{GitHub:
@@ -2184,67 +2245,6 @@ The usage is now as follows:
     A bonus question.
   \end{exercise}
 \end{example}
-
-\subsection{\dots Create and Use \xsim\ Style Files?}\label{sec:style-files}
-\index{style file|(}
-
-\xsim\changedversion{0.11} offers you the possibility to create own
-\emph{style files}.  Let's say you want to have a style called
-\code{math-exam}.  Then you need to save all necessary definitions in a file
-called:
-\begin{center}
-  \code{xsim.style.math-exam.code.tex}
-\end{center}
-The first command in the file should be \cs{xsimstyle}\Marg{math-exam}.  This
-file can now be loaded into your document using
-\cs{loadxsimstyle}\Marg{math-exam} or by using
-\cs{xsimsetup}\Marg{load-style=math-exam}:
-\begin{sourcecode}
-  \documentclass[DIV=18,parskip=half]{scrartcl}
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-
-  \usepackage[clear-aux]{xsim}
-  \loadxsimstyle{math-exam}
-
-  \title{Math Exam \#3}
-  \date{2017-03-28}
-\end{sourcecode}
-
-In this style file stuff like template and property definitions should
-happen.  This is more or less a convenient way to
-\begin{itemize}
-  \item keep the preamble \enquote{clean} and
-  \item define re-usable styles without the need of copying the document
-    preamble to another document.
-\end{itemize}
-A style file is like a package or class file, \ie, \code{@} has category
-code~11 (letter).
-
-The formal description of the commands:
-\begin{commands}
-  \command{xsimstyle}[\sarg\marg{style name}]
-    The\changedversion{0.11} first command in a \xsim\ style file called
-    \code{xsim.style.\meta{style name}.code.tex} which defines the \xsim\
-    style \meta{style name}.  The starred version activates expl3
-    syntax\footnote{Those users who want this will know what it means.  If you
-      don't know what it means you will not need it.}.
-  \command{loadxsimstyle}[\marg{csv list of style names}]
-    Load one or more styles into the document.
-\end{commands}
-\begin{options}
-  \keyval{load-style}{csv list of style names}
-    Another\sinceversion{0.14} interface for \cs{loadxsimstyle}\marg{csv list
-      of style names}.
-\end{options}
-
-\begin{bewareofthedog}
-  At the moment this mechanism offers no advantages over creating a custom
-  package or simply \cs*{input}ing a file.  Future versions might provide
-  additional features.
-\end{bewareofthedog}
-
-\index{style file|)}
 
 \subsection{\dots Print All Solutions Grouped by Section?}
 Here is an idea how to get a list of all solutions grouped by the section the

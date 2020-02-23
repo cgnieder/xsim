@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2019/12/29]
+\ProvidesClass{xsim-manual}[2020/02/23]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -103,6 +103,7 @@
     ForEachUsedExerciseByID ,
     GetExerciseAliasProperty ,
     GetExerciseHeadingF ,
+    GetExerciseIdForProperty ,
     GetExerciseName ,
     GetExerciseParameter ,
     GetExerciseProperty ,
@@ -248,6 +249,7 @@
 
 
 \RequirePackage[en-US]{datetime2}
+\DTMlangsetup[en-US]{abbr}
 \newrobustcmd*\xsim@add@version[2]{\csdef{xsimversion#1}{\DTMdate{#2}}}
 \renewrobustcmd*\sinceversion[1]{%
   \cnltx@version@note{\GetTranslation{cnltx-introduced}~#1 (\csuse{xsimversion#1})}%
@@ -796,23 +798,24 @@
 
 \newcommand*\listlayouts{%
   \def\do##1{%
-    \begin{cnltxcode}[{title=Layout \enquote{\texttt{##1}}}]
+    \begin{cnltxcode}[{title=Layout \enquote{\texttt{##1}}\csuse{xsim@layout@description@##1}}]
       \ifcsdef{xsim@layout@extra@##1}
         {\csuse{xsim@layout@extra@##1}}
         {}%
       \xsimsetup{exercise/template={##1}}
       \let\marginpar\marginnote
-      \XSIMexpandcode{%
-        \printexercise{exercise}{\GetExerciseIdForProperty{ID}{showlayout}}
-      }%
+      \printexercise{exercise}{showlayout}%
     \end{cnltxcode}
   }%
   \dolistloop\xsim@layouts
 }
 
-\NewDocumentCommand\xsim@add@layout{mo}{%
+\NewDocumentCommand\xsim@add@layout{moo}{%
   \listadd\xsim@layouts{#1}%
   \IfNoValueF{#2}{\csdef{xsim@layout@extra@#1}{#2}}%
+  \IfNoValueTF{#3}
+    {\csdef{xsim@layout@description@#1}{}}
+    {\csdef{xsim@layout@description@#1}{ \footnotesize(#3)}}%
 }
 
 % ----------------------------------------------------------------------------
@@ -862,7 +865,10 @@
 \xsim@add@layout{default}
 \xsim@add@layout{runin}[\renewcommand*\theexercise{\arabic{exercise}.}]
 \xsim@add@layout{margin}[\renewcommand*\theexercise{\arabic{exercise}.}]
-\xsim@add@layout{minimal}[\renewcommand*\theexercise{\arabic{exercise}.}]
+\xsim@add@layout{inline}[\renewcommand*\theexercise{\arabic{exercise}.}]
+\xsim@add@layout{minimal}[\renewcommand*\theexercise{\arabic{exercise}.}][Like
+\enquote{\texttt{inline}} but as own paragraph.]
+\xsim@add@layout{centered}[\renewcommand*\theexercise{\arabic{exercise}.}]
 
 % ----------------------------------------------------------------------------
 % versions:
@@ -892,6 +898,7 @@
 \xsim@add@version{0.16}  {2019-11-10}
 \xsim@add@version{0.16a} {2020-01-16}
 \xsim@add@version{0.17}  {2020-02-21}
+\xsim@add@version{0.17a} {2020-02-23}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%
