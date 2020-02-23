@@ -553,10 +553,10 @@
   {
     \group_begin:
       \keys_set:nn {xsim/random} {#1}
-      \xsim_print_random_list:VnV
+      \xsim_print_random_list:VnN
         \l_xsim_random_collection_tl
         {#2}
-        \l_xsim_random_exclude_list_tl
+        \l_xsim_random_exclude_list_clist
     \group_end:
   }
 
@@ -610,22 +610,34 @@
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \XSIMprint {mO{}mm}
-  { \xsim_insert:nnnn {#3} {#4} {#2} {#1} }
+  { \xsim_insert:nenn {#3} { \xsim_normalize_id:n {#4} } {#2} {#1} }
 
 \NewDocumentCommand \XSIMxprint {mO{}mm}
-  { \xsim_insert:xxnn {#3} {#4} {#2} {#1} }
+  { \xsim_insert:xxnn {#3} { \xsim_normalize_id:e {#4} } {#2} {#1} }
 
 \NewDocumentCommand \printexercise {O{}mm}
-  { \xsim_insert:nnnn {#2} {#3} {#1} {exercise} }
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:nenn {#2} { \xsim_normalize_id:n {##1} } {#1} {exercise} }
+  }
 
 \NewDocumentCommand \xprintexercise {O{}mm}
-  { \xsim_insert:xxnn {#2} {#3} {#1} {exercise} }
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:xxnn {#2} { \xsim_normalize_id:e {##1} } {#1} {exercise} }
+  }
 
 \NewDocumentCommand \printsolution {O{}mm}
-  { \xsim_insert:nnnn {#2} {#3} {#1} {solution} }
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:nenn {#2} { \xsim_normalize_id:n {##1} } {#1} {solution} }
+  }
   
 \NewDocumentCommand \xprintsolution {O{}mm}
-  { \xsim_insert:xxnn {#2} {#3} {#1} {solution} }
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:xxnn {#2} { \xsim_normalize_id:e {##1} } {#1} {solution} }
+  }
   
 % ----------------------------------------------------------------------------
   

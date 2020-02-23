@@ -40,7 +40,6 @@
 \xsim_load_modules:n {collections}
 
 \tl_new:N    \l_xsim_random_collection_tl
-\tl_new:N    \l_xsim_random_exclude_list_tl
 \tl_new:N    \l__xsim_print_random_choice_tl
 \tl_const:Nn \c__xsim_print_random_both_tl {both}
 \tl_const:Nn \c__xsim_print_random_exercise_tl {exercise}
@@ -49,6 +48,7 @@
 \seq_new:N   \l__xsim_allowed_exercise_ids_seq
 \int_new:N   \g__xsim_random_list_id_int
 \bool_new:N  \l__xsim_sort_random_bool
+\clist_new:N \l_xsim_random_exclude_list_clist
 
 % #1: random list id
 % #2: csv list of integers
@@ -106,8 +106,8 @@
 
 % #1: collection
 % #2: number of items
-% #3: csv list of excluded ids
-\cs_new_protected:Npn \xsim_print_random_list:nnn #1#2#3
+% #3: clist variable of excluded ids
+\cs_new_protected:Npn \xsim_print_random_list:nnN #1#2#3
   {
     \xsim_if_collection_exist:nTF {#1}
       {
@@ -122,7 +122,7 @@
                   { \xsim_get_type_for_property:nn {id} {##1} }
                 \xsim_if_in_collection:nVnT {#1} \l__xsim_tmpa_tl {##1}
                   {
-                    \clist_if_in:nnF {#3} {##1}
+                    \clist_if_in:NnF #3 {##1}
                       { \seq_put_right:Nn \l__xsim_allowed_exercise_ids_seq {##1} }
                   }
               }
@@ -157,7 +157,7 @@
       }
       { \msg_error:nnn {xsim} {unknown-collection} {#1} }
   }
-\cs_generate_variant:Nn \xsim_print_random_list:nnn {VnV}
+\cs_generate_variant:Nn \xsim_print_random_list:nnN {V}
 
 % #1: random list id
 % #2: max number to choose from
@@ -299,8 +299,9 @@
           }
       }
     \seq_remove_duplicates:N \l__xsim_tmpa_seq
-    \tl_set:Nx \l_xsim_random_exclude_list_tl
-      { \seq_use:Nn \l__xsim_tmpa_seq {,} }
+    \clist_set_from_seq:NN
+      \l_xsim_random_exclude_list_clist
+      \l__xsim_tmpa_seq
   }
 
 % use this in the exclude list:

@@ -144,3 +144,6 @@ HISTORY:
                    - fix issue #27
                    - implement issue #2
                    - don't allow package options to be set with \xsimsetup
+ v0.17a 2020/02/23 - fix issue #56
+                   - change \printexercise and \printsolution to accept a
+                     clist of either ids or IDs (or mixed)

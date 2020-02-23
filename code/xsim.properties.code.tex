@@ -447,6 +447,16 @@
   { \prop_item:cn {g__xsim_property_#1_type_prop} {#2} }
 \cs_generate_variant:Nn \xsim_get_type_for_property:nn {nV}
 
+% #1: id or ID
+\cs_new:Npn \xsim_normalize_id:n #1
+  {
+    \tl_if_blank:eTF
+      { \xsim_get_id_for_property:nn {ID} {#1} }
+      {#1}
+      { \xsim_get_id_for_property:nn {ID} {#1} }
+  }
+\cs_generate_variant:Nn \xsim_normalize_id:n {e}
+
 \cs_new:Npn \__xsim_get_property_tmp:n #1 {}
 \cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
 

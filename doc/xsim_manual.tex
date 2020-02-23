@@ -817,7 +817,7 @@ depending on different settings:
 \end{itemize}
 
 \begin{example}
-  \begin{exercise}[print=false]
+  \begin{exercise}[print=false,ID=invisible]
     This exercise will not be printed but the exercise counter will be
     incremented nonetheless. Its solution will be printed in the list of
     solutions.
@@ -912,15 +912,16 @@ the environments' names are the module names for the options (here using the
 If you know type and \property{id} of an exercise you can (re-)insert every
 existing exercise, \ie, every exercise whose external file exists.
 \begin{commands}
-  \command{printexercise}[\marg{type}\marg{id}]
-    Inserts the exercise of type \meta{type} with the \property{id}
-    \meta{id}.
-  \command{xprintexercise}[\marg{type}\marg{id}]
-    \sinceversion{0.16}The same as \cs{printexercise} but expands \meta{type}
-    and \meta{id} before it uses them.
+  \command{printexercise}[\marg{type}\marg{csv of ids}]
+    \changedversion{0.17a}Inserts the exercise or exercises of type
+    \meta{type} with the \property{id}s or \property{ID}s given in \meta{csv
+      of ids}.
+  \command{xprintexercise}[\marg{type}\marg{csv of ids}]
+    \sincechanged{0.16}{0.17a}The same as \cs{printexercise} but expands
+    \meta{type} and the items of \meta{csv of ids} before it uses them.
 \end{commands}
 \begin{example}
-  \printexercise{exercise}{5}
+  \printexercise{exercise}{invisible}
 \end{example}
 
 \section{Collecting Exercises}\label{sec:collecting-exercises}
@@ -1544,11 +1545,11 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{XSIMprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
-    \sinceversion{0.16}Inserts the either the exercise or the solution of type
-    \meta{type} with the \property{id} \meta{id}.
+    \sincechanged{0.16}{0.17a}Inserts the either the exercise or the solution
+    of type \meta{type} with the \property{id} or \property{ID} \meta{id}.
   \command{XSIMxprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
-    \sinceversion{0.16}The same as \cs{XSIMprint} but expands \meta{type} and
-    \meta{id} before it uses them.
+    \sincechanged{0.16}{0.17a}The same as \cs{XSIMprint} but expands
+    \meta{type} and \meta{id} before it uses them.
   \expandable\command{XSIMtranslate}[\marg{keyword}]
     Delivers the translation of \meta{keyword} according to the current
     document language (in the meaning of a \pkg{babel}~\cite{pkg:babel} or

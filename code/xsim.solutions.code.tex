@@ -104,7 +104,8 @@
 
 % ----------------------------------------------------------------------------
 
-% #1: conditional base function (three n args)% #2: name
+% #1: conditional base function (three n args)
+% #2: name
 % #3: code (refer to type and id with `#1' and `#2'), #3 refers to the boolean
 %     properties use/print
 \cs_new_protected:Npn \xsim_new_solutions_condition:Nnn #1#2#3
@@ -270,7 +271,7 @@
             { \bool_set_true:N \l__xsim_tmpa_bool }
         }
         {
-          \xsim_if_solutions_do:nnn {#4} {use}
+          \xsim_if_solutions_do:nnn {#4} {used}
             { \bool_set_true:N \l__xsim_tmpa_bool }
         }
       \tl_set:Nn \ExerciseType {#4}
@@ -289,7 +290,7 @@
             { \__xsim_print_entry:nn {#4} {##2} }
         }
         {
-          \xsim_if_solutions_do:nnn {#4} {use}
+          \xsim_if_solutions_do:nnn {#4} {used}
             { \__xsim_print_entry:nn {#4} {##2} }
         }
       #3
@@ -341,9 +342,9 @@
             }
         }
         {
-          \xsim_foreach_exercise_id_type:nn {use}
+          \xsim_foreach_exercise_id_type:nn {used}
             {
-              \xsim_if_this_solution_do:nnnn {##1} {##2} {use}
+              \xsim_if_this_solution_do:nnnn {##1} {##2} {used}
                 { \xsim_insert:nnnn {##1} {##2} {} {solution} }
             }
         }
@@ -406,3 +407,5 @@
 % ----------------------------------------------------------------------------
   
 \file_input_stop:
+
+2020/02/23 - resolve bug #56
