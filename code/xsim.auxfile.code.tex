@@ -85,8 +85,14 @@
 
 \xsim_new_aux_property:cpn {readaux}
   {
-    \file_if_exist:nT { \c_sys_jobname_str .xsim }
-      { \file_input:n { \c_sys_jobname_str .xsim } }
+    % can I do this with expl3?
+    % cf. issue #60
+    \InputIfFileExists { \c_sys_jobname_str .xsim }
+      { \xsim_verbose:n { Reading~ \c_sys_jobname_str .xsim } }
+      {
+        \xsim_verbose:n { \c_sys_jobname_str .xsim~ not~ found.}
+        \xsim_rerun:
+      }
   }
 
 % ----------------------------------------------------------------------------
