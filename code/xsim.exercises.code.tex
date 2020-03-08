@@ -42,6 +42,7 @@
 \tl_new:N   \l_xsim_current_id_tl
 \tl_new:N   \g_xsim_exercise_id_tl
 \tl_new:N   \ExerciseID
+\tl_new:N   \ExerciseType
 \bool_new:N \l____xsim_print_bool
 
 % ----------------------------------------------------------------------------
@@ -320,22 +321,22 @@
         \xsim_if_parameter_set:nnF {#1} {exercises-name}
           {
             \xsim_set_parameters:nn {#1}
-              { exercises-name =  \xsim_get_parameter:nn {#1} {exercise-name} s }
+              { exercises-name = \xsim_get_parameter:nn {#1} {exercise-name} s }
           }
         \xsim_if_parameter_set:nnF {#1} {solutions-name}
           {
             \xsim_set_parameters:nn {#1}
-              { solutions-name =  \xsim_get_parameter:nn {#1} {solution-name} s }
+              { solutions-name = \xsim_get_parameter:nn {#1} {solution-name} s }
           }
         \xsim_if_parameter_set:nnF {#1} {counter}
           {
             \xsim_set_parameters:nx {#1}
-              { counter =  \xsim_get_parameter:nn {#1} {exercise-env} }
+              { counter = \xsim_get_parameter:nn {#1} {exercise-env} }
           }
         \xsim_if_parameter_set:nnF {#1} {solution-counter}
           {
             \xsim_set_parameters:nx {#1}
-              { solution-counter =  \xsim_get_parameter:nn {#1} {solution-env} }
+              { solution-counter = \xsim_get_parameter:nn {#1} {solution-env} }
           }
         \xsim_define_counters:n {#1}
         \xsim_verbose:n { Defining~ options~ for~ new~ exercise~ type~ `#1' }
@@ -363,8 +364,12 @@
               .code:n = \xsim_set_parameter:nnn {#1} {solution-template} {####1} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / name
               .code:n = \xsim_set_parameter:nnn {#1} {exercise-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} s / name
+              .code:n = \xsim_set_parameter:nnn {#1} {exercises-name} {####1} ,
             \xsim_get_parameter:nn {#1} {solution-env} / name
               .code:n = \xsim_set_parameter:nnn {#1} {solution-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {solution-env} s / name
+              .code:n = \xsim_set_parameter:nnn {#1} {solutions-name} {####1} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / heading
               .code:n = \xsim_set_parameter:nnn {#1} {exercise-heading} {####1} ,
             \xsim_get_parameter:nn {#1} {solution-env} / heading
@@ -395,6 +400,7 @@
         \int_compare:nF { \g_xsim_max_id_int > \g_xsim_id_int }
           { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
         \tl_gset:Nx \g_xsim_exercise_id_tl { \int_use:N \g_xsim_id_int }
+        \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
         % save the goal values from the auxiliary files:
         \xsim_foreach_goal:n
           {
@@ -467,11 +473,8 @@
                 chapter = \thechapter
               }
           }
-        % \tl_gclear:N \g_xsim_exercise_id_tl
-        % \xsim_gsave_property:nVnN {#1} \l__xsim_tmpa_tl {id}
-        %   \g_xsim_exercise_id_tl
-        \tl_gset_eq:NN \ExerciseID \g_xsim_exercise_id_tl
-        \tl_gset:Nn \ExerciseType {#1}
+        \tl_set_eq:NN \ExerciseID \g_xsim_exercise_id_tl
+        \tl_set:Nn \ExerciseType {#1}
         \xsim_verbose:x
           {
             Starting~ exercise~ type~ `#1' with~ id~
@@ -505,7 +508,11 @@
       }
   }
 
-\cs_new_protected:Npn \xsim_stop_exercise:n #1 {}
+\cs_new_protected:Npn \xsim_stop_exercise:n #1
+  {
+    \xsim_if_insert_mode:F
+      { \tl_gset_eq:NN \g_xsim_exercise_id_tl \ExerciseID }
+  }
 
 % ----------------------------------------------------------------------------
 % #1: type
@@ -615,3 +622,5 @@
 \file_input_stop:
 
 2020/02/21 - implement issue #2
+2020/03/01 - add options `<ex-env>s/name` and `<sol-env>/name`
+2020/03/07 - set \ExerciseID and \ExerciseType only locally

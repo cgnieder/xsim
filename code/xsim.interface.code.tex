@@ -332,8 +332,8 @@
 \NewExpandableDocumentCommand \XSIMtranslate {m}
   { \xsim_translate:n {#1} }
 
-\NewDocumentCommand \XSIMexpandcode {+m}
-  { \use:x {#1} }
+\NewExpandableDocumentCommand \XSIMexpandcode {+m}
+  { \use:e {#1} }
 
 \NewExpandableDocumentCommand \XSIMmixedcase {m}
   { \tl_mixed_case:f {#1} }

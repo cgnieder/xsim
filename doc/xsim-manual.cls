@@ -595,6 +595,90 @@
         \cnltx@after@example@hook
       }%
     \endcnltxcode
+  }\newcommand*\xsimman@readoptions[1]{%
+  \catcode`\^^M=13
+  \xsimman@read@options{#1}%
+}
+
+\begingroup
+\catcode`\^^M=13
+\gdef\xsimman@read@options#1#2^^M{%
+  \ifblank{#2}{}{\xsimman@read@options@#2}%
+  #1%
+  \XSIMfilewritestart*{\jobname.tmp}%
+}%
+\endgroup
+
+\def\xsimman@read@options@[#1]{\pgfqkeys{/cnltx}{#1}}
+
+\RenewDocumentEnvironment{sourcecode}{}
+  {%
+    \xsimman@readoptions{%
+      \setlength\cnltx@sidebysidewidth
+        {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
+      \XSIMexpandcode{%
+        \noexpand\lstset{
+          style=cnltx,
+          \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
+            {linewidth=\cnltx@sidebysidewidth,}{}%
+          \expandonce\cnltx@local@listings@options
+        }%
+      }%
+      \XSIMgobblechars{2}%
+    }%
+  }
+  {%
+    \XSIMfilewritestop
+    \cnltxcode[breakable]%
+    \lstinputlisting[style=cnltx]{\jobname.tmp}%
+    \endcnltxcode
+  }
+
+\RenewDocumentEnvironment{example}{}
+  {%
+    \xsimman@readoptions{%
+      \setlength\cnltx@sidebysidewidth
+        {\dimexpr .45\columnwidth -\lst@xleftmargin -\lst@xrightmargin\relax}%
+      \XSIMexpandcode{%
+        \noexpand\lstset{
+          style=cnltx,
+          \ifboolexpe{ bool {cnltx@sidebyside} and not bool {cnltx@codeonly} }
+            {linewidth=\cnltx@sidebysidewidth,}{}%
+          \expandonce\cnltx@local@listings@options
+        }%
+      }%
+      \XSIMgobblechars{2}%
+    }%
+  }
+  {%
+    \XSIMfilewritestop
+    \catcode`\^^M=5
+    \ifbool{cnltx@sidebyside}
+      {%
+        \cnltxcode
+        \noindent
+        \minipage[c]{\cnltx@sidebysidewidth}%
+          \cnltx@pre@source@hook
+          \lstinputlisting[style=cnltx] {\jobname.tmp}%
+          \cnltx@after@source@hook
+        \endminipage\hfill
+        \minipage[c]{\cnltx@sidebysidewidth}%
+          \cnltx@pre@example@hook
+          \input {\jobname.tmp}%
+          \cnltx@after@example@hook
+        \endminipage
+      }
+      {%
+        \cnltxcode[breakable]%
+        \cnltx@pre@source@hook
+        \lstinputlisting{\jobname.tmp}%
+        \cnltx@after@source@hook
+        \tcblower
+        \cnltx@pre@example@hook
+        \input {\jobname.tmp}%
+        \cnltx@after@example@hook
+      }%
+    \endcnltxcode
   }
 
 \renewrobustcmd*\inputsourcecode[2][]{%

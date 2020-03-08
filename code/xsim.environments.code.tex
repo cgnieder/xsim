@@ -277,6 +277,8 @@
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_typeset_environment:nnn #1#2#3
   {
+    \tl_set:Nn \ExerciseType {#1}
+    \tl_set:Nn \ExerciseID {#2}
     \xsim_if_exchange:nnnT {#1} {#2} {#3}
       { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
     \xsim_verbose:n
@@ -507,7 +509,7 @@
                 \bool_set_true:N \l__xsim_options_given_bool
                 \use:c {xsim_start_#2:nn} {#1} {##1}
               }
-              \xsim_start_environment:nVnn {#1} \g_xsim_exercise_id_tl {#2} {##2}
+            \xsim_start_environment:nVnn {#1} \g_xsim_exercise_id_tl {#2} {##2}
           }
           {
             \xsim_stop_environment:nVn {#1} \g_xsim_exercise_id_tl {#2}
@@ -526,3 +528,5 @@
 2020/02/19 - implement issue #33 (solution property)
 2020/02/20 - fix issue #27
            - implement issue #2
+2020/03/08 - correctly re-set \ExerciseType and \ExerciseID for typesetting
+             (they're no longer local)
