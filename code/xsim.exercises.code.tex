@@ -74,6 +74,26 @@
   }
 
 % ----------------------------------------------------------------------------
+% #1: type
+% #2: parameter
+% #3: value
+\cs_new_protected:Npn \__xsim_set_parameter_type:nnn #1#2#3
+  { \cs_set:cpn {__xsim_parameter_ \tl_to_str:n {#1!#2} :} {#3} }
+
+% #1: type
+% #2: parameter
+\cs_new:Npn \xsim_get_parameter:nn #1#2
+  { \cs_if_exist_use:c {__xsim_parameter_ \tl_to_str:n {#1!#2} :} }
+\cs_generate_variant:Nn \xsim_get_parameter:nn {o}
+
+\prg_new_conditional:Npnn \xsim_if_parameter_set:nn #1#2 {p,T,F,TF}
+  {
+    \cs_if_exist:cTF {__xsim_parameter_ \tl_to_str:n {#1!#2} :}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
 
@@ -142,7 +162,7 @@
 % #1: type
 \prg_new_conditional:Npnn \xsim_if_type:n #1 {p,T,F,TF}
   {
-    \prop_if_exist:cTF {l__xsim_#1_type_parameters_prop}
+    \cs_if_exist:cTF {--__xsim_#1_type_parameter:}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -168,30 +188,17 @@
               {
                 \xsim_verbose:n
                   { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
-                \prop_put:cnn {l__xsim_#1_type_parameters_prop} {#2} {#3}
+                \__xsim_set_parameter_type:nnn {#1} {#2} {#3}
               }
           }
           {
             \xsim_verbose:n
               { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
-            \prop_put:cnn {l__xsim_#1_type_parameters_prop} {#2} {#3}
+            \__xsim_set_parameter_type:nnn {#1} {#2} {#3}
           }
       }
   }
 \cs_generate_variant:Nn \xsim_set_parameter:nnn {nnx,nxx}
-
-% #1: type
-% #2: parameter
-\cs_new:Npn \xsim_get_parameter:nn #1#2
-  { \prop_item:cn {l__xsim_#1_type_parameters_prop} {#2} }
-\cs_generate_variant:Nn \xsim_get_parameter:nn {o}
-
-\prg_new_conditional:Npnn \xsim_if_parameter_set:nn #1#2 {p,T,F,TF}
-  {
-    \prop_if_in:cnTF {l__xsim_#1_type_parameters_prop} {#2}
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
 
 \cs_new:Npn \__xsim_get_parameter_tmp:n #1 {}
 \cs_generate_variant:Nn \__xsim_get_parameter_tmp:n {V}
@@ -275,7 +282,7 @@
 
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
   {
-    \prop_new:c {l__xsim_#1_type_parameters_prop}
+    % \prop_new:c {l__xsim_#1_type_parameters_prop}
     \bool_new:c {l__xsim_#1_solution_print_bool}
     \bool_new:c {l__xsim_#1_exercise_print_bool}
     \bool_new:c {l__xsim_#1_exercise_use_bool}
@@ -624,3 +631,4 @@
 2020/02/21 - implement issue #2
 2020/03/01 - add options `<ex-env>s/name` and `<sol-env>/name`
 2020/03/07 - set \ExerciseID and \ExerciseType only locally
+2020/03/11 - performance optimizations

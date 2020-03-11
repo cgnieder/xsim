@@ -156,7 +156,7 @@
 \prg_new_conditional:Npnn \xsim_if_goal_value:nnnn #1#2#3#4 {p,T,F,TF}
   {
     \fp_compare:nTF
-      { (0 \xsim_get_property:nnn {#1} {#2} {#3}) #4 }
+      { (0 + \xsim_get_property:nnn {#1} {#2} {#3}) #4 }
       { \prg_return_true: }
       { \prg_return_false: }
   }
