@@ -53,7 +53,7 @@
 \cs_generate_variant:Nn \seq_if_in:NnT      {cV}
 \cs_generate_variant:Nn \seq_gremove_all:Nn {cV}
 \cs_generate_variant:Nn \seq_gput_right:Nn  {cV}
-\cs_generate_variant:Nn \prop_put:Nnn       {cxx}
+\cs_generate_variant:Nn \prop_put:Nnn       {Nnx,cxx}
 \cs_generate_variant:Nn \prop_gput:Nnn      {Nx,Nnx,cxx}
 \cs_generate_variant:Nn \prop_item:Nn       {c}
 \cs_generate_variant:Nn \prop_if_in:NnTF    {Nx}
@@ -68,12 +68,11 @@
 \cs_generate_variant:Nn \tl_if_eq:nnTF      {ff,V}
 \cs_generate_variant:Nn \tl_if_eq:nnT       {x}
 \cs_generate_variant:Nn \tl_if_blank:nTF    {f}
-\cs_generate_variant:Nn \tl_set_rescan:Nnn  {Nnn}
+\cs_generate_variant:Nn \tl_set_rescan:Nnn  {Nnx}
 \cs_generate_variant:Nn \iow_now:Nn         {NV}
 \cs_generate_variant:Nn \str_if_eq:nnT      {x}
 \cs_generate_variant:Nn \str_if_eq:nnF      {xx}
 \cs_generate_variant:Nn \str_if_eq_p:nn     {e}
-\cs_generate_variant:Nn \iow_now:Nn         {NV}
 \cs_generate_variant:Nn \prg_new_protected_conditional:Npnn {c}
 
 % ----------------------------------------------------------------------------
@@ -132,6 +131,13 @@
 \prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
   {
     \bool_if:NTF \g__xsim_verbose_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_debug: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_debug_bool
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -198,8 +204,78 @@
 
 % ----------------------------------------------------------------------------
 
+\msg_new:nnn {xsim} {attribute-not-set}
+  { The~ attribute~ `#1'~ is~ not~ set~ \msg_line_context: }
+
+% #1: attribute
+% #2: item
+\cs_new_protected:Npn \xsim_attribute_new:nn #1#2
+  { \cs_new:cpn {____xsim_attribute_ \tl_to_str:n {#1::#2} :} {} }
+  
+% #1: attribute
+% #2: item
+% #3: value
+\cs_new_protected:Npn \xsim_attribute_set:nnn #1#2#3
+  { \cs_gset:cpx {____xsim_attribute_ \tl_to_str:n {#1::#2} :} { \exp_not:n {#3} } }
+\cs_generate_variant:Nn \xsim_attribute_set:nnn {nnx}
+
+% #1: attribute
+% #2: item
+\cs_new_protected:Npn \xsim_attribute_unset:nn #1#2
+  { \cs_undefine:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :} }
+  
+% #1: attribute
+% #2: item
+\cs_new:Npn \xsim_attribute_get:nn #1#2
+  {
+    \cs_if_exist:cTF {____xsim_attribute_ \tl_to_str:n {#1::#2} :}
+      { \use:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :} }
+      {
+        \xsim_if_debug:T
+          { \msg_expandable_error:nnn {xsim} {attribute-not-set} {#1::#2} }
+      }
+  }
+
+% #1: attribute
+% #2: item
+\prg_new_conditional:Npnn \xsim_attribute_if_set:nn #1#2 {p,T,F,TF}
+  {
+    \cs_if_exist:cTF {____xsim_attribute_ \tl_to_str:n {#1::#2} :}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: attribute
+% #2: item
+\prg_new_conditional:Npnn \__xsim_if_attribute_eq:nnn #1#2#3 {p,T,F,TF}
+  {
+    \tl_if_eq:enTF
+      { \use:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :} }
+      {#3}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: attribute
+% #2: item
+\cs_new_protected:Npn \xsim_attribute_show:nn #1#2
+  {
+    \iow_term:n {}
+    \iow_term:x
+      {
+        \c_space_tl \c_space_tl
+        \tl_to_str:n {#1::#2}
+        \c_space_tl \c_space_tl == \c_space_tl \c_space_tl
+        {\use:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :}}
+      }
+    \iow_term:n {}
+  }
+
+% ----------------------------------------------------------------------------
+
 \cs_new_protected:Npn \xsim_setup:n #1
   { \keys_set:nn {xsim} {#1} }
 
 % ----------------------------------------------------------------------------
 \file_input_stop:
+2020/03/15 - alternative to property lists for performance optimizations

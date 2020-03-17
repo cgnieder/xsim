@@ -66,26 +66,8 @@
 % #1: type
 % #2: id
 % #3: property
-\cs_new_protected:Npn \____xsim_define_property:nnn #1#2#3
-  { \cs_new:cpn {____xsim_property_ \tl_to_str:n {#1!#2!#3} :} {} }
-
-% #1: type
-% #2: id
-% #3: property
-\cs_new_protected:Npn \____xsim_set_property:nnnn #1#2#3#4
-  { \cs_set:cpn {____xsim_property_ \tl_to_str:n {#1!#2!#3} :} {#4} }
-
-% #1: type
-% #2: id
-% #3: property
-\cs_new_protected:Npn \____xsim_unset_property:nnn #1#2#3
-  { \cs_undefine:c {____xsim_property_ \tl_to_str:n {#1!#2!#3} :} }
-
-% #1: type
-% #2: id
-% #3: property
-\cs_new:Npn \____xsim_get_property:nnn #1#2#3
-  { \cs_if_exist_use:c {____xsim_property_ \tl_to_str:n {#1!#2!#3} :} }
+\cs_new_protected:Npn \__xsim_define_property:nnn #1#2#3
+  { \xsim_attribute_new:nn {#1!#2} {#3} }
 
 % check if property is set:
 % #1: type
@@ -93,7 +75,7 @@
 % #3: property
 \prg_new_conditional:Npnn \xsim_if_property_set:nnn #1#2#3 {p,T,F,TF}
   {
-    \cs_if_exist:cTF {____xsim_property_ \tl_to_str:n {#1!#2!#3} :}
+    \xsim_attribute_if_set:nnTF {#1!#2} {#3}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -132,8 +114,6 @@
                 \seq_if_in:NnF \l__xsim_unique_properties_seq {#4}
                   { \seq_put_right:Nn \l__xsim_unique_properties_seq {#4} }
                 \seq_new:c {l__xsim_unique_property_#4_values_seq}
-                \prop_new:c {g__xsim_property_#4_type_prop}
-                \prop_new:c {g__xsim_property_#4_id_prop}
               }
               { \xsim_verbose:n { Declaring~ new~ exercise~ property~ `#4'. } }
           }
@@ -262,6 +242,17 @@
 % #1: type
 % #2: id
 % #3: property
+\cs_new_protected:Npn \__xsim_unset_property:nnn #1#2#3
+  {
+    \xsim_verbose:n
+      { Un-setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'. }
+    \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+    \xsim_attribute_unset:nn {#1!#2} {#3}
+  }
+
+% #1: type
+% #2: id
+% #3: property
 \cs_new_protected:Npn \xsim_unset_property:nnn #1#2#3
   {
     \xsim_if_property_exist:nTF {#3}
@@ -284,7 +275,7 @@
     \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
     % now we can safely add the property to the list:
     \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
-    \____xsim_set_property:nnnn {#1} {#2} {#3} {#4}
+    \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
   }
 \cs_generate_variant:Nn \__xsim_set_property:nnnn {VVnV}
 
@@ -294,19 +285,8 @@
 % #4: value
 \cs_new_protected:Npn \__xsim_set_property_reverse:nnnn #1#2#3#4
   {
-    \prop_gput:cnn {g__xsim_property_#3_type_prop} {#4} {#1}
-    \prop_gput:cnn {g__xsim_property_#3_id_prop} {#4} {#2}
-  }
-
-% #1: type
-% #2: id
-% #3: property
-\cs_new_protected:Npn \__xsim_unset_property:nnn #1#2#3
-  {
-    \xsim_verbose:n
-      { Un-setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'. }
-    \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
-    \____xsim_unset_property:nnn {#1} {#2} {#3}
+    \xsim_attribute_set:nnn {type:#3} {#4} {#1}
+    \xsim_attribute_set:nnn {id:#3} {#4} {#2}
   }
 
 \tl_set:Nx \l__xsim_tmpa_tl { \cs_to_str:N \{ }
@@ -324,6 +304,9 @@
     \str_set:Nn #3 {#6}
   }
 
+% #1: type
+% #2: id
+% #3: property
 \cs_new_protected:Npn \__xsim_remove_property_from_list:nnn #1#2#3
   {
     % make sure we change the entry if it has been recorded previously:
@@ -391,20 +374,19 @@
 
 % ----------------------------------------------------------------------------
 
-\prop_new:N \g__xsim_property_aliases_prop
 \seq_new:N \g__xsim_property_aliases_seq
 
 % #1: property
 \prg_new_conditional:Npnn \xsim_if_property_alias:n #1 {p,T,F,TF}
   {
-    \prop_if_in:NnTF \g__xsim_property_aliases_prop {#1}
+    \seq_if_in:NnTF \g__xsim_property_aliases_seq {#1}
       { \prg_return_true: }
       { \prg_return_false: }
   }
 
 % #1: property
 \cs_new:Npn \xsim_property_alias:n #1
-  { \prop_item:Nn \g__xsim_property_aliases_prop {#1} }
+  { \xsim_attribute_get:nn {#1} {alias} }
 
 % #1: property
 % #2: alias of
@@ -414,8 +396,7 @@
       {
         \xsim_verbose:n
           { Making~ property~ `#1'~ an~ alias~ of~ property~ `#2'. }
-        \prop_new:c {g__xsim_property_#1_alias_prop}
-        \prop_gput:Nnn \g__xsim_property_aliases_prop {#1} {#2}
+        \xsim_attribute_set:nnn {#1} {alias} {#2}
         \seq_gput_right:Nn \g__xsim_property_aliases_seq {#1}
       }
   }
@@ -440,8 +421,7 @@
     \xsim_if_property_set:nnxT {#1} {#2}
       { \xsim_property_alias:n {#3} }
       {
-        \prop_gput:cxx {g__xsim_property_#3_alias_prop}
-          { \xsim_get_property:nnn {#1} {#2} {#3} }
+        \xsim_attribute_set:nnx {alias:#1!#2} {#3}
           {
             \xsim_get_property:nnf {#1} {#2}
               { \xsim_property_alias:n {#3} }
@@ -465,18 +445,18 @@
 % #2: id
 % #3: property
 \cs_new:Npn \xsim_get_property:nnn #1#2#3
-  { \____xsim_get_property:nnn {#1} {#2} {#3} }
+  { \xsim_attribute_get:nn {#1!#2} {#3} }
 \cs_generate_variant:Nn \xsim_get_property:nnn {nx,ne,xx,oo,no,nnf,nf,oof,nV}
 
 % #1: property
 % #2: value
 \cs_new:Npn \xsim_get_id_for_property:nn #1#2
-  { \prop_item:cn {g__xsim_property_#1_id_prop} {#2} }
+  { \xsim_attribute_get:nn {id:#1} {#2} }
 
 % #1: property
 % #2: value
 \cs_new:Npn \xsim_get_type_for_property:nn #1#2
-  { \prop_item:cn {g__xsim_property_#1_type_prop} {#2} }
+  { \xsim_attribute_get:nn {type:#1} {#2} }
 \cs_generate_variant:Nn \xsim_get_type_for_property:nn {nV}
 
 % #1: id or ID
@@ -557,4 +537,4 @@
 % ----------------------------------------------------------------------------
 \file_input_stop:
 2020/03/09 - add meaningful error if a comma is missing in the property list
-2020/03/10 - performance optimizations
+2020/03/14 - performance optimizations

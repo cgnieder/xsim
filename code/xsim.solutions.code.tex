@@ -35,7 +35,7 @@
 \bool_new:N \l__xsim_printsolutions_conditions_bool
 \bool_new:N \l____xsim_this_condition_bool
 
-\prop_new:N \l__xsim_printsolutions_conditions_prop
+\seq_new:N \l__xsim_printsolutions_conditions_seq
 
 \int_new:N  \l_xsim_printsolutions_section_int
 \int_new:N  \l_xsim_printsolutions_chapter_int
@@ -194,7 +194,8 @@
 \cs_new_protected:Npn \xsim_declare_printsolutions_condition:nn #1#2
   {
     \bool_new:c {l__xsim_printsolutions_#1_condition_bool}
-    \prop_put:Nnn \l__xsim_printsolutions_conditions_prop {#1} {#2}
+    \seq_put_right:Nn \l__xsim_printsolutions_conditions_seq {#1}
+    \xsim_attribute_set:nnn {printsolutions} {#1} {#2}
   }
 
 \prg_new_conditional:Npnn \__xsim_printsolutions_if_condition:n #1 {T,F,TF}
@@ -218,11 +219,12 @@
   {
     \__xsim_printsolutions_condition_false:
     \bool_set_true:N \l____xsim_this_condition_bool
-    \prop_map_inline:Nn \l__xsim_printsolutions_conditions_prop
+    \seq_map_inline:Nn \l__xsim_printsolutions_conditions_seq
       {
         \bool_if:cT {l__xsim_printsolutions_##1_condition_bool}
           {
-            ##2 {#1} {#2} {#3}
+            \xsim_attribute_get:nn {printsolutions} {##1}
+              {#1} {#2} {#3}
               { }
               { \bool_set_false:N \l____xsim_this_condition_bool }
           }
@@ -409,3 +411,4 @@
 \file_input_stop:
 
 2020/02/23 - resolve bug #56
+2020/03/16 - performance optimizations

@@ -492,7 +492,7 @@
 \tcbset{enhanced,enhanced jigsaw}
 
 \newtcolorbox{bewareofthedog}{
-  colback  = white ,
+  colback  = red!2!white!98 ,
   colframe = red ,
   underlay={%
     \path[draw=none]
@@ -595,21 +595,7 @@
         \cnltx@after@example@hook
       }%
     \endcnltxcode
-  }\newcommand*\xsimman@readoptions[1]{%
-  \catcode`\^^M=13
-  \xsimman@read@options{#1}%
-}
-
-\begingroup
-\catcode`\^^M=13
-\gdef\xsimman@read@options#1#2^^M{%
-  \ifblank{#2}{}{\xsimman@read@options@#2}%
-  #1%
-  \XSIMfilewritestart*{\jobname.tmp}%
-}%
-\endgroup
-
-\def\xsimman@read@options@[#1]{\pgfqkeys{/cnltx}{#1}}
+  }
 
 \RenewDocumentEnvironment{sourcecode}{}
   {%
@@ -983,6 +969,7 @@
 \xsim@add@version{0.16a} {2020-01-16}
 \xsim@add@version{0.17}  {2020-02-21}
 \xsim@add@version{0.18}  {2020-02-23}
+\xsim@add@version{0.19}  {2020-03-16}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

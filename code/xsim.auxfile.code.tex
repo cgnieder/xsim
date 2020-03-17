@@ -85,14 +85,8 @@
 
 \xsim_new_aux_property:cpn {readaux}
   {
-    % can I do this with expl3?
-    % cf. issue #60
-    \InputIfFileExists { \c_sys_jobname_str .xsim }
-      { \xsim_verbose:n { Reading~ \c_sys_jobname_str .xsim } }
-      {
-        \xsim_verbose:n { \c_sys_jobname_str .xsim~ not~ found.}
-        \xsim_rerun:
-      }
+    \file_if_exist:nT { \c_sys_jobname_str .xsim }
+      { \file_input:n { \c_sys_jobname_str .xsim } }
   }
 
 % ----------------------------------------------------------------------------
@@ -105,27 +99,6 @@
     split-aux-lists .code:n    = \str_set:Nn \l__xsim_split_aux_lists_str {#1} ,
     split-aux-lists .initial:n = ||
   }
-
-\cs_new_protected:Npn \__xsim_set_list_value:nn #1#2
-  {
-    \cs_undefine:c {____xsim_list_ \tl_to_str:n {#1!#2} :}
-    \cs_new:cpn {____xsim_list_ \tl_to_str:n {#1!#2} :} {}
-  }
-
-\cs_new_protected:Npn \__xsim_unset_list_value:nn #1#2
-  { \cs_undefine:c {____xsim_list_ \tl_to_str:n {#1!#2} :} }
-
-% check if in list:
-% #1: name
-% #2: entry
-\prg_new_conditional:Npnn \xsim_if_in_list:nn #1#2 {p,T,F,TF}
-  {
-    \cs_if_exist:cTF {____xsim_list_ \tl_to_str:n {#1!#2} :}
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
-\cs_generate_variant:Nn \xsim_if_in_list:nnTF {nx}
-\cs_generate_variant:Nn \xsim_if_in_list:nnT  {nx}
 
 % define list:
 % #1: name
@@ -142,7 +115,7 @@
               \l__xsim_split_aux_lists_str
               { \tl_to_str:n {##1} }
             \seq_map_inline:cn {g__xsim_list_#1_seq}
-              { \__xsim_set_list_value:nn {#1} {####1} }
+              { \xsim_attribute_set:nnn {#1} {####1} {} }
           }
       }
     \xsim_at_begin_document:n
@@ -165,6 +138,7 @@
   {
     \xsim_verbose:n { Adding~ `#2'~ to~ list~ `#1'. }
     \str_set:Nn \l__xsim_tmpa_str {#2}
+    \xsim_attribute_set:nnn {#1} {#2} {}
     \seq_if_in:cVT {g__xsim_list_#1_seq} \l__xsim_tmpa_str
       { \seq_gremove_all:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str }
     \seq_gput_right:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str
@@ -177,13 +151,26 @@
   {
     \xsim_verbose:n { Removing~ `#2'~ to~ list~ `#1'. }
     \str_set:Nn \l__xsim_tmpa_str {#2}
-    \__xsim_unset_list_value:nn {#1} {#2}
+    \xsim_attribute_if_set:nnT {#1} {#2}
+      { \xsim_attribute_unset:nn {#1} {#2} }
     \seq_if_in:cVT {g__xsim_list_#1_seq} \l__xsim_tmpa_str
       { \seq_gremove_all:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str }
     \seq_if_in:cVT {g__xsim_list_recorded#1_seq} \l__xsim_tmpa_str
       { \seq_gremove_all:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str }
   }
 \cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
+
+% check if in list:
+% #1: name
+% #2: entry
+\prg_new_conditional:Npnn \xsim_if_in_list:nn #1#2 {p,T,F,TF}
+  {
+    \xsim_attribute_if_set:nnTF {#1} {#2}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_in_list:nnTF {nx}
+\cs_generate_variant:Nn \xsim_if_in_list:nnT  {nx}
 
 \bool_new:N \l__xsim_empty_lists_bool
 \cs_new_protected:Npn \xsim_empty_lists:
@@ -231,4 +218,4 @@
 
 % ----------------------------------------------------------------------------
 \file_input_stop:
-2020/03/10 - performance optimizations
+2020/03/16 - performance optimizations

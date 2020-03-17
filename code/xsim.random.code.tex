@@ -94,7 +94,7 @@
 % #1: random list id
 % #2: sequence variable to set list from
 \cs_new_protected:Npn \xsim_save_random_list:nN #1#2
-  {
+  { % TODO: check if #2 is empty
     \xsim_random_list_if_exist:nF {#1}
       { \xsim_new_random_list:n {#1} }
     \xsim_random_list_if_empty:nT {#1}
@@ -103,6 +103,7 @@
     \xsim_add_property_to_aux:nn {random}
       { {#1} { \xsim_use_random_list:nn {#1} {,} } }
   }
+\cs_generate_variant:Nn \xsim_save_random_list:nN {x}
 
 % #1: collection
 % #2: number of items
@@ -142,7 +143,7 @@
               { \l__xsim_tmpa_int }
               \g__xsim_random_list_seq
           }
-        \xsim_save_random_list:nN
+        \xsim_save_random_list:xN
           { \int_to_alph:n { \g__xsim_random_list_id_int } }
           \g__xsim_random_list_seq
         \xsim_verbose:x

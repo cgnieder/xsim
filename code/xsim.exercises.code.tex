@@ -33,10 +33,10 @@
     collections
   }
 
+\seq_new:N  \l__xsim_exercise_types_seq
 \seq_new:N  \l__xsim_parameters_seq
 \seq_new:N  \l__xsim_fixed_parameters_seq
 \seq_new:N  \l__xsim_mandatory_parameters_seq
-\prop_new:N \g__xsim_exercises_prop
 \int_gzero_new:N  \g_xsim_id_int
 \int_gzero_new:N  \g_xsim_max_id_int
 \tl_new:N   \l_xsim_current_id_tl
@@ -78,17 +78,19 @@
 % #2: parameter
 % #3: value
 \cs_new_protected:Npn \__xsim_set_parameter_type:nnn #1#2#3
-  { \cs_set:cpn {__xsim_parameter_ \tl_to_str:n {#1!#2} :} {#3} }
+  { \xsim_attribute_set:nnn {#1} {#2} {#3} }
 
 % #1: type
 % #2: parameter
 \cs_new:Npn \xsim_get_parameter:nn #1#2
-  { \cs_if_exist_use:c {__xsim_parameter_ \tl_to_str:n {#1!#2} :} }
+  { \xsim_attribute_get:nn {#1} {#2} }
 \cs_generate_variant:Nn \xsim_get_parameter:nn {o}
 
+% #1: type
+% #2: parameter
 \prg_new_conditional:Npnn \xsim_if_parameter_set:nn #1#2 {p,T,F,TF}
   {
-    \cs_if_exist:cTF {__xsim_parameter_ \tl_to_str:n {#1!#2} :}
+    \xsim_attribute_if_set:nnTF {#1} {#2}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -162,7 +164,7 @@
 % #1: type
 \prg_new_conditional:Npnn \xsim_if_type:n #1 {p,T,F,TF}
   {
-    \cs_if_exist:cTF {--__xsim_#1_type_parameter:}
+    \seq_if_in:NnTF \l__xsim_exercise_types_seq {#1}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -282,7 +284,7 @@
 
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
   {
-    % \prop_new:c {l__xsim_#1_type_parameters_prop}
+    \seq_put_right:Nn \l__xsim_exercise_types_seq {#1}
     \bool_new:c {l__xsim_#1_solution_print_bool}
     \bool_new:c {l__xsim_#1_exercise_print_bool}
     \bool_new:c {l__xsim_#1_exercise_use_bool}
@@ -631,4 +633,4 @@
 2020/02/21 - implement issue #2
 2020/03/01 - add options `<ex-env>s/name` and `<sol-env>/name`
 2020/03/07 - set \ExerciseID and \ExerciseType only locally
-2020/03/11 - performance optimizations
+2020/03/14 - performance optimizations

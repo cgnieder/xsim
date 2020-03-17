@@ -68,6 +68,9 @@ using an up to date \TeX\ distribution, anyway.
   package.  Be careful: if you're in the middle of an important project it
   might be better to wait with the update until you've finished the project.
   Every update might be breaking some things.
+
+  Please also be aware that \xsim\ is actively developed and many things may
+  still change.  However, I will try my best to keep the interface stable.
 \end{bewareofthedog}
 
 \section{Motivation and Background}
@@ -1483,6 +1486,10 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Can be used to refer to the current exercise type.
   \expandable\command{ExerciseID}
     Can be used to refer to the current exercise id.
+  \expandable\command{ExerciseText}
+    Can be used inside solutions to retrieve the text of the corresponding
+    solution.  This is propably seldom useful as in most use cases the
+    exercise property \property{solution} is the easier alternative.
   \expandable\command{ExerciseCollection}
     Can be used in certain templates to refer to the collection that is
     currently inserted.

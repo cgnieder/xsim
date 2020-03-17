@@ -29,7 +29,7 @@
 
 \xsim_load_modules:n {base}
 
-\prop_new:N \g__xsim_collections_prop
+\seq_new:N \g__xsim_collections_seq
 \bool_new:N \l____xsim_active_bool
 
 \msg_new:nnn {xsim} {collection-exists}
@@ -66,7 +66,8 @@
       { \msg_error:nnn {xsim} {collection-exists} {#1} }
       {
         \xsim_verbose:n { Declaring~ new~ collection~ `#1'. }
-        \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_false_bool }
+        \xsim_attribute_set:nnn {collection} {#1} { \c_false_bool }
+        \seq_gput_right:Nn \g__xsim_collections_seq {#1}
         \xsim_new_list:n {collection:#1}
         \seq_new:c {g__xsim_collection_#1_seq}
       }
@@ -75,7 +76,7 @@
 % #1: collection name
 \prg_new_conditional:Npnn \xsim_if_collection_exist:n #1 {T,F,TF}
   {
-    \prop_if_in:NnTF \g__xsim_collections_prop {#1}
+    \seq_if_in:NnTF \g__xsim_collections_seq {#1}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -83,7 +84,9 @@
 \xsim_new_collection:n {all~ exercises}
 
 \cs_new_protected:Npn \xsim_foreach_collection:n #1
-  { \prop_map_inline:Nn \g__xsim_collections_prop {#1} }
+  { \seq_map_inline:Nn \g__xsim_collections_seq {#1} }
+
+\cs_new:Npn \xsim_collection_map_break: { \seq_map_break: }
 
 % ----------------------------------------------------------------------------
 
@@ -96,7 +99,7 @@
       }
       {
         \xsim_verbose:n { Activating~ collection~ `#1'. }
-        \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_true_bool }
+        \xsim_attribute_set:nnn {collection} {#1} { \c_true_bool }
         \tl_if_blank:nF {#2}
           { \seq_gput_right:cn {g__xsim_collection_#1_seq} {#2} }
       }
@@ -111,8 +114,8 @@
     \xsim_if_collection_active:nTF {#1}
       {
         \xsim_verbose:n { Deactivating~ collection~ `#1'. }
-        \prop_gput:Nnn \g__xsim_collections_prop {#1} { \c_false_bool }
-        \seq_gclear:c {g__xsim_collection_#1_seq}
+        \xsim_attribute_set:nnn {collection} {#1} { \c_false_bool }
+        % \seq_gclear:c {g__xsim_collection_#1_seq}
       }
       { % TODO: warning
       }
@@ -161,7 +164,7 @@
     \seq_if_empty:cTF {g__xsim_collection_#1_seq}
       { \__xsim_add_to_collection:nnn {#1} {#2} {#3} }
       {
-        \seq_if_in:cnT {g__xsim_collection_#1_seq} {#2}
+        \seq_if_in:cnF {g__xsim_collection_#1_seq} {#2}
           { \__xsim_add_to_collection:nnn {#1} {#2} {#3} }
       }
   }
@@ -349,11 +352,11 @@
 % #1: collection name
 \prg_new_conditional:Npnn \xsim_if_collection_active:n #1 {T,F,TF}
   {
-    \prop_if_in:NnTF \g__xsim_collections_prop {#1}
+    \xsim_attribute_if_set:nnTF {collection} {#1}
       {
         \bool_lazy_and:nnTF
           { !\str_if_eq_p:en {#1} {all~ exercises} }
-          { \prop_item:Nn \g__xsim_collections_prop {#1} }
+          { \xsim_attribute_get:nn {collection} {#1} }
           { \prg_return_true: }
           { \prg_return_false: }
       }
@@ -363,12 +366,12 @@
 \prg_new_protected_conditional:Npnn \xsim_if_collections_active: {T,F,TF}
   {
     \bool_set_false:N \l____xsim_active_bool
-    \prop_map_inline:Nn \g__xsim_collections_prop
+    \xsim_foreach_collection:n
       {
         \xsim_if_collection_active:nT {##1}
           {
             \bool_set_true:N \l____xsim_active_bool
-            \prop_map_break:
+            \xsim_collection_map_break:
           }
       }
     \bool_if:NTF \l____xsim_active_bool
@@ -381,7 +384,7 @@
 \xsim_at_begin_document:n
   {
     \xsim_get_collections:
-    \xsim_activate_collection:n   {all~ exercises}
+    \xsim_activate_collection:n {all~ exercises}
   }
 
 \xsim_at_end_document:n

@@ -87,7 +87,7 @@
           { \msg_error:nnn {xsim} {module-missing} {#1} }
       }
   }
-\cs_generate_variant:Nn \__xsim_load_module:n { V }
+\cs_generate_variant:Nn \__xsim_load_module:n {V}
 
 \prg_new_conditional:Npnn \xsim_if_module_loaded:n #1 {p,T,F,TF}
   {
@@ -162,8 +162,6 @@
     \tl_set:Nx \l__xsim_module_date_tl {\c_xsim_date_tl}
     \tl_set:Nx \l__xsim_module_version_tl {\c_xsim_version_tl}
   }
-
-\cs_generate_variant:Nn \str_if_eq:nnF {xx}
 
 \cs_new_protected:Npn \__xsim_module:nn #1#2
   {

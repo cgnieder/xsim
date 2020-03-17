@@ -148,7 +148,8 @@ HISTORY:
                    - change \printexercise and \printsolution to accept a
                      clist of either ids or IDs (or mixed)
                    - new templates in the `layouts' style
- v0.19  2020/03/11 - improve performance
+ v0.19  2020/03/16 - improve performance
                    - only set \ExerciseID and \ExerciseType locally to ensure
                      correct values when exercises (of different types) are
                      nested
+		   - new load-time option `debug' - only for development
