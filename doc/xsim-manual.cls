@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2020/02/23]
+\ProvidesClass{xsim-manual}[2020/04/04]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -38,8 +38,10 @@
 
 \RequirePackage{geometry}
 \geometry{
-  left = 3.8cm ,
-  right = 2.8cm
+  left = 3.5cm ,
+  right = 3cm ,
+  marginparwidth = 3cm ,
+  marginparsep = 2mm
 }
 
 \setcnltx{
@@ -247,19 +249,20 @@
   module-sep = {\texttt{/}}%
 }
 
-
+\renewcommand*\versionnoteformat{\tiny\sffamily\RaggedRight}
 \RequirePackage[en-US]{datetime2}
 \DTMlangsetup[en-US]{abbr}
 \newrobustcmd*\xsim@add@version[2]{\csdef{xsimversion#1}{\DTMdate{#2}}}
 \renewrobustcmd*\sinceversion[1]{%
-  \cnltx@version@note{\GetTranslation{cnltx-introduced}~#1 (\csuse{xsimversion#1})}%
+  \cnltx@version@note{\GetTranslation{cnltx-introduced} #1 (\csuse{xsimversion#1})}%
 }
 \renewrobustcmd*\changedversion[1]{%
-  \cnltx@version@note{\GetTranslation{cnltx-changed}~#1 (\csuse{xsimversion#1})}%
+  \cnltx@version@note{\GetTranslation{cnltx-changed} #1 (\csuse{xsimversion#1})}%
 }
 
-\newnote*\sincechanged[2]{\GetTranslation{cnltx-introduced}~#1
-  (\csuse{xsimversion#1}), changed with version~#2 (\csuse{xsimversion#2})}
+\newnote*\sincechanged[2]{%
+  \GetTranslation{cnltx-introduced} #1,
+  changed with version #2 (\csuse{xsimversion#2})}
 
 \RequirePackage{xsimverb}
 \ExplSyntaxOn
@@ -814,6 +817,14 @@
         { http \c_colon_str //golatex.de/viewtopic,p, \l_tmpa_tl .html }
         { \color {white} [forum] }
     }
+  \tl_if_in:nnT {#1} {issues}
+    {
+      \tl_set:Nn \l_tmpa_tl {#1}
+      \tl_replace_once:Nnn \l_tmpa_tl {-} {/}
+      \space \href
+        { https \c_colon_str //github.com/cgnieder/ \l_tmpa_tl }
+        { \color {white} [github] }
+    }
 }
 \ExplSyntaxOff
 
@@ -844,7 +855,8 @@
       title=\xsim@example@title{##1}%
     ]
     \bookmark[level=2,dest=examplefile.\arabic{examplefile}]{\xsim@example@bookmark{##1}}%
-    \lstinputlisting[style=cnltx,firstline=7,lastline=15,firstnumber=7]{\xsim@example@texfile@path{##1}}
+    \lstinputlisting[
+      style=cnltx,firstline=7,lastline=15,firstnumber=7]{\xsim@example@texfile@path{##1}}%
     \tcblower
     \fbox{%
       \href
@@ -928,7 +940,8 @@
 \xsim@add@example{texwelt-23968}{Long and short solutions}
 \xsim@add@example{golatex-80640}{Different versions for students and teachers}
 \xsim@add@example{golatex-91339}{Another custom layout with rules}
-
+\xsim@add@example{issues-49}{Different ideas for exams}
+ 
 % ----------------------------------------------------------------------------
 % layouts:
 
@@ -971,6 +984,7 @@
 \xsim@add@version{0.18}  {2020-02-23}
 \xsim@add@version{0.19}  {2020-03-16}
 \xsim@add@version{0.19a} {2020-03-19}
+\xsim@add@version{0.19b} {2020-04-04}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

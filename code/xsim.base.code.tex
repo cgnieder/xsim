@@ -216,7 +216,11 @@
 % #2: item
 % #3: value
 \cs_new_protected:Npn \xsim_attribute_set:nnn #1#2#3
-  { \cs_gset:cpx {____xsim_attribute_ \tl_to_str:n {#1::#2} :} { \exp_not:n {#3} } }
+  {
+    \cs_gset:cpx
+      {____xsim_attribute_ \tl_to_str:n {#1::#2} :}
+      { \exp_not:n { \exp_not:n {#3} } }
+  }
 \cs_generate_variant:Nn \xsim_attribute_set:nnn {nnx}
 
 % #1: attribute
@@ -279,3 +283,5 @@
 % ----------------------------------------------------------------------------
 \file_input_stop:
 2020/03/15 - alternative to property lists for performance optimizations
+2020/03/22 - fix bug in new attribute mechanism which was a problem when
+             `no-files` has been used

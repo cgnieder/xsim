@@ -73,7 +73,17 @@ using an up to date \TeX\ distribution, anyway.
   still change.  However, I will try my best to keep the interface stable.
 \end{bewareofthedog}
 
-\section{Motivation and Background}
+I'm currently thinking to make the option \option{no-files} the default
+behavior of \xsim.  There is a poll and discussion regarding this question on
+\xsim's github page if you like to give your opinion on this.
+
+\begin{bewareofthedog}
+  The whole collection mechanism is likely to change completely in the
+  not-so-far future (let's say sometime in the six months from April~2020 or
+  so).
+\end{bewareofthedog}
+
+\section{Motivation, Background}
 
 It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in June 2012.  Since then it has gained a
@@ -916,11 +926,11 @@ If you know type and \property{id} of an exercise you can (re-)insert every
 existing exercise, \ie, every exercise whose external file exists.
 \begin{commands}
   \command{printexercise}[\marg{type}\marg{csv of ids}]
-    \changedversion{0.17a}Inserts the exercise or exercises of type
+    \changedversion{0.17}Inserts the exercise or exercises of type
     \meta{type} with the \property{id}s or \property{ID}s given in \meta{csv
       of ids}.
   \command{xprintexercise}[\marg{type}\marg{csv of ids}]
-    \sincechanged{0.16}{0.17a}The same as \cs{printexercise} but expands
+    \sincechanged{0.16}{0.17}The same as \cs{printexercise} but expands
     \meta{type} and the items of \meta{csv of ids} before it uses them.
 \end{commands}
 \begin{example}
@@ -928,6 +938,12 @@ existing exercise, \ie, every exercise whose external file exists.
 \end{example}
 
 \section{Collecting Exercises}\label{sec:collecting-exercises}
+
+\begin{bewareofthedog}
+  The whole collection mechanism is likely to change completely in the
+  not-so-far future (let's say sometime in the six months from April~2020 or
+  so).
+\end{bewareofthedog}
 
 \subsection{Background}
 \xsim\ knows the concept of \enquote{exercise collections}.  A collection of
@@ -1555,11 +1571,11 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{XSIMprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
-    \sincechanged{0.16}{0.17a}Inserts the either the exercise or the solution
+    \sincechanged{0.16}{0.17}Inserts the either the exercise or the solution
     of type \meta{type} with the \property{id} or \property{ID} \meta{id}.
   \command{XSIMxprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
-    \sincechanged{0.16}{0.17a}The same as \cs{XSIMprint} but expands
-    \meta{type} and \meta{id} before it uses them.
+    The same as \cs{XSIMprint} but expands \meta{type} and \meta{id} before it
+    uses them.\sincechanged{0.16}{0.17}
   \expandable\command{XSIMtranslate}[\marg{keyword}]
     Delivers the translation of \meta{keyword} according to the current
     document language (in the meaning of a \pkg{babel}~\cite{pkg:babel} or
