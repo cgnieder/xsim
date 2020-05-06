@@ -1,30 +1,3 @@
-% ----------------------------------------------------------------------------
-% the XSIM package - blanks module
-% 
-%   eXercise Sheets IMproved
-% 
-% ----------------------------------------------------------------------------
-% Clemens Niederberger
-% Web:    https://github.com/cgnieder/xsim
-% E-Mail: contact@mychemistry.eu
-% ----------------------------------------------------------------------------
-% Copyright 2017--2020 Clemens Niederberger
-% 
-% This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License, either version 1.3
-% of this license or (at your option) any later version.
-% The latest version of this license is in
-%   http://www.latex-project.org/lppl.txt
-% and version 1.3 or later is part of all distributions of LaTeX
-% version 2005/12/01 or later.
-% 
-% This work has the LPPL maintenance status `maintained'.
-% 
-% The Current Maintainer of this work is Clemens Niederberger.
-% ----------------------------------------------------------------------------
-% If you have any ideas, questions, suggestions or bugs to report, please
-% feel free to contact me.
-% ----------------------------------------------------------------------------
 \XSIMmodule{blanks}{add blanks, cloze}
 
 \bool_new:N \l__xsim_blank_width_bool
@@ -129,34 +102,4 @@
   }
 \cs_generate_variant:Nn \__xsim_blank_skip:n {V}
 
-% ----------------------------------------------------------------------------
-\file_input_stop:
-
-the following code from Heiko Oberdieck in d.c.t.t served as inspiration
-and basis for the \blank command:
-https://groups.google.com/d/msg/de.comp.text.tex/fZLwraH04jE/o1RSdFXjGuIJ
-
-\makeatletter
-\newcommand*{\luecke}{%
-  \begingroup
-    \setlength{\dimen@}{6cm}%
-    \ifdim\dimen@>2em %
-      \underline{\hspace{1em}}%
-      \advance\dimen@ by -2em\relax
-      \@whiledim\dimen@>0pt\do{%
-        \penalty\hyphenpenalty
-        \ifdim\dimen@<1pt %
-          \underline{\hspace{\dimen@}}%
-        \else
-          \underline{\hspace{1pt}}%
-        \fi
-        \advance\dimen@ by -1pt %
-      }%
-      \underline{\hspace{1em}}%
-    \else
-      \underline{\hspace{\dimen@}}%
-    \fi
-  \endgroup
-  \xspace
-}
-\makeatother
+\XSIMmoduleend

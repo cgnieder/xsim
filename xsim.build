@@ -1,0 +1,359 @@
+# ----------------------------------------------------------------------------
+# the XSIM package
+# 
+#   eXercise Sheets IMproved
+# 
+# ----------------------------------------------------------------------------
+# Clemens Niederberger
+# Web:    https://github.com/cgnieder/xsim
+# E-Mail: contact@mychemistry.eu
+# ----------------------------------------------------------------------------
+# Copyright 2017--2020 Clemens Niederberger
+#
+# --------------------------------------------------------------------------
+# this is a personal bash script to build the xsim package
+# and very likely not of use for anybody else
+#
+#   !! USE WITH CAUTION !!
+#
+# --------------------------------------------------------------------------
+#!/bin/bash
+
+pkgname="xsim"
+moduleext="code.tex"
+styname="${pkgname}.sty"
+verbname="${pkgname}verb.sty"
+program="arara --verbose"
+manualfile="${pkgname}-manual"
+zipname="$pkgname"
+
+build=true
+cleancode=false
+cleandoc=false
+cleanexamples=false
+cleanup=false
+createzip=false
+manual=false
+runmktexlsr=false
+update=false
+silent=false
+
+usage="script for buiding the $pkgname package
+
+./$(basename "$0") [option(s) [value]]
+
+where valid options are:
+    -b  build sty file from modules (default: $build)
+    -d  deletes auxiliary files from a latex compilation
+        allowed values: 'none', 'all', 'code', 'doc', 'examples' (default: 'none')
+    -f  name of manual file (without .tex) (default: '$manualfile')
+    -h  show this help
+    -l  run latex to (re-) create manual (default: $manual)
+    -m  run mktexlsr, only when used together with -u (default: $runmktexlsr)
+    -n  do nothing and exit
+    -o  output file for creating the style file (default: '$styname')
+    -p  program for building the manual (default: '$program')
+    -s  silent, avoid messages (default: $silent)
+    -u  update local tex repository (default: $update)
+    -z  create zip file for CTAN upload (default: $createzip)"
+
+# options:
+while [ -n "$1" ]; do
+    case "$1" in
+        -b|--build)
+            case "$2" in
+                true)
+                    shift ;;
+                false)
+                    build=false
+                    shift ;;
+                *) ;;
+            esac ;;
+        -d|--delete)
+            case "$2" in
+                none)
+                    cleanup=false ;;
+                all)
+                    cleanup=true
+                    cleancode=true
+                    cleandoc=true
+                    cleanexamples=true ;;
+                code)
+                    cleanup=true
+                    cleancode=true ;;
+                doc)
+                    cleanup=true
+                    cleandoc=true ;;
+                examples)
+                    cleanup=true
+                    cleanexamples=true ;;
+                *)
+                    echo "invalid value '$2'"
+                    exit 1 ;;
+            esac
+            shift ;;
+        -f|--file)
+            manualfile="$2"
+            shift ;;
+        -h|--help)
+            echo "$usage"
+            exit 0 ;;
+        -l|--latex)
+            case "$2" in
+                true)
+                    manual=true
+                    shift ;;
+                false)
+                    manual=false
+                    shift ;;
+                *)
+                    manual=true ;;
+            esac ;;
+        -m|--mktexlsr)
+            case "$2" in
+                true)
+                    runmktexlsr=true
+                    shift ;;
+                false)
+                    runmktexlsr=false
+                    shift ;;
+                *)
+                    runmktexlsr=true ;;
+            esac ;;
+        -n|--nothing)
+            exit 0 ;;
+        -o|--output)
+            styname="$2"
+            shift ;;
+        -p|--program)
+            program="$2"
+            shift ;;
+        -s|--silent)
+            case "$2" in
+                true)
+                    slient=true
+                    shift ;;
+                false)
+                    silent=false
+                    shift ;;
+                *)
+                    silent=true ;;
+            esac ;;
+        -u|--update)
+            case "$2" in
+                true)
+                    update=true
+                    shift ;;
+                false)
+                    update=false
+                    shift ;;
+                *)
+                    update=true ;;
+            esac ;;
+        -v|--version)
+            zipname="${zipname}_v$2"
+            shift ;;
+        -z|--zip)
+            case "$2" in
+                true)
+                    createzip=true
+                    shift ;;
+                false)
+                    createzip=false
+                    shift ;;
+                *)
+                    createzip=true ;;
+            esac ;;
+        *) echo "unknown option '$1'"
+           exit 1 ;;
+    esac
+    shift
+done
+
+if [ "$silent" == true ] ; then
+    verbose=false
+else
+    verbose=true
+fi
+
+START_DIR="${PWD}"
+DEV_DIR=~/LaTeX/dev
+SNAPSHOT_DIR=~/LaTeX/snapshots
+XSIM_DEV_DIR=${DEV_DIR}/$pkgname
+CODE_DIR=${XSIM_DEV_DIR}/code
+DOC_DIR=${XSIM_DEV_DIR}/doc
+EXAMPLES_DIR=${DOC_DIR}/examples
+TEXMFLOCAL_DIR=/usr/local/texlive/texmf-local
+LATEXLOCAL_DIR=${TEXMFLOCAL_DIR}/tex/latex/local
+BIBLOCAL_DIR=${TEXMFLOCAL_DIR}/bibtex/bib/local
+
+# files to be "cleaned":
+AUX_FILES=""
+if [ "$cleanup" == true ] ; then
+    if [ "$cleancode" == true ] ; then
+        AUX_FILES="${AUX_FILES}
+                   ${CODE_DIR}/*~"
+    fi
+    if [ "$cleandoc" == true ] ; then
+        AUX_FILES="${AUX_FILES}
+                   ${DOC_DIR}/*~
+                   ${DOC_DIR}/*synctex*
+                   ${DOC_DIR}/*.run.xml
+                   ${DOC_DIR}/*.aux
+                   ${DOC_DIR}/*.acr
+                   ${DOC_DIR}/*.xsim
+                   ${DOC_DIR}/*.log
+                   ${DOC_DIR}/*.out
+                   ${DOC_DIR}/*.bbl
+                   ${DOC_DIR}/*.bcf
+                   ${DOC_DIR}/*.bib
+                   ${DOC_DIR}/*.blg
+                   ${DOC_DIR}/*.idx
+                   ${DOC_DIR}/*.ilg
+                   ${DOC_DIR}/*.ind
+                   ${DOC_DIR}/*.tmp
+                   ${DOC_DIR}/*.toc
+                   ${DOC_DIR}/*.lof
+                   ${DOC_DIR}/*.lot"
+    fi
+    if [ "$cleanexamples" == true ] ; then
+        AUX_FILES="${AUX_FILES}
+                   ${EXAMPLES_DIR}/*~
+                   ${EXAMPLES_DIR}/*synctex*
+                   ${EXAMPLES_DIR}/*.run.xml
+                   ${EXAMPLES_DIR}/*.aux
+                   ${EXAMPLES_DIR}/*.acr
+                   ${EXAMPLES_DIR}/*.xsim
+                   ${EXAMPLES_DIR}/*.log
+                   ${EXAMPLES_DIR}/*.out
+                   ${EXAMPLES_DIR}/*.bbl
+                   ${EXAMPLES_DIR}/*.bcf
+                   ${EXAMPLES_DIR}/*.bib
+                   ${EXAMPLES_DIR}/*.blg
+                   ${EXAMPLES_DIR}/*.idx
+                   ${EXAMPLES_DIR}/*.ilg
+                   ${EXAMPLES_DIR}/*.ind
+                   ${EXAMPLES_DIR}/*.tmp
+                   ${EXAMPLES_DIR}/*.toc
+                   ${EXAMPLES_DIR}/*.lof
+                   ${EXAMPLES_DIR}/*.lot"
+    fi
+fi
+
+
+if [ "$build" == true ] ; then
+    if [ "$verbose" == true ] ; then
+        echo "writing style file $styname ..."
+    fi
+    # change to the code directory
+    cd ${CODE_DIR}
+    # build sty file from modules:
+    cat \
+    $pkgname.start.$moduleext \
+    $pkgname.base.$moduleext \
+    $pkgname.auxfile.$moduleext \
+    $pkgname.properties.$moduleext \
+    $pkgname.environments.$moduleext \
+    $pkgname.templates.$moduleext \
+    $pkgname.tags.$moduleext \
+    $pkgname.goals.$moduleext \
+    $pkgname.collections.$moduleext \
+    $pkgname.exercises.$moduleext \
+    $pkgname.solutions.$moduleext \
+    $pkgname.blanks.$moduleext \
+    $pkgname.grades.$moduleext \
+    $pkgname.random.$moduleext \
+    $pkgname.translations.$moduleext \
+    $pkgname.interface.$moduleext \
+    $pkgname.definitions.$moduleext \
+    > $styname
+    # append necessary end:
+    echo -e "% finish package:\n\
+\\AtEndDocument { \\\\xsim_close_aux: \\\\xsim_do_rerun: }\n\
+%----------------------------------------------------------------------------\n\
+\\\\file_input_stop:"\
+    >> $styname
+    # build xsimverb.sty
+    if [ "$verbose" == true ] ; then
+        echo "writing style file $verbname ..."
+    fi
+    cat \
+    ${pkgname}verb.start.$moduleext \
+    $pkgname.verbwrite.$moduleext \
+    > $verbname
+fi
+
+# build manual
+if [ "$manual" == true ] ; then
+    cd ${DOC_DIR}
+    if [ "$verbose" == true ] ; then
+        echo "running '$program' on '$manualfile'..."
+    fi
+    $program $manualfile
+fi
+
+# remove temporary and auxiliary files
+if [ "$cleanup" == true ] ; then
+    if [ "$verbose" == true ] ; then
+        echo "deleting auxiliary files..."
+    fi
+    for file in ${AUX_FILES}
+    do
+        if [ ! -e "${file}" ]; then continue 
+        else
+            if [ "$verbose" == true ] ; then  
+                echo "deleting file '${file}' ..."
+            fi
+            rm "${file}"
+        fi
+    done
+fi
+
+# move new sty file to local repo
+if [ "$update" == true ] ; then
+    if [ "$verbose" == true ] ; then
+        echo "updating texmf-local..."
+    fi
+    if [ ! -d "${LATEXLOCAL_DIR}/$pkgname" ]; then
+        if [ "$verbose" == true ] ; then
+            echo "creating directory '${LATEXLOCAL_DIR}/$pkgname' ..."
+        fi
+        mkdir ${LATEXLOCAL_DIR}/$pkgname
+    fi
+    cd ${CODE_DIR}
+    cp $styname ${LATEXLOCAL_DIR}/$pkgname
+    cp $verbname ${LATEXLOCAL_DIR}/$pkgname
+    if [ "$runmktexlsr" == true ] ; then
+        if [ "$verbose" == true ] ; then
+            echo "running mktexlsr ..."
+        fi
+        mktexlsr
+    fi
+fi
+
+if [ "$createzip" == true ] ; then
+    if [ -f "${SNAPSHOT_DIR}/$pkgname/$zipname.zip" ] ; then
+        rm ${SNAPSHOT_DIR}/$pkgname/$zipname.zip
+    fi
+    if [ "$verbose" == true ] ; then
+        echo "creating zip archive $zipname.zip ..."
+    fi
+    cd ${XSIM_DEV_DIR}
+    mkdir $pkgname/
+    mkdir $pkgname/examples
+    cp ${CODE_DIR}/$styname $pkgname/
+    cp ${CODE_DIR}/$verbname $pkgname/
+    cp ${DOC_DIR}/$manualfile.tex $pkgname/
+    cp ${DOC_DIR}/$manualfile.pdf $pkgname/
+    cp ${DOC_DIR}/$manualfile.cls $pkgname/
+    cp ${DOC_DIR}/examples/$pkgname.example.*.tex $pkgname/examples/
+    cp ${DOC_DIR}/examples/$pkgname.example.*.pdf $pkgname/examples/
+    cp README $pkgname/
+    zip -r $zipname.zip $pkgname/
+    rm -r $pkgname/
+    mv $zipname.zip ${SNAPSHOT_DIR}/$pkgname
+fi
+    
+cd ${START_DIR}
+    
+exit 0

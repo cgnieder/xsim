@@ -155,4 +155,4 @@ HISTORY:
                    - new load-time option `debug' - only for development
  v0.19a 2020/03/19 - fix missing-variant-bug introduced with the last update
  v0.19b 2020/04/04 - fix bug in new attribute mechanism which was a problem
-                      when `no-files` has been used
+                     when `no-files` has been used

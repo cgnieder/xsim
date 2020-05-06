@@ -1,33 +1,4 @@
-% ----------------------------------------------------------------------------
-% the XSIM package - solutions module
-% 
-%   eXercise Sheets IMproved
-% 
-% ----------------------------------------------------------------------------
-% Clemens Niederberger
-% Web:    https://github.com/cgnieder/xsim
-% E-Mail: contact@mychemistry.eu
-% ----------------------------------------------------------------------------
-% Copyright 2017--2020 Clemens Niederberger
-% 
-% This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License, either version 1.3
-% of this license or (at your option) any later version.
-% The latest version of this license is in
-%   http://www.latex-project.org/lppl.txt
-% and version 1.3 or later is part of all distributions of LaTeX
-% version 2005/12/01 or later.
-% 
-% This work has the LPPL maintenance status `maintained'.
-% 
-% The Current Maintainer of this work is Clemens Niederberger.
-% ----------------------------------------------------------------------------
-% If you have any ideas, questions, suggestions or bugs to report, please
-% feel free to contact me.
-% ----------------------------------------------------------------------------
 \XSIMmodule{solutions}{managing solutions}
-
-\xsim_load_modules:n {tags,properties}
 
 \bool_new:N \l_xsim_inside_solution_bool
 \bool_new:N \l__xsim_include_question_bool
@@ -406,9 +377,4 @@
     collection         .initial:n = false
   }
 
-% ----------------------------------------------------------------------------
-  
-\file_input_stop:
-
-2020/02/23 - resolve bug #56
-2020/03/16 - performance optimizations
+\XSIMmoduleend

@@ -934,6 +934,7 @@
 \xsim@add@example{texsx-370642}{Minimalistic layout}
 \xsim@add@example{texsx-391530}{Exercises and sub-exercises}
 \xsim@add@example{texsx-395273}{Different aspects of exercises, highlighted solutions}
+\xsim@add@example{texsx-466584}{Flushright Solutions}
 \xsim@add@example{texsx-498299}{Multiple choice questions with automated solutions}
 \xsim@add@example{texwelt-6698}{Custom list of exercises}
 \xsim@add@example{texwelt-15093}{Indicate difficulty level}

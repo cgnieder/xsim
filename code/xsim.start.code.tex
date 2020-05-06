@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------------
-% the XSIM package - modules module
+% the XSIM package
 % 
 %   eXercise Sheets IMproved
 % 
@@ -25,12 +25,100 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-%
-% this is a pseudo module as it does the actual definitions for the whole
-% module loading stuff; we do this so both packages `xsimverb' and `xsim' can
-% use the `verbwrite' module
-\RequirePackage{scrlfile}
+\RequirePackage {expl3,xparse,l3keys2e}
+
 \ExplSyntaxOn
+
+\tl_const:Nn \c_xsim_date_tl                 {2020/04/04}
+\tl_const:Nn \c_xsim_version_major_number_tl {0}
+\tl_const:Nn \c_xsim_version_minor_number_tl {19}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {b}
+\tl_const:Nx \c_xsim_version_number_tl
+  {
+    \c_xsim_version_major_number_tl .
+    \c_xsim_version_minor_number_tl
+  }
+\tl_const:Nx \c_xsim_version_tl
+  {
+    \c_xsim_version_number_tl
+    \c_xsim_version_subrelease_tl
+  }
+\tl_const:Nn \c_xsim_info_tl {eXercise ~ Sheets ~ IMproved}
+
+\ProvidesExplPackage
+  {xsim}
+  {\c_xsim_date_tl}
+  {\c_xsim_version_tl}
+  {\c_xsim_info_tl}
+
+% --------------------------------------------------------------------------
+% options, information
+
+\cs_new_protected:Npn \xsim_bool_provide:N #1
+  { \bool_if_exist:NF #1 { \bool_new:N #1 } }
+  
+\xsim_bool_provide:N \g__xsim_final_bool
+\xsim_bool_provide:N \g__xsim_verbose_bool
+\xsim_bool_provide:N \g_xsim_clear_aux_bool
+\xsim_bool_provide:N \g__xsim_write_to_file_bool
+\xsim_bool_provide:N \g_xsim_use_aux_bool
+\xsim_bool_provide:N \g__xsim_rerun_bool
+\xsim_bool_provide:N \g__xsim_debug_bool
+\xsim_bool_provide:N \g__xsim_blank_bool
+
+\keys_define:nn {xsim/package}
+  {
+    final     .bool_gset:N         = \g__xsim_final_bool ,
+    verbose   .bool_gset:N         = \g__xsim_verbose_bool ,
+    debug     .bool_gset:N         = \g__xsim_debug_bool ,
+    clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
+    no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool ,
+    no-files  .initial:n           = false ,
+    use-aux   .bool_gset:N         = \g_xsim_use_aux_bool ,
+    use-aux   .initial:n           = false ,
+    blank     .bool_gset:N         = \g__xsim_blank_bool ,
+    blank     .initial:n           = false
+  }
+
+\ProcessKeysPackageOptions {xsim/package}
+
+\keys_define:nn {xsim/package}
+  {
+    final     .code:n = \msg_error:nnn {xsim} {load-time-option} {final} ,
+    verbose   .code:n = \msg_error:nnn {xsim} {load-time-option} {verbose} ,
+    debug     .code:n = \msg_error:nnn {xsim} {load-time-option} {debug} ,
+    clear-aux .code:n = \msg_error:nnn {xsim} {load-time-option} {clear-aux} ,
+    no-files  .code:n = \msg_error:nnn {xsim} {load-time-option} {no-files} ,
+    use-aux   .code:n = \msg_error:nnn {xsim} {load-time-option} {use-aux} ,
+    blank     .code:n = \msg_error:nnn {xsim} {load-time-option} {blank}
+  }
+
+% --------------------------------------------------------------------------
+
+% messages:
+\msg_new:nnn {xsim} {load-time-option}
+  {
+    `#1'~ is~ a~ load-time~ option! \\
+    You~ cannot~ set~ it~ with~ \token_to_str:N \xsimsetup ! \\
+    You~ need~ to~ use~ \token_to_str:N \usepackage [#1] {xsim} .
+  }
+
+\msg_new:nnn {xsim} {rerun}
+  {
+    Exercise~ properties~ may~ have~ changed.~ Rerun~ to~ get~ them~
+    synchronized.
+  }
+
+\msg_new:nnn {xsim} {verbose} { #1 ~( \msg_line_context: ) }
+
+% --------------------------------------------------------------------------
+
+\cs_new_protected:Npn \xsim_do_rerun:
+  { \xsim_if_rerun:T { \msg_warning:nn {xsim} {rerun} } }
+
+% --------------------------------------------------------------------------
+% MODULE mechanism
+\RequirePackage{scrlfile}
 
 \msg_new:nnn {xsim} {module-missing}
   {
@@ -48,8 +136,8 @@
 \msg_new:nnn {xsim} {forbidden-module}
   {
     You've~ requested~ the~ xsim~ module~ `modules'~ \msg_line_context: .~
-  This~ module~ is~ a~ pseudo~ module~ which~ may~ not~ be~ loaded~ through~
-  the~ module~ loading~ mechansim.
+    This~ module~ is~ a~ pseudo~ module~ which~ may~ not~ be~ loaded~ through~
+    the~ module~ loading~ mechansim.
   }
 
 % ----------------------------------------------------------------------------
@@ -58,12 +146,6 @@
 
 \tl_const:Nn \c__xsim_module_extension_tl {code.tex}
 \tl_const:Nn \c__xsim_module_prefix_tl    {xsim}
-
-\seq_new:N \g__xsim_loaded_modules_seq
-\prop_new:N \g__xsim_loaded_modules_prop
-
-\cs_new_protected:Npn \xsim_load_modules:n #1
-  { \clist_map_inline:nn {#1} { \xsim_load_module:n {##1} } }
 
 \cs_new_protected:Npn \xsim_load_module:n #1
   {
@@ -91,9 +173,11 @@
   }
 \cs_generate_variant:Nn \__xsim_load_module:n {V}
 
+\tl_new:N \g__xsim_modules_loaded_tl
+
 \prg_new_conditional:Npnn \xsim_if_module_loaded:n #1 {p,T,F,TF}
   {
-    \seq_if_in:NnTF \g__xsim_loaded_modules_seq {#1}
+    \tl_if_in:NnTF \g__xsim_modules_loaded_tl {#1}
       { \prg_return_true: }
       { \prg_return_false: }
   }
@@ -110,7 +194,7 @@
 % module hooks:
 % #1: module
 % #2: code
-\cs_new_protected:Npn \xsim_after_module:nn #1#2
+\cs_new_protected:Npn \xsim_module_after:nn #1#2
   {
     \xsim_if_module_loaded:nTF {#1}
       {#2}
@@ -119,8 +203,9 @@
 
 % #1: module
 % #2: code
-\cs_new_protected:Npn \xsim_before_module:nn #1#2
+\cs_new_protected:Npn \xsim_module_before:nn #1#2
   {
+    % TODO: error in T case?
     \xsim_if_module_loaded:nF {#1}
       { \__xsim_add_to_module_hook:nnn {#1} {before} {#2} }
   }
@@ -132,22 +217,23 @@
   {
     \xsim_if_module_loaded:nF {#1}
       {
-        \tl_if_exist:cF {g__xsim_module_#1_#2_hook_tl}
-          { \tl_new:c {g__xsim_module_#1_#2_hook_tl} }
-        \tl_gput_right:cn {g__xsim_module_#1_#2_hook_tl} {#3}
+        \tl_if_exist:cF {g__xsim_module_hook_#1_#2_tl}
+          { \tl_new:c {g__xsim_module_hook_#1_#2_tl} }
+        \tl_gput_right:cn {g__xsim_module_hook_#1_#2_tl} {#3}
       }
   }
 
 % #1: module
 % #2: hook name
-\cs_new_protected:Npn \__xsim_use_module_hook:nn #1#2
+\cs_new_protected:Npn \__xsim_module_hook_use:nn #1#2
   {
-    \tl_if_exist:cT {g__xsim_module_#1_#2_hook_tl}
+    \tl_if_exist:cT {g__xsim_module_hook_#1_#2_tl}
       {
-        \tl_use:c {g__xsim_module_#1_#2_hook_tl}
-        \tl_gclear:c {g__xsim_module_#1_#2_hook_tl}
+        \tl_use:c {g__xsim_module_hook_#1_#2_tl}
+        \tl_gclear:c {g__xsim_module_hook_#1_#2_tl}
       }
   }
+\cs_generate_variant:Nn \__xsim_module_hook_use:nn {V}
 
 % --------------------------------------------------------------------------
 
@@ -167,8 +253,6 @@
 
 \cs_new_protected:Npn \__xsim_module:nn #1#2
   {
-    \seq_gput_right:Nn \g__xsim_loaded_modules_seq {#1}
-    \prop_gput:Nnn \g__xsim_loaded_modules_prop {#1} {#2}
     \str_if_eq:xxF
       {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
       {\@currname.\@currext}
@@ -191,13 +275,9 @@
 
 % --------------------------------------------------------------------------
 % define a xsim module:
-% #1: name
-% #2: description
-\NewDocumentCommand \XSIMmodule {mm}
-  { \__xsim_module:nn {#1} {#2} \ExplSyntaxOn }
-
-% --------------------------------------------------------------------------
-% style files
+% #1: if star: expl3 mode
+% #2: name
+% #3: description
 \NewDocumentCommand \xsimstyle   {smO{}}
   {
     \__xsim_module:nn {style.#2} {#3}
@@ -217,4 +297,31 @@
   { \xsim_load_style:n {#1} }
 
 % --------------------------------------------------------------------------
-\file_input_stop:
+% define internal xsim modules:
+\tl_new:N \g_xsim_module_tl
+\tl_new:N \g__xsim_module_stop_tl
+
+\cs_new_protected:Npn \xsim_stop_module:n #1
+  { \tl_gput_right:Nn \g__xsim_module_stop_tl {{#1}} }
+
+% #1: name
+% #2: description
+\cs_set_protected:Npn \XSIMmodule #1#2
+  {
+    \msg_log:nnnn {xsim} {loading-module} {#1} {#2}
+    \tl_gput_right:Nn \g__xsim_modules_loaded_tl {{#1}}
+    \tl_gset:Nn \g_xsim_module_tl {#1}
+    \__xsim_module_hook_use:nn {#1} {before}
+    \tl_map_inline:Nn \g__xsim_module_stop_tl
+      {
+        \str_if_eq:nnT {##1} {#1}
+          { \tl_map_break:n { \__xsim_gobble_module:w } }
+      }
+  }
+
+\cs_set_protected:Npn \XSIMmoduleend
+  { \__xsim_module_hook_use:Vn \g_xsim_module_tl {after} }
+
+\cs_new_protected:Npn \__xsim_gobble_module:w #1 \XSIMmoduleend {}
+
+% --------------------------------------------------------------------------

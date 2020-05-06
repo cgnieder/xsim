@@ -52,17 +52,19 @@
   {\c_xsim_info_tl}
 
 % --------------------------------------------------------------------------
-
 % options, information
 
-\bool_new:N \g__xsim_final_bool
-\bool_new:N \g__xsim_verbose_bool
-\bool_new:N \g__xsim_debug_bool
-\bool_new:N \g_xsim_clear_aux_bool
-\bool_new:N \g__xsim_write_to_file_bool
-\bool_new:N \g_xsim_use_aux_bool
-\bool_new:N \g__xsim_rerun_bool
-\bool_new:N \g__xsim_blank_bool
+\cs_new_protected:Npn \xsim_bool_provide:N #1
+  { \bool_if_exist:NF #1 { \bool_new:N #1 } }
+  
+\xsim_bool_provide:N \g__xsim_final_bool
+\xsim_bool_provide:N \g__xsim_verbose_bool
+\xsim_bool_provide:N \g_xsim_clear_aux_bool
+\xsim_bool_provide:N \g__xsim_write_to_file_bool
+\xsim_bool_provide:N \g_xsim_use_aux_bool
+\xsim_bool_provide:N \g__xsim_rerun_bool
+\xsim_bool_provide:N \g__xsim_debug_bool
+\xsim_bool_provide:N \g__xsim_blank_bool
 
 \keys_define:nn {xsim/package}
   {
@@ -115,22 +117,5436 @@
   { \xsim_if_rerun:T { \msg_warning:nn {xsim} {rerun} } }
 
 % --------------------------------------------------------------------------
+% MODULE mechanism
+\RequirePackage{scrlfile}
 
-% load module mechanism:
-\tl_set:Nn \l_tmpa_tl {code.tex}
-\@onefilewithoptions {xsim.modules} [][] \l_tmpa_tl
-
-% --------------------------------------------------------------------------
-\xsim_load_modules:n {definitions}
-
-\AtEndDocument
+\msg_new:nnn {xsim} {module-missing}
   {
-    \xsim_do_rerun:
-    \xsim_close_aux:
+    You've~ requested~ the~ xsim~ module~ `#1'~ but~ it~ appears~ to~
+    be~ missing~ on~ your~ system.~ Maybe~ you've~ misspelled~ the~ name?~
+    Loading~ the~ module~ will~ abort~ \msg_line_context:
+  }
+
+\msg_new:nnn {xsim} {loading-module}
+  { Loading~ module~ `#1'~ ... }
+
+\msg_new:nnn {xsim} {wrong-module-name}
+  { The~ module~ file~ name~ is~ `#2'~ but~ it~ provides~ module~ `#1'. }
+
+\msg_new:nnn {xsim} {forbidden-module}
+  {
+    You've~ requested~ the~ xsim~ module~ `modules'~ \msg_line_context: .~
+    This~ module~ is~ a~ pseudo~ module~ which~ may~ not~ be~ loaded~ through~
+    the~ module~ loading~ mechansim.
+  }
+
+% ----------------------------------------------------------------------------
+
+\cs_generate_variant:Nn \str_if_eq:nnF {xx}
+
+\tl_const:Nn \c__xsim_module_extension_tl {code.tex}
+\tl_const:Nn \c__xsim_module_prefix_tl    {xsim}
+
+\cs_new_protected:Npn \xsim_load_module:n #1
+  {
+    \tl_set:Nx \l_tmpa_tl { \tl_trim_spaces:n {#1} }
+    \str_if_eq:VnTF \l_tmpa_tl {modules}
+      { \msg_error:nn {xsim} {forbidden-module} }
+      {  \__xsim_load_module:V \l_tmpa_tl }
+  }
+
+\cs_new_protected:Npn \__xsim_load_module:n #1
+  {
+    \xsim_if_module_loaded:nF {#1}
+      {
+        \xsim_if_module_exist:nTF {#1}
+          {
+            \__xsim_use_module_hook:nn {#1} {before}
+            \msg_info:nnn {xsim} {loading-module} {#1}
+            \@onefilewithoptions
+              {\c__xsim_module_prefix_tl.#1}[][]
+              \c__xsim_module_extension_tl
+            \__xsim_use_module_hook:nn {#1} {after}
+          }
+          { \msg_error:nnn {xsim} {module-missing} {#1} }
+      }
+  }
+\cs_generate_variant:Nn \__xsim_load_module:n {V}
+
+\tl_new:N \g__xsim_modules_loaded_tl
+
+\prg_new_conditional:Npnn \xsim_if_module_loaded:n #1 {p,T,F,TF}
+  {
+    \tl_if_in:NnTF \g__xsim_modules_loaded_tl {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_module_exist:n #1 {p,T,F,TF}
+  {
+    \file_if_exist:nTF
+      {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+      { \prg_return_true: }
+      { \prg_return_false: }
   }
 
 % --------------------------------------------------------------------------
-\file_input_stop:
+% module hooks:
+% #1: module
+% #2: code
+\cs_new_protected:Npn \xsim_module_after:nn #1#2
+  {
+    \xsim_if_module_loaded:nTF {#1}
+      {#2}
+      { \__xsim_add_to_module_hook:nnn {#1} {after} {#2} }
+  }
+
+% #1: module
+% #2: code
+\cs_new_protected:Npn \xsim_module_before:nn #1#2
+  {
+    % TODO: error in T case?
+    \xsim_if_module_loaded:nF {#1}
+      { \__xsim_add_to_module_hook:nnn {#1} {before} {#2} }
+  }
+
+% #1: module
+% #2: hook name
+% #3: code
+\cs_new_protected:Npn \__xsim_add_to_module_hook:nnn #1#2#3
+  {
+    \xsim_if_module_loaded:nF {#1}
+      {
+        \tl_if_exist:cF {g__xsim_module_hook_#1_#2_tl}
+          { \tl_new:c {g__xsim_module_hook_#1_#2_tl} }
+        \tl_gput_right:cn {g__xsim_module_hook_#1_#2_tl} {#3}
+      }
+  }
+
+% #1: module
+% #2: hook name
+\cs_new_protected:Npn \__xsim_module_hook_use:nn #1#2
+  {
+    \tl_if_exist:cT {g__xsim_module_hook_#1_#2_tl}
+      {
+        \tl_use:c {g__xsim_module_hook_#1_#2_tl}
+        \tl_gclear:c {g__xsim_module_hook_#1_#2_tl}
+      }
+  }
+\cs_generate_variant:Nn \__xsim_module_hook_use:nn {V}
+
+% --------------------------------------------------------------------------
+
+\tl_new:N \l__xsim_module_date_tl
+\tl_new:N \l__xsim_module_version_tl
+
+\tl_if_exist:NF \c_xsim_date_tl
+  { \tl_set:Nx \l__xsim_module_date_tl {\c_xsimverb_date_tl} }
+\tl_if_exist:NF \c_xsim_version_tl
+  { \tl_set:Nx \l__xsim_module_version_tl {\c_xsimverb_version_tl} }
+
+\AfterPackage*{xsim}
+  {
+    \tl_set:Nx \l__xsim_module_date_tl {\c_xsim_date_tl}
+    \tl_set:Nx \l__xsim_module_version_tl {\c_xsim_version_tl}
+  }
+
+\cs_new_protected:Npn \__xsim_module:nn #1#2
+  {
+    \str_if_eq:xxF
+      {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+      {\@currname.\@currext}
+      {
+        \msg_error:nnnxx {xsim} {wrong-module-name}
+          {#1}
+          {\@currname.\@currext}
+      }
+    \ProvidesFile
+      {\c__xsim_module_prefix_tl.#1.\c__xsim_module_extension_tl}
+      [
+        \l__xsim_module_date_tl
+        \c_space_tl
+        v \l__xsim_module_version_tl
+        \c_space_tl
+        xsim~ module~ `#1'~ (#2)
+      ]
+  }
+\cs_generate_variant:Nn \msg_error:nnnn {nnnx}
+
+% --------------------------------------------------------------------------
+% define a xsim module:
+% #1: if star: expl3 mode
+% #2: name
+% #3: description
+\NewDocumentCommand \xsimstyle   {smO{}}
+  {
+    \__xsim_module:nn {style.#2} {#3}
+    \IfBooleanT {#1} { \ExplSyntaxOn }
+  }
+
+% \cs_new_protected:Npn \xsim_style_options:nn #1#2
+%   { \keys_define:nn {xsim/#1} {#2} }
+
+\cs_new_protected:Npn \xsim_load_style:n #1
+  { \clist_map_inline:nn {#1} { \xsim_load_module:n {style.##1} } }
+
+\keys_define:nn {xsim}
+  { load-style .code:n = \xsim_load_style:n {#1} }
+
+\NewDocumentCommand \loadxsimstyle {m}
+  { \xsim_load_style:n {#1} }
+
+% --------------------------------------------------------------------------
+% define internal xsim modules:
+\tl_new:N \g_xsim_module_tl
+\tl_new:N \g__xsim_module_stop_tl
+
+\cs_new_protected:Npn \xsim_stop_module:n #1
+  { \tl_gput_right:Nn \g__xsim_module_stop_tl {{#1}} }
+
+% #1: name
+% #2: description
+\cs_set_protected:Npn \XSIMmodule #1#2
+  {
+    \msg_log:nnnn {xsim} {loading-module} {#1} {#2}
+    \tl_gput_right:Nn \g__xsim_modules_loaded_tl {{#1}}
+    \tl_gset:Nn \g_xsim_module_tl {#1}
+    \__xsim_module_hook_use:nn {#1} {before}
+    \tl_map_inline:Nn \g__xsim_module_stop_tl
+      {
+        \str_if_eq:nnT {##1} {#1}
+          { \tl_map_break:n { \__xsim_gobble_module:w } }
+      }
+  }
+
+\cs_set_protected:Npn \XSIMmoduleend
+  { \__xsim_module_hook_use:Vn \g_xsim_module_tl {after} }
+
+\cs_new_protected:Npn \__xsim_gobble_module:w #1 \XSIMmoduleend {}
+
+% --------------------------------------------------------------------------
+\XSIMmodule{base}{basic functionality of the package}
+
+\tl_new:N \g_xsim_end_document_hook_tl
+\tl_new:N \g_xsim_begin_document_hook_tl
+
+\AtBeginDocument { \tl_use:N \g_xsim_begin_document_hook_tl }
+\AtEndDocument   { \tl_use:N \g_xsim_end_document_hook_tl }
+
+\cs_new_protected:Npn \xsim_at_begin_document:n #1
+  { \tl_gput_right:Nn \g_xsim_begin_document_hook_tl {#1} }
+
+\cs_new_protected:Npn \xsim_at_end_document:n #1
+  { \tl_gput_right:Nn \g_xsim_end_document_hook_tl {#1} }
+
+% ----------------------------------------------------------------------------
+
+% variants of kernel functions:
+\cs_generate_variant:Nn \seq_set_split:Nnn  {Nnx,NV}
+\cs_generate_variant:Nn \seq_gset_split:Nnn {c,cVx,cnx}
+\cs_generate_variant:Nn \seq_use:Nn         {cV}
+\cs_generate_variant:Nn \seq_count:N        {c}
+\cs_generate_variant:Nn \seq_if_empty:NT    {c}
+\cs_generate_variant:Nn \seq_if_in:NnT      {cV}
+\cs_generate_variant:Nn \seq_gremove_all:Nn {cV}
+\cs_generate_variant:Nn \seq_gput_right:Nn  {cV}
+\cs_generate_variant:Nn \prop_put:Nnn       {Nnx,cxx}
+\cs_generate_variant:Nn \prop_gput:Nnn      {Nx,Nnx,cxx}
+\cs_generate_variant:Nn \prop_item:Nn       {c}
+\cs_generate_variant:Nn \prop_if_in:NnTF    {Nx}
+\cs_generate_variant:Nn \use:nn             {nx}
+\cs_generate_variant:Nn \file_input:n       {V,x}
+\cs_generate_variant:Nn \file_if_exist:nT   {V,x}
+\cs_generate_variant:Nn \file_if_exist:nTF  {V}
+\cs_generate_variant:Nn \msg_error:nnnnn    {nnnxx}
+\cs_generate_variant:Nn \keys_define:nn     {nx}
+\cs_generate_variant:Nn \keys_set:nn        {xn}
+\cs_generate_variant:Nn \tl_mixed_case:n    {x,f}
+\cs_generate_variant:Nn \tl_if_eq:nnTF      {ff,V}
+\cs_generate_variant:Nn \tl_if_eq:nnT       {x}
+\cs_generate_variant:Nn \tl_if_blank:nTF    {f}
+\cs_generate_variant:Nn \tl_set_rescan:Nnn  {Nnx}
+\cs_generate_variant:Nn \iow_now:Nn         {NV}
+\cs_generate_variant:Nn \str_if_eq:nnT      {x}
+\cs_generate_variant:Nn \str_if_eq:nnF      {xx}
+\cs_generate_variant:Nn \str_if_eq_p:nn     {e}
+\cs_generate_variant:Nn \prg_new_protected_conditional:Npnn {c}
+
+% ----------------------------------------------------------------------------
+% temporary variables:
+\tl_new:N    \l__xsim_tmpa_tl
+\tl_new:N    \l__xsim_tmpb_tl
+\tl_new:N    \l__xsim_tmpc_tl
+\tl_new:N    \l__xsim_tmpd_tl
+
+\str_new:N   \l__xsim_tmpa_str
+\str_new:N   \l__xsim_tmpb_str
+\str_new:N   \l__xsim_tmpc_str
+
+\bool_new:N  \l__xsim_tmpa_bool
+\bool_new:N  \l__xsim_tmpb_bool
+\bool_new:N  \l__xsim_tmpc_bool
+
+\dim_new:N   \l__xsim_tmpa_dim
+\dim_new:N   \l__xsim_tmpb_dim
+\dim_new:N   \l__xsim_tmpc_dim
+
+\seq_new:N   \l__xsim_tmpa_seq
+\seq_new:N   \l__xsim_tmpb_seq
+\seq_new:N   \l__xsim_tmpc_seq
+
+\int_new:N   \l__xsim_tmpa_int
+\int_new:N   \l__xsim_tmpb_int
+\int_new:N   \l__xsim_tmpc_int
+
+\box_new:N   \l__xsim_tmpa_box
+\box_new:N   \l__xsim_tmpb_box
+\box_new:N   \l__xsim_tmpc_box
+
+\clist_new:N \l__xsim_tmpa_clist
+\clist_new:N \l__xsim_tmpb_clist
+\clist_new:N \l__xsim_tmpc_clist
+
+% ----------------------------------------------------------------------------
+
+\prg_new_conditional:Npnn \xsim_if_komascript: {T,F,TF}
+  {
+    \cs_if_exist:cTF {KOMAClassName}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
+\prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_final_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_verbose_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_debug: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_debug_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_package_blank: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_blank_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_rerun: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_rerun_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_write_to_files: {p,T,F,TF}
+  {
+    \bool_if:NTF \g__xsim_write_to_file_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_clear_aux: {p,T,F,TF}
+  {
+    \xsim_if_final:TF
+      { \prg_return_false: }
+      {
+        \bool_if:NTF \g_xsim_clear_aux_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+  }
+
+\cs_new_protected:Npn \xsim_verbose:n #1
+  { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
+\cs_generate_variant:Nn \xsim_verbose:n {x}
+
+\cs_new_protected:Npn \xsim_rerun:
+  { \bool_gset_true:N \g__xsim_rerun_bool }
+
+\prg_new_conditional:Npnn \xsim_if_chapter: {p,T,F,TF}
+  {
+    \bool_lazy_and:nnTF
+      { \cs_if_exist_p:N \chapter }
+      { \cs_if_exist_p:N \c@chapter }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: macro name
+% #2: 0 to 9 times `n' (= number of arguments of internal item)
+% #3: code; may contain a suiting \__xsim_loop_item:<nnn>
+\cs_new_protected:Npn \xsim_define_loop_macro:Nnn #1#2#3
+  {
+    \xsim_verbose:n { Defining~ loop~ macro~ #1 }
+    \cs_new_protected:Npn #1 ##1##2
+      { \cs_set:cn {__xsim_loop_item:#2} {##2} #3 }
+  }
+
+% ----------------------------------------------------------------------------
+
+\msg_new:nnn {xsim} {attribute-not-set}
+  { The~ attribute~ `#1'~ is~ not~ set~ \msg_line_context: }
+
+% #1: attribute
+% #2: item
+\cs_new_protected:Npn \xsim_attribute_new:nn #1#2
+  { \cs_new:cpn {____xsim_attribute_ \tl_to_str:n {#1::#2} :} {} }
   
-2020/02/20 - implement issue #31 (blank package option)
-2020/02/21 - don't allow package options to be set with \xsimsetup
+% #1: attribute
+% #2: item
+% #3: value
+\cs_new_protected:Npn \xsim_attribute_set:nnn #1#2#3
+  {
+    \cs_gset:cpx
+      {____xsim_attribute_ \tl_to_str:n {#1::#2} :}
+      { \exp_not:n { \exp_not:n {#3} } }
+  }
+\cs_generate_variant:Nn \xsim_attribute_set:nnn {nnx}
+
+% #1: attribute
+% #2: item
+\cs_new_protected:Npn \xsim_attribute_unset:nn #1#2
+  { \cs_undefine:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :} }
+  
+% #1: attribute
+% #2: item
+\cs_new:Npn \xsim_attribute_get:nn #1#2
+  {
+    \cs_if_exist:cTF {____xsim_attribute_ \tl_to_str:n {#1::#2} :}
+      { \use:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :} }
+      {
+        \xsim_if_debug:T
+          { \msg_expandable_error:nnn {xsim} {attribute-not-set} {#1::#2} }
+      }
+  }
+
+% #1: attribute
+% #2: item
+\prg_new_conditional:Npnn \xsim_attribute_if_set:nn #1#2 {p,T,F,TF}
+  {
+    \cs_if_exist:cTF {____xsim_attribute_ \tl_to_str:n {#1::#2} :}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: attribute
+% #2: item
+\prg_new_conditional:Npnn \__xsim_if_attribute_eq:nnn #1#2#3 {p,T,F,TF}
+  {
+    \tl_if_eq:enTF
+      { \use:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :} }
+      {#3}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: attribute
+% #2: item
+\cs_new_protected:Npn \xsim_attribute_show:nn #1#2
+  {
+    \iow_term:n {}
+    \iow_term:x
+      {
+        \c_space_tl \c_space_tl
+        \tl_to_str:n {#1::#2}
+        \c_space_tl \c_space_tl == \c_space_tl \c_space_tl
+        {\use:c {____xsim_attribute_ \tl_to_str:n {#1::#2} :}}
+      }
+    \iow_term:n {}
+  }
+
+% ----------------------------------------------------------------------------
+
+\cs_new_protected:Npn \xsim_setup:n #1
+  { \keys_set:nn {xsim} {#1} }
+
+\XSIMmoduleend
+\XSIMmodule{auxfile}{writing stuff to an auxiliary file}
+
+\prg_new_conditional:Npnn \xsim_if_use_aux: {p,T,F,TF}
+  {
+    \bool_if:NTF \g_xsim_use_aux_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new_protected:Npn \xsim_write_to_aux:n #1
+  {
+    \legacy_if:nT {@filesw}
+      {
+        \xsim_if_use_aux:TF
+          { \iow_now:Nn \@auxout {#1} }
+          { \iow_now:Nn \l__xsim_aux_file_iow {#1} }
+      }
+  }
+\cs_generate_variant:Nn \xsim_write_to_aux:n {x}
+
+% --------------------------------------------------------------------------
+
+\cs_new_protected:Npn \XSIM #1 { \use:c {XSIMaux#1} }
+
+\cs_new_protected:Npn \xsim_new_aux_property:cpn #1
+  { \cs_new_protected:cpn {XSIMaux#1} }
+
+\cs_new_protected:Npn \xsim_add_property_to_aux:nn #1#2
+  {
+    \xsim_verbose:n { Writing~ command~ \XSIM {#1}~ to~ aux~ file }
+    \xsim_write_to_aux:x { \token_to_str:N \XSIM {#1} #2 }
+  }
+
+\xsim_at_begin_document:n
+  {
+    \iow_now:Nx \@auxout
+      { \token_to_str:N \providecommand \token_to_str:N \XSIM [1] {} }
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_if_use_aux:F
+  {
+    \iow_new:N \l__xsim_aux_file_iow
+    \xsim_at_begin_document:n
+      { \iow_open:Nn \l__xsim_aux_file_iow { \c_sys_jobname_str .xsim } }
+  }
+
+\cs_new_protected:Npn \xsim_close_aux:
+  {
+    \xsim_if_use_aux:F
+      {
+        \iow_close:N \l__xsim_aux_file_iow
+        \legacy_if:nT {@filesw}
+          { \iow_now:Nx \@auxout { \token_to_str:N \XSIM {readaux} } }
+      }
+  }
+
+\xsim_new_aux_property:cpn {readaux}
+  {
+    \file_if_exist:nT { \c_sys_jobname_str .xsim }
+      { \file_input:n { \c_sys_jobname_str .xsim } }
+  }
+
+% ----------------------------------------------------------------------------
+% list for recording values that need to be written to the aux file and
+% updated at begin document
+
+\str_new:N \l__xsim_split_aux_lists_str
+\keys_define:nn {xsim}
+  {
+    split-aux-lists .code:n    = \str_set:Nn \l__xsim_split_aux_lists_str {#1} ,
+    split-aux-lists .initial:n = ||
+  }
+
+% define list:
+% #1: name
+\cs_new_protected:Npn \xsim_new_list:n #1
+  {
+    \xsim_verbose:n { Defining~ new~ auxfile~ list~ `#1'. }
+    \seq_new:c {g__xsim_list_#1_seq}
+    \seq_new:c {g__xsim_list_recorded_#1_seq}
+    \xsim_new_aux_property:cpn {#1} ##1
+      {
+        \tl_if_blank:nF {##1}
+          {
+            \seq_gset_split:cVx {g__xsim_list_#1_seq}
+              \l__xsim_split_aux_lists_str
+              { \tl_to_str:n {##1} }
+            \seq_map_inline:cn {g__xsim_list_#1_seq}
+              { \xsim_attribute_set:nnn {#1} {####1} {} }
+          }
+      }
+    \xsim_at_begin_document:n
+      {
+        \seq_gclear:c {g__xsim_list_recorded_#1_seq}
+        \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
+        \seq_map_inline:Nn \l__xsim_tmpa_seq
+          {
+            \str_set:Nn \l__xsim_tmpa_str {##1}
+            \seq_gput_right:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str
+          }
+        \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
+      }
+  }
+
+% add to or remove from list:
+% #1: name
+% #2: entry
+\cs_new_protected:Npn \xsim_add_to_list:nn #1#2
+  {
+    \xsim_verbose:n { Adding~ `#2'~ to~ list~ `#1'. }
+    \str_set:Nn \l__xsim_tmpa_str {#2}
+    \xsim_attribute_set:nnn {#1} {#2} {}
+    \seq_if_in:cVT {g__xsim_list_#1_seq} \l__xsim_tmpa_str
+      { \seq_gremove_all:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str }
+    \seq_gput_right:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str
+  }
+\cs_generate_variant:Nn \xsim_add_to_list:nn {nx}
+
+% #1: name
+% #2: entry
+\cs_new_protected:Npn \xsim_remove_from_list:nn #1#2
+  {
+    \xsim_verbose:n { Removing~ `#2'~ to~ list~ `#1'. }
+    \str_set:Nn \l__xsim_tmpa_str {#2}
+    \xsim_attribute_if_set:nnT {#1} {#2}
+      { \xsim_attribute_unset:nn {#1} {#2} }
+    \seq_if_in:cVT {g__xsim_list_#1_seq} \l__xsim_tmpa_str
+      { \seq_gremove_all:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str }
+    \seq_if_in:cVT {g__xsim_list_recorded#1_seq} \l__xsim_tmpa_str
+      { \seq_gremove_all:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str }
+  }
+\cs_generate_variant:Nn \xsim_remove_from_list:nn {nx}
+
+% check if in list:
+% #1: name
+% #2: entry
+\prg_new_conditional:Npnn \xsim_if_in_list:nn #1#2 {p,T,F,TF}
+  {
+    \xsim_attribute_if_set:nnTF {#1} {#2}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_in_list:nnTF {nx}
+\cs_generate_variant:Nn \xsim_if_in_list:nnT  {nx}
+
+\bool_new:N \l__xsim_empty_lists_bool
+\cs_new_protected:Npn \xsim_empty_lists:
+  { \bool_set_true:N \l__xsim_empty_lists_bool }
+
+% update list (should be used inside \xsim_at_end_document:n):
+% #1: name
+\cs_new_protected:Npn \xsim_update_list:n #1
+  {
+    \xsim_verbose:n { Updating~ list~ `#1'. }
+    \seq_remove_duplicates:c {g__xsim_list_#1_seq}
+    \seq_remove_duplicates:c {g__xsim_list_recorded_#1_seq}
+    \str_set:Nx \l__xsim_tmpa_str
+      { \seq_use:cn {g__xsim_list_#1_seq} {} }
+    \str_set:Nx \l__xsim_tmpb_str
+      { \seq_use:cn {g__xsim_list_recorded_#1_seq} {} }
+    \str_if_eq:NNF \l__xsim_tmpa_str \l__xsim_tmpb_str
+      { \xsim_rerun: }
+    \bool_if:NF \l__xsim_empty_lists_bool
+      {
+        \xsim_add_property_to_aux:nn {#1}
+          { { \seq_use:cV {g__xsim_list_#1_seq} \l__xsim_split_aux_lists_str } }
+      }
+  }
+
+% loop over list:
+% #1: name
+% #2: code
+\cs_new_protected:Npn \xsim_foreach_list_entry:nn #1#2
+  { \seq_map_inline:cn {g__xsim_list_recorded_#1_seq} {#2} }
+
+\cs_new_protected:Npn \xsim_foreach_new_list_entry:nn #1#2
+  { \seq_map_inline:cn {g__xsim_list_#1_seq} {#2} }
+
+% length of a list:
+% #1: name
+\cs_new:Npn \xsim_list_count:n #1
+  { \seq_count:c {g__xsim_list_recorded_#1_seq} }
+
+% item of a list:
+% #1: name
+% #2: integer
+\cs_new:Npn \xsim_list_item:nn #1#2
+  { \seq_item:cn {g__xsim_list_recorded_#1_seq} {#2} }
+
+\XSIMmoduleend
+\XSIMmodule{properties}{properties of exercises}
+
+\msg_new:nnn {xsim} {unknown-property}
+  {
+    You~ tried~ to~ set~ the~ property~ `#1'~ \msg_line_context: . \\
+    This~ property~ does~ not~ exist.~ Check~ for~ a~ typo~ or~ \\
+    define~ the~ property~ yourself.
+  }
+
+\msg_new:nnn {xsim} {property-unique}
+  {
+    You~ tried~ to~ set~ the~ property~ `#1'~ \msg_line_context: . \\
+    This~ property~ has~ to~ have~ a~ unique~ value~ and~ thus~ \\
+    cannot~ be~ set~ to~ `#2'~ since~ this~ value~ is~ already~ talen.
+  }
+
+\msg_new:nnn {xsim} {no-boolean-property}
+  {
+    You~ tried~ to~ check~ the~ boolean~ value~ of~ property~ `#1'~
+    \msg_line_context: . \\
+    However,~ property~ `#1'~ is~ not~ a~ boolean~ property!
+  }
+
+\msg_new:nnn {xsim} {unbalanced-property-list}
+  {
+    There~ is~ a~ mis-match~ in~ the~ property~ list: \\
+    `#1' \\
+    \msg_line_context:
+  }
+
+\seq_new:N \l__xsim_properties_seq
+\seq_new:N \l__xsim_boolean_properties_seq
+\seq_new:N \l__xsim_unique_properties_seq
+\seq_new:N \l__xsim_noupdate_properties_seq
+\seq_new:N \l__xsim_given_properties_seq
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \__xsim_define_property:nnn #1#2#3
+  { \xsim_attribute_new:nn {#1!#2} {#3} }
+
+% check if property is set:
+% #1: type
+% #2: id
+% #3: property
+\prg_new_conditional:Npnn \xsim_if_property_set:nnn #1#2#3 {p,T,F,TF}
+  {
+    \xsim_attribute_if_set:nnTF {#1!#2} {#3}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\prg_generate_conditional_variant:Nnn \xsim_if_property_set:nnn
+  {nx,nnx,xx,nV}
+  {T,F,TF}
+
+% new property:
+% #1: boolean if unique
+% #2: boolean if boolean
+% #3: boolean if noupdate
+% #4: property name
+\cs_new_protected:Npn \xsim_declare_property:nnnn #1#2#3#4
+  {
+    \xsim_if_property_exist:nF {#4}
+      {
+        \seq_put_right:Nn \l__xsim_properties_seq {#4}
+        \bool_if:nTF {#3}
+          {
+            \seq_if_in:NnF \l__xsim_noupdate_properties_seq {#4}
+              { \seq_put_right:Nn \l__xsim_noupdate_properties_seq {#4} }
+          }
+          { \xsim_new_list:n {#4} }
+        \bool_if:nTF {#2}
+          {
+            \xsim_verbose:n
+              { Declaring~ new~ boolean~ exercise~ property~ `#4'. }
+            \seq_if_in:NnF \l__xsim_boolean_properties_seq {#4}
+              { \seq_put_right:Nn \l__xsim_boolean_properties_seq {#4} }
+          }
+          {
+            \bool_if:nTF {#1}
+              {
+                \xsim_verbose:n
+                  { Declaring~ new~ unique~ exercise~ property~ `#4'. }
+                \seq_if_in:NnF \l__xsim_unique_properties_seq {#4}
+                  { \seq_put_right:Nn \l__xsim_unique_properties_seq {#4} }
+                \seq_new:c {l__xsim_unique_property_#4_values_seq}
+              }
+              { \xsim_verbose:n { Declaring~ new~ exercise~ property~ `#4'. } }
+          }
+        \bool_if:nF {#3}
+          {
+            \xsim_at_end_document:n { \xsim_update_list:n {#4} }
+            \xsim_at_begin_document:n { \__xsim_set_property_from_list:n {#4} }
+          }
+      }
+  }
+
+% check if property exists:
+\prg_new_conditional:Npnn \xsim_if_property_exist:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_properties_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_property_exist:nTF {x}
+
+\prg_new_conditional:Npnn \xsim_if_property_noupdate:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_noupdate_properties_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_property_noupdate:nF {V}
+
+\prg_new_conditional:Npnn \xsim_if_property_boolean:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_boolean_properties_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_property_unique:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_unique_properties_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% true if property #1 has been set in the /last/ call of
+% \xsim_set_properties:nnn
+\prg_new_conditional:Npnn \xsim_if_property_given:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_given_properties_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: property
+% #2: value
+\prg_new_conditional:Npnn \xsim_if_property_unique_value:nn #1#2 {p,T,F,TF}
+  {
+    \xsim_if_property_unique:nTF {#1}
+      {
+        \seq_if_in:cnTF {l__xsim_unique_property_#1_values_seq} {#2}
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
+  }
+
+% #1: type
+% #2: id
+% #3: property
+% #4: value
+\cs_new_protected:Npn \xsim_set_property:nnnn #1#2#3#4
+  {
+    \xsim_if_property_exist:nTF {#3} % _p
+      {
+        \xsim_if_property_set:nnnTF {#1} {#2} {#3} % _p
+          {
+            \xsim_if_property_unique_value:nnTF {#3} {#4} %_p
+              { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
+              {
+                \xsim_if_property_boolean:nTF {#3} % _p
+                  { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
+                  {
+                    \xsim_if_property_unique:nTF {#3} % _p
+                      { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
+                      { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
+                  }
+              }
+          }
+          {
+            \xsim_if_property_boolean:nTF {#3} % _p
+              { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
+              {
+                \xsim_if_property_unique:nTF {#3} % _p
+                  { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
+                  { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
+              }
+          }
+      }
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }  
+  }
+\cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx,xx,xxnx,nxnx}
+
+% #1: type
+% #2: id
+% #3: property
+% #4: value
+\cs_new_protected:Npn \__xsim_set_boolean_property:nnnn #1#2#3#4
+  {
+    \str_case_e:nnTF { \str_lowercase:n {#4} }
+      {
+        {} {}
+        {true} {}
+      }
+      { \__xsim_set_property:nnnn {#1} {#2} {#3} {true} }
+      { \__xsim_set_property:nnnn {#1} {#2} {#3} {false} }
+  }
+
+% #1: type
+% #2: id
+% #3: property
+% #4: value
+\cs_new_protected:Npn \__xsim_set_unique_property:nnnn #1#2#3#4
+  {
+    \__xsim_set_property:nnnn {#1} {#2} {#3} {#4}
+    \__xsim_set_property_reverse:nnnn {#1} {#2} {#3} {#4}
+  }
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \__xsim_unset_property:nnn #1#2#3
+  {
+    \xsim_verbose:n
+      { Un-setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'. }
+    \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+    \xsim_attribute_unset:nn {#1!#2} {#3}
+  }
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \xsim_unset_property:nnn #1#2#3
+  {
+    \xsim_if_property_exist:nTF {#3}
+      { \__xsim_unset_property:nnn {#1} {#2} {#3} }
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }  
+  }
+\cs_generate_variant:Nn \xsim_unset_property:nnn {nx,nnx,nV}
+
+% #1: type
+% #2: id
+% #3: property
+% #4: value
+\cs_new_protected:Npn \__xsim_set_property:nnnn #1#2#3#4
+  {
+    \xsim_verbose:n
+      {
+        Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
+        value~ `#4'.
+      }
+    \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+    % now we can safely add the property to the list:
+    \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
+    \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
+  }
+\cs_generate_variant:Nn \__xsim_set_property:nnnn {VVnV}
+
+% #1: type
+% #2: id
+% #3: property
+% #4: value
+\cs_new_protected:Npn \__xsim_set_property_reverse:nnnn #1#2#3#4
+  {
+    \xsim_attribute_set:nnn {type:#3} {#4} {#1}
+    \xsim_attribute_set:nnn {id:#3} {#4} {#2}
+  }
+
+\tl_set:Nx \l__xsim_tmpa_tl { \cs_to_str:N \{ }
+\tl_set:Nx \l__xsim_tmpb_tl { \cs_to_str:N \} }
+\use:x
+  {
+    \cs_new_protected:Npn
+    \exp_not:N \__xsim_extract_property_list_entry:NNNwww
+    ##1##2##3##4-##5== \l__xsim_tmpa_tl ##6 \l__xsim_tmpb_tl
+    \exp_not:N \q_stop
+  }
+  {
+    \str_set:Nn #1 {#4}
+    \str_set:Nn #2 {#5}
+    \str_set:Nn #3 {#6}
+  }
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \__xsim_remove_property_from_list:nnn #1#2#3
+  {
+    % make sure we change the entry if it has been recorded previously:
+    \xsim_foreach_list_entry:nn {#3}
+      {
+        \__xsim_extract_property_list_entry:NNNwww
+          \l__xsim_tmpa_str \l__xsim_tmpb_str \l__xsim_tmpc_str ##1 \q_stop
+        \str_if_eq:xnT { \l__xsim_tmpa_str - \l__xsim_tmpb_str } {#1-#2}
+          {
+            \xsim_remove_from_list:nx {#3}
+              { #1-#2 == {\l__xsim_tmpc_str} }
+          }
+      }
+    % make sure we change the entry if it has been set during the current run:
+    \xsim_foreach_new_list_entry:nn {#3}
+      {
+        \__xsim_extract_property_list_entry:NNNwww
+          \l__xsim_tmpa_str \l__xsim_tmpb_str \l__xsim_tmpc_str ##1 \q_stop
+        \str_if_eq:xnT { \l__xsim_tmpa_str - \l__xsim_tmpb_str } {#1-#2}
+          {
+            \xsim_remove_from_list:nx {#3}
+              { #1-#2 == {\l__xsim_tmpc_str} }
+          }
+      }
+  }
+
+\cs_new_protected:Npn \__xsim_set_property_from_list:n #1
+  {
+    \xsim_foreach_list_entry:nn {#1}
+      {
+        \__xsim_extract_property_list_entry:NNNwww
+          \l__xsim_tmpa_str \l__xsim_tmpb_str \l__xsim_tmpc_str ##1 \q_stop
+        \tl_set_rescan:Nnx \l__xsim_tmpc_tl {} { \l__xsim_tmpc_str }
+        \__xsim_set_property:VVnV
+          \l__xsim_tmpa_str
+          \l__xsim_tmpb_str
+          {#1}
+          \l__xsim_tmpc_tl
+      }
+  }
+
+% set properties:
+% #1: type
+% #2: id
+% #3: csv list of properties
+\cs_new_protected:Npn \xsim_set_properties:nnn #1#2#3
+  {
+    \seq_clear:N \l__xsim_given_properties_seq
+    \clist_map_inline:nn {#3}
+      {
+        \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
+        \int_compare:nNnT { \seq_count:N \l__xsim_tmpa_seq } > {2}
+          { \msg_error:nnn {xsim} {unbalanced-property-list} {##1} }
+        \xsim_set_property:nnxx
+          {#1}
+          {#2}
+          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
+          { \seq_item:Nn \l__xsim_tmpa_seq {2} }
+        \seq_put_right:Nx \l__xsim_given_properties_seq
+          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
+      }
+    \xsim_property_set_aliases:nn {#1} {#2}
+  }
+\cs_generate_variant:Nn \xsim_set_properties:nnn {nnx,nxx,nV,nVx}
+
+% ----------------------------------------------------------------------------
+
+\seq_new:N \g__xsim_property_aliases_seq
+
+% #1: property
+\prg_new_conditional:Npnn \xsim_if_property_alias:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \g__xsim_property_aliases_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: property
+\cs_new:Npn \xsim_property_alias:n #1
+  { \xsim_attribute_get:nn {#1} {alias} }
+
+% #1: property
+% #2: alias of
+\cs_new_protected:Npn \xsim_make_property_alias:nn #1#2
+  {
+    \xsim_if_property_alias:nF {#1}
+      {
+        \xsim_verbose:n
+          { Making~ property~ `#1'~ an~ alias~ of~ property~ `#2'. }
+        \xsim_attribute_set:nnn {#1} {alias} {#2}
+        \seq_gput_right:Nn \g__xsim_property_aliases_seq {#1}
+      }
+  }
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \xsim_property_set_alias:nnn #1#2#3
+  {
+    \xsim_if_property_set:nnnF {#1} {#2} {#3}
+      {
+        \xsim_if_property_set:nnxT {#1} {#2}
+          { \xsim_property_alias:n {#3} }
+          { 
+            \xsim_set_property:nnnx {#1} {#2} {#3}
+              {
+                \xsim_get_property:nnf {#1} {#2}
+                  { \xsim_property_alias:n {#3} }
+              }
+          }
+      }
+    \xsim_if_property_set:nnxT {#1} {#2}
+      { \xsim_property_alias:n {#3} }
+      {
+        \xsim_attribute_set:nnx {alias:#1!#2} {#3}
+          {
+            \xsim_get_property:nnf {#1} {#2}
+              { \xsim_property_alias:n {#3} }
+          }
+      }
+  }
+\cs_generate_variant:Nn \xsim_property_set_alias:nnn {nV}
+
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_property_set_aliases:nn #1#2
+  {
+    \seq_map_inline:Nn \g__xsim_property_aliases_seq
+      { \xsim_property_set_alias:nnn {#1} {#2} {##1} }
+  }
+
+% ----------------------------------------------------------------------------
+
+% retrieve properties:
+% #1: type
+% #2: id
+% #3: property
+\cs_new:Npn \xsim_get_property:nnn #1#2#3
+  { \xsim_attribute_get:nn {#1!#2} {#3} }
+\cs_generate_variant:Nn \xsim_get_property:nnn {nx,ne,xx,oo,no,nnf,nf,oof,nV}
+
+% #1: property
+% #2: value
+\cs_new:Npn \xsim_get_id_for_property:nn #1#2
+  { \xsim_attribute_get:nn {id:#1} {#2} }
+
+% #1: property
+% #2: value
+\cs_new:Npn \xsim_get_type_for_property:nn #1#2
+  { \xsim_attribute_get:nn {type:#1} {#2} }
+\cs_generate_variant:Nn \xsim_get_type_for_property:nn {nV}
+
+% #1: id or ID
+\cs_new:Npn \xsim_normalize_id:n #1
+  {
+    \tl_if_blank:eTF
+      { \xsim_get_id_for_property:nn {ID} {#1} }
+      {#1}
+      { \xsim_get_id_for_property:nn {ID} {#1} }
+  }
+\cs_generate_variant:Nn \xsim_normalize_id:n {e}
+
+\cs_new:Npn \__xsim_get_property_tmp:n #1 {}
+\cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
+
+% #1: type
+% #2: id
+% #3: property
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnTF #1#2#3#4#5
+  {
+    \group_begin:
+      \xsim_if_property_exist:nTF {#3}
+        {
+          \xsim_if_property_set:nnnTF {#1} {#2} {#3}
+            {    
+              \tl_set:Nx \PropertyValue
+                { \xsim_get_property:nnn {#1} {#2} {#3} }
+              \cs_set:Npn \__xsim_get_property_tmp:n ##1 {#4}
+              \__xsim_get_property_tmp:V \PropertyValue
+            }
+            {#5}
+        }
+        { \msg_error:nnn {xsim} {unknown-property} {#3} }
+    \group_end:
+  }
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnT #1#2#3#4
+  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {#4} {} }
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnF #1#2#3#4
+  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {} {#4} }
+\cs_generate_variant:Nn \xsim_get_property_if_set:nnnTF {oo}
+
+% #1: type
+% #2: id
+% #3: property
+\prg_new_conditional:Npnn \xsim_if_boolean_property:nnn #1#2#3 {T,F,TF}
+  {
+    \xsim_if_property_exist:nTF {#3}
+      {
+        \xsim_if_property_boolean:nTF {#3}
+          {
+            \xsim_if_property_set:nnnTF {#1} {#2} {#3}
+              {
+                \bool_if:cTF
+                  {c_ \xsim_get_property:nnn {#1} {#2} {#3} _bool}
+                  { \prg_return_true: }
+                  { \prg_return_false: }
+              }
+              { \prg_return_false: }
+          }
+          { \msg_error:nnn {xsim} {no-boolean-property} {#3} }
+      }
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }
+  }
+\cs_generate_variant:Nn \xsim_if_boolean_property:nnnTF {oo}
+\cs_generate_variant:Nn \xsim_if_boolean_property:nnnF  {nV}
+
+\cs_new_protected:Npn \xsim_save_property:nnnN #1#2#3#4
+  { \tl_set:No #4 { \cs:w __xsim_property_#2!#1!#3: \cs_end: } }
+\cs_generate_variant:Nn \xsim_save_property:nnnN {nx,xx}
+
+\cs_new_protected:Npn \xsim_gsave_property:nnnN #1#2#3#4
+  {
+    \xsim_save_property:nnnN {#1} {#2} {#3} #4
+    \tl_gset:NV #4 #4
+  }
+\cs_generate_variant:Nn \xsim_gsave_property:nnnN {nx,xx,nV}
+
+\XSIMmoduleend
+\XSIMmodule{environments}{generic code for exercise and solution environments}
+
+\RequirePackage{xsimverb}
+
+\xsim_if_write_to_files:F
+  {
+    \xsim_declare_property:nnnn
+      { \c_false_bool }
+      { \c_false_bool }
+      { \c_false_bool }
+      {solution-body}
+    \xsim_declare_property:nnnn
+      { \c_false_bool }
+      { \c_false_bool }
+      { \c_false_bool }
+      {exercise-body}
+  }
+
+\tl_new:N   \l__xsim_file_name_signature_tl
+\tl_new:N   \l__xsim_file_path_tl
+\tl_new:N   \l__xsim_file_path_and_name_tl
+\tl_new:N   \l__xsim_file_name_tl
+\tl_new:N   \l__xsim_file_extension_tl
+\tl_new:N   \l__xsim_solution_tl
+\bool_new:N \l__xsim_options_given_bool
+\bool_new:N \l__xsim_insert_mode_bool
+
+\tl_new:N  \ExerciseText
+\tl_set:Nn \ExerciseText { \msg_error:nn {xsim} {only-in-solution} }
+
+% ----------------------------------------------------------------------------
+
+\msg_new:nnn {xsim} {only-in-solution}
+  {
+    You~ can't~ use~ \token_to_str:N \ExerciseText \c_space_tl inside~ an~
+    exercise.~ It~ is~ only~ allowed~ inside~ solution~ environments!
+  }
+
+% ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim}
+  {
+    path           .tl_set:N  = \l__xsim_file_path_tl ,
+    file-extension .tl_set:N  = \l__xsim_file_extension_tl ,
+    file-extension .initial:n = tex
+  }
+
+% ----------------------------------------------------------------------------
+
+\tl_const:Nn \c__xsim_comment_line_tl { \c__xsim_percent_char_tl }
+\tl_const:Nn \c__xsim_comment_line_fill_tl { \prg_replicate:nn {72} {-} }
+\tl_const:Nn \c__xsim_comment_line_indent_tl { \c_space_tl \c_space_tl }
+
+\cs_new:Npn \__xsim_comment_line_and_feed:n #1
+  { \__xsim_comment_line:n {#1} ^^J }
+
+\cs_new:Npn \__xsim_comment_line:n #1
+  {
+    \c__xsim_comment_line_tl
+    \tl_if_blank:nF {#1} { \c_space_tl }
+    #1
+  }
+
+\cs_new:Npn \__xsim_two_digits:n #1
+  { \int_compare:nT { #1 < 10 } {0} \int_eval:n {#1} }
+  
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \__xsim_set_file_signature:nnn #1#2#3
+  { \tl_set:Nn \l__xsim_file_name_signature_tl {#1-#2-#3} }
+\cs_generate_variant:Nn \__xsim_set_file_signature:nnn {nx,nV}
+
+\tl_set:Nn \l__xsim_file_name_tl
+  { \c_sys_jobname_str - \l__xsim_file_name_signature_tl -body . \l__xsim_file_extension_tl }
+
+\tl_set:Nn \l__xsim_file_path_and_name_tl
+  {
+    \tl_if_blank:VF \l__xsim_file_path_tl
+      { \l__xsim_file_path_tl / }
+    \l__xsim_file_name_tl
+  }
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: file name
+% #5: path
+\cs_new_protected:Npn \__xsim_file_info:nnnnn #1#2#3#4#5
+  {
+    \tl_set:Nn \l_xsim_file_begin_tl
+      {
+        \__xsim_comment_line_and_feed:n { \c__xsim_comment_line_fill_tl }
+        \__xsim_comment_line_and_feed:n {file~ `#4'}
+        \tl_if_blank:nF {#5}
+          {
+            \__xsim_comment_line_and_feed:n
+              { \c__xsim_comment_line_indent_tl in~ folder~ `#5/'}
+          }
+        \__xsim_comment_line_and_feed:n {}
+        \__xsim_comment_line_and_feed:n
+          {
+            \c__xsim_comment_line_indent_tl
+            \c__xsim_comment_line_indent_tl
+            #3~ of~ type~ `#1'~ with~ id~ `#2'
+          }
+        \__xsim_comment_line_and_feed:n {}
+        \__xsim_comment_line_and_feed:n
+          {generated~ by~ the~ `\@currenvir'~ environment~ of~ the}
+        \__xsim_comment_line_and_feed:n
+          {
+            \c__xsim_comment_line_indent_tl
+            `xsim'~ package~ v \c_xsim_version_tl
+            \c_space_tl (\c_xsim_date_tl)
+          }
+        \__xsim_comment_line_and_feed:n
+          {
+            from~ source~ `\c_sys_jobname_str'~ on~
+            \int_use:N \c_sys_year_int /
+            \__xsim_two_digits:n { \c_sys_month_int } /
+            \__xsim_two_digits:n { \c_sys_day_int } ~
+            \msg_line_context:
+          }
+        \__xsim_comment_line:n { \c__xsim_comment_line_fill_tl }
+      }
+  }
+\cs_generate_variant:Nn \__xsim_file_info:nnnnn {nnnVV}
+
+% ----------------------------------------------------------------------------
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: potential environment body
+\cs_new_protected:Npn \xsim_save_environment_body:nnnn #1#2#3#4
+  {
+    \xsim_if_write_to_files:TF
+      { \__xsim_write_environment_body:nnn {#1} {#2} {#3} }
+      { \__xsim_save_environment_body:nnnn {#1} {#2} {#3} {#4} }
+  }
+
+\cs_new_protected:Npn \xsim_save_environment_body_end:
+  {
+    \xsim_if_write_to_files:TF
+      { \__xsim_write_environment_body_end: }
+      { \__xsim_save_environment_body_end: }
+  }
+
+% writing to files:
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \__xsim_write_environment_body:nnn #1#2#3
+  {
+    \xsim_verbose:n
+      { Starting~ to~ write~ #3~ environment~ type~ `#1'~ id~ `#2' }
+    \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+    \__xsim_file_info:nnnVV {#1} {#2} {#3}
+      \l__xsim_file_name_tl
+      \l__xsim_file_path_tl
+    \int_zero:N \l_xsim_line_gobble_int
+    \xsim_file_write_start:nV
+      { \l__xsim_options_given_bool }
+      \l__xsim_file_path_and_name_tl
+  }
+
+\cs_new_protected:Npn \__xsim_write_environment_body_end:
+  { \xsim_file_write_stop: }
+
+% saving to property lists:
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: environment body
+\cs_new_protected:Npn \__xsim_save_environment_body:nnnn #1#2#3#4
+  {
+    \xsim_verbose:n { Saving~ #3~ environment~ type~ `#1'~ id~ `#2' }
+    \xsim_set_property:nnnn {#1} {#2} {#3-body} {#4}
+  }
+
+\cs_new:Npn \__xsim_save_environment_body_end: { }
+
+% ----------------------------------------------------------------------------
+% #1: type
+% #2: exercise|solution
+% #3: hook
+\cs_new_protected:Npn \xsim_new_hook:nnn #1#2#3
+  {
+    \xsim_verbose:n { Defining~ new~ #1~ (#2)~ hook~ `#3' }
+    \tl_new:c {l__xsim_#1_#2_#3_hook_tl}
+    \keys_define:nx {xsim}
+      {
+        \xsim_get_parameter:nn {#1} {#2-env}/#3-hook .tl_set:N =
+          \exp_not:c {l__xsim_#1_#2_#3_hook_tl}
+      }
+  }
+
+% #1: type
+% #2: exercise|solution
+% #3: hook
+\cs_new:Npn \xsim_use_hook:nnn #1#2#3
+  { \exp_not:v {l__xsim_#1_#2_#3_hook_tl} }
+
+% #1: type
+% #2: exercise|solution
+% #3: hook
+% #4: code
+\cs_new_protected:Npn \xsim_set_hook:nnnn #1#2#3#4
+  {
+    \xsim_verbose:n { Setting~ #1~ (#2)~ hook~ `#3' }
+    \tl_set:cn {l__xsim_#1_#2_#3_hook_tl} {#4}
+  }
+
+% #1: type
+% #2: exercise|solution
+% #3: hook
+% #4: code
+\cs_new_protected:Npn \xsim_addto_hook:nnnn #1#2#3#4
+  {
+    \xsim_verbose:n { Adding~ to~ #1~ (#2)~ hook~ `#3' }
+    \tl_put_right:cn {l__xsim_#1_#2_#3_hook_tl} {#4}
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+% #4: potential enironment body
+\cs_new_protected:Npn \xsim_start_environment:nnnn #1#2#3#4
+  { \xsim_save_environment_body:nnnn {#1} {#2} {#3} {#4} }
+\cs_generate_variant:Nn \xsim_start_environment:nnnn {nV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_stop_environment:nnn #1#2#3
+  {
+    \xsim_save_environment_body_end:
+    \xsim_if_print:nnnTF {#1} {#2} {#3}
+      { \xsim_typeset_environment:nnn {#1} {#2} {#3} }
+      { \xsim_use_hook:nnn {#1} {#3} {print-false} }
+  }
+\cs_generate_variant:Nn \xsim_stop_environment:nnn {nV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_typeset_environment:nnn #1#2#3
+  {
+    \tl_set:Nn \ExerciseType {#1}
+    \tl_set:Nn \ExerciseID {#2}
+    \xsim_if_exchange:nnnT {#1} {#2} {#3}
+      { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+    \xsim_verbose:n
+      { Typesetting~ #3~ environment~ type~ `#1'~ id~ `#2' }
+    \xsim_use_hook:nnn {#1} {#3} {pre}
+    \xsim_use_template:nx
+      {begin}
+      { \xsim_get_parameter:nn {#1} {#3-template} }
+    \xsim_use_hook:nnn {#1} {#3} {begin}
+    \xsim_if_write_to_files:TF
+      {
+        \file_if_exist:nTF { \exp_not:V \l__xsim_file_path_and_name_tl }
+          { \file_input:n { \exp_not:V \l__xsim_file_path_and_name_tl } }
+          {
+            \xsim_verbose:n
+              { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
+          }
+      }
+      {
+        \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+          { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
+          { \xsim_get_property:nnn {#1} {#2} {#3-body} }
+      }
+    \xsim_synchronize_goals:nn {#1} {#2}
+    \str_if_eq:nnT {#3} {exercise}
+      { \xsim_update_goals:nn {#1} {#2} }
+    \xsim_use_hook:nnn {#1} {#3} {end}
+    \xsim_use_template:nx
+      {end}
+      { \xsim_get_parameter:nn {#1} {#3-template} }
+    \xsim_use_hook:nnn {#1} {#3} {post}
+  }
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\prg_new_conditional:Npnn \xsim_if_exchange:nnn #1#2#3 {T,F,TF}
+  {
+    \str_if_eq:nnTF {#3} {solution}
+      {
+        \xsim_if_boolean_property:nnnTF {#1} {#2} {solution}
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
+  }
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\prg_new_protected_conditional:Npnn \xsim_if_exist:nnn #1#2#3 {T,F,TF}
+  {
+    \xsim_if_write_to_files:TF
+      {
+        \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+        \file_if_exist:VTF \l__xsim_file_path_and_name_tl
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+      {
+        \xsim_if_property_exist:nTF {#3-body}
+          {
+            \xsim_if_property_set:nnnTF {#1} {#2} {#3-body}
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+          { \prg_return_false: }
+      }
+  }
+
+% #1: type
+% #2: id
+% #3: options
+% #4: exercise|solution
+\cs_new_protected:Npn \xsim_insert:nnnn #1#2#3#4
+  {
+    \xsim_if_exchange:nnnTF {#1} {#2} {#4}
+      { \xsim_if_exist:nnnTF {#1} {#2} {exercise} }
+      { \xsim_if_exist:nnnTF {#1} {#2} {#4} }
+      {
+        \xsim_verbose:n
+          { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
+        \group_begin:
+          \xsim_insert_mode:
+          \use:c {xsim_start_#4:nn} {#1} {#3}
+          \tl_set:Nn \ExerciseType {#1}
+          \tl_set:Nn \ExerciseID {#2}
+          \str_if_eq:nnT {#4} {exercise}
+            {
+              \xsim_if_boolean_property:nnnF {#1} {#2} {used}
+                {
+                  \xsim_step_exercise_counter:nn {#1} {#2}
+                  \xsim_set_properties:nnx {#1} {#2}
+                    {
+                      page-value = \the\value{page} ,
+                      page = \thepage ,
+                      section-value = \the\value{section} ,
+                      section = \thesection
+                    }
+                  \xsim_synchronize_goals:nn {#1} {#2}
+                  \xsim_update_goals:nn {#1} {#2}
+                }
+              \xsim_if_property_exist:nT {chapter}
+                {
+                  \xsim_set_properties:nnx {#1} {#2}
+                    {
+                      chapter-value = \the\value{chapter} ,
+                      chapter = \thechapter
+                    }
+                }
+              \xsim_set_properties:nnn {#1} {#2}
+                { print=true , used=true }
+            }
+          \str_if_eq:nnT {#4} {solution}
+            {
+              \xsim_if_write_to_files:TF
+                {
+                  \__xsim_set_file_signature:nnn {#1} {#2} {exercise}
+                  \file_get:nnN {\l__xsim_file_path_and_name_tl} {} \ExerciseText
+                  \tl_trim_spaces:N \ExerciseText
+                }
+                {
+                  \tl_set:Nx \ExerciseText
+                    { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
+                }
+            }
+          \use:x
+            {
+              \xsim_use_hook:nnn {#1} {#4} {pre}
+              \xsim_use_template:nn
+                {begin}
+                { \xsim_get_parameter:nn {#1} {#4-template} }
+              \xsim_use_hook:nnn {#1} {#4} {begin}
+              \xsim_input:nnn {#1} {#2} {#4}
+              \xsim_use_hook:nnn {#1} {#4} {end}
+              \xsim_use_template:nn
+                {end}
+                { \xsim_get_parameter:nn {#1} {#4-template} }
+              \xsim_use_hook:nnn {#1} {#4} {post}
+            }
+        \group_end:
+      }
+      {
+        \xsim_if_write_to_files:T
+          {
+            \xsim_verbose:x
+              { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
+          }
+      }
+  }
+\cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV,nnnV,xx,ne}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\cs_new_protected:Npn \xsim_input:nnn #1#2#3
+  {
+    \group_begin:
+      \xsim_if_write_to_files:TF
+        {
+          \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+            { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+            { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
+          \file_input:n { \l__xsim_file_path_and_name_tl }
+        }
+        {
+          \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+            { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
+            { \xsim_get_property:nnn {#1} {#2} {#3-body} }
+        }
+    \group_end:
+  }
+\cs_generate_variant:Nn \xsim_input:nnn {oo}
+
+\prg_new_conditional:Npnn \xsim_if_insert_mode: {T,F,TF}
+  {
+    \bool_if:NTF \l__xsim_insert_mode_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new_protected:Npn \xsim_insert_mode:
+  { \bool_set_true:N \l__xsim_insert_mode_bool }
+
+% ----------------------------------------------------------------------------
+
+% #1: type
+% #2: exercise|solution
+\cs_new_protected:Npn \xsim_new_environment:nn #1#2
+  {
+    \xsim_verbose:n { Defining~ #2~ environment~ type~ `#1'. }
+    \xsim_new_hook:nnn {#1} {#2} {pre}
+    \xsim_new_hook:nnn {#1} {#2} {begin}
+    \xsim_new_hook:nnn {#1} {#2} {end}
+    \xsim_new_hook:nnn {#1} {#2} {post}
+    \xsim_new_hook:nnn {#1} {#2} {print-false}
+    \xsim_if_write_to_files:TF
+      {
+        \NewDocumentEnvironment
+          { \xsim_get_parameter:nn {#1} {#2-env} } {!o}
+          {
+            \IfNoValueTF {##1}
+              {
+                \bool_set_false:N \l__xsim_options_given_bool
+                \use:c {xsim_start_#2:nn} {#1} {}
+              }
+              {
+                \bool_set_true:N \l__xsim_options_given_bool
+                \use:c {xsim_start_#2:nn} {#1} {##1}
+              }
+              \xsim_start_environment:nVnn {#1} \g_xsim_exercise_id_tl {#2} { }
+          }
+          {
+            \xsim_stop_environment:nVn {#1} \g_xsim_exercise_id_tl {#2}
+            \use:c {xsim_stop_#2:n} {#1}
+          }
+      }
+      {
+        \NewDocumentEnvironment
+          { \xsim_get_parameter:nn {#1} {#2-env} } {o+b}
+          {
+            \IfNoValueTF {##1}
+              {
+                \bool_set_false:N \l__xsim_options_given_bool
+                \use:c {xsim_start_#2:nn} {#1} {}
+              }
+              {
+                \bool_set_true:N \l__xsim_options_given_bool
+                \use:c {xsim_start_#2:nn} {#1} {##1}
+              }
+            \xsim_start_environment:nVnn {#1} \g_xsim_exercise_id_tl {#2} {##2}
+          }
+          {
+            \xsim_stop_environment:nVn {#1} \g_xsim_exercise_id_tl {#2}
+            \use:c {xsim_stop_#2:n} {#1}
+          }
+      }
+  }
+
+\XSIMmoduleend
+\XSIMmodule{templates}{templates for typesetting exercises}
+
+\msg_new:nnn {xsim} {unknown-template}
+  {
+    You~ are~ trying~ to~ load~ the~ template~ `#2'~ (template~ type~ `#1')~
+    \msg_line_context: .~ This~ template~ does~ not~ seem~ to~ be~ defined.~
+    I~ am~ using~ the~ template~ `#3'~ (template~ type~ `#1')~ instead.
+  }
+
+\msg_new:nnn {xsim} {template-type-exists}
+  { The~ template~ type~ `#1'~ already~ exists~ \msg_line_context: }
+
+% ----------------------------------------------------------------------------
+\seq_new:N \l__xsim_template_types_seq
+
+% #1: template type
+\cs_new_protected:Npn \xsim_new_template_type:n #1
+  {
+    \seq_if_in:NnTF \l__xsim_template_types_seq {#1}
+      { \msg_error:nnn {xsim} {template-type-exists} {#1} }
+      {
+        \xsim_verbose:n { Declaring~ new~ template~ type~ `#1'. }
+        \seq_put_right:Nn \l__xsim_template_types_seq {#1}
+      }
+  }
+
+% #1: template type
+% #2: template name
+% #3: code
+\cs_new_protected:Npn \__xsim_add_template:nnn #1#2#3
+  {
+    \xsim_verbose:n { Defining~ new~ template~ `#2'~ of~ type~ `#1'. }
+    \tl_new:c {l__xsim_template_#1_#2_setup_tl}
+    \xsim_attribute_set:nnn {template::#1} {#2} {#3}
+  }
+
+\prg_new_conditional:Npnn \xsim_if_template_exist:nn #1#2 {T,F,TF}
+  {
+    \xsim_attribute_if_set:nnTF {template::#1} {#2}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_get_template:nn #1#2
+  { \xsim_attribute_get:nn {template::#1} {#2} }
+
+% ----------------------------------------------------------------------------
+
+% environment templates (types `begin' and `end'):
+\xsim_new_template_type:n {begin}
+\xsim_new_template_type:n {end}
+
+% #1: template name
+% #2: begin code
+% #3: end code
+\cs_new_protected:Npn \xsim_declare_environment_template:nnn #1#2#3
+  {
+    \__xsim_add_template:nnn {begin} {#1}
+      {
+        \__xsim_start_template:nn {begin} {#1}
+        \__xsim_start_template:nn {end} {#1}
+        #2
+      }
+    \__xsim_add_template:nnn {end} {#1}
+      {
+        #3
+        \__xsim_stop_template:nn {end} {#1}
+        \__xsim_stop_template:nn {begin} {#1}
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+% heading templates for the solution list (type `heading'):
+\xsim_new_template_type:n {heading}
+
+% #1: template name
+% #2: code
+\cs_new_protected:Npn \xsim_declare_heading_template:nn #1#2
+  {
+    \__xsim_add_template:nnn {heading} {#1}
+      {
+        \__xsim_start_template:nn {heading} {#1}
+        #2
+        \__xsim_stop_template:nn {heading} {#1}
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+% grading table templates (type `table'):
+\xsim_new_template_type:n {table}
+
+% #1: template name
+% #2: code
+\cs_new_protected:Npn \xsim_declare_table_template:nn #1#2
+  {
+    \__xsim_add_template:nnn {table} {#1}
+      {
+        \__xsim_start_template:nn {table} {#1}
+        #2
+        \__xsim_stop_template:nn {table} {#1}
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+% using templates:
+% setup up the next usage of `template name':
+% #1: template type
+% #2: template name
+% #3: setup code
+\cs_new_protected:Npn \xsim_setup_template:nnn #1#2#3
+  { \tl_set:cn {l__xsim_template_#1_#2_setup_tl} {#3} }
+\cs_generate_variant:Nn \xsim_setup_template:nnn {nnV,nVn}
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_setup_template:nn #1#2
+  { \tl_use:c {l__xsim_template_#1_#2_setup_tl} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_clear_template_setup:nn #1#2
+  { \tl_clear:c {l__xsim_template_#1_#2_setup_tl} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_start_template:nn #1#2
+  { \group_begin: \__xsim_setup_template:nn {#1} {#2} }
+
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \__xsim_stop_template:nn #1#2
+  { \group_end: \__xsim_clear_template_setup:nn {#1} {#2} }
+  
+% #1: template type
+% #2: template name
+\cs_new_protected:Npn \xsim_use_template:nn #1#2
+  {
+    \xsim_if_template_exist:nnTF {#1} {#2}
+      { \__xsim_get_template:nn {#1} {#2} }
+      {
+        \msg_warning:nnnnn {xsim} {unknown-template} {#1} {#2} {default}
+        \__xsim_get_template:nn {#1} {default}
+      }
+  }
+\cs_generate_variant:Nn \xsim_use_template:nn {nx,nV}
+
+\XSIMmoduleend
+\XSIMmodule{tags}{tagging of exercises}
+
+\seq_new:N \l__xsim_tag_types_seq
+\bool_new:N \l____xsim_tagged_bool
+
+\cs_new_protected:Npn \xsim_set_seq_from_clist:Nn #1#2
+  {
+    \seq_clear:N #1
+    \clist_map_inline:nn {#2}
+      { \tl_if_blank:nF {##1} { \seq_put_right:Nn #1 {##1} } }
+  }
+\cs_generate_variant:Nn \xsim_set_seq_from_clist:Nn {c,Nx}
+
+\msg_new:nnn {xsim} {tag-exists}
+  { The~ tag~ type~ `#1'~ already~ exists.~ I~ am~ doing~ nothing. }
+
+% #1: name
+\cs_new_protected:Npn \xsim_new_tag_type:n #1
+  {
+    \xsim_verbose:n { Declaring~ new~ tag~ type~ `#1'. }
+    \seq_put_right:Nn \l__xsim_tag_types_seq {#1}
+    \seq_remove_duplicates:N \l__xsim_tag_types_seq
+    \seq_new:c  {l__xsim_chosen_tags_#1_seq}
+    \bool_new:c {l__xsim_ignore_untagged_#1_bool}
+    \bool_new:c {l____xsim_tagged_#1_bool}
+    \keys_define:nn {xsim}
+      {
+        #1/ignore-untagged .bool_set:c = {l__xsim_ignore_untagged_#1_bool} ,
+        #1/ignore-untagged .initial:n  = true ,
+        #1                 .code:n     =
+          \xsim_set_seq_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
+      }
+    \prg_new_protected_conditional:cpnn {xsim_if_#1_value:n} ##1 {T,F,TF}
+      {
+        \seq_if_in:cnTF {l__xsim_chosen_tags_#1_seq} {##1}
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+    \xsim_declare_property:nnnn
+      { \c_false_bool }
+      { \c_false_bool }
+      { \c_false_bool }
+      {#1}
+    \xsim_declare_printsolutions_condition:nn {#1}
+      { \__xsim_printsolutions_if_tagged:nnnnTF {#1}  }
+    \keys_define:nn {xsim/print-solutions}
+      {
+        #1         .choice: ,
+        #1/false   .code:n    =
+          \__xsim_printsolutions_condition:nn {#1} {false} ,
+        #1/true    .code:n    =
+          \__xsim_printsolutions_condition:nn {#1} {true} ,
+        #1/unknown .code:n    =
+          \keys_set:nn {xsim} { #1 = ##1 }
+          \__xsim_printsolutions_condition:nn {#1} {true} ,
+        #1         .initial:n = false
+      }
+  }
+
+% #1: tag type
+\prg_new_protected_conditional:Npnn \xsim_if_tag_type_exist:n #1 {T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_tag_types_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+  
+% #1: tag type
+% #2: exercise type
+% #3: id
+% #4: print|use
+\prg_new_protected_conditional:Npnn
+  \__xsim_printsolutions_if_tagged:nnnn #1#2#3#4 {T,F,TF}
+  {
+    \xsim_if_in_list:nnTF {#4} {#2-#3=={true}}
+      {
+        \__xsim_printsolutions_if_condition:nTF {#1}
+          {
+            \__xsim_printsolutions_condition_true:
+            \xsim_if_tagged:nnnTF {#2} {#3} {#1}
+              { \prg_return_true: }
+              { \prg_return_false: }
+          }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
+  }
+
+% #1: exercise type
+% #2: id
+% #3: tag type
+\prg_new_protected_conditional:Npnn \xsim_if_tagged:nnn #1#2#3 {T,F,TF}
+  {
+    \bool_set_false:c {l____xsim_tagged_#3_bool}
+    \seq_if_empty:cTF {l__xsim_chosen_tags_#3_seq}
+      { \bool_set_true:c {l____xsim_tagged_#3_bool} }
+      {
+        \xsim_set_seq_from_clist:Nx
+          \l__xsim_tmpa_seq
+          { \xsim_get_property:nnn {#1} {#2} {#3} }
+        \seq_if_empty:NTF \l__xsim_tmpa_seq
+          {
+            \bool_set_eq:cc
+              {l____xsim_tagged_#3_bool}
+              {l__xsim_ignore_untagged_#3_bool}
+          }
+          {
+            \seq_map_inline:Nn \l__xsim_tmpa_seq
+              {
+                \seq_if_in:cnT {l__xsim_chosen_tags_#3_seq} {##1}
+                  {
+                    \bool_set_true:c {l____xsim_tagged_#3_bool}
+                    \seq_map_break:
+                  }
+              }
+          }
+      }
+    \bool_if:cTF {l____xsim_tagged_#3_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: exercise type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_if_tagged:nn #1#2 {T,F,TF}
+  {
+    \bool_set_true:N \l____xsim_tagged_bool
+    \seq_map_inline:Nn \l__xsim_tag_types_seq
+      {
+        \xsim_if_tagged:nnnF {#1} {#2} {##1}
+          {
+            \bool_set_false:N \l____xsim_tagged_bool
+            \seq_map_break:
+          }
+      }
+    \bool_if:NTF \l____xsim_tagged_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+
+% #1: exercise type
+% #2: id
+% #3: tag type
+% #4: code
+\cs_new_protected:Npn \xsim_foreach_exercise_tag:nnnn #1#2#3#4
+  {
+    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+      { \xsim_get_property:nnn {#1} {#2} {#3} }
+    \seq_map_inline:Nn \l__xsim_tmpa_seq {#4}
+  }
+\cs_generate_variant:Nn \xsim_foreach_exercise_tag:nnnn {oo}
+
+% #1: exercise type
+% #2: id
+% #3: tag type
+% #4: sep
+\cs_new_protected:Npn \xsim_exercise_tags_use:nnnn #1#2#3#4
+  {
+    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+      { \xsim_get_property:nnn {#1} {#2} {#3} }
+    \seq_use:Nn \l__xsim_tmpa_seq {#4}
+  }
+\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnn {oo}
+
+% #1: exercise type
+% #2: id
+% #3: tag type
+% #4: sep between two
+% #5: sep between more than two
+% #6: sep between last two
+\cs_new_protected:Npn \xsim_exercise_tags_use:nnnnnn #1#2#3#4#5#6
+  {
+    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+      { \xsim_get_property:nnn {#1} {#2} {#3} }
+    \seq_use:Nnnn \l__xsim_tmpa_seq {#4} {#5} {#6}
+  }
+\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnn   {oo}
+\cs_generate_variant:Nn \xsim_exercise_tags_use:nnnnnn {oo}
+
+\XSIMmoduleend
+\XSIMmodule{goals}{counting of points and bonus points}
+
+\msg_new:nnn {xsim} {goal-unknown}
+  { The~ goal~ `#1'~ has~ never~ been~ declared~ \msg_line_context: }
+
+\seq_new:N \l__xsim_goals_seq
+\tl_new:N  \l_xism_grading_table_template_tl
+\tl_new:N  \l_xism_grading_table_exercise_type_tl
+
+% #1: name
+\cs_new_protected:Npn \xsim_declare_exercise_goal:n #1
+  {
+    \xsim_if_goal_exist:nF {#1}
+      {
+        \xsim_verbose:n { Declaring~ new~ goal~ `#1'. }
+        \xsim_declare_property:nnnn
+          { \c_false_bool }
+          { \c_false_bool }
+          { \c_false_bool }
+          {#1}
+        \seq_put_right:Nn \l__xsim_goals_seq {#1}
+        \fp_gzero_new:c {g__xsim_goal_#1_fp}
+        \bool_new:c {l__xsim_goal_#1_given_bool}
+        \fp_gzero_new:c {l__xsim_current_goal_#1_fp}
+        \fp_if_exist:cF {g__xsim_total_goal_#1_fp}
+          { \fp_new:c {g__xsim_total_goal_#1_fp} }
+        \fp_if_exist:cF {g__xsim_total_goal_recorded_#1_fp}
+          { \fp_new:c {g__xsim_total_goal_recorded_#1_fp} }
+        \xsim_at_begin_document:n
+          {
+            \xsim_foreach_exercise_type:n
+              {
+                \fp_gzero_new:c {g__xsim_##1_goal_#1_fp}
+                \fp_if_exist:cF {g__xsim_total_##1_goal_#1_fp}
+                  { \fp_new:c {g__xsim_total_##1_goal_#1_fp} }
+              }
+          }
+      }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_goal_exist:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_goals_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_goal_given:n #1 {p,T,F,TF}
+  {
+    \bool_if:cTF {l__xsim_goal_#1_given_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\cs_new_protected:Npn \xsim_goal_given:n #1
+  { \bool_set_true:c {l__xsim_goal_#1_given_bool} }
+
+% #1: exercise type
+% #2: id
+% #3: goal
+\cs_new_protected:Npn \xsim_update_goal:nnn #1#2#3
+  {
+    \xsim_if_goal_exist:nT {#3}
+      {
+        \fp_gadd:cn {g__xsim_goal_#3_fp}
+          { \xsim_get_property:nnn {#1} {#2} {#3} + 0 }
+        \fp_gadd:cn {g__xsim_#1_goal_#3_fp}
+          { \xsim_get_property:nnn {#1} {#2} {#3} + 0 }
+      }
+  }
+
+% #1: exercise type
+% #2: id
+\cs_new_protected:Npn \xsim_update_goals:nn #1#2
+  {
+    \xsim_foreach_goal:n
+      { \xsim_update_goal:nnn {#1} {#2} {##1} }
+  }
+\cs_generate_variant:Nn \xsim_update_goals:nn {nV}
+
+\cs_new_protected:Npn \xsim_foreach_goal:n #1
+  { \seq_map_inline:Nn \l__xsim_goals_seq {#1} }
+
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_synchronize_goals:nn #1#2
+  {
+    \xsim_foreach_goal:n
+      {
+        \xsim_if_property_set:nnnTF {#1} {#2} {##1}
+          {
+            \xsim_set_property:nnnx {#1} {#2} {##1}
+              { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} }
+          }
+          {
+            \fp_compare:nNnT
+              { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} } > {0}
+              {
+                \xsim_set_property:nnnx {#1} {#2} {##1}
+                  { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} }
+              }
+          }
+      }
+  }
+
+% #1: exercise type
+% #2: id
+% #3: goal
+% #4: value
+\cs_new_protected:Npn \xsim_addto_goal:nnnn #1#2#3#4
+  {
+    \xsim_if_goal_exist:nT {#3}
+      {
+        \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
+        % \fp_gadd:cn {g__xsim_goal_#3_fp} {#4}
+        % \fp_gadd:cn {g__xsim_#1_goal_#3_fp} {#4}
+        % \fp_add:cn {l__xsim_current_goal_#3_fp} {#4}
+        \xsim_temporary_goal_add:nnnn {#1} {#2} {#3} {#4}
+      }
+  }
+\cs_generate_variant:Nn \xsim_addto_goal:nnnn {xx,nVnx}
+
+% #1: exercise type
+% #2: id
+% #3: goal
+% #4: relation and value
+\prg_new_conditional:Npnn \xsim_if_goal_value:nnnn #1#2#3#4 {p,T,F,TF}
+  {
+    \fp_compare:nTF
+      { (0 + \xsim_get_property:nnn {#1} {#2} {#3}) #4 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_goal_value:nnnnTF {xx}
+
+% ----------------------------------------------------------------------------
+% we need some kind of temporary variable to be able to set goals both as
+% option to exercises and within the exercise body
+
+% #1: type
+% #2: id
+% #3: goal
+\cs_new_protected:Npn \xsim_temporary_goal_new:nnn #1#2#3
+  { \fp_new:c {g__xsim_goal_#3_#1_#2_fp} }
+\cs_generate_variant:Nn \xsim_temporary_goal_new:nnn {nV}
+
+% #1: type
+% #2: id
+% #3: goal
+% #4: value
+\cs_new_protected:Npn \xsim_temporary_goal_set:nnnn #1#2#3#4
+  { \fp_gset:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
+\cs_generate_variant:Nn \xsim_temporary_goal_set:nnnn {nV}
+
+% #1: type
+% #2: id
+% #3: goal
+% #4: value
+\cs_new_protected:Npn \xsim_temporary_goal_add:nnnn #1#2#3#4
+  { \fp_gadd:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
+\cs_generate_variant:Nn \xsim_temporary_goal_add:nnnn {nV}
+
+% #1: type
+% #2: id
+% #3: goal
+\cs_new:Npn \xsim_temporary_goal_get:nnn #1#2#3
+  { \fp_to_decimal:c {g__xsim_goal_#3_#1_#2_fp} }
+\cs_generate_variant:Nn \xsim_temporary_goal_get:nnn {nV}
+
+% #1: type
+% #2: id
+% #3: goal
+\cs_new_protected:Npn \__xsim_temporary_goal_show:nnn #1#2#3
+  { \fp_show:c {g__xsim_goal_#3_#1_#2_fp} }
+
+% ----------------------------------------------------------------------------
+% a function which can be used to modify how the numbers of a goal are
+% printed:
+\cs_new_protected:Npn \__xsim_print_goal:n #1 {#1}
+\cs_generate_variant:Nn \__xsim_print_goal:n {x}
+
+% #1: value
+% #2: value == 1
+% #3: value != 1
+\cs_new_protected:Npn \xsim_print_goal:nnn #1#2#3
+  {
+    \__xsim_print_goal:x { \fp_to_decimal:n {#1} }
+    \fp_compare:nTF { (#1) = 1 } {#2} {#3}
+  }
+
+% #1: exercise type
+% #2: goal
+% #3: sum == 1
+% #4: sum != 1
+\cs_new_protected:Npn \xsim_print_goal_sum:nnnn #1#2#3#4
+  { \xsim_print_goal:nnn { \use:c {g__xsim_total_#1_goal_#2_fp} } {#3} {#4} }
+
+% #1: goal
+% #2: sum == 1
+% #3: sum != 1
+\cs_new_protected:Npn \xsim_print_total_goal_sum:nnn #1#2#3
+  { \xsim_print_goal:nnn { \use:c {g__xsim_total_goal_#1_fp} } {#2} {#3} }
+
+% ----------------------------------------------------------------------------
+% the same as the last to functions but for a list of goals:
+
+% #1: fp variable to be set
+% #2: list of goals (separated with +)
+% #3: function to be applied to goal names
+\cs_new_protected:Npn \__xsim_exercise_goals_sum_aux:Nnn #1#2#3
+  {
+    \seq_set_split:Nnn \l__xsim_tmpa_seq {+} {#2}
+    \seq_set_map:NNn \l__xsim_tmpb_seq \l__xsim_tmpa_seq {#3}
+    \fp_set:Nn #1 { \seq_use:Nn \l__xsim_tmpb_seq {+} }
+  }
+
+% #1: fp variable
+% #2: exercise type
+% #3: list of goals (separated with +)
+\cs_new_protected:Npn \__xsim_exercise_goals_sum:Nnn #1#2#3
+  {
+    \__xsim_exercise_goals_sum_aux:Nnn #1 {#3}
+      { \exp_not:c {g__xsim_total_#2_goal_ \tl_trim_spaces:n {##1} _fp} }
+  }
+
+% #1: fp variable
+% #2: list of goals (separated with +)
+\cs_new_protected:Npn \__xsim_exercise_goals_sum:Nn #1#2
+  {
+    \__xsim_exercise_goals_sum_aux:Nnn #1 {#2}
+      { \exp_not:c {g__xsim_total_goal_ \tl_trim_spaces:n {##1} _fp} }
+  }
+
+% #1: exercise type
+% #2: list of goals (separated with +)
+% #3: sum == 1
+% #4: sum != 1
+\cs_new_protected:Npn \xsim_print_goals_sum:nnnn #1#2#3#4
+  {
+    \__xsim_exercise_goals_sum:Nnn \l__xsim_tmpa_fp {#1} {#2}
+    \xsim_print_goal:nnn { \l__xsim_tmpa_fp } {#3} {#4}
+  }
+
+% #1: list of goals (separated with +)
+% #2: sum == 1
+% #3: sum != 1
+\cs_new_protected:Npn \xsim_print_total_goals_sum:nnn #1#2#3
+  {
+    \__xsim_exercise_goals_sum:Nn \l__xsim_tmpa_fp {#1}
+    \xsim_print_goal:nnn { \l__xsim_tmpa_fp } {#2} {#3}
+  }
+
+% ----------------------------------------------------------------------------
+% #1: exercise type
+% #2: goal
+% #3: relation and value
+\prg_new_conditional:Npnn \xsim_if_goal_sum:nnn #1#2#3 {p,T,F,TF}
+  {
+    \fp_compare:nTF
+      { ( \use:c {g__xsim_total_#1_goal_#2_fp} ) #3 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: exercise type
+% #2: list of goals (separated with +)
+% #3: relation and value
+\prg_new_protected_conditional:Npnn \xsim_if_goals_sum:nnn #1#2#3 {T,F,TF}
+  {
+    \__xsim_exercise_goals_sum:Nnn \l__xsim_tmpa_fp {#1} {#2}
+    \fp_compare:nTF
+      { ( \l__xsim_tmpa_fp ) #3 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: goal
+% #2: relation and value
+\prg_new_conditional:Npnn \xsim_if_total_goal_sum:nn #1#2 {p,T,F,TF}
+  {
+    \fp_compare:nTF
+      { ( \use:c {g__xsim_total_goal_#1_fp} ) #2 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: list of goals (separated with +)
+% #2: relation and value
+\prg_new_protected_conditional:Npnn \xsim_if_total_goals_sum:nn #1#2 {T,F,TF}
+  {
+    \__xsim_exercise_goals_sum:Nn \l__xsim_tmpa_fp {#1}
+    \fp_compare:nTF
+      { ( \l__xsim_tmpa_fp ) #2 }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+% #1: exercise type
+% #2: goal
+% #3: value
+\xsim_new_aux_property:cpn {goal} #1#2#3
+  { \fp_gset:cn {g__xsim_total_#1_goal_#2_fp} {#3} }
+
+% #1: goal
+% #2: value
+\xsim_new_aux_property:cpn {totalgoal} #1#2
+  { \fp_gset:cn {g__xsim_total_goal_#1_fp} {#2} }
+
+\xsim_at_begin_document:n
+  {
+    \seq_map_inline:Nn \l__xsim_goals_seq
+      {
+        \fp_gset_eq:cc
+          {g__xsim_total_goal_recorded_#1_fp}
+          {g__xsim_total_goal_#1_fp}
+      }
+  }
+  
+\xsim_at_end_document:n
+  {
+    \seq_map_inline:Nn \l__xsim_goals_seq
+      {
+        \xsim_foreach_exercise_type:n
+          {
+            \xsim_add_property_to_aux:nn {goal}
+              { {##1} {#1} { \fp_to_decimal:c {g__xsim_##1_goal_#1_fp} } }
+          }
+        \tl_set:Nx \l__xsim_tmpa_tl
+          { \fp_to_decimal:c {g__xsim_total_goal_#1_fp} }
+        \tl_set:Nx \l__xsim_tmpb_tl
+          { \fp_to_decimal:c {g__xsim_total_goal_recorded_#1_fp} }
+        \tl_if_eq:NNF \l__xsim_tmpa_tl \l__xsim_tmpb_tl { \xsim_rerun: }
+        \xsim_add_property_to_aux:nn {totalgoal}
+          { {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim}
+  {
+    goal-print .code:n =
+      \cs_set_protected:Npn \__xsim_print_goal:n ##1 {#1} ,
+    grading-table/template .tl_set:N  = \l_xism_grading_table_template_tl ,
+    grading-table/template .initial:n = default ,
+    grading-table/type     .tl_set:N  = \l_xism_grading_table_exercise_type_tl ,
+    grading-table/type     .initial:n =
+  }
+
+\XSIMmoduleend
+\XSIMmodule{collections}{collect exercises and print collected exercises}
+
+\seq_new:N \g__xsim_collections_seq
+\bool_new:N \l____xsim_active_bool
+
+\msg_new:nnn {xsim} {collection-exists}
+  {
+    The~ collection~ `#1'~ you're~ trying~ to~ define~ \msg_line_context:
+    \c_space_tl already~ exists.
+  }
+
+\msg_new:nnn {xsim} {collection-active}
+  {
+    You~ can't~ print~ collection~ `#1'~ while~ it~ is~ still~ active~
+    \msg_line_context:
+  }
+
+\msg_new:nnn {xsim} {unknown-collection}
+  {
+    You're~ trying~ to~ use~ the~ collection~ `#1'~ \msg_line_context:
+    \c_space_tl but~ no~ collection~ with~ that~ name~ exists.~ You~ need~ to~
+    define~ it~ first!
+  }
+
+\msg_new:nnn {xsim} {print-collection-choice}
+  {
+    The~ choice~ `#1'~ for~ the~ option~ `print-collection/print'~ does~ not~
+    exist.~ I'm~ using~ `exercises'~ instead~ \msg_line_context:
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+\cs_new_protected:Npn \xsim_new_collection:n #1
+  {
+    \xsim_if_collection_exist:nTF {#1}
+      { \msg_error:nnn {xsim} {collection-exists} {#1} }
+      {
+        \xsim_verbose:n { Declaring~ new~ collection~ `#1'. }
+        \xsim_attribute_set:nnn {collection} {#1} { \c_false_bool }
+        \seq_gput_right:Nn \g__xsim_collections_seq {#1}
+        \xsim_new_list:n {collection:#1}
+        \seq_new:c {g__xsim_collection_#1_seq}
+      }
+  }
+
+% #1: collection name
+\prg_new_conditional:Npnn \xsim_if_collection_exist:n #1 {T,F,TF}
+  {
+    \seq_if_in:NnTF \g__xsim_collections_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\xsim_new_collection:n {all~ exercises}
+
+\cs_new_protected:Npn \xsim_foreach_collection:n #1
+  { \seq_map_inline:Nn \g__xsim_collections_seq {#1} }
+
+\cs_new:Npn \xsim_collection_map_break: { \seq_map_break: }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+% #2: type
+\cs_new_protected:Npn \xsim_activate_collection:nn #1#2
+  {
+    \xsim_if_collection_active:nTF {#1}
+      { % TODO: error
+      }
+      {
+        \xsim_verbose:n { Activating~ collection~ `#1'. }
+        \xsim_attribute_set:nnn {collection} {#1} { \c_true_bool }
+        \tl_if_blank:nF {#2}
+          { \seq_gput_right:cn {g__xsim_collection_#1_seq} {#2} }
+      }
+  }
+
+\cs_new_protected:Npn \xsim_activate_collection:n #1
+  { \xsim_activate_collection:nn {#1} {} }
+
+% #1: collection name
+\cs_new_protected:Npn \xsim_deactivate_collection:n #1
+  {
+    \xsim_if_collection_active:nTF {#1}
+      {
+        \xsim_verbose:n { Deactivating~ collection~ `#1'. }
+        \xsim_attribute_set:nnn {collection} {#1} { \c_false_bool }
+        % \seq_gclear:c {g__xsim_collection_#1_seq}
+      }
+      { % TODO: warning
+      }
+  }
+
+% start collection for an exercise type:
+% #1: collection name
+% #2: type
+\cs_new_protected:Npn \xsim_start_collection:nn #1#2
+  {
+    \group_begin:
+    \xsim_if_collection_exist:nF {#1}
+      { \msg_error:nnn {xsim} {unknown-collection} {#1} }
+    \xsim_activate_collection:nn {#1} {#2}
+    \xsim_setup:x { \xsim_get_parameter:nn {#2} {exercise-env} /print = false }
+  }
+\cs_generate_variant:Nn \xsim_setup:n {x}
+
+% start collection for all exercise types:
+% #1: collection name
+\cs_new_protected:Npn \xsim_start_collection:n #1
+  {
+    \group_begin:
+    \xsim_if_collection_exist:nF {#1}
+      { \msg_error:nnn {xsim} {unknown-collection} {#1} }
+    \xsim_activate_collection:n {#1}
+    \xsim_foreach_exercise_type:n
+      { \xsim_setup:x { \xsim_get_parameter:nn {##1} {exercise-env} /print = false } }
+  }
+
+% stop collection:
+% #1: collection name
+\cs_new_protected:Npn \xsim_stop_collection:n #1
+  {
+    \xsim_deactivate_collection:n {#1}
+    \group_end:
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+% #2: type
+% #3: id
+\cs_new_protected:Npn \xsim_add_to_collection:nnn #1#2#3
+  {
+    \seq_if_empty:cTF {g__xsim_collection_#1_seq}
+      { \__xsim_add_to_collection:nnn {#1} {#2} {#3} }
+      {
+        \seq_if_in:cnF {g__xsim_collection_#1_seq} {#2}
+          { \__xsim_add_to_collection:nnn {#1} {#2} {#3} }
+      }
+  }
+
+% #1: collection name
+% #2: type
+% #3: id
+\cs_new_protected:Npn \__xsim_add_to_collection:nnn #1#2#3
+  {
+    \xsim_verbose:n
+      { Adding~ exercise~ type~ `#2'~ id~ `#3'~ to~ collection~ `#1'. } 
+    \xsim_add_to_list:nn {collection:#1} {#2-#3}
+  }
+
+\cs_new:Npn \xsim_collection_count:n #1
+  { \xsim_list_count:n {collection:#1} }
+
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_update_collections:nn #1#2
+  {
+    \xsim_if_insert_mode:F
+      {
+        \xsim_exercise_if_use:nnT {#1} {#2}
+          { \xsim_add_to_collection:nnn {all~ exercises} {#1} {#2} }
+        \xsim_foreach_collection:n
+          {
+            \xsim_exercise_if_use:nnTF {#1} {#2}
+              {
+                \xsim_if_collection_active:nT {##1}
+                  { \xsim_add_to_collection:nnn {##1} {#1} {#2} }
+              }
+              { \xsim_remove_from_list:nn {collection:##1} {#1-#2} }
+          }
+      }
+  }
+\cs_generate_variant:Nn \xsim_update_collections:nn {nV}
+
+% #1: collection name
+\cs_new_protected:Npn \xsim_get_collections:
+  {
+    \xsim_foreach_collection:n
+      {
+        \xsim_foreach_list_entry:nn {collection:##1}
+          { \__xsim_list_to_collection:nww {##1} ####1 \q_stop }
+      }
+  }
+
+\cs_new_protected:Npn \__xsim_list_to_collection:nww #1#2-#3 \q_stop
+  { \xsim_add_to_collection:nnn {#1} {#2} {#3} }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+% #2: type
+% #3: id
+\prg_new_conditional:Npnn \xsim_if_in_collection:nnn #1#2#3 {T,F,TF}
+  {
+    \xsim_if_in_list:nnTF {collection:#1} {#2-#3}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_in_collection:nnnTF {V}
+\cs_generate_variant:Nn \xsim_if_in_collection:nnnT  {x,nV}
+
+% ----------------------------------------------------------------------------
+
+\bool_new:N \l__xsim_printcollection_headings_bool
+\tl_new:N   \l__xsim_printcollection_headings_template_tl
+\tl_new:N   \l__xsim_print_collection_choice_tl
+
+\keys_define:nn {xsim/print-collection}
+  {
+    headings          .bool_set:N = \l__xsim_printcollection_headings_bool ,
+    headings          .initial:n  = false ,
+    headings-template .tl_set:N  = \l__xsim_printcollection_headings_template_tl ,
+    headings-template .initial:n = collection ,
+    print             .choice: ,
+    print/exercises   .code:n =
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {exercise} ,
+    print/solutions   .code:n =
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {solution} ,
+    print/both        .code:n =
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {both} ,
+    print/unknown     .code:n =
+      \msg_warning:nnn {xsim} {print-collection-choice} {#1}
+      \tl_set:Nn \l__xsim_print_collection_choice_tl {exercise} ,
+    print             .initial:n = exercises
+  }
+
+% #1: options
+% #2: collection name
+\cs_new_protected:Npn \xsim_print_collection:nn #1#2
+  {
+    \xsim_if_collection_active:nTF {#2}
+      { \msg_error:nnn {xsim} {collection-active} {#2} }
+      {
+        \xsim_verbose:x
+          {
+            Printing~
+            \l__xsim_print_collection_choice_tl \c_space_tl
+            \str_if_eq:onT { \l__xsim_print_collection_choice_tl } {both}
+              { exercises~ and~ solutions~ }
+            of~ collection~ `#2'
+          }
+        \group_begin:
+          \keys_set:nn {xsim/print-collection} {#1} 
+          \tl_set:Nn \ExerciseCollection {#2}
+          \xsim_foreach_exercise_type:n
+            {
+              \tl_set:Nn \ExerciseType {##1}
+              \bool_if:NT \l__xsim_printcollection_headings_bool
+                {
+                  \bool_set_false:N \l__xsim_tmpa_bool
+                  \xsim_foreach_exercise_id:n
+                    {
+                      \xsim_if_in_collection:nnnT {#2} {##1} {####1}
+                        {
+                          \tl_if_eq:VnTF
+                            \l__xsim_print_collection_choice_tl
+                            {both}
+                            {
+                              \xsim_if_exercise_exist:nnT {##1} {####1}
+                                { \bool_set_true:N \l__xsim_tmpa_bool }
+                            }
+                            {
+                              \use:c
+                                {
+                                  xsim_if_
+                                  \l__xsim_print_collection_choice_tl
+                                  _exist:nnT
+                                }
+                                {##1}
+                                {####1}
+                                { \bool_set_true:N \l__xsim_tmpa_bool }
+                            }
+                        }
+                    }
+                  \bool_if:NT \l__xsim_tmpa_bool
+                    {
+                      \xsim_use_template:nV
+                      {heading}
+                      \l__xsim_printcollection_headings_template_tl
+                    }
+                }
+              \xsim_foreach_exercise_id:n
+                {
+                  \xsim_if_in_collection:nnnT {#2} {##1} {####1}
+                    {
+                      \tl_if_eq:VnTF
+                        \l__xsim_print_collection_choice_tl
+                        {both}
+                        {
+                          \xsim_if_exercise_exist:nnT {##1} {####1}
+                            { \xsim_insert:nnnn {##1} {####1} {} {exercise} }
+                          \xsim_if_solution_exist:nnT {##1} {####1}
+                            { \xsim_insert:nnnn {##1} {####1} {} {solution} }
+                        }
+                        {
+                          \use:c
+                            {
+                              xsim_if_
+                              \l__xsim_print_collection_choice_tl
+                              _exist:nnT
+                            }
+                            {##1}
+                            {####1}
+                            {
+                              \xsim_insert:nnnV
+                                {##1}
+                                {####1}
+                                {}
+                                \l__xsim_print_collection_choice_tl
+                            }
+                        }
+                    }
+                }
+            }
+        \group_end:
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+% #1: collection name
+\prg_new_conditional:Npnn \xsim_if_collection_active:n #1 {T,F,TF}
+  {
+    \xsim_attribute_if_set:nnTF {collection} {#1}
+      {
+        \bool_lazy_and:nnTF
+          { !\str_if_eq_p:en {#1} {all~ exercises} }
+          { \xsim_attribute_get:nn {collection} {#1} }
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+      { \prg_return_false: }
+  }
+
+\prg_new_protected_conditional:Npnn \xsim_if_collections_active: {T,F,TF}
+  {
+    \bool_set_false:N \l____xsim_active_bool
+    \xsim_foreach_collection:n
+      {
+        \xsim_if_collection_active:nT {##1}
+          {
+            \bool_set_true:N \l____xsim_active_bool
+            \xsim_collection_map_break:
+          }
+      }
+    \bool_if:NTF \l____xsim_active_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_at_begin_document:n
+  {
+    \xsim_get_collections:
+    \xsim_activate_collection:n {all~ exercises}
+  }
+
+\xsim_at_end_document:n
+  {
+    \xsim_deactivate_collection:n {all~ exercises}
+    \xsim_foreach_collection:n { \xsim_update_list:n {collection:#1} }
+  }
+  
+\XSIMmoduleend
+\XSIMmodule{exercises}{main exercises definitions}
+
+\seq_new:N  \l__xsim_exercise_types_seq
+\seq_new:N  \l__xsim_parameters_seq
+\seq_new:N  \l__xsim_fixed_parameters_seq
+\seq_new:N  \l__xsim_mandatory_parameters_seq
+\int_gzero_new:N  \g_xsim_id_int
+\int_gzero_new:N  \g_xsim_max_id_int
+\tl_new:N   \l_xsim_current_id_tl
+\tl_new:N   \g_xsim_exercise_id_tl
+\tl_new:N   \g_xsim_exercise_type_tl
+\tl_new:N   \ExerciseID
+\tl_new:N   \ExerciseType
+\bool_new:N \l____xsim_print_bool
+
+% ----------------------------------------------------------------------------
+
+\msg_new:nnn {xsim} {parameter-fixed}
+  {
+    You~ tried~ to~ set~ parameter~ `#2'~ for~ type~ `#1'~ \msg_line_context:
+    . ~ However,~ parameter~ `#2'~ is~ a~ fixed~ parameter~ that~ already~
+    has~ been~ set~ for~ type~ `#1'.~ Its~ value~ can't~ be~ changed!
+  }
+
+\msg_new:nnn {xsim} {type-exists}
+  {
+    You~ try~ to~ define~ exercise~ type~ `#1'~ \msg_line_context: .~
+    However,~ the~ exercise~ type~ `#1'~ already~ exists.
+  }
+
+\msg_new:nnn {xsim} {mandatory-parameter}
+  {
+    You~ forget~ to~ set~ the~ mandatory~ parameter~ `#1'~ when~ defining~
+    exercise~ type~ `#2'.
+  }
+
+\msg_new:nnn {xsim} {unknown-parameter}
+  {
+    You~ tried~ to~ retrieve~ the~ parameter~ `#1'~ \msg_line_context: . \\
+    This~ parameter~ does~ not~ exist.~ Check~ for~ a~ typo~ or~ \\
+    define~ the~ parameter~ yourself.
+  }
+
+% ----------------------------------------------------------------------------
+% #1: type
+% #2: parameter
+% #3: value
+\cs_new_protected:Npn \__xsim_set_parameter_type:nnn #1#2#3
+  { \xsim_attribute_set:nnn {#1} {#2} {#3} }
+
+% #1: type
+% #2: parameter
+\cs_new:Npn \xsim_get_parameter:nn #1#2
+  { \xsim_attribute_get:nn {#1} {#2} }
+\cs_generate_variant:Nn \xsim_get_parameter:nn {o}
+
+% #1: type
+% #2: parameter
+\prg_new_conditional:Npnn \xsim_if_parameter_set:nn #1#2 {p,T,F,TF}
+  {
+    \xsim_attribute_if_set:nnTF {#1} {#2}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_new_list:n {types}
+
+% #1: true|false (fixed parameter)
+% #2: true|false (mandatory parameter)
+% #3: parameter name
+\cs_new_protected:Npn \xsim_declare_parameter:nnn #1#2#3
+  {
+    \xsim_verbose:n { Declaring~ parameter~ `#3'. }
+    \xsim_if_parameter_exist:nF {#3}
+      {
+        \seq_put_right:Nn \l__xsim_parameters_seq {#3}
+        \bool_if:cT {c_#1_bool}
+          { \seq_put_right:Nn \l__xsim_fixed_parameters_seq {#3} }
+        \bool_if:cT {c_#2_bool}
+          { \seq_put_right:Nn \l__xsim_mandatory_parameters_seq {#3} }
+      }
+  }
+  
+\cs_new_protected:Npn \xsim_remove_parameter:n #1
+  {
+    \xsim_verbose:n { Removing~ parameter~ `#1'. }
+    \xsim_if_parameter_exist:nT {#1}
+      { \seq_remove_all:Nn \l__xsim_parameters_seq {#1} }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_parameter_exist:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_parameters_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_parameter_exist:nT {x}
+
+\prg_new_conditional:Npnn \xsim_if_parameter_fixed:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_fixed_parameters_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: type
+% #2: csv list of parameters
+\cs_new_protected:Npn \xsim_set_parameters:nn #1#2
+  {
+    \clist_map_inline:nn {#2}
+      {
+        \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
+        \xsim_set_parameter:nxx {#1}
+          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
+          { \seq_item:Nn \l__xsim_tmpa_seq {2} }
+      }
+  }
+\cs_generate_variant:Nn \xsim_set_parameters:nn {nx}
+
+% #1: type
+\cs_new_protected:Npn \xsim_check_mandatory_parameters:n #1
+  {
+    \seq_map_inline:Nn \l__xsim_mandatory_parameters_seq
+      {
+        \xsim_if_parameter_set:nnF {#1} {##1}
+          { \msg_error:nnnn {xsim} {mandatory-parameter} {##1} {#1} }
+      }
+  }
+
+% #1: type
+\prg_new_conditional:Npnn \xsim_if_type:n #1 {p,T,F,TF}
+  {
+    \seq_if_in:NnTF \l__xsim_exercise_types_seq {#1}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: type
+% #2: parameter
+% #3: value
+\cs_new_protected:Npn \xsim_set_parameter:nnn #1#2#3
+  {
+    \xsim_if_parameter_exist:nT {#2}
+      {
+        \xsim_if_parameter_fixed:nTF {#1}
+          {
+            \xsim_if_parameter_set:nnTF {#1} {#2}
+              {
+                \msg_warning:nnnn {xsim} {parameter-fixed} {#1} {#2}
+                \xsim_verbose:n
+                  {
+                    Not~ setting~ already~ set~ and~ fixed~ parameter~ `#2'~
+                    for~ type~ `#1'.
+                  }
+              }
+              {
+                \xsim_verbose:n
+                  { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
+                \__xsim_set_parameter_type:nnn {#1} {#2} {#3}
+              }
+          }
+          {
+            \xsim_verbose:n
+              { Setting~ parameter~ `#2'~ for~ type~ `#1'~ to~ `#3'. }
+            \__xsim_set_parameter_type:nnn {#1} {#2} {#3}
+          }
+      }
+  }
+\cs_generate_variant:Nn \xsim_set_parameter:nnn {nnx,nxx}
+
+\cs_new:Npn \__xsim_get_parameter_tmp:n #1 {}
+\cs_generate_variant:Nn \__xsim_get_parameter_tmp:n {V}
+
+% #1: type
+% #2: parameter
+\cs_new_protected:Npn \xsim_get_parameter_if_set:nnTF #1#2#3#4
+  {
+    \group_begin:
+      \xsim_if_parameter_exist:nTF {#2}
+        {
+          \xsim_if_parameter_set:nnTF {#1} {#2}
+            {    
+              \tl_set:Nx \ParameterValue
+                { \xsim_get_parameter:nn {#1} {#2} }
+              \cs_set:Npn \__xsim_get_parameter_tmp:n ##1 {#3}
+              \__xsim_get_parameter_tmp:V \ParameterValue
+            }
+            {#4}
+        }
+        { \msg_error:nnn {xsim} {unknown-parameter} {#2} }
+    \group_end:
+  }
+\cs_new_protected:Npn \xsim_get_parameter_if_set:nnT #1#2#3
+  { \xsim_get_parameter_if_set:nnTF {#1} {#2} {#3} {} }
+\cs_new_protected:Npn \xsim_get_parameter_if_set:nnF #1#2#3
+  { \xsim_get_parameter_if_set:nnTF {#1} {#2} {} {#3} }
+\cs_generate_variant:Nn \xsim_get_parameter_if_set:nnTF {o}
+
+% ----------------------------------------------------------------------------
+% inside the argument `#1' refers to the type
+\cs_new_protected:Npn \xsim_foreach_exercise_type:n #1
+  { \xsim_foreach_new_list_entry:nn {types} {#1} }
+
+\cs_new_protected:Npn \xsim_foreach_exercise_id:n #1
+  { \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int } {#1} }
+
+\cs_new:Npn \__xsim_loop_item:nnnnnn #1#2#3#4#5#6 {}
+\cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
+
+% #1: type
+% #2: id
+% #3: boolean property
+\cs_new:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
+  {
+    \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
+      {
+        \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} {#1}
+        \tl_set_rescan:Nnx \l__xsim_tmpb_tl {} {#2}
+        \__xsim_loop_item:VVxxxx
+          \l__xsim_tmpa_tl                                    % #1
+          \l__xsim_tmpb_tl                                    % #2
+          { \xsim_get_property:nnn {#1} {#2} {counter} }      % #3
+          { \xsim_get_property:nnn {#1} {#2} {subtitle} }     % #4
+          { \xsim_get_property:nnn {#1} {#2} {points} }       % #5
+          { \xsim_get_property:nnn {#1} {#2} {bonus-points} } % #6
+       }
+  }
+
+% #1: boolean property
+% #2: loop code
+\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_type_id:nn
+  {nnnnnn}
+  {
+    \xsim_foreach_exercise_type:n
+      {
+        \xsim_foreach_exercise_id:n
+          { \__xsim_deliver_exercise_details:nnn {##1} {####1} {#1} }
+      }
+  }
+
+\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_id_type:nn
+  {nnnnnn}
+  {
+    \xsim_foreach_exercise_id:n
+      {
+        \xsim_foreach_exercise_type:n
+          { \__xsim_deliver_exercise_details:nnn {####1} {##1} {#1} }
+      }
+  }
+
+\cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
+  {
+    \seq_put_right:Nn \l__xsim_exercise_types_seq {#1}
+    \bool_new:c {l__xsim_#1_solution_print_bool}
+    \bool_new:c {l__xsim_#1_exercise_print_bool}
+    \bool_new:c {l__xsim_#1_exercise_use_bool}
+  }
+
+\cs_new_protected:Npn \xsim_define_counters:n #1
+  {
+    \xsim_verbose:n { Defining~ counters~ for~ new~ exercise~ type~ `#1' }
+    \cs_if_exist:cF { c@ \xsim_get_parameter:nn {#1} {counter} }
+      { \newcounter { \xsim_get_parameter:nn {#1} {counter} } }
+    \cs_if_exist:cF { c@ \xsim_get_parameter:nn {#1} {solution-counter} }
+      { \newcounter { \xsim_get_parameter:nn {#1} {solution-counter} } }
+    \cs_if_exist:cF { c@ number of \xsim_get_parameter:nn {#1} {exercise-env} s }
+      { \newcounter { number of \xsim_get_parameter:nn {#1} {exercise-env} s } }
+  }
+
+% #1: type
+% #2: id
+\cs_new_protected:Npn \xsim_step_exercise_counter:nn #1#2
+  {
+    \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
+    \xsim_set_properties:nnx {#1} {#2}
+      {
+        counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
+        counter-value = \arabic { \xsim_get_parameter:nn {#1} {counter} }
+      }
+  }
+\cs_generate_variant:Nn \xsim_step_exercise_counter:nn {nV}
+
+% #1: type
+\cs_new_protected:Npn \xsim_declare_exercise_type:nn #1#2
+  {
+    \xsim_if_type:nTF {#1}
+      { \msg_error:nnn {xsim} {type-exists} {#1} }
+      {
+        \xsim_verbose:n { Declaring~ new~ exercise~ type~ `#1'. }
+        \xsim_define_exercise_type_variables:n {#1}
+        \xsim_add_to_list:nn {types} {#1}
+        \xsim_set_parameters:nn {#1} {#2}
+        \xsim_set_parameter:nnx {#1} {number}
+          { number of \xsim_get_parameter:nn {#1} {exercise-env} s }
+        \xsim_check_mandatory_parameters:n {#1}
+        \xsim_if_parameter_set:nnF {#1} {exercises-name}
+          {
+            \xsim_set_parameters:nn {#1}
+              { exercises-name = \xsim_get_parameter:nn {#1} {exercise-name} s }
+          }
+        \xsim_if_parameter_set:nnF {#1} {solutions-name}
+          {
+            \xsim_set_parameters:nn {#1}
+              { solutions-name = \xsim_get_parameter:nn {#1} {solution-name} s }
+          }
+        \xsim_if_parameter_set:nnF {#1} {counter}
+          {
+            \xsim_set_parameters:nx {#1}
+              { counter = \xsim_get_parameter:nn {#1} {exercise-env} }
+          }
+        \xsim_if_parameter_set:nnF {#1} {solution-counter}
+          {
+            \xsim_set_parameters:nx {#1}
+              { solution-counter = \xsim_get_parameter:nn {#1} {solution-env} }
+          }
+        \xsim_define_counters:n {#1}
+        \xsim_verbose:n { Defining~ options~ for~ new~ exercise~ type~ `#1' }
+        \keys_define:nx {xsim}
+          {
+            \xsim_get_parameter:nn {#1} {solution-env} / print
+              .bool_set:N = \exp_not:c {l__xsim_#1_solution_print_bool} ,
+            \xsim_get_parameter:nn {#1} {solution-env} / print
+              .initial:n  = false ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / print
+              .bool_set:N = \exp_not:c {l__xsim_#1_exercise_print_bool} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / print
+              .initial:n  = true ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / use
+              .bool_set:N = \exp_not:c {l__xsim_#1_exercise_use_bool} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / use
+              .initial:n  = true ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / within .code:n =
+              \exp_not:N \@addtoreset { \xsim_get_parameter:nn {#1} {counter} } {####1},
+            \xsim_get_parameter:nn {#1} {exercise-env} / the-counter .code:n =
+              \cs_set:cpn {the \xsim_get_parameter:nn {#1} {counter} } {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / template
+              .code:n = \xsim_set_parameter:nnn {#1} {exercise-template} {####1} ,
+            \xsim_get_parameter:nn {#1} {solution-env} / template
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-template} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / name
+              .code:n = \xsim_set_parameter:nnn {#1} {exercise-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} s / name
+              .code:n = \xsim_set_parameter:nnn {#1} {exercises-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {solution-env} / name
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {solution-env} s / name
+              .code:n = \xsim_set_parameter:nnn {#1} {solutions-name} {####1} ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / heading
+              .code:n = \xsim_set_parameter:nnn {#1} {exercise-heading} {####1} ,
+            \xsim_get_parameter:nn {#1} {solution-env} / heading
+              .code:n = \xsim_set_parameter:nnn {#1} {solution-heading} {####1}
+          }
+        \xsim_new_environment:nn {#1} {exercise}
+        \xsim_new_environment:nn {#1} {solution}
+      }
+  }
+  
+% #1: type
+% #2: id
+\prg_new_conditional:Npnn \xsim_if_exercise_exist:nn #1#2 {T,F,TF}
+  {
+    \xsim_if_exist:nnnTF {#1} {#2} {exercise}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_exercise_exist:nnT {VV}
+
+% #1: type
+% #2: options
+\cs_new_protected:Npn \xsim_start_exercise:nn #1#2
+  {
+    \xsim_if_insert_mode:F
+      {
+        \int_gincr:N \g_xsim_id_int
+        \int_compare:nF { \g_xsim_max_id_int > \g_xsim_id_int }
+          { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
+        \tl_gset:Nx \g_xsim_exercise_id_tl { \int_use:N \g_xsim_id_int }
+        \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
+        % save the goal values from the auxiliary files:
+        \xsim_foreach_goal:n
+          {
+            \xsim_temporary_goal_new:nVn {#1} \g_xsim_exercise_id_tl {##1}
+            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
+              {
+                \xsim_temporary_goal_set:nVnn
+                  {#1}
+                  \g_xsim_exercise_id_tl
+                  {##1}
+                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
+              }
+          }
+        \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
+          {
+            % preset options so the user doesn't has to:
+            print = true ,
+            use = true ,
+            % options set by the user:
+            \exp_not:n {#2} ,
+            % options which need to have certain values:
+            id = \g_xsim_exercise_id_tl ,
+            section-value = \arabic{section} ,
+            section = \thesection ,
+            page-value = \arabic{page} ,
+            sectioning =
+              { \cs_if_exist:NTF \thechapter { \arabic {chapter} } {0} }
+              { \arabic {section} }
+              { \arabic {subsection} }
+              { \arabic {subsubsection} }
+              { \arabic {paragraph} } ,
+            page = \thepage ,
+            % this cannot yet be set (see below):
+            used = false
+          }
+        % temporary goal now: either 0 or equal the complete property
+        % property: equal to the given value
+        \xsim_foreach_goal:n
+          {
+            \fp_set:Nn \l__xsim_tmpa_fp
+              { \xsim_temporary_goal_get:nVn {#1} \g_xsim_exercise_id_tl {##1} }
+            % set temporary goal to given property:
+            \xsim_if_property_given:nTF {##1}
+              {
+                \xsim_temporary_goal_set:nVnn
+                  {#1}
+                  \g_xsim_exercise_id_tl
+                  {##1}
+                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
+              }
+              {
+                \xsim_temporary_goal_set:nVnn
+                  {#1}
+                  \g_xsim_exercise_id_tl
+                  {##1}
+                  {0}
+              }
+            % update to property to complete value:
+            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
+              {
+                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
+                  { \fp_to_decimal:N \l__xsim_tmpa_fp }
+              }
+          }
+        \xsim_if_property_exist:nT {chapter}
+          {
+            \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
+              {
+                chapter-value = \arabic{chapter} ,
+                chapter = \thechapter
+              }
+          }
+        \tl_set_eq:NN \ExerciseID \g_xsim_exercise_id_tl
+        \tl_set:Nn \ExerciseType {#1}
+        \xsim_verbose:x
+          {
+            Starting~ exercise~ type~ `#1' with~ id~
+            ` \g_xsim_exercise_id_tl '.
+          }
+        \xsim_exercise_if_use:nVTF {#1} \g_xsim_exercise_id_tl
+          {
+            \stepcounter { \xsim_get_parameter:nn {#1} {number} }
+            % don't step if in active collection:
+            \xsim_if_collections_active:TF
+              {
+                \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+                  {print}
+                  {false}
+              }
+              {
+                \xsim_step_exercise_counter:nV {#1} \g_xsim_exercise_id_tl
+                \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+                  {used}
+                  {true}
+              }
+            \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+              {use}
+              {true}
+          }
+          {
+            \xsim_set_properties:nVn {#1} \g_xsim_exercise_id_tl
+              { use = false , print = false }
+          }
+        \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
+      }
+  }
+
+\cs_new_protected:Npn \xsim_stop_exercise:n #1
+  {
+    \xsim_if_insert_mode:F
+      { \tl_gset_eq:NN \g_xsim_exercise_id_tl \ExerciseID }
+  }
+
+% ----------------------------------------------------------------------------
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
+  {
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {print!}
+      { \prg_return_true: }
+      {
+        \bool_set_true:N \l____xsim_print_bool
+        \bool_if:cF {l__xsim_#1_exercise_print_bool}
+          { \bool_set_false:N \l____xsim_print_bool }
+        \xsim_if_tagged:nnF {#1} {#2}
+          { \bool_set_false:N \l____xsim_print_bool }
+        \xsim_if_boolean_property:nnnF {#1} {#2} {print}
+          { \bool_set_false:N \l____xsim_print_bool }
+        \bool_if:NTF \l____xsim_print_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+  }
+\cs_generate_variant:Nn \xsim_exercise_if_print:nnT  {nV}
+\cs_generate_variant:Nn \xsim_exercise_if_print:nnTF {nV}
+
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
+  {
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {use!}
+      { \prg_return_true: }
+      {
+        \xsim_exercise_if_print:nnTF {#1} {#2}
+          { \prg_return_true: }
+          {
+            \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+              {
+                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
+                  {
+                    \xsim_if_tagged:nnTF {#1} {#2}
+                      { \prg_return_true: }
+                      { \prg_return_false: }
+                  }
+                  { \prg_return_false: }
+              }
+              { \prg_return_false: }
+          }
+          
+      }
+  }
+\cs_generate_variant:Nn \xsim_exercise_if_use:nnT  {nV}
+\cs_generate_variant:Nn \xsim_exercise_if_use:nnTF {nV}
+
+% #1: type
+% #2: id
+% #3: exercise|solution
+\prg_new_protected_conditional:Npnn \xsim_if_print:nnn #1#2#3 {T,F,TF}
+  {
+    \use:c {xsim_#3_if_print:nnTF} {#1} {#2}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_new_aux_property:cpn {total-number} #1
+  { \int_gset:Nn \g_xsim_max_id_int {#1} }
+
+\RequirePackage {etoolbox}
+
+\AtEndPreamble
+  {
+    \xsim_foreach_exercise_type:n
+      {
+        \tl_new:c { number of #1 s }
+        \tl_set:cn { number of #1 s } {0}
+        \xsim_new_aux_property:cpn {#1} ##1
+          { \tl_gset:cn { number of #1 s } {##1} }
+      }
+  }
+
+\xsim_at_begin_document:n
+  {
+    \xsim_foreach_exercise_type:n
+      {
+        \xsim_write_to_aux:x
+          { \token_to_str:N \providecommand \token_to_str:N \numberof #1 s {} }
+      }
+  }
+
+\xsim_at_end_document:n
+  {
+    \xsim_if_clear_aux:T
+      {
+        \int_compare:nNnF { \g_xsim_max_id_int } = { \g_xsim_id_int }
+          { \xsim_empty_lists: }
+      }
+    \xsim_add_property_to_aux:nn {total-number} { { \int_use:N \g_xsim_id_int } }
+    \xsim_foreach_exercise_type:n
+      {
+        \xsim_add_property_to_aux:nn {#1}
+          { { \arabic { \xsim_get_parameter:nn {#1} {number} } } }
+      }
+    \xsim_update_list:n {types}
+  }
+
+\XSIMmoduleend
+\XSIMmodule{solutions}{managing solutions}
+
+\bool_new:N \l_xsim_inside_solution_bool
+\bool_new:N \l__xsim_include_question_bool
+\bool_new:N \l__xsim_printsolutions_headings_bool
+\bool_new:N \l__xsim_printsolutions_conditions_bool
+\bool_new:N \l____xsim_this_condition_bool
+
+\seq_new:N \l__xsim_printsolutions_conditions_seq
+
+\int_new:N  \l_xsim_printsolutions_section_int
+\int_new:N  \l_xsim_printsolutions_chapter_int
+
+\tl_new:N   \l__xsim_printsolutions_headings_template_tl
+\tl_new:N   \ExerciseSection
+\tl_new:N   \ExerciseChapter
+\tl_new:N   \l__xsim_printsolutions_collection_tl
+
+% ----------------------------------------------------------------------------
+
+\prg_new_conditional:Npnn \xsim_if_inside_solution: {p,T,F,TF}
+  {
+    \bool_if:NTF \l_xsim_inside_solution_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_if_solution_print:n #1 {p,T,F,TF}
+  {
+    \bool_if:cTF {l__xsim_#1_solution_print_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_solution_if_print:nn #1#2 {T,F,TF}
+  {
+    \bool_set_true:N \l____xsim_print_bool
+    \xsim_if_tagged:nnF {#1} {#2}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \xsim_if_boolean_property:nnnF {#1} {#2} {print}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \bool_if:cF {l__xsim_#1_solution_print_bool}
+      { \bool_set_false:N \l____xsim_print_bool }
+    \bool_if:NTF \l____xsim_print_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_solution_if_print:nnT {nV,oo}
+
+% #1: type
+% #2: id
+\prg_new_protected_conditional:Npnn \xsim_if_solution_exist:nn #1#2 {T,F,TF}
+  {
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {solution}
+      { \xsim_if_exist:nnnTF {#1} {#2} {exercise} }
+      { \xsim_if_exist:nnnTF {#1} {#2} {solution} }
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_solution_exist:nnT  {VV,oo}
+\cs_generate_variant:Nn \xsim_if_solution_exist:nnTF {oo}
+
+% #1: type
+% #2: options
+\cs_new_protected:Npn \xsim_start_solution:nn #1#2
+  {
+    \keys_set:xn { xsim/\xsim_get_parameter:nn {#1} {solution-env} } {#2}
+    \bool_set_true:N \l_xsim_inside_solution_bool
+    \refstepcounter { \xsim_get_parameter:nn {#1} {solution-counter} }
+  }
+
+\cs_new_protected:Npn \xsim_stop_solution:n #1 {}
+
+% ----------------------------------------------------------------------------
+
+% #1: conditional base function (three n args)
+% #2: name
+% #3: code (refer to type and id with `#1' and `#2'), #3 refers to the boolean
+%     properties use/print
+\cs_new_protected:Npn \xsim_new_solutions_condition:Nnn #1#2#3
+  {
+    \prg_new_protected_conditional:Npnn #1 ##1##2##3 {T,F,TF}
+      {
+        \xsim_if_in_list:nnTF {##3} {##1-##2=={true}}
+          {
+            \__xsim_printsolutions_if_condition:nTF {#2}
+              { \__xsim_printsolutions_condition_true: #3 }
+              { \prg_return_false: }
+          }
+          { \prg_return_false: }
+      }
+  }
+
+% per section condition:
+\xsim_new_solutions_condition:Nnn \__xsim_if_solutions_per_section:nnn
+  {per-section}
+  {
+    \xsim_if_in_list:nxTF {section-value}
+      { #1-#2 == { \int_use:N \l_xsim_printsolutions_section_int } }
+      {
+        \tl_set:Nx \ExerciseSection
+          { \xsim_get_property:nnn {#1} {#2} {section} }
+        \prg_return_true:   
+      }
+      { \prg_return_false: }
+  }
+
+% per chapter condition:
+\xsim_new_solutions_condition:Nnn \__xsim_if_solutions_per_chapter:nnn
+  {per-chapter}
+  {
+    \xsim_if_in_list:nxTF {chapter-value}
+      { #1-#2 == { \int_use:N \l_xsim_printsolutions_chapter_int } }
+      {
+        \tl_set:Nx \ExerciseChapter
+          { \xsim_get_property:nnn {#1} {#2} {chapter} }
+        \prg_return_true:   
+      }
+      { \prg_return_false: }
+  }
+
+% per collection condition:
+\xsim_new_solutions_condition:Nnn \__xsim_if_solutions_in_collection:nnn
+  {per-collection}
+  {
+    \tl_if_blank:VTF \l__xsim_printsolutions_collection_tl
+      { \prg_return_false: }
+      {
+        \xsim_if_in_collection:VnnTF
+          \l__xsim_printsolutions_collection_tl
+          {#1}
+          {#2}
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+  }
+
+% ----------------------------------------------------------------------------
+% conditions mechanism
+\cs_new_protected:Npn \__xsim_printsolutions_condition_false:
+  { \bool_set_false:N \l__xsim_printsolutions_conditions_bool }
+
+\cs_new_protected:Npn \__xsim_printsolutions_condition_true:
+  { \bool_set_true:N \l__xsim_printsolutions_conditions_bool }
+
+% #1: type
+% #2: id
+% #3: boolean property
+\prg_new_conditional:Npnn
+  \__xsim_printsolutions_if_conditions:nnn #1#2#3 {T,F,TF}
+  {
+    \bool_if:NTF \l__xsim_printsolutions_conditions_bool
+      { \prg_return_true: }
+      {
+        \xsim_if_in_list:nnTF {#3} {#1-#2=={true}}
+          { \prg_return_false: }
+          { \prg_return_true: }
+      }
+  }
+
+% #1: name
+% #2: condition
+\cs_new_protected:Npn \xsim_declare_printsolutions_condition:nn #1#2
+  {
+    \bool_new:c {l__xsim_printsolutions_#1_condition_bool}
+    \seq_put_right:Nn \l__xsim_printsolutions_conditions_seq {#1}
+    \xsim_attribute_set:nnn {printsolutions} {#1} {#2}
+  }
+
+\prg_new_conditional:Npnn \__xsim_printsolutions_if_condition:n #1 {T,F,TF}
+  {
+    \bool_if:cTF {l__xsim_printsolutions_#1_condition_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: name
+% #2: true|false
+\cs_new_protected:Npn \__xsim_printsolutions_condition:nn #1#2
+  { \bool_set_eq:cc {l__xsim_printsolutions_#1_condition_bool} {c_#2_bool} }
+
+% false if any condition is false for this solution:
+% #1: type
+% #2: id
+% #3: boolean property
+\prg_new_protected_conditional:Npnn
+  \__xsim_printsolutions_check_conditions:nnn #1#2#3 {T,F,TF}
+  {
+    \__xsim_printsolutions_condition_false:
+    \bool_set_true:N \l____xsim_this_condition_bool
+    \seq_map_inline:Nn \l__xsim_printsolutions_conditions_seq
+      {
+        \bool_if:cT {l__xsim_printsolutions_##1_condition_bool}
+          {
+            \xsim_attribute_get:nn {printsolutions} {##1}
+              {#1} {#2} {#3}
+              { }
+              { \bool_set_false:N \l____xsim_this_condition_bool }
+          }
+      }
+    \bool_if:NTF \l____xsim_this_condition_bool
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+
+% #1: type
+% #2: id
+% #3: boolean property
+% #4: code
+\cs_new_protected:Npn \xsim_if_this_solution_do:nnnn #1#2#3#4
+  {
+    \xsim_if_solution_exist:nnT {#1} {#2}
+      { \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4} }
+  }
+
+% #1: type
+% #2: boolean property
+% #3: code
+\cs_new_protected:Npn \xsim_if_solutions_do:nnn #1#2#3
+  {
+    \xsim_foreach_exercise_type_id:nn {#2}
+      { \xsim_if_this_solution_do:nnnn {#1} {##2} {#2} {#3} }
+  }
+
+% ----------------------------------------------------------------------------
+% #1: boolean -- if true only the solutions of printed exercises will be
+%     output
+% #2: pre
+% #3: post
+% #4: type
+% #5: code (refer to type with #1 and id with #2)
+\cs_new_protected:Npn \xsim_print_type_code:nnnnn #1#2#3#4#5
+  {
+    \group_begin:
+      \cs_set_protected:Npn \__xsim_print_entry:nn ##1##2 {#5}
+      #2
+      \bool_set_false:N \l__xsim_tmpa_bool
+      \bool_if:nTF {#1}
+        {
+          \xsim_if_solutions_do:nnn {#4} {print}
+            { \bool_set_true:N \l__xsim_tmpa_bool }
+        }
+        {
+          \xsim_if_solutions_do:nnn {#4} {used}
+            { \bool_set_true:N \l__xsim_tmpa_bool }
+        }
+      \tl_set:Nn \ExerciseType {#4}
+      \bool_if:NT \l__xsim_tmpa_bool
+        {
+          \bool_if:NT \l__xsim_printsolutions_headings_bool
+            {
+              \xsim_use_template:nV
+                {heading}
+                \l__xsim_printsolutions_headings_template_tl
+            }
+        }
+      \bool_if:nTF {#1}
+        {
+          \xsim_if_solutions_do:nnn {#4} {print}
+            { \__xsim_print_entry:nn {#4} {##2} }
+        }
+        {
+          \xsim_if_solutions_do:nnn {#4} {used}
+            { \__xsim_print_entry:nn {#4} {##2} }
+        }
+      #3
+    \group_end:
+  }
+
+% #1: boolean -- if true only the solutions of printed exercises will be
+%     output
+% #2: options
+% #3: type
+\cs_new_protected:Npn \xsim_print_type_solutions:nnn #1#2#3
+  {
+    \xsim_print_type_code:nnnnn
+      {#1}
+      {
+        \xsim_verbose:n
+          { Printing~ solutions~ for~ exercise~ type~ `#3'. }
+        \keys_set:nn {xsim/print-solutions} {#2}
+      }
+      {}
+      {#3}
+      { \xsim_insert:nnnn {##1} {##2} {} {solution} }
+  }
+
+% #1: boolean -- if true only the solutions of printed exercises will be
+%     output
+% #2: options
+\cs_new_protected:Npn \xsim_print_all_solutions_per_type:nn #1#2
+  {
+    \xsim_foreach_exercise_type:n
+      { \xsim_print_type_solutions:nnn {#1} {#2} {##1} }
+  }
+
+% #1: boolean -- if true only the solutions of printed exercises will be
+%     output
+% #2: options
+\cs_new_protected:Npn \xsim_print_all_solutions_per_id:nn #1#2
+  {
+    \xsim_verbose:n { Printing~ solutions. }
+    \group_begin:
+      \keys_set:nn {xsim/print-solutions} {#2}
+      \bool_set_false:N \l__xsim_tmpa_bool
+      \bool_if:nTF {#1}
+        {
+          \xsim_foreach_exercise_id_type:nn {print}
+            {
+              \xsim_if_this_solution_do:nnnn {##1} {##2} {print}
+                { \xsim_insert:nnnn {##1} {##2} {} {solution} }
+            }
+        }
+        {
+          \xsim_foreach_exercise_id_type:nn {used}
+            {
+              \xsim_if_this_solution_do:nnnn {##1} {##2} {used}
+                { \xsim_insert:nnnn {##1} {##2} {} {solution} }
+            }
+        }
+    \group_end:
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_declare_printsolutions_condition:nn {per-section}
+  { \__xsim_if_solutions_per_section:nnnTF }
+\xsim_declare_printsolutions_condition:nn {per-chapter}
+  { \__xsim_if_solutions_per_chapter:nnnTF }
+\xsim_declare_printsolutions_condition:nn {per-collection}
+  { \__xsim_if_solutions_in_collection:nnnTF }
+
+% ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim/print-solutions}
+  {
+    headings .bool_set:N = \l__xsim_printsolutions_headings_bool ,
+    headings .initial:n  = true ,
+    headings-template .tl_set:N  = \l__xsim_printsolutions_headings_template_tl ,
+    headings-template .initial:n = default ,
+    include-exercise  .bool_set:N = \l__xsim_include_question_bool ,
+    include-exercise  .initial:n = false ,
+    section           .choice: ,
+    section/true      .code:n    =
+      \__xsim_printsolutions_condition:nn  {per-section} {true}
+      \int_set:Nn \l_xsim_printsolutions_section_int { \value {section} } ,
+    section/false     .code:n    =
+      \__xsim_printsolutions_condition:nn  {per-section} {false} ,
+    section/unknown   .code:n    =
+      \__xsim_printsolutions_condition:nn  {per-section} {true}
+      \int_set:Nn \l_xsim_printsolutions_section_int {#1} ,
+    section  .default:n  = true ,
+    section  .initial:n  = false ,
+    chapter           .choice: ,
+    chapter/true      .code:n    =
+      \__xsim_printsolutions_condition:nn  {per-chapter} {true}
+      \int_set:Nn \l_xsim_printsolutions_chapter_int { \value {chapter} } ,
+    chapter/false     .code:n    =
+      \__xsim_printsolutions_condition:nn  {per-chapter} {false} ,
+    chapter/unknown   .code:n    =
+      \__xsim_printsolutions_condition:nn  {per-chapter} {true}
+      \int_set:Nn \l_xsim_printsolutions_chapter_int {#1} ,
+    chapter           .default:n  = true ,
+    chapter           .initial:n  = false ,
+    collection        .choice: ,
+    collection/false  .code:n     =
+      \__xsim_printsolutions_condition:nn  {per-collection} {false} ,
+    collection/unknown .code:n    =
+      \xsim_if_collection_exist:nT {#1}
+        {
+          \__xsim_printsolutions_condition:nn  {per-collection} {true}
+          \tl_set:Nn \l__xsim_printsolutions_collection_tl {#1}
+        } ,
+    collection         .initial:n = false
+  }
+
+\XSIMmoduleend
+\XSIMmodule{blanks}{add blanks, cloze}
+
+\bool_new:N \l__xsim_blank_width_bool
+\bool_new:N \l__xsim_blank_linespread_bool
+\bool_new:N \l__xsim_fill_blank_bool
+\tl_new:N   \l__xsim_blank_linespread_tl
+\tl_new:N   \l__xsim_blank_scale_tl
+\dim_new:N  \l__xsim_blank_dim
+\dim_new:N  \l__xsim_blank_line_increment_dim
+\dim_new:N  \l__xsim_blank_line_minimum_length_dim
+\box_new:N  \l__xsim_blank_box
+
+\cs_new_protected:Npn \xsim_write_cloze_blank:n #1 {#1}
+\cs_new_protected:Npn \xsim_write_cloze_filled:n #1 {#1}
+
+\keys_define:nn {xsim/blank}
+  {
+    blank-style         .code:n     =
+      \cs_set_protected:Npn \xsim_write_cloze_blank:n ##1 {#1} ,
+    blank-style         .initial:n  = \underline {#1} ,
+    filled-style        .code:n     =
+      \cs_set_protected:Npn \xsim_write_cloze_filled:n ##1 {#1} ,
+    filled-style        .initial:n  = \underline {#1} ,
+    style               .meta:n     =
+      {
+        blank-style = #1 ,
+        filled-style = #1
+      } ,
+    fill                .bool_set:N = \l__xsim_fill_blank_bool ,
+    fill                .initial:n  = false ,
+    scale               .tl_set:N   = \l__xsim_blank_scale_tl ,
+    scale               .initial:n  = 1 ,
+    width               .code:n     =
+      {
+        \bool_set_true:N \l__xsim_blank_width_bool
+        \dim_set:Nn \l__xsim_blank_dim {#1}
+      } ,
+    linespread          .code:n     =
+      \bool_set_true:N \l__xsim_blank_linespread_bool
+      \tl_set:Nn \l__xsim_blank_linespread_tl {#1} ,
+    linespread          .initial:n  = 1 ,
+    line-increment      .dim_set:N  = \l__xsim_blank_line_increment_dim ,
+    line-increment      .initial:n  = 0.001\linewidth ,
+    line-minimum-length .dim_set:N  = \l__xsim_blank_line_minimum_length_dim ,
+    line-minimum-length .initial:n  = 2em
+  }
+
+\cs_new_protected:Npn \xsim_blank:n #1
+  {
+    \box_clear:N \l__xsim_blank_box
+    \mode_if_math:TF
+      { \hbox_set:Nn \l__xsim_blank_box { $ \m@th \mathpalette{}{#1} $ } }
+      { \hbox_set:Nn \l__xsim_blank_box {#1} }
+    \bool_lazy_or:nnTF
+      { \xsim_if_inside_solution_p: }
+      { \l__xsim_fill_blank_bool }
+      { \xsim_write_cloze_filled:n {#1} }
+      {
+        \bool_if:NTF \l__xsim_blank_width_bool
+          { \__xsim_blank_skip:V \l__xsim_blank_dim }
+          { \__xsim_blank_skip:n { \box_wd:N \l__xsim_blank_box } }
+      }
+  }
+  
+\cs_new_protected:Npn \__xsim_blank_skip:n #1
+  {
+    \bool_if:NTF \l__xsim_blank_width_bool
+      { \dim_set:Nn \l__xsim_tmpa_dim {#1} }
+      {
+        \fp_set:Nn \l__xsim_tmpa_fp
+          { \dim_to_fp:n {#1} * \l__xsim_blank_scale_tl }
+        \dim_set:Nn \l__xsim_tmpa_dim { \fp_to_dim:N \l__xsim_tmpa_fp }
+      }
+    \dim_compare:nTF
+      { \l__xsim_tmpa_dim > \l__xsim_blank_line_minimum_length_dim }
+      {
+        \mode_if_math:TF
+          { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
+          {
+            \dim_do_while:nn { \l__xsim_tmpa_dim > \c_zero_dim }
+              {
+                % I wonder what the correct l3 way would be -- if there is
+                % one, yet:
+                % \tex_hfil:D
+                \tex_penalty:D \hyphenpenalty
+                % \tex_hfilneg:D
+                \dim_compare:nTF
+                  { \l__xsim_tmpa_dim < \l__xsim_blank_line_increment_dim }
+                  { \xsim_write_cloze_blank:n { \skip_horizontal:N \l__xsim_tmpa_dim } }
+                  {
+                    \xsim_write_cloze_blank:n
+                      { \skip_horizontal:N \l__xsim_blank_line_increment_dim }
+                  }
+                \dim_sub:Nn \l__xsim_tmpa_dim { \l__xsim_blank_line_increment_dim }
+              }
+          }
+      }
+      {
+        \xsim_write_cloze_blank:n
+          { \skip_horizontal:N \l__xsim_blank_line_minimum_length_dim }
+      }
+  }
+\cs_generate_variant:Nn \__xsim_blank_skip:n {V}
+
+\XSIMmoduleend
+\XSIMmodule{grades}{distribute goal sums to grades}
+
+\msg_new:nnn {xsim} {grade-unknown}
+  { The~ grade~ `#1'~ has~ never~ been~ declared~ \msg_line_context: }
+
+\bool_new:N \l__xsim_grades_half_bool
+\fp_new:N   \l__xsim_grade_round_fp
+\fp_zero:N  \l__xsim_grade_round_fp
+\prop_new:N \l__xsim_relative_grades_prop
+\tl_new:N   \l__xsim_grade_split_tl
+
+\cs_new:Npn \__xsim_fp_round_to_half:n #1
+  { round( 2*(#1),0)/2 }
+
+\cs_new:Npn \__xsim_grades_round:n #1
+  { round ( #1 , \l__xsim_grade_round_fp ) }
+
+% #1: factor
+% #2: goal sum
+\cs_new:Npn \__xsim_grade_rounded:nn #1#2
+  {
+    \bool_if:NTF \l__xsim_grades_half_bool
+      { \__xsim_fp_round_to_half:n }
+      { \__xsim_grades_round:n }
+    { (#1) * (#2) }
+  }
+
+\cs_new_protected:Npn \xsim_declare_relative_grades:n #1
+  {
+    \seq_set_split:NVn \l__xsim_tmpa_seq \l__xsim_grade_split_tl {#1}
+    \seq_map_inline:Nn \l__xsim_tmpa_seq
+      { \__xsim_declare_relative_grade:w ##1 \q_stop }
+    \xsim_verbose:n {Declaring~ relative~ grade~ distribution}
+  }
+
+\cs_new_protected:Npn \__xsim_declare_relative_grade:w #1 = #2 \q_stop
+  {
+    \tl_set:Nx \l__xsim_tmpa_tl { \tl_trim_spaces:n {#1} }
+    \tl_set:Nx \l__xsim_tmpb_tl { \tl_trim_spaces:n {#2} }
+    \prop_put:NVV \l__xsim_relative_grades_prop
+      \l__xsim_tmpa_tl
+      \l__xsim_tmpb_tl
+  }
+
+% #1: grade
+% #2: sum of points
+% #3: code after grade requirement if == 1
+% #4: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_grade:nnnn #1#2#3#4
+  {
+    \prop_get:NnNTF \l__xsim_relative_grades_prop {#1} \l__xsim_tmpa_tl
+      {
+        \xsim_print_goal:nnn
+          {
+            min(
+              \__xsim_grade_rounded:nn
+                { \l__xsim_tmpa_tl }
+                {#2} ,
+              #2
+            )
+          }
+          {#3}
+          {#4}
+      }
+      { \msg_error:nnn {xsim} {grade-unknown} {#1} }
+  }
+
+% #1: grade
+% #2: goal
+% #3: code after grade requirement if == 1
+% #4: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_grade_goal:nnnn #1#2#3#4
+  {
+    \xsim_if_goal_exist:nTF {#2}
+      {
+        \xsim_get_grade:nnnn
+          {#1}
+          { \use:c {g__xsim_total_goal_#2_fp} }
+          {#3}
+          {#4}
+      }
+      { \msg_error:nnn {xsim} {goal-unknown} {#2} }
+  }
+
+% #1: grade
+% #2: goal list (separated with +)
+% #3: code after grade requirement if == 1
+% #4: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_grade_requirement:nnnn #1#2#3#4
+  {
+    \seq_set_split:Nnn \l__xsim_tmpa_seq {+} {#2}
+    \fp_zero:N \l__xsim_tmpa_fp
+    \seq_map_inline:Nn \l__xsim_tmpa_seq
+      {
+        \fp_add:Nn \l__xsim_tmpa_fp
+          { \use:c {g__xsim_total_goal_\tl_trim_spaces:n {##1} _fp} }
+      }
+    \xsim_get_grade:nnnn {#1} { \l__xsim_tmpa_fp } {#3} {#4}
+  }
+
+% #1: grade
+% #2: code after grade requirement if == 1
+% #3: code after grade requirement if != 1
+\cs_new_protected:Npn \xsim_get_absolute_grade_requirement:nnn #1#2#3
+  {
+    \fp_zero:N \l__xsim_tmpa_fp
+    \xsim_foreach_goal:n
+      {
+        \fp_add:Nn \l__xsim_tmpa_fp
+          { \use:c {g__xsim_total_goal_##1_fp} }
+      }
+    \xsim_get_grade:nnnn {#1} { \l__xsim_tmpa_fp } {#2} {#3}
+  }
+
+\keys_define:nn {xsim/grades}
+  {
+    round .fp_set:N   = \l__xsim_grade_round_fp ,
+    half  .bool_set:N = \l__xsim_grades_half_bool ,
+    split .tl_set:N   = \l__xsim_grade_split_tl ,
+    split .initial:n  = {,}
+  }
+
+\XSIMmoduleend
+\XSIMmodule{random}{randomly select exercises from collections}
+
+\msg_new:nnn {xsim} {random-numbers-unavailable}
+  {
+    You~ are~ compiling~ your~ document~ using ~XeLaTeX.~ Please~ be~ aware~
+    that~ random~ selection~ of~ exercises~ is~ unavailable~ in~ XeLaTeX.~ If~
+    you~ use~ this~ feature~ you~ can~ safely~ ignore~ this~ message.
+  }
+
+\sys_if_engine_xetex:T
+  { \msg_warning:nn {xsim} {random-numbers-unavailable} }
+
+\tl_new:N    \l_xsim_random_collection_tl
+\tl_new:N    \l__xsim_print_random_choice_tl
+\tl_const:Nn \c__xsim_print_random_both_tl {both}
+\tl_const:Nn \c__xsim_print_random_exercise_tl {exercise}
+\tl_const:Nn \c__xsim_print_random_solution_tl {solution}
+\seq_new:N   \g__xsim_random_list_seq
+\seq_new:N   \l__xsim_allowed_exercise_ids_seq
+\int_new:N   \g__xsim_random_list_id_int
+\bool_new:N  \l__xsim_sort_random_bool
+\clist_new:N \l_xsim_random_exclude_list_clist
+
+% #1: random list id
+% #2: csv list of integers
+\xsim_new_aux_property:cpn {random} #1#2
+  {
+    \xsim_random_list_if_exist:nF {#1}
+      { \xsim_new_random_list:n {#1} }
+    \xsim_set_random_list:nn {#1} {#2}
+  }
+
+\cs_new_protected:Npn \xsim_new_random_list:n #1
+  {
+    \xsim_verbose:n {Defining~ new~ random~ list~ `#1'}
+    \seq_new:c {g__xsim_random_#1 _seq}
+  }
+
+\cs_new_protected:Npn \xsim_set_random_list:nn #1#2
+  { \seq_gset_from_clist:cn {g__xsim_random_#1_seq} {#2} }
+
+\cs_new_protected:Npn \xsim_set_random_list_from_seq:nN #1#2
+  { \seq_gset_eq:cN {g__xsim_random_#1_seq} #2 }
+
+\cs_new:Npn \xsim_use_random_list:nn #1#2
+  { \seq_use:cn {g__xsim_random_#1_seq} {#2} }
+
+\cs_new_protected:Npn \xsim_map_random_list:nn #1#2
+  { \seq_map_inline:cn {g__xsim_random_#1_seq} {#2} }
+
+\prg_new_conditional:Npnn \xsim_random_list_if_exist:n #1 {p,T,F,TF}
+  {
+    \seq_if_exist:cTF {g__xsim_random_#1_seq}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+\prg_new_conditional:Npnn \xsim_random_list_if_empty:n #1 {p,T,F,TF}
+  {
+    \seq_if_empty:cTF {g__xsim_random_#1_seq}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+
+% #1: random list id
+% #2: sequence variable to set list from
+\cs_new_protected:Npn \xsim_save_random_list:nN #1#2
+  { % TODO: check if #2 is empty
+    \xsim_random_list_if_exist:nF {#1}
+      { \xsim_new_random_list:n {#1} }
+    \xsim_random_list_if_empty:nT {#1}
+      { \xsim_set_random_list_from_seq:nN {#1} #2 }
+    \xsim_verbose:n {Saving~ random~ list~ `#1'}
+    \xsim_add_property_to_aux:nn {random}
+      { {#1} { \xsim_use_random_list:nn {#1} {,} } }
+  }
+\cs_generate_variant:Nn \xsim_save_random_list:nN {x}
+
+% #1: collection
+% #2: number of items
+% #3: clist variable of excluded ids
+\cs_new_protected:Npn \xsim_print_random_list:nnN #1#2#3
+  {
+    \xsim_if_collection_exist:nTF {#1}
+      {
+        \int_gincr:N \g__xsim_random_list_id_int
+        \int_compare:nNnTF { \xsim_collection_count:n {#1} } = {0}
+          { \xsim_rerun: }
+          {
+            % generate seq of allowed ids from collection:
+            \xsim_foreach_exercise_id:n
+              {
+                \tl_set:Nx \l__xsim_tmpa_tl
+                  { \xsim_get_type_for_property:nn {id} {##1} }
+                \xsim_if_in_collection:nVnT {#1} \l__xsim_tmpa_tl {##1}
+                  {
+                    \clist_if_in:NnF #3 {##1}
+                      { \seq_put_right:Nn \l__xsim_allowed_exercise_ids_seq {##1} }
+                  }
+              }
+            \int_compare:nNnTF
+              {#2}
+               >
+              { \seq_count:N \l__xsim_allowed_exercise_ids_seq }
+              {
+                \int_set:Nn \l__xsim_tmpa_int
+                  { \seq_count:N \l__xsim_allowed_exercise_ids_seq }
+              }
+              { \int_set:Nn \l__xsim_tmpa_int {#2} }
+            % generate random list:
+            \xsim_generate_random_list:nnnN
+              { \int_to_alph:n { \g__xsim_random_list_id_int } }
+              { \seq_count:N \l__xsim_allowed_exercise_ids_seq }
+              { \l__xsim_tmpa_int }
+              \g__xsim_random_list_seq
+          }
+        \xsim_save_random_list:xN
+          { \int_to_alph:n { \g__xsim_random_list_id_int } }
+          \g__xsim_random_list_seq
+        \xsim_verbose:x
+          {
+            Printing~ exercises~ of~ random~ list~
+            `\int_to_alph:n { \g__xsim_random_list_id_int }'~ of~
+            collection~ `#1'
+          }
+        \xsim_print_random_exercises:Nn
+          \l__xsim_allowed_exercise_ids_seq
+          { \int_to_alph:n { \g__xsim_random_list_id_int } }
+      }
+      { \msg_error:nnn {xsim} {unknown-collection} {#1} }
+  }
+\cs_generate_variant:Nn \xsim_print_random_list:nnN {V}
+
+% #1: random list id
+% #2: max number to choose from
+% #3: number of items
+% #4: seq variable
+\cs_new_protected:Npn \xsim_generate_random_list:nnnN #1#2#3#4
+  {
+    \bool_lazy_or:nnT
+      { !\xsim_random_list_if_exist_p:n {#1} }
+      { \xsim_random_list_if_empty_p:n {#1} }
+      {
+        \xsim_verbose:n
+          {Generating~ random~ list~ `#1'~ with~ #3~ out~ of~ #2~ items}
+        \seq_gclear:N #4
+        \int_do_until:nNnn { \seq_count:N #4 } = {#3}
+          {
+            \tl_set:Nx \l__xsim_tmpa_tl
+              { \fp_eval:n { randint(#2) } }
+            \seq_if_in:NVF #4
+              \l__xsim_tmpa_tl
+              { \seq_gput_right:NV #4 \l__xsim_tmpa_tl }
+          }
+        \bool_if:NT \l__xsim_sort_random_bool
+          {
+            \seq_sort:Nn #4
+              {
+                \int_compare:nNnTF {##1} > {##2}
+                  { \sort_return_swapped: }
+                  { \sort_return_same: }
+              }
+          }
+      }
+  }
+
+% #1: seq variable of ids
+% #2: random list id
+\cs_new_protected:Npn \xsim_print_random_exercises:Nn #1#2
+  {
+    \bool_lazy_and:nnT
+      { \xsim_random_list_if_exist_p:n {#2} }
+      { !\xsim_random_list_if_empty_p:n {#2} }
+      {
+        \xsim_verbose:x
+          {
+            Printing~
+            \l__xsim_print_random_choice_tl \c_space_tl
+            \str_if_eq:onT { \l__xsim_print_random_choice_tl } {both}
+              { exercises~ and~ solutions~ }
+            of~ random~ list~ `#2'
+          }
+        \xsim_map_random_list:nn {#2}
+          {
+            \tl_set:Nx \l__xsim_tmpa_tl
+              { \seq_item:Nn #1 {##1} }
+            \tl_set:Nx \l__xsim_tmpb_tl
+              { \xsim_get_type_for_property:nV {id} \l__xsim_tmpa_tl }
+            \bool_lazy_or:nnT
+              {
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_both_tl
+              }
+              {
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_exercise_tl
+              }
+              {
+                \xsim_if_exercise_exist:VVT
+                  \l__xsim_tmpb_tl
+                  \l__xsim_tmpa_tl
+                  {
+                    \xsim_insert:VVnn
+                      \l__xsim_tmpb_tl
+                      \l__xsim_tmpa_tl
+                      {}
+                      {exercise}
+                  }
+              }
+            \bool_lazy_or:nnT
+              {
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_both_tl
+              }
+              {
+                \tl_if_eq_p:NN
+                  \l__xsim_print_random_choice_tl
+                  \c__xsim_print_random_solution_tl
+              }
+              {
+                \xsim_if_solution_exist:VVT
+                  \l__xsim_tmpb_tl
+                  \l__xsim_tmpa_tl
+                  {
+                    \xsim_insert:VVnn
+                      \l__xsim_tmpb_tl
+                      \l__xsim_tmpa_tl
+                      {}
+                      {solution}
+                  }
+              }
+          }
+      }
+  }
+
+\keys_define:nn {xsim/random}
+  {
+    sort       .bool_set:N = \l__xsim_sort_random_bool ,
+    sort       .initial:n  = true ,
+    collection .tl_set:N   = \l_xsim_random_collection_tl ,
+    collection .initial:n  = all~exercises ,
+    exclude    .code:n     = \__xsim_exclude_ids:n {#1} ,
+    print             .choice: ,
+    print/exercises   .code:n =
+      \tl_set:Nn \l__xsim_print_random_choice_tl {exercise} ,
+    print/solutions   .code:n =
+      \tl_set:Nn \l__xsim_print_random_choice_tl {solution} ,
+    print/both        .code:n =
+      \tl_set:Nn \l__xsim_print_random_choice_tl {both} ,
+    print/unknown     .code:n =
+      \msg_warning:nnn {xsim} {print-collection-choice} {#1}
+      \tl_set:Nn \l__xsim_print_random_choice_tl {exercise} ,
+    print             .initial:n = exercises
+  }
+
+\cs_new_protected:Npn \__xsim_exclude_ids:n #1
+  {
+    \seq_clear:N \l__xsim_tmpa_seq
+    \clist_map_inline:nn {#1}
+      {
+        \tl_set:Nx \l__xsim_tmpa_tl
+          { \xsim_get_id_for_property:nn {ID} {##1} }
+        \tl_if_blank:VTF \l__xsim_tmpa_tl
+          { \seq_put_right:Nn \l__xsim_tmpa_seq {##1} }
+          {
+            \seq_put_right:Nx \l__xsim_tmpa_seq
+              { \xsim_get_id_for_property:nn {ID} {##1} }
+          }
+      }
+    \seq_remove_duplicates:N \l__xsim_tmpa_seq
+    \clist_set_from_seq:NN
+      \l_xsim_random_exclude_list_clist
+      \l__xsim_tmpa_seq
+  }
+
+% use this in the exclude list:
+% \xsim_get_type_for_property:nn {id} {}
+% or a combination of:
+% \xsim_get_type_for_property:nn {ID} {}
+% \xsim_get_id_for_property:nn {ID} {}
+
+\XSIMmoduleend
+\XSIMmodule{translations}{language settings for XSIM}
+
+\RequirePackage{translations}
+
+\msg_new:nnn {xsim} {language-not-defined}
+  {
+    You~ chose~ the~ language~ `#1'~ which~ is~ not~ defined~ by~ xsim.~
+    `english'~ is~ used~ instead.~ If~ you~ just~ mistyped~ try~ again!~
+    Otherwise~ contact~ the~ author~ and~ he'll~ probably~ add~ your~ language.
+  }
+
+% --------------------------------------------------------------------------
+
+\bool_new:N      \l__xsim_language_auto_bool
+\bool_set_true:N \l__xsim_language_auto_bool
+% this token list will hold the chosen language for xsim; since the
+% language is either chosen automatically or by option it is only available at
+% begin document
+\tl_new:N  \l_xsim_language_tl
+\tl_set:Nn \l_xsim_language_tl {english}
+\tl_new:N  \l__xsim_current_language_tl
+
+\tl_const:Nn \c__xsim_keyword_prefix_tl {xsim-keyword-}
+
+% ----------------------------------------------------------------------------
+  
+\prop_new:N \g_xsim_translations_prop
+
+% translate the key #1
+\cs_new:Npn \xsim_translate:n #1
+  {
+    \bool_if:NTF \l__xsim_language_auto_bool
+      { \GetTranslation { \c__xsim_keyword_prefix_tl #1 } }
+      {
+        \GetTranslationFor
+          { \l_xsim_language_tl }
+          { \c__xsim_keyword_prefix_tl #1 }
+      }
+  }
+
+\xsim_at_begin_document:n
+  {
+    \bool_if:NTF \l__xsim_language_auto_bool
+      {
+        \tl_set:Nx \l_xsim_language_tl
+          { \@trnslt@language{\@trnslt@current@language} }
+      }
+      {
+        \tl_set_eq:NN
+          \l_xsim_language_tl
+          \l__xsim_current_language_tl
+      }
+  }
+
+% ----------------------------------------------------------------------------
+% #1: keyword
+% #2: language
+% #3: translation
+\cs_new_protected:Npn \__xsim_declare_translation:nw #1#2=#3\q_stop
+  {
+    \tl_set:Nx \l__xsim_tmpa_tl { \tl_trim_spaces:n {#2} }
+    \tl_set:Nx \l__xsim_tmpb_tl { \tl_trim_spaces:n {#3} }
+    \xsim_declare_translation:VnV
+      \l__xsim_tmpa_tl
+      {#1}
+      \l__xsim_tmpb_tl
+  }
+
+% #1: language
+% #2: keyword
+% #3: translation
+\cs_new_protected:Npn \xsim_declare_translation:nnn #1#2#3
+  {
+    \xsim_verbose:n
+      { Declaring~ `#1'~ tranlation~ of~ `#2':~ `#3'. }
+    \declaretranslation
+      {#1}
+      { \c__xsim_keyword_prefix_tl #2 }
+      {#3}
+    \prop_gput:Nnn \g_xsim_translations_prop {#2(#1)} {#3}
+  }
+\cs_generate_variant:Nn \xsim_declare_translation:nnn {V,VnV}
+
+% #1: key
+% #2: csv list: { <lang1> = <translation1> , <lang2> = <translation2> }
+\cs_new_protected:Npn \xsim_declare_translations:nn #1#2
+  {
+    \clist_map_inline:nn {#2}
+      { \__xsim_declare_translation:nw {#1} ##1 \q_stop }
+  }
+
+\cs_new:Npn \__xsim_parse_translate_list_entry:nnn #1#2#3 {}
+
+\cs_new_protected:Npn \__xsim_parse_translate_list_entry:www #1(#2)\q_mark#3\q_stop
+  { \__xsim_parse_translate_list_entry:nnn {#1} {#2} {#3} }
+
+\cs_new_protected:Npn \xsim_for_all_translations_do:n #1
+  {
+    \cs_set:Npn \__xsim_parse_translate_list_entry:nnn ##1##2##3 {#1}
+    \prop_map_inline:Nn \g_xsim_translations_prop
+      { \__xsim_parse_translate_list_entry:www ##1 \q_mark ##2 \q_stop }
+  }
+
+% ----------------------------------------------------------------------------
+
+\keys_define:nn {xsim}
+  {
+    language .value_required:n = true ,
+    language .code:n =
+      \tl_if_eq:nnTF {#1} {auto}
+        { \bool_set_true:N \l__xsim_language_auto_bool }
+        {
+          \bool_set_false:N \l__xsim_language_auto_bool
+          \tl_set:Nn \l__xsim_current_language_tl {#1}
+        } ,
+    language .initial:n = auto
+  }
+
+\XSIMmoduleend
+\XSIMmodule{interface}{user interface}
+
+\NewDocumentCommand \DeclareExerciseEnvironmentTemplate {m+m+m}
+  { \xsim_declare_environment_template:nnn {#1} {#2} {#3} }
+\@onlypreamble \DeclareExerciseEnvironmentTemplate
+
+\NewDocumentCommand \DeclareExerciseHeadingTemplate {m+m}
+  { \xsim_declare_heading_template:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseHeadingTemplate
+
+\NewDocumentCommand \DeclareExerciseTableTemplate {m+m}
+  { \xsim_declare_table_template:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseTableTemplate
+
+\NewDocumentCommand \UseExerciseTemplate {mm}
+  { \xsim_use_template:nn {#1} {#2} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseType {mm}
+  { \xsim_declare_exercise_type:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseType
+
+\NewExpandableDocumentCommand \numberofusedexercises {}
+  { \int_use:N \g_xsim_max_id_int }
+
+% ----------------------------------------------------------------------------
+
+\ProvideDocumentCommand \IfExistSolutionTF {+m+m}
+  { \xsim_if_solution_exist:ooTF {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+\NewDocumentCommand \IfExistSolutionT {+m}
+  { \IfExistSolutionTF {#1} {} }
+
+\NewDocumentCommand \IfExistSolutionF {+m}
+  { \IfExistSolutionTF {} {#1} }
+
+\NewExpandableDocumentCommand \IfInsideSolutionTF {+m+m}
+  { \xsim_if_inside_solution:TF {#1} {#2} }
+
+\NewExpandableDocumentCommand \IfInsideSolutionT {+m}
+  { \IfInsideSolutionTF {#1} {} }
+
+\NewExpandableDocumentCommand \IfInsideSolutionF {+m}
+  { \IfInsideSolutionTF {} {#1} }
+
+\NewExpandableDocumentCommand \IfSolutionPrintTF {+m+m}
+  { \xsim_if_solution_print:nTF {\ExerciseType} {#1} {#2} }
+
+\NewExpandableDocumentCommand \IfSolutionPrintT {+m}
+  { \IfSolutionPrintTF {#1} {} }
+
+\NewExpandableDocumentCommand \IfSolutionPrintF {+m}
+  { \IfSolutionPrintTF {} {#1} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseProperty {t!st-m}
+  {
+    \IfBooleanTF {#2}
+      {
+        \IfBooleanTF {#3}
+          {
+            \xsim_declare_property:nnnn
+              { \c_false_bool }
+              { \c_true_bool }
+              { \c_true_bool }
+              {#4}
+          }
+          {
+            \xsim_declare_property:nnnn
+              { \c_false_bool }
+              { \c_true_bool }
+              { \c_false_bool }
+              {#4}
+          }
+      }
+      {
+        \IfBooleanTF {#1}
+          {
+            \IfBooleanTF {#3}
+              {
+                \xsim_declare_property:nnnn
+                  { \c_true_bool }
+                  { \c_false_bool }
+                  { \c_true_bool }
+                  {#4}
+              }
+              {
+                \xsim_declare_property:nnnn
+                  { \c_true_bool }
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  {#4}
+              }
+          }
+          {
+            \IfBooleanTF {#3}
+              {
+                \xsim_declare_property:nnnn
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  { \c_true_bool }
+                  {#4}
+              }
+              {
+                \xsim_declare_property:nnnn
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  { \c_false_bool }
+                  {#4}
+              }
+          }
+      }
+  }
+\@onlypreamble \DeclareExerciseProperty
+
+\NewDocumentCommand \DeclareExercisePropertyAlias {mm}
+  { \xsim_make_property_alias:nn {#1} {#2} }
+\@onlypreamble \DeclareExercisePropertyAlias
+
+\NewDocumentCommand \SetExerciseProperty {m+m}
+  { \xsim_set_property:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+\NewDocumentCommand \SetExpandedExerciseProperty {m+m}
+  { \xsim_set_property:xxnx {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+\NewDocumentCommand \ExerciseSetProperty {mmm+m}
+  { \xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \ExerciseSetExpandedProperty {mmm+m}
+  { \xsim_set_property:nnnx {#1} {#2} {#3} {#4} }
+
+\NewExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
+  { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
+
+\NewExpandableDocumentCommand \IfExercisePropertyExistT {+m+m}
+  { \IfExercisePropertyExistTF {#1} {#2} {} }
+
+\NewExpandableDocumentCommand \IfExercisePropertyExistF {+m+m}
+  { \IfExercisePropertyExistTF {#1} {} {#2} }
+
+\NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
+  { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
+
+\NewDocumentCommand \IfExercisePropertySetT {m+m}
+  { \IfExercisePropertySetTF {#1} {#2} {} }
+
+\NewDocumentCommand \IfExercisePropertySetF {m+m}
+  { \IfExercisePropertySetTF {#1} {} {#2} }
+
+\NewExpandableDocumentCommand \GetExerciseProperty {m}
+  { \xsim_get_property:oon {\ExerciseType} {\ExerciseID} {#1} }
+
+\NewExpandableDocumentCommand \GetExerciseAliasProperty {m}
+  {
+    \xsim_get_property:oof
+      {\ExerciseType}
+      {\ExerciseID}
+      { \xsim_property_alias:n {#1} }
+  }
+
+\NewDocumentCommand \GetExercisePropertyTF {m+m+m}
+  {
+    \xsim_get_property_if_set:oonTF {\ExerciseType} {\ExerciseID} {#1}
+      {#2}
+      {#3}
+  }
+
+\NewDocumentCommand \GetExercisePropertyT {m+m}
+  { \GetExercisePropertyTF {#1} {#2} {} }
+\NewDocumentCommand \GetExercisePropertyF {m+m+m}
+  { \GetExercisePropertyTF {#1} {} {#2} }
+
+\NewExpandableDocumentCommand \GetExerciseIdForProperty {mm}
+  { \xsim_get_id_for_property:nn {#1} {#2} }
+
+\NewExpandableDocumentCommand \GetExerciseTypeForProperty {mm}
+  { \xsim_get_type_for_property:nn {#1} {#2} }
+
+\NewExpandableDocumentCommand \IfExerciseBooleanPropertyTF {+m+m+m}
+  {
+    \xsim_if_boolean_property:oonTF {\ExerciseType} {\ExerciseID} {#1}
+      {#2}
+      {#3}
+  }
+
+\NewExpandableDocumentCommand \IfExerciseBooleanPropertyT {+m+m}
+  { \IfExerciseBooleanPropertyTF {#1} {#2} {} }
+\NewExpandableDocumentCommand \IfExerciseBooleanPropertyF {+m+m}
+  { \IfExerciseBooleanPropertyTF {#1} {} {#2} }
+
+\NewDocumentCommand \SaveExerciseProperty {mm}
+  { \xsim_save_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
+
+\NewDocumentCommand \GlobalSaveExerciseProperty {mm}
+  { \xsim_gsave_property:xxnN {\ExerciseType} {\ExerciseID} {#1} #2 }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseParameter {st!m}
+   {
+     \IfBooleanTF {#1} % fixed
+       {
+         \IfBooleanTF {#2} % mandatory
+           { \xsim_declare_parameter:nnn {true} {true} {#3} }
+           { \xsim_declare_parameter:nnn {true} {false} {#3} }
+       }
+       {
+         \IfBooleanTF {#2} % mandatory
+           { \xsim_declare_parameter:nnn {false} {true} {#3} }
+           { \xsim_declare_parameter:nnn {false} {false} {#3} }
+       }
+   }
+
+\NewExpandableDocumentCommand \GetExerciseParameter {m}
+  { \xsim_get_parameter:on {\ExerciseType} {#1} }
+
+\NewDocumentCommand \SetExerciseParameter {mmm}
+  { \xsim_set_parameter:nnn {#1} {#2} {#3} }
+
+\NewDocumentCommand \SetExerciseParameters {mm}
+  { \xsim_set_parameters:nn {#1} {#2} }
+
+\NewExpandableDocumentCommand \GetExerciseName {}
+  {
+    \IfInsideSolutionTF
+      { \GetExerciseParameter {solution-name} }
+      { \GetExerciseParameter {exercise-name} }
+  }
+
+\NewExpandableDocumentCommand \GetExerciseHeadingF {m}
+  {
+    \IfInsideSolutionTF
+      {
+        \IfExerciseParameterSetTF {solution-heading}
+          { \GetExerciseParameter {solution-heading} }
+          {#1}
+      }
+      {
+        \IfExerciseParameterSetTF {exercise-heading}
+          { \GetExerciseParameter {exercise-heading} }
+          {#1}
+      }
+  }
+
+\NewDocumentCommand \GetExerciseBody {m}
+  { \xsim_input:oon { \ExerciseType } { \ExerciseID } {#1} }
+  
+\NewExpandableDocumentCommand \IfExerciseParameterSetTF {+m+m+m}
+  { \xsim_if_parameter_set:nnTF {\ExerciseType} {#1} {#2} {#3} }
+
+\NewExpandableDocumentCommand \IfExerciseParameterSetT {+m+m}
+  { \IfExerciseParameterSetTF {#1} {#2} {} }
+
+\NewExpandableDocumentCommand \IfExerciseParameterSetF {+m+m}
+  { \IfExerciseParameterSetTF {#1} {} {#2} }
+
+\NewExpandableDocumentCommand \ExerciseParameterIfSetTF {+m+m+m+m}
+  { \xsim_if_parameter_set:nnTF {#1} {#2} {#3} {#4} }
+
+\NewExpandableDocumentCommand \ExerciseParameterIfSetT {+m+m+m}
+  { \ExerciseParameterIfSetTF {#1} {#2} {#3} {} }
+
+\NewExpandableDocumentCommand \ExerciseParameterIfSetF {+m+m+m}
+  { \ExerciseParameterIfSetTF {#1} {#2} {} {#3} }
+
+\NewDocumentCommand \GetExerciseParameterTF {m+m+m}
+  { \xsim_get_parameter_if_set:onTF {\ExerciseType} {#1} {#2} {#3} }
+
+\NewDocumentCommand \GetExerciseParameterT {m+m}
+  { \GetExerciseParameterTF {#1} {#2} {} }
+
+\NewDocumentCommand \GetExerciseParameterF {m+m+m}
+  { \GetExerciseParameterTF {#1} {} {#2} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \ExercisePropertyIfSetTF {mmm+m+m}
+  { \xsim_if_property_set:nnnTF {#1} {#2} {#3} {#4} {#5} }
+
+\NewDocumentCommand \ExercisePropertyIfSetT {mmm+m}
+  { \ExercisePropertyIfSetTF {#1} {#2} {#3} {#4} {} }
+
+\NewDocumentCommand \ExercisePropertyIfSetF {mmm+m}
+  { \ExercisePropertyIfSetTF {#1} {#2} {#3} {} {#4} }
+
+\NewExpandableDocumentCommand \ExercisePropertyGet {mmm}
+  { \xsim_get_property:nnn {#1} {#2} {#3} }
+
+\NewExpandableDocumentCommand \ExercisePropertyGetAlias {mm}
+  { \xsim_get_property:nnf {#1} {#2} { \xsim_property_alias:n {#1} } }
+
+\NewDocumentCommand \ExercisePropertySave {mmmm}
+  { \xsim_save_property:nnnN {#1} {#2} {#3} #4 }
+
+\NewDocumentCommand \ExercisePropertyGlobalSave {mmmm}
+  { \xsim_gsave_property:nnnN {#1} {#2} {#3} #4 }
+
+\NewExpandableDocumentCommand \ExerciseParameterGet {mm}
+  { \xsim_get_parameter:nn {#1} {#2} }
+
+% ----------------------------------------------------------------------------
+
+\NewExpandableDocumentCommand \XSIMtranslate {m}
+  { \xsim_translate:n {#1} }
+
+\NewExpandableDocumentCommand \XSIMexpandcode {+m}
+  { \use:e {#1} }
+
+\NewExpandableDocumentCommand \XSIMmixedcase {m}
+  { \tl_mixed_case:f {#1} }
+
+\NewDocumentCommand \XSIMputright {mm}
+  { \tl_put_right:Nn #1 {#2} }
+
+\NewExpandableDocumentCommand \XSIMifeqTF {+m+m+m+m}
+  { \tl_if_eq:ffTF {#1} {#2} {#3} {#4} }
+
+\NewExpandableDocumentCommand \XSIMifeqT {+m+m+m}
+  { \XSIMifeqTF {#1} {#2} {#3} {} }
+
+\NewExpandableDocumentCommand \XSIMifeqF {+m+m+m}
+  { \XSIMifeqTF {#1} {#2} {} {#3} }
+
+\NewExpandableDocumentCommand \XSIMifblankTF {+m+m+m}
+  { \tl_if_blank:fTF {#1} {#2} {#3} }
+
+\NewExpandableDocumentCommand \XSIMifblankT {+m+m}
+  { \XSIMifblankTF {#1} {#2} {} }
+
+\NewExpandableDocumentCommand \XSIMifblankF {+m+m}
+  { \XSIMifblankTF {#1} {} {#2} {} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseGoal {m}
+  { \xsim_declare_exercise_goal:n {#1} }
+\@onlypreamble \DeclareExerciseGoal
+
+\NewDocumentCommand \IfExerciseGoalTF {mm+m+m}
+  {
+    \xsim_if_goal_value:xxnnTF
+      {\ExerciseType} {\ExerciseID} {#1}
+      {#2}
+      {#3} {#4}
+  }
+
+\NewDocumentCommand \IfExerciseGoalT {mm+m}
+  { \IfExerciseGoalTF {#1} {#2} {#3} {} }
+
+\NewDocumentCommand \IfExerciseGoalF {mm+m}
+  { \IfExerciseGoalTF {#1} {#2} {} {#3} }
+
+\NewDocumentCommand \IfExerciseGoalSingularTF {mmm}
+  { \IfExerciseGoalTF {#1} {=1} {#2} {#3} }
+
+\NewDocumentCommand \IfExerciseGoalSingularT {mm}
+  { \IfExerciseGoalT {#1} {=1} {#2} }
+
+\NewDocumentCommand \IfExerciseGoalSingularF {mm}
+  { \IfExerciseGoalF {#1} {=1} {#2} }
+
+\NewDocumentCommand \IfExerciseTypeGoalsSumTF {mmm+m+m}
+  { \xsim_if_goals_sum:nnnTF {#1} {#2} {#3} {#4} {#5} }
+
+\NewDocumentCommand \IfExerciseTypeGoalsSumT {mmm+m}
+  { \IfExerciseTypeGoalsSumTF {#1} {#2} {#3} {#4} {} }
+
+\NewDocumentCommand \IfExerciseTypeGoalsSumF {mmm+m}
+  { \IfExerciseTypeGoalsSumTF {#1} {#2} {#3} {} {#4} }
+
+\NewDocumentCommand \IfExerciseGoalsSumTF {mm+m+m}
+  { \xsim_if_total_goals_sum:nnTF {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \IfExerciseGoalsSumT {mm+m}
+  { \IfExerciseGoalsSumTF {#1} {#2} {#3} {} }
+
+\NewDocumentCommand \IfExerciseGoalsSumF {mm+m}
+  { \IfExerciseGoalsSumTF {#1} {#2} {} {#3} }
+
+\NewDocumentCommand \TotalExerciseTypeGoal {mmmm}
+  { \xsim_print_goal_sum:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \TotalExerciseTypeGoals {mmmm}
+  { \xsim_print_goals_sum:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \TotalExerciseGoal {mmm}
+  { \xsim_print_total_goal_sum:nnn {#1} {#2} {#3} }
+
+\NewDocumentCommand \TotalExerciseGoals {mmm}
+  { \xsim_print_total_goals_sum:nnn {#1} {#2} {#3} }
+
+\NewDocumentCommand \AddtoExerciseTypeGoal {mmmm}
+  { \xsim_addto_goal:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \AddtoExerciseGoal {mm}
+  { \xsim_addto_goal:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+\NewDocumentCommand \ExerciseGoalValuePrint {mmm}
+  { \xsim_print_goal:nnn {#1} {#2} {#3} }
+
+\NewDocumentCommand \AddtoExerciseTypeGoalPrint {mmmmmm}
+  {
+    \xsim_addto_goal:nnnn {#1} {#2} {#3} {#4}
+    \xsim_print_goal:nnn {#4} {#5} {#6}
+  }
+
+\NewDocumentCommand \AddtoExerciseGoalPrint {mmmm}
+  {
+    \xsim_addto_goal:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2}
+    \xsim_print_goal:nnn {#2} {#3} {#4}
+  }
+
+% ----------------------------------------------------------------------------
+\NewDocumentCommand \DeclareGradeDistribution {m}
+  { \xsim_declare_relative_grades:n {#1} }
+
+\NewDocumentCommand \GetGradeRequirementForGoal {mmmm}
+  { \xsim_get_grade_goal:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \GetGradeRequirementForGoals {mmmm}
+  { \xsim_get_grade_requirement:nnnn {#1} {#2} {#3} {#4} }
+
+\NewDocumentCommand \GetGradeRequirement {mmm}
+  { \xsim_get_absolute_grade_requirement:nnn {#1} {#2} {#3} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseTagging {m}
+  { \xsim_new_tag_type:n {#1} }
+\@onlypreamble \DeclareExerciseTagging
+
+\NewDocumentCommand \ProvideExerciseTagging {m}
+  {
+    \xsim_if_tag_type_exist:nTF {#1}
+      { \msg_warning:nnn {xsim} {tag-exists} {#1} }
+      { \xsim_new_tag_type:n {#1} }
+  }
+
+\NewDocumentCommand \ForEachExerciseTag {m+m}
+  { \xsim_foreach_exercise_tag:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+\NewDocumentCommand \ListExerciseTags {mm}
+  { \xsim_exercise_tags_use:oonn {\ExerciseType} {\ExerciseID} {#1} {#2} }
+
+\NewDocumentCommand \UseExerciseTags {mmmm}
+  {
+    \xsim_exercise_tags_use:oonnnn
+      {\ExerciseType}
+      {\ExerciseID}
+      {#1}
+      {#2}
+      {#3}
+      {#4}
+  }
+
+\NewDocumentCommand \IfExerciseTagSetTF {m+m+m}
+  { \xsim_if_tags_value:nTF {#1} {#2} {#3} }
+\NewDocumentCommand \IfExerciseTagSetT {m+m}
+  { \xsim_if_tags_value:nT {#1} {#2} }
+\NewDocumentCommand \IfExerciseTagSetF {m+m}
+  { \xsim_if_tags_value:nF {#1} {#2} }
+
+\NewDocumentCommand \IfExerciseTopicSetTF {m+m+m}
+  { \xsim_if_topic_value:nTF {#1} {#2} {#3} }
+\NewDocumentCommand \IfExerciseTopicSetT {m+m}
+  { \xsim_if_topic_value:nT {#1} {#2} }
+\NewDocumentCommand \IfExerciseTopicSetF {m+m}
+  { \xsim_if_topic_value:nF {#1} {#2} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \XSIMatbegindocument {+m}
+  { \xsim_at_begin_document:n {#1} }
+
+\NewDocumentCommand \XSIMatenddocument {+m}
+  { \xsim_at_end_document:n {#1} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \ForEachPrintedExerciseByType {+m}
+  { \xsim_foreach_exercise_type_id:nn {print} {#1} }
+
+\NewDocumentCommand \ForEachPrintedExerciseByID {+m}
+  { \xsim_foreach_exercise_id_type:nn {print} {#1} }
+
+\NewDocumentCommand \ForEachUsedExerciseByType {+m}
+  { \xsim_foreach_exercise_type_id:nn {used} {#1} }
+
+\NewDocumentCommand \ForEachUsedExerciseByID {+m}
+  { \xsim_foreach_exercise_id_type:nn {used} {#1} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseTranslations {mm}
+  { \xsim_declare_translations:nn {#1} {#2} }
+\@onlypreamble \DeclareExerciseTranslations
+  
+\NewDocumentCommand \DeclareExerciseTranslation {mmm}
+  { \xsim_declare_translation:nnn {#1} {#2} {#3} }
+\@onlypreamble \DeclareExerciseTranslation
+
+\NewDocumentCommand \ForEachExerciseTranslation {+m}
+  { \xsim_for_all_translations_do:n {#1} }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \DeclareExerciseCollection {m}
+  { \xsim_new_collection:n {#1} }
+\@onlypreamble \DeclareExerciseCollection
+
+\NewDocumentCommand \collectexercisestype {mm}
+  { \xsim_start_collection:nn {#1} {#2} }
+
+\NewDocumentCommand \collectexercises {m}
+  { \xsim_start_collection:n {#1} }
+
+\NewDocumentCommand \collectexercisesstop {m}
+  { \xsim_stop_collection:n {#1} }
+
+\NewDocumentCommand \printcollection {O{}m}
+  { \xsim_print_collection:nn {#1} {#2} }
+
+\NewDocumentCommand \printrandomexercises {O{}m}
+  {
+    \group_begin:
+      \keys_set:nn {xsim/random} {#1}
+      \xsim_print_random_list:VnN
+        \l_xsim_random_collection_tl
+        {#2}
+        \l_xsim_random_exclude_list_clist
+    \group_end:
+  }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \blank {som}
+  {
+    \group_begin:
+      \IfNoValueF {#2} { \keys_set:nn {xsim/blank} {#2} }
+      \mode_if_vertical:TF
+        {
+          \IfBooleanTF {#1}
+            { \xsim_blank:n {#3} }
+            {
+              \bool_if:NT \l__xsim_blank_linespread_bool
+                { \linespread { \l__xsim_blank_linespread_tl } \selectfont }
+              \noindent \null \xsim_blank:n {#3} \par
+            }
+        }
+        { \xsim_blank:n {#3} }
+    \group_end:
+  }
+
+\NewDocumentCommand \examspace { sm }
+  {
+    \IfBooleanTF {#1}
+      { \xsim_examspace:nn { \c_true_bool } {#2} }
+      { \xsim_examspace:nn { \c_false_bool } {#2} }
+  }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \gradingtable {O{}}
+  {
+    \group_begin:
+      \keys_set:nn {xsim/grading-table} {#1}
+      \xsim_setup_template:nVn {table} \l_xism_grading_table_template_tl
+        {
+          \providecommand* \ExerciseTableCode {}
+          \providecommand* \ExerciseTableType [1] {}
+          \providecommand* \ExerciseType {}
+          \tl_set_eq:NN \ExerciseType \l_xism_grading_table_exercise_type_tl
+          \renewcommand* \ExerciseTableCode {}
+          \renewcommand* \ExerciseTableType [1]
+            { \XSIMifblankTF { \ExerciseType } {##1} { \ExerciseType } }
+        }
+      \xsim_use_template:nV {table} \l_xism_grading_table_template_tl
+    \group_end:
+  }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \XSIMprint {mO{}mm}
+  { \xsim_insert:nenn {#3} { \xsim_normalize_id:n {#4} } {#2} {#1} }
+
+\NewDocumentCommand \XSIMxprint {mO{}mm}
+  { \xsim_insert:xxnn {#3} { \xsim_normalize_id:e {#4} } {#2} {#1} }
+
+\NewDocumentCommand \printexercise {O{}mm}
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:nenn {#2} { \xsim_normalize_id:n {##1} } {#1} {exercise} }
+  }
+
+\NewDocumentCommand \xprintexercise {O{}mm}
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:xxnn {#2} { \xsim_normalize_id:e {##1} } {#1} {exercise} }
+  }
+
+\NewDocumentCommand \printsolution {O{}mm}
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:nenn {#2} { \xsim_normalize_id:n {##1} } {#1} {solution} }
+  }
+  
+\NewDocumentCommand \xprintsolution {O{}mm}
+  {
+    \clist_map_inline:nn {#3}
+      { \xsim_insert:xxnn {#2} { \xsim_normalize_id:e {##1} } {#1} {solution} }
+  }
+  
+% ----------------------------------------------------------------------------
+  
+\NewDocumentCommand \printsolutionstype {sO{}m}
+  {
+    \IfBooleanTF {#1}
+      { \xsim_print_type_solutions:nnn { \c_true_bool } {#2} {#3} }
+      { \xsim_print_type_solutions:nnn { \c_false_bool } {#2} {#3} }
+  }
+
+\NewDocumentCommand \printsolutions {sO{}}
+  {
+    \IfBooleanTF {#1}
+      { \xsim_print_all_solutions_per_type:nn { \c_true_bool } {#2} }
+      { \xsim_print_all_solutions_per_type:nn { \c_false_bool } {#2} }
+  }
+
+\NewDocumentCommand \printallsolutions {sO{}}
+  {
+    \IfBooleanTF {#1}
+      { \xsim_print_all_solutions_per_id:nn { \c_true_bool } {#2} }
+      { \xsim_print_all_solutions_per_id:nn { \c_false_bool } {#2} }
+  }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \printforexercises {sO{}+mO{}}
+  {
+    \IfBooleanTF {#1}
+      {
+        \xsim_foreach_exercise_type:n
+          { \xsim_print_type_code:nnnnn { \c_true_bool } {#2} {#4} {##1} {#3} }
+      }
+      {
+        \xsim_foreach_exercise_type:n
+          { \xsim_print_type_code:nnnnn { \c_false_bool } {#2} {#4} {##1} {#3} }
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+\NewDocumentCommand \xsimsetup {+m}
+  { \xsim_setup:n {#1} }
+
+% ----------------------------------------------------------------------------
+\NewExpandableDocumentCommand \XSIMifchapterTF {+m+m}
+  { \xsim_if_chapter:TF {#1} {#2} }
+
+\NewExpandableDocumentCommand \XSIMifchapterT {+m}
+  { \xsim_if_chapter:T {#1} }
+
+\NewExpandableDocumentCommand \XSIMifchapterF {+m}
+  { \xsim_if_chapter:F {#1} }
+
+\XSIMmoduleend
+\XSIMmodule{definitions}{definition of user commands}
+
+% not exactly a user choice: the `exercises' environments rely on them:
+\DeclareExerciseParameter*!{exercise-env}
+\DeclareExerciseParameter*!{solution-env}
+\DeclareExerciseParameter !{exercise-name}
+\DeclareExerciseParameter !{solution-name}
+\DeclareExerciseParameter  {exercises-name}
+\DeclareExerciseParameter  {solutions-name}
+\DeclareExerciseParameter !{exercise-template}
+\DeclareExerciseParameter !{solution-template}
+\DeclareExerciseParameter* {counter}
+\DeclareExerciseParameter* {solution-counter}
+\DeclareExerciseParameter* {number}
+
+% these are additional - but are used in the `default' environment
+% template:
+\DeclareExerciseParameter  {exercise-heading}
+\DeclareExerciseParameter  {solution-heading}
+
+% ----------------------------------------------------------------------------
+
+% not exactly a user choice, must be present at various places:
+\DeclareExerciseProperty!  {id}
+\DeclareExerciseProperty!  {ID}
+\DeclareExerciseProperty   {counter}
+\DeclareExerciseProperty   {counter-value}
+\DeclareExerciseProperty * {print}
+\DeclareExerciseProperty *-{print!}
+\DeclareExerciseProperty * {use}
+\DeclareExerciseProperty * {used}
+\DeclareExerciseProperty *-{use!}
+\DeclareExerciseProperty * {solution}
+\XSIMifchapterT{
+  \DeclareExerciseProperty {chapter-value}
+  \DeclareExerciseProperty {chapter}
+}
+\DeclareExerciseProperty  {section-value}
+\DeclareExerciseProperty  {section}
+\DeclareExerciseProperty  {sectioning}
+
+% those are additional and wouldn't *need* to be present except for
+% pre-defined templates which make use of them (the page and page-value
+% property actually needs to be defined for xsim to be able to save the
+% corresponding values):
+\DeclareExerciseProperty  {subtitle}
+\DeclareExerciseProperty  {points}
+\DeclareExerciseProperty  {bonus-points}
+\DeclareExerciseProperty  {page-value}
+\DeclareExerciseProperty  {page}
+
+\DeclareExercisePropertyAlias {ID} {id}
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseTagging {tags}
+\DeclareExerciseTagging {topics}
+
+\xsimsetup{tags/ignore-untagged=false}
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseGoal {points}
+\DeclareExerciseGoal {bonus-points}
+
+\NewDocumentCommand \printgoal {m}
+  { \ExerciseGoalValuePrint {#1} {} {} }
+
+\NewDocumentCommand \points {m}
+  {
+    \ExerciseGoalValuePrint {#1}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \addpoints {sm}
+  {
+    \AddtoExerciseGoal {points} {#2}
+    \IfBooleanF {#1} { \points {#2} }
+  }
+
+\NewDocumentCommand \printpoints {m}
+  {
+    \TotalExerciseTypeGoal {#1} {points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \printtotalpoints {}
+  {
+    \TotalExerciseGoal {points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \addbonus {sm}
+  {
+    \AddtoExerciseGoal {bonus-points} {#2}
+    \IfBooleanF {#1} { \points {#2} }
+  }
+
+\NewDocumentCommand \printbonus {m}
+  {
+    \TotalExerciseTypeGoal {#1} {bonus-points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \printtotalbonus {}
+  {
+    \TotalExerciseGoal {bonus-points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+% ----------------------------------------------------------------------------
+\NewDocumentCommand \pointsforgrade {m}
+  {
+    \GetGradeRequirementForGoal {#1} {points}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \goalsforgrade {mm}
+  {
+    \GetGradeRequirementForGoals {#2} {#1}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+\NewDocumentCommand \totalgoalforgrade {m}
+  {
+    \GetGradeRequirement {#1}
+      { \, \XSIMtranslate {point} }
+      { \, \XSIMtranslate {points} }
+  }
+
+% ----------------------------------------------------------------------------
+
+\xsim_if_package_blank:F
+  {
+    \DeclareExerciseType {exercise} {
+      exercise-env      = exercise ,
+      solution-env      = solution ,
+      exercise-name     = \XSIMtranslate {exercise} ,
+      exercises-name    = \XSIMtranslate {exercises} ,
+      solution-name     = \XSIMtranslate {solution} ,
+      solutions-name    = \XSIMtranslate {solutions} ,
+      exercise-template = default ,
+      solution-template = default ,
+      exercise-heading  = \subsection* ,
+      solution-heading  = \subsection*
+    }
+  }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseEnvironmentTemplate {default}
+  {
+    \GetExerciseHeadingF { \subsection* }
+    {
+      \XSIMmixedcase { \GetExerciseName } \nobreakspace
+      \GetExerciseProperty {counter}
+      \IfInsideSolutionF
+        {
+          \IfExercisePropertySetT {subtitle}
+            { ~ { \normalfont \itshape \GetExerciseProperty {subtitle} } }
+        }
+    }
+    \GetExercisePropertyT {points}
+      {
+        \marginpar
+          {
+            \IfInsideSolutionF { \rule {1.2cm} {1pt} \slash }
+            \printgoal {\PropertyValue}
+            \GetExercisePropertyT {bonus-points}
+              { \nobreakspace ( + \printgoal {\PropertyValue} ) }
+            \nobreakspace\XSIMtranslate {point-abbr}
+          }
+      }
+  }
+  { \par }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseHeadingTemplate {none} {}
+
+\DeclareExerciseHeadingTemplate {default}
+  { \section* { \XSIMtranslate {default-heading} } }
+
+\DeclareExerciseHeadingTemplate {collection}
+  { \section* { \XSIMtranslate {collection-heading} } }
+
+\DeclareExerciseHeadingTemplate {per-section}
+  { \section* { \XSIMtranslate {per-section-heading} } }
+  
+\DeclareExerciseHeadingTemplate {per-chapter}
+  { \section* { \XSIMtranslate {per-chapter-heading} } }
+
+% ----------------------------------------------------------------------------
+
+\RequirePackage{array,booktabs}
+
+\DeclareExerciseTableTemplate {default*}
+  {
+    \XSIMputright \ExerciseTableCode
+      {
+        \toprule
+        \XSIMifblankTF {\ExerciseType}
+          {}
+          { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
+        &
+      }
+    \ForEachUsedExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          {
+            \XSIMifblankTF { \ExerciseType }
+              {
+                \XSIMputright \ExerciseTableCode
+                  {
+                    \XSIMmixedcase
+                      { \ExerciseParameterGet {#1} {exercise-name} ~ }
+                  }
+              }
+              {}
+            \XSIMputright \ExerciseTableCode { #3 & }
+          }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode
+      {
+        \XSIMtranslate {total} \\
+        \midrule \XSIMmixedcase { \XSIMtranslate {points} } &
+      }
+    \ForEachUsedExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          {
+            \XSIMputright \ExerciseTableCode
+              { \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & }
+          }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode
+      {
+        \XSIMifblankTF {\ExerciseType}
+          { \TotalExerciseGoal {points} {} {} }
+          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} }
+        \\ \midrule
+        \XSIMtranslate {reached} &
+      }
+    \ForEachUsedExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          { \XSIMputright \ExerciseTableCode {&} }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode { \\ \bottomrule }
+    \def\numberofcolumns{
+      \XSIMifblankTF {\ExerciseType}
+        {\numberofusedexercises}
+        {\csname numberof \ExerciseType s\endcsname}
+      }
+    \XSIMifeqF{\numberofcolumns}{0}
+      {
+        \begin {tabular} {l*{\numberofcolumns}{c}c}
+          \ExerciseTableCode
+        \end {tabular}
+      }
+  }
+
+\DeclareExerciseTableTemplate {default}
+  {
+    \XSIMputright \ExerciseTableCode
+      {
+        \toprule
+        \XSIMifblankTF {\ExerciseType}
+          {}
+          { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
+        &
+        \XSIMmixedcase { \XSIMtranslate {points} } &
+        \XSIMtranslate {reached} \\
+        \midrule
+      }
+    \ForEachUsedExerciseByType
+      {
+        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+          {
+            \XSIMifblankTF { \ExerciseType }
+              {
+                \XSIMputright \ExerciseTableCode
+                  {
+                    \XSIMmixedcase
+                      { \ExerciseParameterGet {#1} {exercise-name} ~ }
+                  }
+              }
+              {}
+            \XSIMputright \ExerciseTableCode
+              { #3 & \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & \\ }
+          }
+          {}
+      }
+    \XSIMputright \ExerciseTableCode
+      {
+        \midrule
+        \XSIMtranslate {total} &
+        \XSIMifblankTF {\ExerciseType}
+          { \TotalExerciseGoal {points} {} {} }
+          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} } &
+        \\ \bottomrule
+      }
+    \XSIMexpandcode
+      {
+        \noexpand \begin {tabular} {\XSIMifblankTF{\ExerciseType}{l}{c}cc}
+          \noexpand \ExerciseTableCode
+        \noexpand \end {tabular}
+      }
+  }
+
+% ----------------------------------------------------------------------------
+
+\DeclareExerciseTranslations {exercise} {
+  Fallback = exercise ,
+  English  = exercise ,
+  French   = exercice ,
+  German   = \"Ubung
+}
+
+\DeclareExerciseTranslations {exercises} {
+  Fallback = exercises ,
+  English  = exercises ,
+  French   = exercices ,
+  German   = \"Ubungen
+}
+
+\DeclareExerciseTranslations {question} {
+  Fallback = question ,
+  English  = question ,
+  French   = question ,
+  German   = Aufgabe
+}
+
+\DeclareExerciseTranslations {questions} {
+  Fallback = questions ,
+  English  = questions ,
+  French   = questions ,
+  German   = Aufgaben
+}
+
+\DeclareExerciseTranslations {solution} {
+  Fallback = solution ,
+  English  = solution ,
+  French   = solution ,
+  German   = L\"osung
+}
+
+\DeclareExerciseTranslations {solutions} {
+  Fallback = solutions ,
+  English  = solutions ,
+  French   = solutions ,
+  German   = L\"osungen
+}
+
+\DeclareExerciseTranslations {point-abbr} {
+  Fallback = p. ,
+  English  = p. ,
+  French   = p. ,
+  German   = P.
+}
+
+\DeclareExerciseTranslations {point} {
+  Fallback = point ,
+  English  = point ,
+  French   = point ,
+  German   = Punkt
+}
+
+\DeclareExerciseTranslations {points} {
+  Fallback = points ,
+  English  = points ,
+  French   = points ,
+  German   = Punkte
+}
+
+\DeclareExerciseTranslations {reached} {
+  Fallback = reached ,
+  English  = reached ,
+  French   = obtenus ,
+  German   = erreicht
+}
+
+\DeclareExerciseTranslations {total} {
+  Fallback = total ,
+  English  = total ,
+  French   = total ,
+  German   = insgesamt
+}
+
+\DeclareExerciseTranslations {default-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {solutions-name} }~
+             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {solutions-name} }~
+             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
+  French   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} ~
+             des~ \GetExerciseParameter {exercises-name} } ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} }~
+             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} }
+}
+
+\DeclareExerciseTranslations {collection-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
+  French   = \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {exercises-name} }
+}
+
+\DeclareExerciseTranslations {per-section-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+             of~ Section \nobreakspace \ExerciseSection ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+             of~ Section \nobreakspace \ExerciseSection ,
+  French   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} ~
+             des~ \GetExerciseParameter {exercises-name} ~ de~ la~
+             section \nobreakspace \ExerciseSection } ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
+             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} }~
+             in~ Abschnitt \nobreakspace \ExerciseSection
+}
+
+\DeclareExerciseTranslations {per-chapter-heading} {
+  Fallback = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+             of~ Chapter \nobreakspace \ExerciseChapter ,
+  English  = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+             of~ Chapter \nobreakspace \ExerciseChapter ,
+  French   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} ~
+             des~ \GetExerciseParameter {exercises-name} ~
+             du~ chapitre \nobreakspace \ExerciseChapter } ,
+  German   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
+             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+             in~ Kapitel \nobreakspace \ExerciseChapter
+}
+
+\XSIMmoduleend
+% finish package:
+\AtEndDocument { \xsim_close_aux: \xsim_do_rerun: }
+%----------------------------------------------------------------------------
+\file_input_stop:
