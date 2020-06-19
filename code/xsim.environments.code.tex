@@ -1,7 +1,5 @@
 \XSIMmodule{environments}{generic code for exercise and solution environments}
 
-\RequirePackage{xsimverb}
-
 \xsim_if_write_to_files:F
   {
     \xsim_declare_property:nnnn
@@ -249,8 +247,6 @@
   {
     \tl_set:Nn \ExerciseType {#1}
     \tl_set:Nn \ExerciseID {#2}
-    \xsim_if_exchange:nnnT {#1} {#2} {#3}
-      { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
     \xsim_verbose:n
       { Typesetting~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \xsim_use_hook:nnn {#1} {#3} {pre}
@@ -258,6 +254,9 @@
       {begin}
       { \xsim_get_parameter:nn {#1} {#3-template} }
     \xsim_use_hook:nnn {#1} {#3} {begin}
+    \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+      { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+      { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
     \xsim_if_write_to_files:TF
       {
         \file_if_exist:nTF { \exp_not:V \l__xsim_file_path_and_name_tl }

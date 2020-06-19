@@ -25,7 +25,7 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\RequirePackage {expl3}
+\RequirePackage {expl3,xparse,l3keys2e}
 \ExplSyntaxOn
 
 \tl_const:Nn \c_xsimverb_date_tl                 {2020/05/06}
@@ -49,9 +49,6 @@
   {\c_xsimverb_date_tl}
   {\c_xsimverb_version_tl}
   {\c_xsimverb_info_tl}
-
-\@ifpackageloaded {xsim} { \file_input_stop: } {}
-\RequirePackage {xparse,l3keys2e}
 
 % options, information
 
