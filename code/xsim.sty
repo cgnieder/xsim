@@ -161,12 +161,12 @@
       {
         \xsim_if_module_exist:nTF {#1}
           {
-            \__xsim_use_module_hook:nn {#1} {before}
+            \__xsim_module_hook_use:nn {#1} {before}
             \msg_info:nnn {xsim} {loading-module} {#1}
             \@onefilewithoptions
               {\c__xsim_module_prefix_tl.#1}[][]
               \c__xsim_module_extension_tl
-            \__xsim_use_module_hook:nn {#1} {after}
+            \__xsim_module_hook_use:nn {#1} {after}
           }
           { \msg_error:nnn {xsim} {module-missing} {#1} }
       }
@@ -418,18 +418,21 @@
 
 % ----------------------------------------------------------------------------
 
-\prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+\cs_if_exist:NF \xsim_if_final:T
   {
-    \bool_if:NTF \g__xsim_final_bool
-      { \prg_return_true: }
-      { \prg_return_false: }
-  }
+    \prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+      {
+        \bool_if:NTF \g__xsim_final_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
 
-\prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
-  {
-    \bool_if:NTF \g__xsim_verbose_bool
-      { \prg_return_true: }
-      { \prg_return_false: }
+    \prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
+      {
+        \bool_if:NTF \g__xsim_verbose_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
   }
 
 \prg_new_conditional:Npnn \xsim_if_debug: {p,T,F,TF}
@@ -471,9 +474,12 @@
       }
   }
 
-\cs_new_protected:Npn \xsim_verbose:n #1
-  { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
-\cs_generate_variant:Nn \xsim_verbose:n {x}
+\cs_if_exist:NF \xsim_verbose:n
+  {
+    \cs_new_protected:Npn \xsim_verbose:n #1
+      { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
+    \cs_generate_variant:Nn \xsim_verbose:n {x}
+  }
 
 \cs_new_protected:Npn \xsim_rerun:
   { \bool_gset_true:N \g__xsim_rerun_bool }

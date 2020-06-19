@@ -80,6 +80,30 @@
 
 \ProcessKeysPackageOptions {xsimverb}
 
+\cs_if_exist:NF \xsim_if_final:T
+  {
+    \prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+      {
+        \bool_if:NTF \g__xsim_final_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+
+    \prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
+      {
+        \bool_if:NTF \g__xsim_verbose_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+  }
+
+\cs_if_exist:NF \xsim_verbose:n
+  {
+    \cs_new_protected:Npn \xsim_verbose:n #1
+      { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
+    \cs_generate_variant:Nn \xsim_verbose:n {x}
+  }
+  
 % --------------------------------------------------------------------------
 % #1: name
 % #2: description
@@ -88,6 +112,9 @@
 
 % --------------------------------------------------------------------------
 \XSIMmodule{verbwrite}{write contents of environments verbatim to files}
+
+\int_new:N \l__xsimverb_tmpa_int
+\tl_new:N  \l__xsimverb_tmpa_tl
 
 \iow_new:N  \l__xsim_file_contents_iow
 \tl_new:N   \l_xsim_file_begin_tl
@@ -133,21 +160,22 @@
       {
         % remove the /one/ space token with catcode 10 that is inserted if
         % no options are given to the surrounding environment:
-        \tl_set:Nn \l__xsim_tmpa_tl {#2}
-        \tl_remove_once:Nn \l__xsim_tmpa_tl {~}
-        % \tl_show:N \l__xsim_tmpa_tl
-        % \int_show:n { \tl_count:N \l__xsim_tmpa_tl }
-        % \tl_analysis_show:N \l__xsim_tmpa_tl
-        \int_zero:N \l__xsim_tmpa_int
-        \int_while_do:nn { \l__xsim_tmpa_int < \l_xsim_line_gobble_int }
+        \tl_set:Nn \l__xsimverb_tmpa_tl {#2}
+        \tl_remove_once:Nn \l__xsimverb_tmpa_tl {~}
+        % \tl_show:N \l__xsimverb_tmpa_tl
+        % \int_show:n { \tl_count:N \l__xsimverb_tmpa_tl }
+        % \tl_analysis_show:N \l__xsimverb_tmpa_tl
+        \int_zero:N \l__xsimverb_tmpa_int
+        \int_while_do:nn { \l__xsimverb_tmpa_int < \l_xsim_line_gobble_int }
           {
-            \int_incr:N \l__xsim_tmpa_int
-            \tl_set:Nx \l__xsim_tmpa_tl { \tl_tail:N \l__xsim_tmpa_tl }
+            \int_incr:N \l__xsimverb_tmpa_int
+            \tl_set:Nx \l__xsimverb_tmpa_tl { \tl_tail:N \l__xsimverb_tmpa_tl }
           }
-        \iow_now:NV #1 \l__xsim_tmpa_tl
+        \iow_now:NV #1 \l__xsimverb_tmpa_tl
       }
   }
 \cs_generate_variant:Nn \__xsim_write_to_stream:Nn {Nx}
+\cs_generate_variant:Nn \iow_now:Nn {NV}
 
 \cs_new:Npn \__xsim_tab: { \c_space_tl \c_space_tl }
 \cs_new:Npn \__xsim_par: { ^^J ^^J }
@@ -166,6 +194,7 @@
       { \bool_if:nF {#1} { \exp_not:V \c__xsim_active_eol_tl } }
   }
 \cs_generate_variant:Nn \xsim_file_write_start:nn {nV}
+\cs_generate_variant:Nn \use:nn {nx}
 
 \cs_new_protected:Npn \__xsim_set_verb_catcodes:
   {
@@ -199,13 +228,13 @@
           } %
       } %
     \__xsim_set_verb_catcodes: %
-    \tl_set:Nx \l__xsim_tmpa_tl %
+    \tl_set:Nx \l__xsimverb_tmpa_tl %
       { \c__xsim_backslash_char_tl end \cs_to_str:N \{ \@currenvir \cs_to_str:N \} } %
     \use:x %
       { %
         \cs_set:cpn {__xsim_tmpa:www} %
-          ####1 \l__xsim_tmpa_tl %
-          ####2 \l__xsim_tmpa_tl %
+          ####1 \l__xsimverb_tmpa_tl %
+          ####2 \l__xsimverb_tmpa_tl %
           ####3 \exp_not:N \q_stop: %
       } %
         { %
@@ -228,8 +257,8 @@
     \cs_set:Npx \__xsim_M:w ##1 ^^M %
       { %
         \exp_not:N \__xsim_tmpa:www ##1 %
-        \l__xsim_tmpa_tl %
-        \l__xsim_tmpa_tl %
+        \l__xsimverb_tmpa_tl %
+        \l__xsimverb_tmpa_tl %
         \exp_not:N \q_stop: %
       } %
     \char_set_active_eq:nN {13} \__xsim_M:w %

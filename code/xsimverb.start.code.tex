@@ -80,6 +80,30 @@
 
 \ProcessKeysPackageOptions {xsimverb}
 
+\cs_if_exist:NF \xsim_if_final:T
+  {
+    \prg_new_conditional:Npnn \xsim_if_final: {p,T,F,TF}
+      {
+        \bool_if:NTF \g__xsim_final_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+
+    \prg_new_conditional:Npnn \xsim_if_verbose: {p,T,F,TF}
+      {
+        \bool_if:NTF \g__xsim_verbose_bool
+          { \prg_return_true: }
+          { \prg_return_false: }
+      }
+  }
+
+\cs_if_exist:NF \xsim_verbose:n
+  {
+    \cs_new_protected:Npn \xsim_verbose:n #1
+      { \xsim_if_verbose:T { \msg_info:nnn {xsim} {verbose} {#1} } }
+    \cs_generate_variant:Nn \xsim_verbose:n {x}
+  }
+  
 % --------------------------------------------------------------------------
 % #1: name
 % #2: description

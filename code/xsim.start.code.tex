@@ -161,12 +161,12 @@
       {
         \xsim_if_module_exist:nTF {#1}
           {
-            \__xsim_use_module_hook:nn {#1} {before}
+            \__xsim_module_hook_use:nn {#1} {before}
             \msg_info:nnn {xsim} {loading-module} {#1}
             \@onefilewithoptions
               {\c__xsim_module_prefix_tl.#1}[][]
               \c__xsim_module_extension_tl
-            \__xsim_use_module_hook:nn {#1} {after}
+            \__xsim_module_hook_use:nn {#1} {after}
           }
           { \msg_error:nnn {xsim} {module-missing} {#1} }
       }
