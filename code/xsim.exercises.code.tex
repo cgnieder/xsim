@@ -559,12 +559,12 @@
 
 \RequirePackage {etoolbox}
 
-\AtEndPreamble
+\hook_gput_code:nnn {begindocument/before} {xsim}
   {
     \xsim_foreach_exercise_type:n
       {
         \tl_new:c { number of #1 s }
-        \tl_set:cn { number of #1 s } {0}
+        \tl_gset:cn { number of #1 s } {0}
         \xsim_new_aux_property:cpn {#1} ##1
           { \tl_gset:cn { number of #1 s } {##1} }
       }

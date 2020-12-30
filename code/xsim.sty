@@ -11,12 +11,12 @@
 % Copyright 2017--2020 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License, either version 1.3
+% conditions of the LaTeX Project Public License, either version 1.3c
 % of this license or (at your option) any later version.
 % The latest version of this license is in
 %   http://www.latex-project.org/lppl.txt
-% and version 1.3 or later is part of all distributions of LaTeX
-% version 2005/12/01 or later.
+% and version 1.3c or later is part of all distributions of LaTeX
+% version 2008/05/04 or later.
 % 
 % This work has the LPPL maintenance status `maintained'.
 % 
@@ -25,14 +25,14 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\RequirePackage {expl3,xparse,l3keys2e,xsimverb}
+\RequirePackage {l3keys2e,xsimverb}
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2020/04/04}
+\tl_const:Nn \c_xsim_date_tl                 {2020/06/19}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
-\tl_const:Nn \c_xsim_version_minor_number_tl {19}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {b}
+\tl_const:Nn \c_xsim_version_minor_number_tl {20}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -327,17 +327,28 @@
 % --------------------------------------------------------------------------
 \XSIMmodule{base}{basic functionality of the package}
 
-\tl_new:N \g_xsim_end_document_hook_tl
-\tl_new:N \g_xsim_begin_document_hook_tl
+% \tl_new:N \g_xsim_end_document_hook_tl
+% \tl_new:N \g_xsim_begin_document_hook_tl
 
-\AtBeginDocument { \tl_use:N \g_xsim_begin_document_hook_tl }
-\AtEndDocument   { \tl_use:N \g_xsim_end_document_hook_tl }
+% \hook_gput_code:nnn {begindocument} {xsim}
+%   { \tl_use:N \g_xsim_begin_document_hook_tl }
+% \hook_gput_code:nnn {enddocument} {xsim}
+%   { \tl_use:N \g_xsim_end_document_hook_tl }
+
+% \cs_new_protected:Npn \xsim_at_begin_document:n #1
+%   { \tl_gput_right:Nn \g_xsim_begin_document_hook_tl {#1} }
+
+% \cs_new_protected:Npn \xsim_at_end_document:n #1
+%   { \tl_gput_right:Nn \g_xsim_end_document_hook_tl {#1} }
 
 \cs_new_protected:Npn \xsim_at_begin_document:n #1
-  { \tl_gput_right:Nn \g_xsim_begin_document_hook_tl {#1} }
+  { \hook_gput_code:nnn {begindocument} {xsim} {#1} }
+
+\cs_new_protected:Npn \xsim_before_begin_document:n #1
+  { \hook_gput_code:nnn {begindocument/before} {xsim} {#1} }
 
 \cs_new_protected:Npn \xsim_at_end_document:n #1
-  { \tl_gput_right:Nn \g_xsim_end_document_hook_tl {#1} }
+  { \hook_gput_code:nnn {enddocument} {xsim} {#1} }
 
 % ----------------------------------------------------------------------------
 
@@ -361,7 +372,7 @@
 \cs_generate_variant:Nn \msg_error:nnnnn    {nnnxx}
 \cs_generate_variant:Nn \keys_define:nn     {nx}
 \cs_generate_variant:Nn \keys_set:nn        {xn}
-\cs_generate_variant:Nn \tl_mixed_case:n    {x,f}
+\cs_generate_variant:Nn \text_titlecase:n   {x,f}
 \cs_generate_variant:Nn \tl_if_eq:nnTF      {ff,V}
 \cs_generate_variant:Nn \tl_if_eq:nnT       {x}
 \cs_generate_variant:Nn \tl_if_blank:nTF    {f}
@@ -398,6 +409,10 @@
 \int_new:N   \l__xsim_tmpa_int
 \int_new:N   \l__xsim_tmpb_int
 \int_new:N   \l__xsim_tmpc_int
+
+\fp_new:N    \l__xsim_tmpa_fp
+\fp_new:N    \l__xsim_tmpb_fp
+\fp_new:N    \l__xsim_tmpc_fp
 
 \box_new:N   \l__xsim_tmpa_box
 \box_new:N   \l__xsim_tmpb_box
@@ -628,7 +643,7 @@
 \xsim_if_use_aux:F
   {
     \iow_new:N \l__xsim_aux_file_iow
-    \xsim_at_begin_document:n
+    \hook_gput_code:nnn {begindocument} {xsim}
       { \iow_open:Nn \l__xsim_aux_file_iow { \c_sys_jobname_str .xsim } }
   }
 
@@ -740,8 +755,8 @@
 \cs_new_protected:Npn \xsim_update_list:n #1
   {
     \xsim_verbose:n { Updating~ list~ `#1'. }
-    \seq_remove_duplicates:c {g__xsim_list_#1_seq}
-    \seq_remove_duplicates:c {g__xsim_list_recorded_#1_seq}
+    \seq_gremove_duplicates:c {g__xsim_list_#1_seq}
+    \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
     \str_set:Nx \l__xsim_tmpa_str
       { \seq_use:cn {g__xsim_list_#1_seq} {} }
     \str_set:Nx \l__xsim_tmpb_str
@@ -1272,8 +1287,9 @@
 \cs_generate_variant:Nn \xsim_if_boolean_property:nnnTF {oo}
 \cs_generate_variant:Nn \xsim_if_boolean_property:nnnF  {nV}
 
+
 \cs_new_protected:Npn \xsim_save_property:nnnN #1#2#3#4
-  { \tl_set:No #4 { \cs:w __xsim_property_#2!#1!#3: \cs_end: } }
+  { \tl_set:Nx #4 { \xsim_get_property:nnn {#1} {#2} {#3} } }
 \cs_generate_variant:Nn \xsim_save_property:nnnN {nx,xx}
 
 \cs_new_protected:Npn \xsim_gsave_property:nnnN #1#2#3#4
@@ -2135,7 +2151,7 @@
           { \fp_new:c {g__xsim_total_goal_#1_fp} }
         \fp_if_exist:cF {g__xsim_total_goal_recorded_#1_fp}
           { \fp_new:c {g__xsim_total_goal_recorded_#1_fp} }
-        \xsim_at_begin_document:n
+        \xsim_before_begin_document:n
           {
             \xsim_foreach_exercise_type:n
               {
@@ -3386,12 +3402,12 @@
 
 \RequirePackage {etoolbox}
 
-\AtEndPreamble
+\hook_gput_code:nnn {begindocument/before} {xsim}
   {
     \xsim_foreach_exercise_type:n
       {
         \tl_new:c { number of #1 s }
-        \tl_set:cn { number of #1 s } {0}
+        \tl_gset:cn { number of #1 s } {0}
         \xsim_new_aux_property:cpn {#1} ##1
           { \tl_gset:cn { number of #1 s } {##1} }
       }
@@ -4746,7 +4762,7 @@
   { \use:e {#1} }
 
 \NewExpandableDocumentCommand \XSIMmixedcase {m}
-  { \tl_mixed_case:f {#1} }
+  { \text_titlecase:f {#1} }
 
 \NewDocumentCommand \XSIMputright {mm}
   { \tl_put_right:Nn #1 {#2} }
@@ -5552,6 +5568,6 @@
 
 \XSIMmoduleend
 % finish package:
-\AtEndDocument { \xsim_close_aux: \xsim_do_rerun: }
+\hook_gput_code:nnn {enddocument} {xsim} { \xsim_close_aux: \xsim_do_rerun: }
 %----------------------------------------------------------------------------
 \file_input_stop:

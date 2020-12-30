@@ -1,16 +1,27 @@
 \XSIMmodule{base}{basic functionality of the package}
 
-\tl_new:N \g_xsim_end_document_hook_tl
-\tl_new:N \g_xsim_begin_document_hook_tl
+% \tl_new:N \g_xsim_end_document_hook_tl
+% \tl_new:N \g_xsim_begin_document_hook_tl
 
-\AtBeginDocument { \tl_use:N \g_xsim_begin_document_hook_tl }
-\AtEndDocument   { \tl_use:N \g_xsim_end_document_hook_tl }
+% \hook_gput_code:nnn {begindocument} {xsim}
+%   { \tl_use:N \g_xsim_begin_document_hook_tl }
+% \hook_gput_code:nnn {enddocument} {xsim}
+%   { \tl_use:N \g_xsim_end_document_hook_tl }
+
+% \cs_new_protected:Npn \xsim_at_begin_document:n #1
+%   { \tl_gput_right:Nn \g_xsim_begin_document_hook_tl {#1} }
+
+% \cs_new_protected:Npn \xsim_at_end_document:n #1
+%   { \tl_gput_right:Nn \g_xsim_end_document_hook_tl {#1} }
 
 \cs_new_protected:Npn \xsim_at_begin_document:n #1
-  { \tl_gput_right:Nn \g_xsim_begin_document_hook_tl {#1} }
+  { \hook_gput_code:nnn {begindocument} {xsim} {#1} }
+
+\cs_new_protected:Npn \xsim_before_begin_document:n #1
+  { \hook_gput_code:nnn {begindocument/before} {xsim} {#1} }
 
 \cs_new_protected:Npn \xsim_at_end_document:n #1
-  { \tl_gput_right:Nn \g_xsim_end_document_hook_tl {#1} }
+  { \hook_gput_code:nnn {enddocument} {xsim} {#1} }
 
 % ----------------------------------------------------------------------------
 
@@ -34,7 +45,7 @@
 \cs_generate_variant:Nn \msg_error:nnnnn    {nnnxx}
 \cs_generate_variant:Nn \keys_define:nn     {nx}
 \cs_generate_variant:Nn \keys_set:nn        {xn}
-\cs_generate_variant:Nn \tl_mixed_case:n    {x,f}
+\cs_generate_variant:Nn \text_titlecase:n   {x,f}
 \cs_generate_variant:Nn \tl_if_eq:nnTF      {ff,V}
 \cs_generate_variant:Nn \tl_if_eq:nnT       {x}
 \cs_generate_variant:Nn \tl_if_blank:nTF    {f}
@@ -71,6 +82,10 @@
 \int_new:N   \l__xsim_tmpa_int
 \int_new:N   \l__xsim_tmpb_int
 \int_new:N   \l__xsim_tmpc_int
+
+\fp_new:N    \l__xsim_tmpa_fp
+\fp_new:N    \l__xsim_tmpb_fp
+\fp_new:N    \l__xsim_tmpc_fp
 
 \box_new:N   \l__xsim_tmpa_box
 \box_new:N   \l__xsim_tmpb_box

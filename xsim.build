@@ -236,7 +236,8 @@ if [ "$cleanup" == true ] ; then
                    ${EXAMPLES_DIR}/*.tmp
                    ${EXAMPLES_DIR}/*.toc
                    ${EXAMPLES_DIR}/*.lof
-                   ${EXAMPLES_DIR}/*.lot"
+                   ${EXAMPLES_DIR}/*.lot
+                   ${EXAMPLES_DIR}/*-body.tex"
     fi
 fi
 
@@ -269,7 +270,7 @@ if [ "$build" == true ] ; then
     > $styname
     # append necessary end:
     echo -e "% finish package:\n\
-\\AtEndDocument { \\\\xsim_close_aux: \\\\xsim_do_rerun: }\n\
+\\hook_gput_code:nnn {enddocument} {xsim} { \\\\xsim_close_aux: \\\\xsim_do_rerun: }\n\
 %----------------------------------------------------------------------------\n\
 \\\\file_input_stop:"\
     >> $styname
