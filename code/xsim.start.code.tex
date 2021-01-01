@@ -8,7 +8,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2020 Clemens Niederberger
+% Copyright 2017--2021 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3c
@@ -68,16 +68,20 @@
 
 \keys_define:nn {xsim/package}
   {
-    final     .bool_gset:N         = \g__xsim_final_bool ,
-    verbose   .bool_gset:N         = \g__xsim_verbose_bool ,
-    debug     .bool_gset:N         = \g__xsim_debug_bool ,
-    clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
-    no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool ,
-    no-files  .initial:n           = false ,
-    use-aux   .bool_gset:N         = \g_xsim_use_aux_bool ,
-    use-aux   .initial:n           = false ,
-    blank     .bool_gset:N         = \g__xsim_blank_bool ,
-    blank     .initial:n           = false
+    final     .bool_gset:N = \g__xsim_final_bool ,
+    verbose   .bool_gset:N = \g__xsim_verbose_bool ,
+    debug     .bool_gset:N = \g__xsim_debug_bool ,
+    clear-aux .bool_gset:N = \g_xsim_clear_aux_bool ,
+    use-files .bool_gset:N = \g__xsim_write_to_file_bool ,
+    use-files .initial:n   = false ,
+    no-files  .choice: ,
+    no-files / true  .meta:n = { use-files = false } ,
+    no-files / false .meta:n = { use-files = true } ,
+    no-files  .default:n   = true ,
+    use-aux   .bool_gset:N = \g_xsim_use_aux_bool ,
+    use-aux   .initial:n   = false ,
+    blank     .bool_gset:N = \g__xsim_blank_bool ,
+    blank     .initial:n   = false
   }
 
 \ProcessKeysPackageOptions {xsim/package}
@@ -88,6 +92,7 @@
     verbose   .code:n = \msg_error:nnn {xsim} {load-time-option} {verbose} ,
     debug     .code:n = \msg_error:nnn {xsim} {load-time-option} {debug} ,
     clear-aux .code:n = \msg_error:nnn {xsim} {load-time-option} {clear-aux} ,
+    use-files .code:n = \msg_error:nnn {xsim} {load-time-option} {use-files} ,
     no-files  .code:n = \msg_error:nnn {xsim} {load-time-option} {no-files} ,
     use-aux   .code:n = \msg_error:nnn {xsim} {load-time-option} {use-aux} ,
     blank     .code:n = \msg_error:nnn {xsim} {load-time-option} {blank}
@@ -118,8 +123,6 @@
 
 % --------------------------------------------------------------------------
 % MODULE mechanism
-\RequirePackage{scrlfile}
-
 \msg_new:nnn {xsim} {module-missing}
   {
     You've~ requested~ the~ xsim~ module~ `#1'~ but~ it~ appears~ to~
@@ -245,10 +248,10 @@
 \tl_if_exist:NF \c_xsim_version_tl
   { \tl_set:Nx \l__xsim_module_version_tl {\c_xsimverb_version_tl} }
 
-\AfterPackage*{xsim}
+\hook_gput_code:nnn {package/after/xsim} {xsim}
   {
-    \tl_set:Nx \l__xsim_module_date_tl {\c_xsim_date_tl}
-    \tl_set:Nx \l__xsim_module_version_tl {\c_xsim_version_tl}
+    \tl_set:NV \l__xsim_module_date_tl    \c_xsim_date_tl
+    \tl_set:NV \l__xsim_module_version_tl \c_xsim_version_tl
   }
 
 \cs_new_protected:Npn \__xsim_module:nn #1#2

@@ -8,7 +8,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2020 Clemens Niederberger
+% Copyright 2017--2021 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3c
@@ -942,6 +942,7 @@
 \xsim@add@example{texsx-395273}{Different aspects of exercises, highlighted solutions}
 \xsim@add@example{texsx-466584}{Flushright Solutions}
 \xsim@add@example{texsx-498299}{Multiple choice questions with automated solutions}
+\xsim@add@example{texsx-576998}{Exercises at the end of section and sectionwise solutions}
 \xsim@add@example{texwelt-6698}{Custom list of exercises}
 \xsim@add@example{texwelt-15093}{Indicate difficulty level}
 \xsim@add@example{texwelt-23968}{Long and short solutions}
@@ -992,6 +993,7 @@
 \xsim@add@version{0.19}  {2020-03-16}
 \xsim@add@version{0.19a} {2020-03-19}
 \xsim@add@version{0.19b} {2020-04-04}
+\xsim@add@version{0.20}  {2021-01-01}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

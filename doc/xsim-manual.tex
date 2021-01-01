@@ -13,7 +13,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2020 Clemens Niederberger
+% Copyright 2017--2021 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3c
@@ -142,12 +142,13 @@ meaning in this manual.
       probability of possibly faulty exercises after changes to the document.}
     The \option{final} option automatically disables this option.  See also
     sections~\vref{sec:how-exerc-envir} and~\vref{sec:resolve-getting}.
-  \opt{no-files}
+  \opt{no-files}\Default{true}
     \sinceversion{0.13}This option prevents \xsim\ from writing the exercises
     and solutions to external files.  This will keep your working folder
     ``clean'' but will also prevent using verbatim material in exercises and
-    solutions and will possibly slow processing further down.  \emph{This
-      option is considered experimental.  Feedback is very welcome.}
+    solutions.
+  \opt{use-files}
+    \sinceversion{0.20}This is the opposite of the option \option{no-files}.
   \opt{use-aux}
     \sinceversion{0.15}With this option enabled \xsim\ will use the regular
     auxiliary file \cs*{jobname}\code{.aux} instead of its own auxiliary file
