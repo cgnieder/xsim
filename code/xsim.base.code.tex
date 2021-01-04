@@ -23,6 +23,9 @@
 \cs_new_protected:Npn \xsim_at_end_document:n #1
   { \hook_gput_code:nnn {enddocument} {xsim} {#1} }
 
+\cs_new_protected:Npn \xsim_before_end_document:n #1
+  { \hook_gput_code:nnn {enddocument/before} {xsim} {#1} }
+  
 % ----------------------------------------------------------------------------
 
 % variants of kernel functions:

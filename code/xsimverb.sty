@@ -25,7 +25,7 @@
 % If you have any ideas, questions, suggestions or bugs to report, please
 % feel free to contact me.
 % ----------------------------------------------------------------------------
-\RequirePackage {expl3,xparse,l3keys2e}
+\RequirePackage {l3keys2e}
 \ExplSyntaxOn
 
 \tl_const:Nn \c_xsimverb_date_tl                 {2021/01/01}
@@ -66,16 +66,20 @@
 
 \keys_define:nn {xsimverb}
   {
-    final     .bool_gset:N         = \g__xsim_final_bool ,
-    verbose   .bool_gset:N         = \g__xsim_verbose_bool ,
-    debug     .bool_gset:N         = \g__xsim_debug_bool ,
-    clear-aux .bool_gset:N         = \g_xsim_clear_aux_bool ,
-    no-files  .bool_gset_inverse:N = \g__xsim_write_to_file_bool ,
-    no-files  .initial:n           = false ,
-    use-aux   .bool_gset:N         = \g_xsim_use_aux_bool ,
-    use-aux   .initial:n           = false ,
-    blank     .bool_gset:N         = \g__xsim_blank_bool ,
-    blank     .initial:n           = false
+    final     .bool_gset:N   = \g__xsim_final_bool ,
+    verbose   .bool_gset:N   = \g__xsim_verbose_bool ,
+    debug     .bool_gset:N   = \g__xsim_debug_bool ,
+    clear-aux .bool_gset:N   = \g_xsim_clear_aux_bool ,
+    use-files .bool_gset:N   = \g__xsim_write_to_file_bool ,
+    use-files .initial:n     = false ,
+    no-files  .choice: ,
+    no-files / true  .meta:n = { use-files = false } ,
+    no-files / false .meta:n = { use-files = true } ,
+    no-files  .default:n     = true ,
+    use-aux   .bool_gset:N   = \g_xsim_use_aux_bool ,
+    use-aux   .initial:n     = false ,
+    blank     .bool_gset:N   = \g__xsim_blank_bool ,
+    blank     .initial:n     = false
   }
 
 \ProcessKeysPackageOptions {xsimverb}

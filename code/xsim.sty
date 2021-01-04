@@ -68,20 +68,20 @@
 
 \keys_define:nn {xsim/package}
   {
-    final     .bool_gset:N = \g__xsim_final_bool ,
-    verbose   .bool_gset:N = \g__xsim_verbose_bool ,
-    debug     .bool_gset:N = \g__xsim_debug_bool ,
-    clear-aux .bool_gset:N = \g_xsim_clear_aux_bool ,
-    use-files .bool_gset:N = \g__xsim_write_to_file_bool ,
-    use-files .initial:n   = false ,
+    final     .bool_gset:N   = \g__xsim_final_bool ,
+    verbose   .bool_gset:N   = \g__xsim_verbose_bool ,
+    debug     .bool_gset:N   = \g__xsim_debug_bool ,
+    clear-aux .bool_gset:N   = \g_xsim_clear_aux_bool ,
+    use-files .bool_gset:N   = \g__xsim_write_to_file_bool ,
+    use-files .initial:n     = false ,
     no-files  .choice: ,
     no-files / true  .meta:n = { use-files = false } ,
     no-files / false .meta:n = { use-files = true } ,
-    no-files  .default:n   = true ,
-    use-aux   .bool_gset:N = \g_xsim_use_aux_bool ,
-    use-aux   .initial:n   = false ,
-    blank     .bool_gset:N = \g__xsim_blank_bool ,
-    blank     .initial:n   = false
+    no-files  .default:n     = true ,
+    use-aux   .bool_gset:N   = \g_xsim_use_aux_bool ,
+    use-aux   .initial:n     = false ,
+    blank     .bool_gset:N   = \g__xsim_blank_bool ,
+    blank     .initial:n     = false
   }
 
 \ProcessKeysPackageOptions {xsim/package}
@@ -123,8 +123,6 @@
 
 % --------------------------------------------------------------------------
 % MODULE mechanism
-\RequirePackage{scrlfile}
-
 \msg_new:nnn {xsim} {module-missing}
   {
     You've~ requested~ the~ xsim~ module~ `#1'~ but~ it~ appears~ to~
@@ -355,6 +353,9 @@
 \cs_new_protected:Npn \xsim_at_end_document:n #1
   { \hook_gput_code:nnn {enddocument} {xsim} {#1} }
 
+\cs_new_protected:Npn \xsim_before_end_document:n #1
+  { \hook_gput_code:nnn {enddocument/before} {xsim} {#1} }
+  
 % ----------------------------------------------------------------------------
 
 % variants of kernel functions:
@@ -888,7 +889,7 @@
           }
         \bool_if:nF {#3}
           {
-            \xsim_at_end_document:n { \xsim_update_list:n {#4} }
+            \xsim_before_end_document:n { \xsim_update_list:n {#4} }
             \xsim_at_begin_document:n { \__xsim_set_property_from_list:n {#4} }
           }
       }
@@ -2889,6 +2890,21 @@
     define~ the~ parameter~ yourself.
   }
 
+\msg_new:nnn {xsim} {parameter-undefined}
+  {
+    You~ tried~ to~ set~ the~ parameter~ `#2'~ for~ exercise~ type~ `#1'~
+    \msg_line_context: . \\
+    This~ parameter~ does~ not~ exist.~ Check~ for~ a~ typo~ or~ \\
+    define~ the~ parameter~ yourself.
+  }
+
+\msg_new:nnn {xsim} {parameter-value}
+  {
+    A~ parameter~ needs~ to~ be~ set~ to~ a~ (possibly~ empty)~ value! \\
+    Not~ setting~ parameter~ `#2'~ for~ exercise~ type~ `#1'~
+    \msg_line_context: .
+  }
+
 % ----------------------------------------------------------------------------
 % #1: type
 % #2: parameter
@@ -2957,13 +2973,21 @@
 % #2: csv list of parameters
 \cs_new_protected:Npn \xsim_set_parameters:nn #1#2
   {
-    \clist_map_inline:nn {#2}
-      {
-        \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
-        \xsim_set_parameter:nxx {#1}
-          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
-          { \seq_item:Nn \l__xsim_tmpa_seq {2} }
-      }
+    % \clist_map_inline:nn {#2}
+    %   {
+    %     \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
+    %     \xsim_set_parameter:nxx {#1}
+    %       { \seq_item:Nn \l__xsim_tmpa_seq {1} }
+    %       { \seq_item:Nn \l__xsim_tmpa_seq {2} }
+    %   }
+    \cs_set_protected:Npn \__xsim_set_parameter:n ##1
+      { \msg_warning:nnnn {xsim} {parameter-value} {#1} {##1} }
+    \cs_set_protected:Npn \__xsim_set_parameter:nn ##1##2
+      { \xsim_set_parameter:nnn {#1} {##1} {##2} }
+    \keyval_parse:NNn
+      \__xsim_set_parameter:n
+      \__xsim_set_parameter:nn
+      {#2}
   }
 \cs_generate_variant:Nn \xsim_set_parameters:nn {nx}
 
@@ -2990,7 +3014,7 @@
 % #3: value
 \cs_new_protected:Npn \xsim_set_parameter:nnn #1#2#3
   {
-    \xsim_if_parameter_exist:nT {#2}
+    \xsim_if_parameter_exist:nTF {#2}
       {
         \xsim_if_parameter_fixed:nTF {#1}
           {
@@ -3015,6 +3039,7 @@
             \__xsim_set_parameter_type:nnn {#1} {#2} {#3}
           }
       }
+      { \msg_error:nnnn {xsim} {parameter-undefined} {#1} {#2} }
   }
 \cs_generate_variant:Nn \xsim_set_parameter:nnn {nnx,nxx}
 
