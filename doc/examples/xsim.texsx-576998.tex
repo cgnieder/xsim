@@ -1,0 +1,134 @@
+\documentclass[twocolumn]{book}
+\usepackage{xsim}
+
+\DeclareExerciseEnvironmentTemplate{number-only}{%
+  \par\noindent
+  \textbf{\GetExerciseProperty{counter}}%
+  \GetExercisePropertyT{subtitle}{ \textit{#1}} %
+}{\par}
+
+\newcommand\printsectionexercises{%
+  \ForEachUsedExerciseByType{%
+    \ifnum\ExercisePropertyGet{##1}{##2}{chapter-value}=\value{chapter}
+      \ifnum\ExercisePropertyGet{##1}{##2}{section-value}=\value{section}
+        \XSIMprint{exercise}{##1}{##2}%
+      \fi
+    \fi
+  }%
+}
+
+\renewcommand\printsolutions{%
+  \def\currentchapter{}%
+  \def\currentsection{}%
+  \def\lastchapter{}%
+  \def\lastsection{}%
+  \ForEachUsedExerciseByType{%
+    \let\lastchapter\currentchapter
+    \let\lastsection\currentsection
+    \edef\currentchapter{\ExercisePropertyGet{##1}{##2}{chapter-value}}%
+    \edef\currentsection{\ExercisePropertyGet{##1}{##2}{section-value}}%
+    \ifx\lastchapter\currentchapter\else
+      \section*{Chapter \ExercisePropertyGet{##1}{##2}{chapter}}
+    \fi
+    \ifx\lastsection\currentsection\else
+      \subsection*{Exercises \ExercisePropertyGet{##1}{##2}{section}}
+    \fi
+    \XSIMprint{solution}{##1}{##2}%
+  }%
+}
+
+\xsimsetup{
+  exercise/template = number-only ,
+  solution/template = number-only ,
+  exercise/within = section ,
+  exercise/the-counter = \arabic{exercise}. ,
+  exercise/print = false
+}
+
+\begin{document}
+
+\setcounter{chapter}{13}
+\chapter{}
+\section{Cats as pets}
+Text text text\dots
+\begin{exercise}
+  Draw a cat.
+\end{exercise}
+\begin{solution}
+  Drawing a cat.
+\end{solution}
+
+Text text text\dots
+\begin{exercise}
+  Bathe a cat.
+\end{exercise}
+\begin{solution}
+  Bathing a cat.
+\end{solution}
+
+Text text text\dots
+\begin{exercise}
+  Trace the history of cats through time.
+\end{exercise}
+\begin{solution}
+  Tracing the history of cats through time.
+\end{solution}
+
+\subsection*{Exercises \thesection}
+\printsectionexercises
+
+\section{Frogs as pets}
+Text text text\dots
+\begin{exercise}
+  Lick a frog.
+\end{exercise}
+\begin{solution}
+  Licking a frog.
+\end{solution}
+
+Text text text\dots
+\begin{exercise}
+  Bathe a frog.
+\end{exercise}
+\begin{solution}
+  Bathing a frog.
+\end{solution}
+
+Text text text\dots
+\begin{exercise}
+  Feed a frog.
+\end{exercise}
+\begin{solution}
+  Feeding a frog.
+\end{solution}
+
+\subsection*{Exercises \thesection}
+\printsectionexercises
+
+\setcounter{chapter}{20}
+\chapter{}
+
+\section{The joys of fish}
+Text text text\dots
+\begin{exercise}
+  Catch a fish.
+\end{exercise}
+\begin{solution}
+  Catching a fish.
+\end{solution}
+
+Text text text\dots
+\begin{exercise}
+  Draw a fish.
+\end{exercise}
+\begin{solution}
+  Drawing a fish.
+\end{solution}
+
+\subsection*{Exercises \thesection}
+\printsectionexercises
+
+\chapter*{Solutions to the exercises}
+\printsolutions
+
+\end{document}

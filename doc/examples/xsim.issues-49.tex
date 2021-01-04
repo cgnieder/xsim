@@ -1,0 +1,122 @@
+\documentclass{article}
+\usepackage[no-files]{xsim}
+
+\xsimsetup{
+  load-style = layouts ,
+  exercise/template = runin ,
+  solution/template = runin
+}
+
+\usepackage{tasks,fontawesome,fmtcount,multicol}
+\NewTasksEnvironment[label=\Alph*),label-width=12pt]{choices}[\choice]
+\newcommand*\correct{\thetask\expanded{\SetExerciseProperty{choice}{\thetask}}}
+
+\NewTasksEnvironment[label=\Roman*,label-width=12pt]{options}[\option]
+
+\DeclareExerciseProperty{choice}
+
+\newcommand*\pkg[1]{\texttt{#1}}
+\newcommand*\cls[1]{\texttt{#1}}
+
+\newcommand\EA[2]{\IfInsideSolutionTF{#2}{#1}}
+\newcommand\answer[1]{\IfInsideSolutionT{#1}}
+
+\begin{document}
+
+\section{List of exercises}
+Solve and answer the following exercises.
+
+\begin{exercise}
+  Factor $x^{2}-2x+1$
+\end{exercise}
+\begin{solution}
+  $\left(x-1\right)^{2}$
+\end{solution}
+\begin{exercise}
+  Factor $3x+3y+3z$
+\end{exercise}
+\begin{solution}
+  $3(x+y+z)$
+\end{solution}
+
+\begin{exercise}[solution]
+  \EA{True or false?}{}
+  \begin{tasks}(2)
+    \task \EA{$\alpha > \delta$}{False}
+    \task \EA{\LaTeX2e\ is cool?}{Very True!}
+  \end{tasks}
+\end{exercise}
+
+\begin{exercise}[subtitle=Talking Linux,solution]
+  \begin{tasks}(2)
+    \task \EA{You use linux?}{Yes}
+    \task \EA{Usually uses the package manager?}{Yes}
+  \end{tasks}
+\end{exercise}
+
+\begin{exercise}[solution]
+  \EA{Rate the following \LaTeX\ packages and classes.}{}
+  \begin{tasks}(\EA{3}{1})
+    \task \EA{\cls{xsim-exam}}{doesn't exist for now}
+    \task \EA{\pkg{xsim}}{very good}
+    \task \EA{\pkg{exsheets}}{obsolete}
+  \end{tasks}
+\end{exercise}
+
+\begin{exercise}
+  \begin{choices}(5)
+    \choice value
+    \choice value
+    \choice value
+    \choice[\correct] correct
+    \choice value
+  \end{choices}
+\end{exercise}
+\begin{solution}
+  \GetExerciseProperty{choice}
+\end{solution}
+
+\begin{exercise}
+  \begin{options}(3)
+    \option $2\alpha+2\delta=90^{\circ}$
+    \option $\alpha=\delta$
+    \option $\angle EDF=45^{\circ}$
+  \end{options}
+  \begin{choices}(4)
+    \choice I only
+    \choice[\correct] II only
+    \choice I and II only
+    \choice I and III only
+    \choice I, II, and III
+  \end{choices}
+\end{exercise}
+\begin{solution}
+  \GetExerciseProperty{choice}
+\end{solution}
+
+\begin{exercise}
+  \begin{tasks}[label=(\arabic*),label-width=13pt](2)
+    \task $2\alpha+2\delta=90^{\circ}$
+    \task $\angle EDF=45^{\circ}$
+  \end{tasks}
+  \begin{choices}(3)
+    \choice Alternative A
+    \choice Alternative B
+    \choice[\correct] Alternative C
+    \choice Alternative D
+    \choice Alternative E
+  \end{choices}
+\end{exercise}
+\begin{solution}
+  \GetExerciseProperty{choice}
+\end{solution}
+
+\clearpage
+
+\section{Solutions}
+\raggedcolumns
+\begin{multicols}{2}
+  \printsolutions[headings=false]
+\end{multicols}
+
+\end{document}

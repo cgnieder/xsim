@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage[no-files]{xsim}
+\usepackage{needspace}
+\usepackage{tasks}
+
+\DeclareExerciseEnvironmentTemplate{exandsol}{%
+  \par\vspace{\baselineskip}
+  \Needspace*{2\baselineskip}
+  \noindent\sffamily
+  \textbf{\XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}}%
+  \GetExercisePropertyT{subtitle}{\hspace{3em}{\small#1}}\par
+  \normalfont
+}{}
+
+\DeclareExerciseEnvironmentTemplate{flushright}{%
+  \begin{flushright}
+  \begin{minipage}{.4\linewidth}
+    \textsf{Solutions:}\par\normalfont
+}{%
+  \end{minipage}%
+  \end{flushright}%
+}
+
+\xsimsetup{
+  exercise/within = section ,
+  exercise/template = exandsol ,
+  solution/template = flushright ,
+  solution/print = true
+}
+
+\renewcommand*\theexercise{\thesection-\arabic{exercise}}
+
+\newcommand\QA[2]{\IfInsideSolutionTF{#2}{#1}}
+
+\newcommand*\answer[1]{%
+  \begingroup
+  \def\ExerciseType{exercise}%
+  \IfSolutionPrintT{\printsolution{exercise}{#1}}%
+  \endgroup
+}
+
+\begin{document}
+
+\setcounter{section}{1}
+\setcounter{exercise}{30}
+
+\begin{exercise}[ID=one,solution,subtitle=Factorize as much as possible the following expressions.]
+  \begin{tasks}
+    \task \QA{$(2x-3)^2 - (3x-2)^2 =$}{$-(x+5)(5x-1)$}
+    \task \QA{$(x^2-25) - 2(5-x)(x+6) =$}{$(x+5)(3x-17)$}
+    \task \QA{$2x(x+2) + (x+1)^2 + 2 =$}{$3(x+1)^2$}
+  \end{tasks}
+\end{exercise}
+\answer{one}
+
+\end{document}
