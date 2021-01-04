@@ -889,7 +889,7 @@
           }
         \bool_if:nF {#3}
           {
-            \xsim_before_end_document:n { \xsim_update_list:n {#4} }
+            \xsim_at_end_document:n { \xsim_update_list:n {#4} }
             \xsim_at_begin_document:n { \__xsim_set_property_from_list:n {#4} }
           }
       }
@@ -2973,13 +2973,6 @@
 % #2: csv list of parameters
 \cs_new_protected:Npn \xsim_set_parameters:nn #1#2
   {
-    % \clist_map_inline:nn {#2}
-    %   {
-    %     \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
-    %     \xsim_set_parameter:nxx {#1}
-    %       { \seq_item:Nn \l__xsim_tmpa_seq {1} }
-    %       { \seq_item:Nn \l__xsim_tmpa_seq {2} }
-    %   }
     \cs_set_protected:Npn \__xsim_set_parameter:n ##1
       { \msg_warning:nnnn {xsim} {parameter-value} {#1} {##1} }
     \cs_set_protected:Npn \__xsim_set_parameter:nn ##1##2
@@ -4509,7 +4502,7 @@
 
 % ----------------------------------------------------------------------------
 
-\ProvideDocumentCommand \IfExistSolutionTF {+m+m}
+\NewDocumentCommand \IfExistSolutionTF {+m+m}
   { \xsim_if_solution_exist:ooTF {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \IfExistSolutionT {+m}
@@ -5598,6 +5591,6 @@
 
 \XSIMmoduleend
 % finish package:
-\hook_gput_code:nnn {enddocument} {xsim} { \xsim_close_aux: \xsim_do_rerun: }
+\hook_gput_code:nnn {enddocument/after} {xsim} { \xsim_close_aux: \xsim_do_rerun: }
 %----------------------------------------------------------------------------
 \file_input_stop:

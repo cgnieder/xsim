@@ -270,7 +270,7 @@ if [ "$build" == true ] ; then
     > $styname
     # append necessary end:
     echo -e "% finish package:\n\
-\\hook_gput_code:nnn {enddocument} {xsim} { \\\\xsim_close_aux: \\\\xsim_do_rerun: }\n\
+\\hook_gput_code:nnn {enddocument/after} {xsim} { \\\\xsim_close_aux: \\\\xsim_do_rerun: }\n\
 %----------------------------------------------------------------------------\n\
 \\\\file_input_stop:"\
     >> $styname
