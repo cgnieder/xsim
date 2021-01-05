@@ -229,9 +229,11 @@
 % #1: type
 % #2: id
 % #3: boolean property
-\cs_new:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
+\cs_new_protected:Npn \__xsim_deliver_exercise_details:nnn #1#2#3
   {
-    \xsim_if_in_list:nnT {#3} {#1-#2=={true}}
+    \tl_if_blank:nTF {#3}
+      { \use:n }
+      { \xsim_if_in_list:nnT {#3} {#1-#2=={true}} }
       {
         \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} {#1}
         \tl_set_rescan:Nnx \l__xsim_tmpb_tl {} {#2}
@@ -478,18 +480,18 @@
           {
             \stepcounter { \xsim_get_parameter:nn {#1} {number} }
             % don't step if in active collection:
-            \xsim_if_collections_active:TF
-              {
-                \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
-                  {print}
-                  {false}
-              }
-              {
+            % \xsim_if_collections_active:TF
+            %   {
+            %     \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
+            %       {print}
+            %       {false}
+            %   }
+            %   {
                 \xsim_step_exercise_counter:nV {#1} \g_xsim_exercise_id_tl
                 \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
                   {used}
                   {true}
-              }
+            %   }
             \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
               {use}
               {true}
@@ -498,7 +500,7 @@
             \xsim_set_properties:nVn {#1} \g_xsim_exercise_id_tl
               { use = false , print = false }
           }
-        \xsim_update_collections:nV {#1} \g_xsim_exercise_id_tl
+        \xsim_collect:nV {#1} \g_xsim_exercise_id_tl
       }
   }
 

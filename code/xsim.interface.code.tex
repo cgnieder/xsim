@@ -506,18 +506,28 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \DeclareExerciseCollection {m}
-  { \xsim_new_collection:n {#1} }
+\NewDocumentCommand \DeclareExerciseCollection {O{}m}
+  {
+    \xsim_new_collection:nn {#2} {#1}
+    \xsim_activate_collection:n {#2}
+  }
 \@onlypreamble \DeclareExerciseCollection
 
-\NewDocumentCommand \collectexercisestype {mm}
-  { \xsim_start_collection:nn {#1} {#2} }
+\NewDocumentCommand \activatecollection {m}
+  { \xsim_activate_collection:n {#1} }
 
-\NewDocumentCommand \collectexercises {m}
-  { \xsim_start_collection:n {#1} }
+\NewDocumentCommand \deactivatecollection {m}
+  { \xsim_deactivate_collection:n {#1} }
 
-\NewDocumentCommand \collectexercisesstop {m}
-  { \xsim_stop_collection:n {#1} }
+% TODO: deprecate
+% \NewDocumentCommand \collectexercisestype {mm}
+%   { \xsim_start_collection:nn {#1} {#2} }
+
+% \NewDocumentCommand \collectexercises {m}
+%   { \xsim_start_collection:n {#1} }
+
+% \NewDocumentCommand \collectexercisesstop {m}
+%   { \xsim_stop_collection:n {#1} }
 
 \NewDocumentCommand \printcollection {O{}m}
   { \xsim_print_collection:nn {#1} {#2} }

@@ -347,8 +347,8 @@
                       section-value = \the\value{section} ,
                       section = \thesection
                     }
-                  \xsim_synchronize_goals:nn {#1} {#2}
-                  \xsim_update_goals:nn {#1} {#2}
+                  % \xsim_synchronize_goals:nn {#1} {#2}
+                  % \xsim_update_goals:nn {#1} {#2}
                 }
               \xsim_if_property_exist:nT {chapter}
                 {
@@ -382,6 +382,9 @@
                 { \xsim_get_parameter:nn {#1} {#4-template} }
               \xsim_use_hook:nnn {#1} {#4} {begin}
               \xsim_input:nnn {#1} {#2} {#4}
+              \xsim_synchronize_goals:nn {#1} {#2}
+              \str_if_eq:nnT {#3} {exercise}
+                { \xsim_update_goals:nn {#1} {#2} }
               \xsim_use_hook:nnn {#1} {#4} {end}
               \xsim_use_template:nn
                 {end}

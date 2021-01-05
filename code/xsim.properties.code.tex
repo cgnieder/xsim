@@ -440,33 +440,26 @@
   }
 \cs_generate_variant:Nn \xsim_normalize_id:n {e}
 
-\cs_new:Npn \__xsim_get_property_tmp:n #1 {}
-\cs_generate_variant:Nn \__xsim_get_property_tmp:n {V}
+\tl_new:N \l_xsim_property_value_tl
 
 % #1: type
 % #2: id
 % #3: property
-\cs_new_protected:Npn \xsim_get_property_if_set:nnnTF #1#2#3#4#5
+\prg_new_protected_conditional:Npnn \xsim_get_property_if_set:nnn #1#2#3 {T,F,TF}
   {
-    \group_begin:
-      \xsim_if_property_exist:nTF {#3}
-        {
-          \xsim_if_property_set:nnnTF {#1} {#2} {#3}
-            {    
-              \tl_set:Nx \PropertyValue
-                { \xsim_get_property:nnn {#1} {#2} {#3} }
-              \cs_set:Npn \__xsim_get_property_tmp:n ##1 {#4}
-              \__xsim_get_property_tmp:V \PropertyValue
-            }
-            {#5}
-        }
-        { \msg_error:nnn {xsim} {unknown-property} {#3} }
-    \group_end:
+    \xsim_if_property_exist:nTF {#3}
+      {
+        \xsim_if_property_set:nnnTF {#1} {#2} {#3}
+          {    
+            \tl_set:Nx \l_xsim_property_value_tl
+              { \xsim_get_property:nnn {#1} {#2} {#3} }
+            \tl_set_eq:NN \PropertyValue \l_xsim_property_value_tl
+            \prg_return_true:
+          }
+          { \prg_return_false: }
+      }
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }
   }
-\cs_new_protected:Npn \xsim_get_property_if_set:nnnT #1#2#3#4
-  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {#4} {} }
-\cs_new_protected:Npn \xsim_get_property_if_set:nnnF #1#2#3#4
-  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {} {#4} }
 \cs_generate_variant:Nn \xsim_get_property_if_set:nnnTF {oo}
 
 % #1: type

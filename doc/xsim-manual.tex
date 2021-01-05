@@ -1,6 +1,6 @@
 % !arara: pdflatex: { interaction: nonstopmode }
 % !arara: biber
-% arara: pdflatex: { interaction: nonstopmode }
+% !arara: pdflatex: { interaction: nonstopmode }
 % arara: pdflatex: { interaction: nonstopmode }
 % arara: pdflatex: { interaction: nonstopmode }
 % ----------------------------------------------------------------------------
@@ -285,8 +285,8 @@ itself) followed by type and id of the corresponding exercise and then
 followed by the environment type.  For example both environments from the first
 example have been written to files named
 \begin{itemize}
-  \item \verbcode+xsim_manual-exercise-1-exercise-body.tex+ and
-  \item \verbcode+xsim_manual-exercise-1-solution-body.tex+, respectively.
+  \item \verbcode+xsim-manual-exercise-1-exercise-body.tex+ and
+  \item \verbcode+xsim-manual-exercise-1-solution-body.tex+, respectively.
 \end{itemize}
 These external files are input when the respective exercise or solution is
 printed.  An advantage of using external files is that \emph{verbatim material
@@ -301,7 +301,7 @@ it was generated\footnote{In this example the sourcecode line number is
   external file where the \env{exercise} environment indeed \emph{was} on
   line~1.}:
 
-\inputsourcecode{exercises/xsim_manual-exercise-1-exercise-body.tex}
+\inputsourcecode{exercises/xsim-manual-exercise-1-exercise-body.tex}
 
 Arguably one downside of the approach using external files for each exercise
 and its solution is that your project folder will be cluttered with files.  In

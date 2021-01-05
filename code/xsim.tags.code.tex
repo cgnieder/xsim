@@ -3,14 +3,6 @@
 \seq_new:N \l__xsim_tag_types_seq
 \bool_new:N \l____xsim_tagged_bool
 
-\cs_new_protected:Npn \xsim_set_seq_from_clist:Nn #1#2
-  {
-    \seq_clear:N #1
-    \clist_map_inline:nn {#2}
-      { \tl_if_blank:nF {##1} { \seq_put_right:Nn #1 {##1} } }
-  }
-\cs_generate_variant:Nn \xsim_set_seq_from_clist:Nn {c,Nx}
-
 \msg_new:nnn {xsim} {tag-exists}
   { The~ tag~ type~ `#1'~ already~ exists.~ I~ am~ doing~ nothing. }
 
@@ -28,7 +20,7 @@
         #1/ignore-untagged .bool_set:c = {l__xsim_ignore_untagged_#1_bool} ,
         #1/ignore-untagged .initial:n  = true ,
         #1                 .code:n     =
-          \xsim_set_seq_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
+          \seq_set_from_clist:cn {l__xsim_chosen_tags_#1_seq} {##1}
       }
     \prg_new_protected_conditional:cpnn {xsim_if_#1_value:n} ##1 {T,F,TF}
       {
@@ -95,7 +87,7 @@
     \seq_if_empty:cTF {l__xsim_chosen_tags_#3_seq}
       { \bool_set_true:c {l____xsim_tagged_#3_bool} }
       {
-        \xsim_set_seq_from_clist:Nx
+        \seq_set_from_clist:Nx
           \l__xsim_tmpa_seq
           { \xsim_get_property:nnn {#1} {#2} {#3} }
         \seq_if_empty:NTF \l__xsim_tmpa_seq
@@ -122,6 +114,45 @@
 
 % #1: exercise type
 % #2: id
+% #3: tag type
+% #4: tag values
+\prg_new_protected_conditional:Npnn \xsim_has_tags:nnnn #1#2#3#4 {T,F,TF}
+  {
+    \bool_set_false:c {l____xsim_tagged_#3_bool}
+    \seq_set_from_clist:Nn \l__xsim_tmpa_seq {#4}
+    \seq_if_empty:NTF \l__xsim_tmpa_seq
+      {% no tag values given:
+        \bool_set_true:c {l____xsim_tagged_#3_bool}
+      }
+      {
+        \seq_set_from_clist:Nx
+          \l__xsim_tmpb_seq
+          { \xsim_get_property:nnn {#1} {#2} {#3} }
+        \seq_if_empty:NTF \l__xsim_tmpb_seq
+          {% exercise has no tag values given
+            \bool_set_eq:cc
+              {l____xsim_tagged_#3_bool}
+              {l__xsim_ignore_untagged_#3_bool}
+          }
+          {
+            \seq_map_inline:Nn \l__xsim_tmpb_seq
+              {
+                \seq_if_in:NnT \l__xsim_tmpa_seq {##1}
+                  {
+                    \bool_set_true:c {l____xsim_tagged_#3_bool}
+                    \seq_map_break:
+                  }
+              }
+          }
+      }
+    \bool_if:cTF {l____xsim_tagged_#3_bool}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\prg_generate_conditional_variant:Nnn \xsim_has_tags:nnnn {nnVV} {T}
+
+% #1: exercise type
+% #2: id
 \prg_new_protected_conditional:Npnn \xsim_if_tagged:nn #1#2 {T,F,TF}
   {
     \bool_set_true:N \l____xsim_tagged_bool
@@ -145,7 +176,7 @@
 % #4: code
 \cs_new_protected:Npn \xsim_foreach_exercise_tag:nnnn #1#2#3#4
   {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+    \seq_set_from_clist:Nx \l__xsim_tmpa_seq
       { \xsim_get_property:nnn {#1} {#2} {#3} }
     \seq_map_inline:Nn \l__xsim_tmpa_seq {#4}
   }
@@ -157,7 +188,7 @@
 % #4: sep
 \cs_new_protected:Npn \xsim_exercise_tags_use:nnnn #1#2#3#4
   {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+    \seq_set_from_clist:Nx \l__xsim_tmpa_seq
       { \xsim_get_property:nnn {#1} {#2} {#3} }
     \seq_use:Nn \l__xsim_tmpa_seq {#4}
   }
@@ -171,7 +202,7 @@
 % #6: sep between last two
 \cs_new_protected:Npn \xsim_exercise_tags_use:nnnnnn #1#2#3#4#5#6
   {
-    \xsim_set_seq_from_clist:Nx \l__xsim_tmpa_seq
+    \seq_set_from_clist:Nx \l__xsim_tmpa_seq
       { \xsim_get_property:nnn {#1} {#2} {#3} }
     \seq_use:Nnnn \l__xsim_tmpa_seq {#4} {#5} {#6}
   }

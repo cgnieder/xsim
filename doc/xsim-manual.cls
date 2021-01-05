@@ -29,19 +29,18 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2020/04/04]
+\ProvidesClass{xsim-manual}[2021/01/04]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
-\RequirePackage[utf8]{inputenc}
-\RequirePackage{xsim,xsimverb}
+\RequirePackage[use-files]{xsim}
 
 \RequirePackage{geometry}
 \geometry{
-  left = 3.5cm ,
-  right = 3cm ,
-  marginparwidth = 3cm ,
-  marginparsep = 2mm
+  left = 4cm ,
+  right = 2.5cm ,
+  marginparwidth = 3.3cm ,
+  marginparsep = 5mm
 }
 
 \setcnltx{
