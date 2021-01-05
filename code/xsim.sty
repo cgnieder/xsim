@@ -2560,7 +2560,8 @@
         \xsim_attribute_set:nnn {collection:conditions} {#1} {#2}
         \seq_gput_right:Nn \g__xsim_collections_seq {#1}
         \xsim_new_list:n {collection:#1}
-        \seq_new:c {g__xsim_collection_#1_seq}
+        \xsim_at_end_document:n
+          { \xsim_update_list:n {collection:#1} }
       }
   }
 
@@ -2622,7 +2623,23 @@
   }
 
 % ----------------------------------------------------------------------------
+% #1: collection name
+% #2: type
+% #3: ID
+\prg_new_conditional:Npnn \xsim_if_in_collection:nnn #1#2#3 {T,F,TF}
+  {
+    \xsim_if_in_list:nnTF {collection:#1} {#2-#3}
+      { \prg_return_true: }
+      { \prg_return_false: }
+  }
+\cs_generate_variant:Nn \xsim_if_in_collection:nnnTF {V}
+\cs_generate_variant:Nn \xsim_if_in_collection:nnnT  {x,nV}
+
+\cs_new:Npn \xsim_collection_count:n #1
+  { \xsim_list_count:n {collection:#1} }
+
 \bool_new:N \l____xsim_collection_condition_bool
+
 % #1: collection name
 % #2: type
 % #3: ID
@@ -2683,8 +2700,7 @@
     \clist_if_in:NnF \l__xsim_tmpa_clist {#1}
       { \clist_put_right:Nn \l__xsim_tmpa_clist {#1} }
     \xsim_set_property:nnnV {#2} {#3} {collections} \l__xsim_tmpa_clist
-    \seq_if_in:cnF {g__xsim_collection_#1_seq} {#2:#3}
-      { \seq_put_right:cn {g__xsim_collection_#1_seq} {#2:#3} }
+    \xsim_add_to_list:nn {collection:#1} {#2-#3}
   }
 
 % ----------------------------------------------------------------------------
@@ -2694,10 +2710,10 @@
 
 \keys_define:nn {xsim/print-collection}
   {
-    headings          .bool_set:N = \l__xsim_printcollection_headings_bool ,
-    headings          .initial:n  = false ,
-    headings-template .tl_set:N   = \l__xsim_printcollection_headings_template_tl ,
-    headings-template .initial:n  = collection ,
+    % headings          .bool_set:N = \l__xsim_printcollection_headings_bool ,
+    % headings          .initial:n  = false ,
+    % headings-template .tl_set:N   = \l__xsim_printcollection_headings_template_tl ,
+    % headings-template .initial:n  = collection ,
     print             .tl_set:N   = \l__xsim_print_collection_choice_tl ,
     print             .initial:n  = exercises
   }
