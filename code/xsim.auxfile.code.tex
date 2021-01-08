@@ -142,8 +142,7 @@
       { \prg_return_true: }
       { \prg_return_false: }
   }
-\cs_generate_variant:Nn \xsim_if_in_list:nnTF {nx}
-\cs_generate_variant:Nn \xsim_if_in_list:nnT  {nx}
+\prg_generate_conditional_variant:Nnn \xsim_if_in_list:nn {nx} {T,TF}
 
 \bool_new:N \l__xsim_empty_lists_bool
 \cs_new_protected:Npn \xsim_empty_lists:

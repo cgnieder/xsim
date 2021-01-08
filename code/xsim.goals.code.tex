@@ -14,10 +14,10 @@
       {
         \xsim_verbose:n { Declaring~ new~ goal~ `#1'. }
         \xsim_declare_property:nnnn
-          { \c_false_bool }
-          { \c_false_bool }
-          { \c_false_bool }
-          {#1}
+          { \c_false_bool } { \c_false_bool } { \c_false_bool } {#1}
+        \xsim_declare_property:nnnn
+          { \c_false_bool } { \c_false_bool } { \c_false_bool } {actual#1}
+        % \xsim_make_property_alias:nn {actual#1} {#1}
         \seq_put_right:Nn \l__xsim_goals_seq {#1}
         \fp_gzero_new:c {g__xsim_goal_#1_fp}
         \bool_new:c {l__xsim_goal_#1_given_bool}
@@ -102,6 +102,7 @@
           }
       }
   }
+\cs_generate_variant:Nn \xsim_synchronize_goals:nn {nV}
 
 % #1: exercise type
 % #2: id
@@ -111,11 +112,11 @@
   {
     \xsim_if_goal_exist:nT {#3}
       {
-        \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
-        % \fp_gadd:cn {g__xsim_goal_#3_fp} {#4}
-        % \fp_gadd:cn {g__xsim_#1_goal_#3_fp} {#4}
-        % \fp_add:cn {l__xsim_current_goal_#3_fp} {#4}
-        \xsim_temporary_goal_add:nnnn {#1} {#2} {#3} {#4}
+        % \xsim_if_boolean_property:nnnF {#1} {#2} {printed}
+        %   {
+            \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
+            \xsim_temporary_goal_add:nnnn {#1} {#2} {#3} {#4}
+        %   }
       }
   }
 \cs_generate_variant:Nn \xsim_addto_goal:nnnn {xx,nVnx}
@@ -141,7 +142,10 @@
 % #2: id
 % #3: goal
 \cs_new_protected:Npn \xsim_temporary_goal_new:nnn #1#2#3
-  { \fp_new:c {g__xsim_goal_#3_#1_#2_fp} }
+  {
+    \fp_if_exist:cF {g__xsim_goal_#3_#1_#2_fp}
+      { \fp_new:c {g__xsim_goal_#3_#1_#2_fp} }
+  }
 \cs_generate_variant:Nn \xsim_temporary_goal_new:nnn {nV}
 
 % #1: type

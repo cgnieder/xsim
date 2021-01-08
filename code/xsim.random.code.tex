@@ -12,9 +12,6 @@
 
 \tl_new:N    \l_xsim_random_collection_tl
 \tl_new:N    \l__xsim_print_random_choice_tl
-\tl_const:Nn \c__xsim_print_random_both_tl {both}
-\tl_const:Nn \c__xsim_print_random_exercise_tl {exercise}
-\tl_const:Nn \c__xsim_print_random_solution_tl {solution}
 \seq_new:N   \g__xsim_random_list_seq
 \seq_new:N   \l__xsim_allowed_exercise_ids_seq
 \int_new:N   \g__xsim_random_list_id_int
@@ -85,13 +82,16 @@
       {
         \int_gincr:N \g__xsim_random_list_id_int
         \int_compare:nNnTF { \xsim_collection_count:n {#1} } = {0}
-          { \xsim_rerun: }
+          {
+            % TODO: message
+            \xsim_rerun:
+          }
           {
             % generate seq of allowed ids from collection:
             \xsim_foreach_exercise_id:n
               {
-                \tl_set:Nx \l__xsim_tmpa_tl
-                  { \xsim_get_type_for_property:nn {id} {##1} }
+                \xsim_get_type_for_id:nN {##1} \l__xsim_tmpa_str
+                \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} { \l__xsim_tmpa_str }
                 \xsim_if_in_collection:nVnT {#1} \l__xsim_tmpa_tl {##1}
                   {
                     \clist_if_in:NnF #3 {##1}
@@ -144,13 +144,16 @@
         \xsim_verbose:n
           {Generating~ random~ list~ `#1'~ with~ #3~ out~ of~ #2~ items}
         \seq_gclear:N #4
-        \int_do_until:nNnn { \seq_count:N #4 } = {#3}
+        \int_compare:nNnF {#2} = 0
           {
-            \tl_set:Nx \l__xsim_tmpa_tl
-              { \fp_eval:n { randint(#2) } }
-            \seq_if_in:NVF #4
-              \l__xsim_tmpa_tl
-              { \seq_gput_right:NV #4 \l__xsim_tmpa_tl }
+            \int_do_until:nNnn { \seq_count:N #4 } = {#3}
+              {
+                \tl_set:Nx \l__xsim_tmpa_tl
+                  { \fp_eval:n { randint(#2) } }
+                \seq_if_in:NVF #4
+                  \l__xsim_tmpa_tl
+                  { \seq_gput_right:NV #4 \l__xsim_tmpa_tl }
+              }
           }
         \bool_if:NT \l__xsim_sort_random_bool
           {
@@ -168,68 +171,70 @@
 % #2: random list id
 \cs_new_protected:Npn \xsim_print_random_exercises:Nn #1#2
   {
-    \bool_lazy_and:nnT
-      { \xsim_random_list_if_exist_p:n {#2} }
-      { !\xsim_random_list_if_empty_p:n {#2} }
+    \seq_if_empty:NF #1
       {
-        \xsim_verbose:x
+        \bool_lazy_and:nnT
+          { \xsim_random_list_if_exist_p:n {#2} }
+          { !\xsim_random_list_if_empty_p:n {#2} }
           {
-            Printing~
-            \l__xsim_print_random_choice_tl \c_space_tl
-            \str_if_eq:onT { \l__xsim_print_random_choice_tl } {both}
-              { exercises~ and~ solutions~ }
-            of~ random~ list~ `#2'
-          }
-        \xsim_map_random_list:nn {#2}
-          {
-            \tl_set:Nx \l__xsim_tmpa_tl
-              { \seq_item:Nn #1 {##1} }
-            \tl_set:Nx \l__xsim_tmpb_tl
-              { \xsim_get_type_for_property:nV {id} \l__xsim_tmpa_tl }
-            \bool_lazy_or:nnT
+            \xsim_verbose:x
               {
-                \tl_if_eq_p:NN
-                  \l__xsim_print_random_choice_tl
-                  \c__xsim_print_random_both_tl
-              }
-              {
-                \tl_if_eq_p:NN
-                  \l__xsim_print_random_choice_tl
-                  \c__xsim_print_random_exercise_tl
-              }
-              {
-                \xsim_if_exercise_exist:VVT
-                  \l__xsim_tmpb_tl
-                  \l__xsim_tmpa_tl
+                Printing~
+                \str_case:Vn \l__xsim_print_random_choice_tl
                   {
-                    \xsim_insert:VVnn
-                      \l__xsim_tmpb_tl
-                      \l__xsim_tmpa_tl
-                      {}
-                      {exercise}
+                    {exercises} {exercises~}
+                    {solutions} {solutions~}
+                    {both} { exercises~ and~ solutions~ }
                   }
+                of~ random~ list~ `#2'.
               }
-            \bool_lazy_or:nnT
+            \xsim_map_random_list:nn {#2}
               {
-                \tl_if_eq_p:NN
-                  \l__xsim_print_random_choice_tl
-                  \c__xsim_print_random_both_tl
-              }
-              {
-                \tl_if_eq_p:NN
-                  \l__xsim_print_random_choice_tl
-                  \c__xsim_print_random_solution_tl
-              }
-              {
-                \xsim_if_solution_exist:VVT
-                  \l__xsim_tmpb_tl
-                  \l__xsim_tmpa_tl
+                \tl_set:Nx \l__xsim_tmpa_tl
+                  { \seq_item:Nn #1 {##1} }
+                \tl_set:Nx \l__xsim_tmpb_tl
+                  { \xsim_get_type_for_property:nV {id} \l__xsim_tmpa_tl }
+                \bool_set_false:N \l__xsim_tmpa_bool
+                \bool_set_false:N \l__xsim_tmpb_bool
+                \str_case:VnF \l__xsim_print_random_choice_tl
                   {
-                    \xsim_insert:VVnn
+                    {exercises} { \bool_set_true:N \l__xsim_tmpa_bool }
+                    {solutions} { \bool_set_true:N \l__xsim_tmpb_bool }
+                    {both} {
+                      \bool_set_true:N \l__xsim_tmpa_bool
+                      \bool_set_true:N \l__xsim_tmpb_bool
+                    }
+                  }
+                  {
+                    \msg_warning:nnV {xsim}
+                      {print-collection-choice}
+                      \l__xsim_print_random_choice_tl
+                  }
+                \bool_if:NT \l__xsim_tmpa_bool
+                  {
+                    \xsim_if_exercise_exist:VVT
                       \l__xsim_tmpb_tl
                       \l__xsim_tmpa_tl
-                      {}
-                      {solution}
+                      {
+                        \xsim_insert:VVnn
+                          \l__xsim_tmpb_tl
+                          \l__xsim_tmpa_tl
+                          {}
+                          {exercise}
+                      }
+                  }
+                \bool_if:NT \l__xsim_tmpb_bool
+                  {
+                    \xsim_if_solution_exist:VVT
+                      \l__xsim_tmpb_tl
+                      \l__xsim_tmpa_tl
+                      {
+                        \xsim_insert:VVnn
+                          \l__xsim_tmpb_tl
+                          \l__xsim_tmpa_tl
+                          {}
+                          {solution}
+                      }
                   }
               }
           }
@@ -243,17 +248,8 @@
     collection .tl_set:N   = \l_xsim_random_collection_tl ,
     collection .initial:n  = all~exercises ,
     exclude    .code:n     = \__xsim_exclude_ids:n {#1} ,
-    print             .choice: ,
-    print/exercises   .code:n =
-      \tl_set:Nn \l__xsim_print_random_choice_tl {exercise} ,
-    print/solutions   .code:n =
-      \tl_set:Nn \l__xsim_print_random_choice_tl {solution} ,
-    print/both        .code:n =
-      \tl_set:Nn \l__xsim_print_random_choice_tl {both} ,
-    print/unknown     .code:n =
-      \msg_warning:nnn {xsim} {print-collection-choice} {#1}
-      \tl_set:Nn \l__xsim_print_random_choice_tl {exercise} ,
-    print             .initial:n = exercises
+    print      .tl_set:N   = \l__xsim_print_random_choice_tl ,
+    print      .initial:n  = exercises
   }
 
 \cs_new_protected:Npn \__xsim_exclude_ids:n #1
@@ -275,11 +271,5 @@
       \l_xsim_random_exclude_list_clist
       \l__xsim_tmpa_seq
   }
-
-% use this in the exclude list:
-% \xsim_get_type_for_property:nn {id} {}
-% or a combination of:
-% \xsim_get_type_for_property:nn {ID} {}
-% \xsim_get_id_for_property:nn {ID} {}
 
 \XSIMmoduleend

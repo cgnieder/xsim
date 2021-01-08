@@ -254,26 +254,7 @@
       {begin}
       { \xsim_get_parameter:nn {#1} {#3-template} }
     \xsim_use_hook:nnn {#1} {#3} {begin}
-    \xsim_if_exchange:nnnTF {#1} {#2} {#3}
-      { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
-      { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
-    \xsim_if_write_to_files:TF
-      {
-        \file_if_exist:nTF { \exp_not:V \l__xsim_file_path_and_name_tl }
-          { \file_input:n { \exp_not:V \l__xsim_file_path_and_name_tl } }
-          {
-            \xsim_verbose:n
-              { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
-          }
-      }
-      {
-        \xsim_if_exchange:nnnTF {#1} {#2} {#3}
-          { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
-          { \xsim_get_property:nnn {#1} {#2} {#3-body} }
-      }
-    \xsim_synchronize_goals:nn {#1} {#2}
-    \str_if_eq:nnT {#3} {exercise}
-      { \xsim_update_goals:nn {#1} {#2} }
+    \xsim_input:nnn {#1} {#2} {#3}
     \xsim_use_hook:nnn {#1} {#3} {end}
     \xsim_use_template:nx
       {end}
@@ -324,82 +305,18 @@
 % #4: exercise|solution
 \cs_new_protected:Npn \xsim_insert:nnnn #1#2#3#4
   {
-    \xsim_if_exchange:nnnTF {#1} {#2} {#4}
-      { \xsim_if_exist:nnnTF {#1} {#2} {exercise} }
-      { \xsim_if_exist:nnnTF {#1} {#2} {#4} }
-      {
-        \xsim_verbose:n
-          { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
-        \group_begin:
-          \xsim_insert_mode:
-          \use:c {xsim_start_#4:nn} {#1} {#3}
-          \tl_set:Nn \ExerciseType {#1}
-          \tl_set:Nn \ExerciseID {#2}
-          \str_if_eq:nnT {#4} {exercise}
-            {
-              \xsim_if_boolean_property:nnnF {#1} {#2} {used}
-                {
-                  \xsim_step_exercise_counter:nn {#1} {#2}
-                  \xsim_set_properties:nnx {#1} {#2}
-                    {
-                      page-value = \the\value{page} ,
-                      page = \thepage ,
-                      section-value = \the\value{section} ,
-                      section = \thesection
-                    }
-                  % \xsim_synchronize_goals:nn {#1} {#2}
-                  % \xsim_update_goals:nn {#1} {#2}
-                }
-              \xsim_if_property_exist:nT {chapter}
-                {
-                  \xsim_set_properties:nnx {#1} {#2}
-                    {
-                      chapter-value = \the\value{chapter} ,
-                      chapter = \thechapter
-                    }
-                }
-              \xsim_set_properties:nnn {#1} {#2}
-                { print=true , used=true }
-            }
-          \str_if_eq:nnT {#4} {solution}
-            {
-              \xsim_if_write_to_files:TF
-                {
-                  \__xsim_set_file_signature:nnn {#1} {#2} {exercise}
-                  \file_get:nnN {\l__xsim_file_path_and_name_tl} {} \ExerciseText
-                  \tl_trim_spaces:N \ExerciseText
-                }
-                {
-                  \tl_set:Nx \ExerciseText
-                    { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
-                }
-            }
-          \use:x
-            {
-              \xsim_use_hook:nnn {#1} {#4} {pre}
-              \xsim_use_template:nn
-                {begin}
-                { \xsim_get_parameter:nn {#1} {#4-template} }
-              \xsim_use_hook:nnn {#1} {#4} {begin}
-              \xsim_input:nnn {#1} {#2} {#4}
-              \xsim_synchronize_goals:nn {#1} {#2}
-              \str_if_eq:nnT {#3} {exercise}
-                { \xsim_update_goals:nn {#1} {#2} }
-              \xsim_use_hook:nnn {#1} {#4} {end}
-              \xsim_use_template:nn
-                {end}
-                { \xsim_get_parameter:nn {#1} {#4-template} }
-              \xsim_use_hook:nnn {#1} {#4} {post}
-            }
-        \group_end:
-      }
-      {
-        \xsim_if_write_to_files:T
-          {
-            \xsim_verbose:x
-              { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
-          }
-      }
+    \xsim_verbose:n
+      { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
+    \group_begin:
+      \xsim_insert_mode:
+      % \keys_set:nn {xsim} {#1/print = true}
+      % \keys_set:nn {xsim} {#1/use = false}
+      \tl_gset:Nx \g_xsim_exercise_id_tl {#2}
+      \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
+      \use:c {xsim_start_#4:nn} {#1} {#3}
+      \xsim_typeset_environment:nnn {#1} {#2} {#4}
+      \use:c {xsim_stop_#4:n} {#1} {}
+    \group_end:
   }
 \cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV,nnnV,xx,ne}
 
@@ -408,20 +325,23 @@
 % #3: exercise|solution
 \cs_new_protected:Npn \xsim_input:nnn #1#2#3
   {
-    \group_begin:
-      \xsim_if_write_to_files:TF
-        {
-          \xsim_if_exchange:nnnTF {#1} {#2} {#3}
-            { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
-            { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
-          \file_input:n { \l__xsim_file_path_and_name_tl }
+    \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+      { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+      { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
+    \xsim_if_write_to_files:TF
+      {
+        \file_if_exist:nTF { \exp_not:V \l__xsim_file_path_and_name_tl }
+          { \file_input:n { \exp_not:V \l__xsim_file_path_and_name_tl } }
+          {
+            \xsim_verbose:n
+              { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
+          }
+      }
+      {
+        \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+          { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
+          { \xsim_get_property:nnn {#1} {#2} {#3-body} }
         }
-        {
-          \xsim_if_exchange:nnnTF {#1} {#2} {#3}
-            { \xsim_get_property:nnn {#1} {#2} {exercise-body} }
-            { \xsim_get_property:nnn {#1} {#2} {#3-body} }
-        }
-    \group_end:
   }
 \cs_generate_variant:Nn \xsim_input:nnn {oo}
 

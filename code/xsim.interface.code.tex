@@ -1,5 +1,24 @@
 \XSIMmodule{interface}{user interface}
 
+\msg_new:nnn {xsim} {remove}
+  {
+    The~ command~ #2 is~ deprecated.~ As~ of~ version~ #1~ it~ serves~ no~
+    purpose~ and~ does~ nothing.
+  }
+
+\msg_new:nnn {xsim} {deprecate}
+  {
+    The~ command~ #2 is~ deprecated.~ As~ of~ version~ #1~ it~ serves~ no~
+    purpose~ and~ does~ nothing.~ Use~ #3 instead.
+  }
+
+\cs_new_protected:Npn \xsim_remove:nN #1#2
+  { \msg_warning:nnnn {xsim} {remove} {#1} {#2} }
+
+\cs_new_protected:Npn \xsim_deprecate:nNN #1#2#3
+  { \msg_warning:nnnn {xsim} {remove} {#1} {#2} {#3} }
+
+% ----------------------------------------------------------------------------
 \NewDocumentCommand \DeclareExerciseEnvironmentTemplate {m+m+m}
   { \xsim_declare_environment_template:nnn {#1} {#2} {#3} }
 \@onlypreamble \DeclareExerciseEnvironmentTemplate
@@ -519,15 +538,14 @@
 \NewDocumentCommand \deactivatecollection {m}
   { \xsim_deactivate_collection:n {#1} }
 
-% TODO: deprecate
-% \NewDocumentCommand \collectexercisestype {mm}
-%   { \xsim_start_collection:nn {#1} {#2} }
+\NewDocumentCommand \collectexercisestype {}
+  { \xsim_remove:nN {0.20} \collectexercisestype }
 
-% \NewDocumentCommand \collectexercises {m}
-%   { \xsim_start_collection:n {#1} }
+\NewDocumentCommand \collectexercises {}
+  { \xsim_remove:nN {0.20} \collectexercises}
 
-% \NewDocumentCommand \collectexercisesstop {m}
-%   { \xsim_stop_collection:n {#1} }
+\NewDocumentCommand \collectexercisesstop {}
+  { \xsim_remove:nN {0.20} \collectexercisesstop }
 
 \NewDocumentCommand \printcollection {O{}m}
   { \xsim_print_collection:nn {#1} {#2} }

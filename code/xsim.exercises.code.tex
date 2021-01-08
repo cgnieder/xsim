@@ -11,7 +11,7 @@
 \tl_new:N   \g_xsim_exercise_type_tl
 \tl_new:N   \ExerciseID
 \tl_new:N   \ExerciseType
-\bool_new:N \l____xsim_print_bool
+% \bool_new:N \l____xsim_print_bool
 
 % ----------------------------------------------------------------------------
 
@@ -81,6 +81,7 @@
 % ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
+\xsim_new_list:n {idtypes}
 
 % #1: true|false (fixed parameter)
 % #2: true|false (mandatory parameter)
@@ -223,6 +224,16 @@
 \cs_new_protected:Npn \xsim_foreach_exercise_id:n #1
   { \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int } {#1} }
 
+% #1: macro name
+% #2: 0 to 9 times `n' (= number of arguments of internal item)
+% #3: code; may contain a suiting \__xsim_loop_item:<nnn>
+\cs_new_protected:Npn \xsim_define_loop_macro:Nnn #1#2#3
+  {
+    \xsim_verbose:n { Defining~ loop~ macro~ #1 }
+    \cs_new_protected:Npn #1 ##1##2
+      { \cs_set:cn {__xsim_loop_item:#2} {##2} #3 }
+  }
+
 \cs_new:Npn \__xsim_loop_item:nnnnnn #1#2#3#4#5#6 {}
 \cs_generate_variant:Nn \__xsim_loop_item:nnnnnn {VVxxxx}
 
@@ -235,11 +246,11 @@
       { \use:n }
       { \xsim_if_in_list:nnT {#3} {#1-#2=={true}} }
       {
-        \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} {#1}
-        \tl_set_rescan:Nnx \l__xsim_tmpb_tl {} {#2}
+        \tl_set_rescan:Nnx \ExerciseType {} {#1}
+        \tl_set_rescan:Nnx \ExerciseID {} {#2}
         \__xsim_loop_item:VVxxxx
-          \l__xsim_tmpa_tl                                    % #1
-          \l__xsim_tmpb_tl                                    % #2
+          \ExerciseType                                       % #1
+          \ExerciseID                                         % #2
           { \xsim_get_property:nnn {#1} {#2} {counter} }      % #3
           { \xsim_get_property:nnn {#1} {#2} {subtitle} }     % #4
           { \xsim_get_property:nnn {#1} {#2} {points} }       % #5
@@ -269,6 +280,7 @@
       }
   }
 
+% ----------------------------------------------------------------------------
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
   {
     \seq_put_right:Nn \l__xsim_exercise_types_seq {#1}
@@ -386,189 +398,264 @@
   }
 \cs_generate_variant:Nn \xsim_if_exercise_exist:nnT {VV}
 
-% #1: type
-% #2: options
-\cs_new_protected:Npn \xsim_start_exercise:nn #1#2
-  {
-    \xsim_if_insert_mode:F
-      {
-        \int_gincr:N \g_xsim_id_int
-        \int_compare:nF { \g_xsim_max_id_int > \g_xsim_id_int }
-          { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
-        \tl_gset:Nx \g_xsim_exercise_id_tl { \int_use:N \g_xsim_id_int }
-        \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
-        % save the goal values from the auxiliary files:
-        \xsim_foreach_goal:n
-          {
-            \xsim_temporary_goal_new:nVn {#1} \g_xsim_exercise_id_tl {##1}
-            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
-              {
-                \xsim_temporary_goal_set:nVnn
-                  {#1}
-                  \g_xsim_exercise_id_tl
-                  {##1}
-                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
-              }
-          }
-        \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
-          {
-            % preset options so the user doesn't has to:
-            print = true ,
-            use = true ,
-            % options set by the user:
-            \exp_not:n {#2} ,
-            % options which need to have certain values:
-            id = \g_xsim_exercise_id_tl ,
-            section-value = \arabic{section} ,
-            section = \thesection ,
-            page-value = \arabic{page} ,
-            sectioning =
-              { \cs_if_exist:NTF \thechapter { \arabic {chapter} } {0} }
-              { \arabic {section} }
-              { \arabic {subsection} }
-              { \arabic {subsubsection} }
-              { \arabic {paragraph} } ,
-            page = \thepage ,
-            % this cannot yet be set (see below):
-            used = false
-          }
-        % temporary goal now: either 0 or equal the complete property
-        % property: equal to the given value
-        \xsim_foreach_goal:n
-          {
-            \fp_set:Nn \l__xsim_tmpa_fp
-              { \xsim_temporary_goal_get:nVn {#1} \g_xsim_exercise_id_tl {##1} }
-            % set temporary goal to given property:
-            \xsim_if_property_given:nTF {##1}
-              {
-                \xsim_temporary_goal_set:nVnn
-                  {#1}
-                  \g_xsim_exercise_id_tl
-                  {##1}
-                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
-              }
-              {
-                \xsim_temporary_goal_set:nVnn
-                  {#1}
-                  \g_xsim_exercise_id_tl
-                  {##1}
-                  {0}
-              }
-            % update to property to complete value:
-            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
-              {
-                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
-                  { \fp_to_decimal:N \l__xsim_tmpa_fp }
-              }
-          }
-        \xsim_if_property_exist:nT {chapter}
-          {
-            \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
-              {
-                chapter-value = \arabic{chapter} ,
-                chapter = \thechapter
-              }
-          }
-        \tl_set_eq:NN \ExerciseID \g_xsim_exercise_id_tl
-        \tl_set:Nn \ExerciseType {#1}
-        \xsim_verbose:x
-          {
-            Starting~ exercise~ type~ `#1' with~ id~
-            ` \g_xsim_exercise_id_tl '.
-          }
-        \xsim_exercise_if_use:nVTF {#1} \g_xsim_exercise_id_tl
-          {
-            \stepcounter { \xsim_get_parameter:nn {#1} {number} }
-            % don't step if in active collection:
-            % \xsim_if_collections_active:TF
-            %   {
-            %     \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
-            %       {print}
-            %       {false}
-            %   }
-            %   {
-                \xsim_step_exercise_counter:nV {#1} \g_xsim_exercise_id_tl
-                \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
-                  {used}
-                  {true}
-            %   }
-            \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl
-              {use}
-              {true}
-          }
-          {
-            \xsim_set_properties:nVn {#1} \g_xsim_exercise_id_tl
-              { use = false , print = false }
-          }
-        \xsim_collect:nV {#1} \g_xsim_exercise_id_tl
-      }
-  }
-
-\cs_new_protected:Npn \xsim_stop_exercise:n #1
-  {
-    \xsim_if_insert_mode:F
-      { \tl_gset_eq:NN \g_xsim_exercise_id_tl \ExerciseID }
-  }
-
 % ----------------------------------------------------------------------------
-% #1: type
-% #2: id
-\prg_new_protected_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
+% define boolean properties <do> and <done> (<done> is a noupdate property)
+% and the conditionals:
+%   \xsim_exercise_if_<do>:nnTF
+%   \xsim_solution_if_<do>:nnTF
+%   \xsim_if_<do>:nnTF
+%
+% #1: <do>
+% #2: <done>
+\cs_new_protected:Npn \__xsim_new_exercise_mode:nn #1#2
   {
-    \xsim_if_boolean_property:nnnTF {#1} {#2} {print!}
-      { \prg_return_true: }
+    % boolean:
+    \xsim_declare_property:nnnn
+      { \c_false_bool } { \c_true_bool } { \c_false_bool } {#1}
+    % boolean, noupdate:
+    \xsim_declare_property:nnnn
+      { \c_false_bool } { \c_true_bool } { \c_true_bool } {#2}
+    % \bool_new:c {l____xsim_#1_bool}
+    % % ####1: type
+    % % ####2: id
+    % \tl_map_inline:nn { {exercise} {solution} }
+    %   {
+    %     \prg_new_protected_conditional:cpnn {xsim_##1_if_#1:nn} ####1####2 {T,F,TF}
+    %       {
+    %         \bool_set_true:c {l____xsim_#1_bool}
+    %         \bool_if:cF {l__xsim_####1_##1_#1_bool}
+    %           { \bool_set_false:c {l____xsim_#1_bool} }
+    %         \xsim_if_tagged:nnF {####1} {####2}
+    %           { \bool_set_false:c {l____xsim_#1_bool} }
+    %         \xsim_if_boolean_property:nnnF {####1} {####2} {#1}
+    %           { \bool_set_false:c {l____xsim_#1_bool} }
+    %         \bool_if:cTF {l____xsim_#1_bool}
+    %           { \prg_return_true: }
+    %           { \prg_return_false: }
+    %       }
+    %     \prg_generate_conditional_variant:cnn {xsim_##1_if_#1:nn} {nV} {T,TF}
+    %   }
+    % ##1: type
+    % ##2: id
+    % ##3: exercise|solution
+    \prg_new_protected_conditional:cpnn {xsim_if_#1:nnn} ##1##2##3 {T,F,TF}
       {
-        \bool_set_true:N \l____xsim_print_bool
-        \bool_if:cF {l__xsim_#1_exercise_print_bool}
-          { \bool_set_false:N \l____xsim_print_bool }
-        \xsim_if_tagged:nnF {#1} {#2}
-          { \bool_set_false:N \l____xsim_print_bool }
-        \xsim_if_boolean_property:nnnF {#1} {#2} {print}
-          { \bool_set_false:N \l____xsim_print_bool }
-        \bool_if:NTF \l____xsim_print_bool
+        \use:c {xsim_##3_if_#1:nnTF} {##1} {##2}
           { \prg_return_true: }
           { \prg_return_false: }
       }
   }
-\cs_generate_variant:Nn \xsim_exercise_if_print:nnT  {nV}
-\cs_generate_variant:Nn \xsim_exercise_if_print:nnTF {nV}
+\cs_generate_variant:Nn \prg_new_protected_conditional:Npnn {c}
+\cs_generate_variant:Nn \prg_generate_conditional_variant:Nnn {c}
+
+\__xsim_new_exercise_mode:nn {use}   {used}
+\__xsim_new_exercise_mode:nn {print} {printed}
+
 
 % #1: type
-% #2: id
-\prg_new_protected_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
+% #2: options
+\cs_new_protected:Npn \xsim_exercise_setup:nn #1#2
   {
-    \xsim_if_boolean_property:nnnTF {#1} {#2} {use!}
-      { \prg_return_true: }
+    \int_gincr:N \g_xsim_id_int
+    \int_compare:nF { \g_xsim_max_id_int > \g_xsim_id_int }
+      { \int_gset_eq:NN \g_xsim_max_id_int \g_xsim_id_int }
+    \tl_gset:Nx \g_xsim_exercise_id_tl { \int_use:N \g_xsim_id_int }
+    \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
+    \show_setup:nn {general} {#1}
+    \xsim_add_to_list:nx {idtypes} {\g_xsim_exercise_id_tl=={#1}}
+    \xsim_foreach_goal:n
       {
-        \xsim_exercise_if_print:nnTF {#1} {#2}
-          { \prg_return_true: }
+        \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
           {
-            \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-              {
-                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
-                  {
-                    \xsim_if_tagged:nnTF {#1} {#2}
-                      { \prg_return_true: }
-                      { \prg_return_false: }
-                  }
-                  { \prg_return_false: }
-              }
-              { \prg_return_false: }
+            \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {actual##1}
+              { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
           }
-          
+      }
+    \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
+      {
+        % print = true ,
+        % use = true ,
+        % options set by the user:
+        \exp_not:n {#2} ,
+        % options which need to have certain values:
+        id = \g_xsim_exercise_id_tl ,
+        % used = false ,
+        % printed = false
+      }
+    \xsim_foreach_goal:n
+      {
+        \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
+          {
+            \xsim_temporary_goal_set:nVnn
+              {#1}
+              \g_xsim_exercise_id_tl
+              {##1}
+              { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
+            \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
+              {
+                \fp_set:Nn \l__xsim_tmpa_fp
+                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {actual##1}+0 }
+                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {actual##1}
+                  { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
+                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
+                  { \fp_to_decimal:N \l__xsim_tmpa_fp }
+              }
+          }
       }
   }
-\cs_generate_variant:Nn \xsim_exercise_if_use:nnT  {nV}
-\cs_generate_variant:Nn \xsim_exercise_if_use:nnTF {nV}
+
+\prg_new_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
+  {
+    \xsim_if_insert_mode:TF
+      {
+        \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+          { \prg_return_false: }
+          {
+            \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
+              { \prg_return_false: }
+              {
+                \xsim_if_boolean_property:nnnTF {#1} {#2} {used}
+                  { \prg_return_false: }
+                  { \prg_return_true: }
+              }
+          }
+      }
+      {
+        \xsim_if_boolean_property:nnnTF {#1} {#2} {used}
+          { \prg_return_false: }
+          { \prg_return_true: }
+      }
+  }
+\prg_generate_conditional_variant:Nnn \xsim_exercise_if_use:nn {nV} {T,TF}
 
 % #1: type
-% #2: id
-% #3: exercise|solution
-\prg_new_protected_conditional:Npnn \xsim_if_print:nnn #1#2#3 {T,F,TF}
+% #2: ID
+\cs_new_protected:Npn \xsim_exercise_use_setup:nn #1#2
   {
-    \use:c {xsim_#3_if_print:nnTF} {#1} {#2}
-      { \prg_return_true: }
+    \show_setup:nn {use} {#1}
+    \stepcounter { \xsim_get_parameter:nn {#1} {number} }
+    \xsim_step_exercise_counter:nn {#1} {#2}
+  }
+\cs_generate_variant:Nn \xsim_exercise_use_setup:nn {nV}
+
+\prg_new_conditional:Npnn \xsim_exercise_if_print:nn #1#2 {T,F,TF}
+  {
+    \xsim_if_tagged:nnTF {#1} {#2}
+      {
+        \xsim_if_insert_mode:TF
+          { \prg_return_true: }
+          {
+            \bool_if:cTF {l__xsim_#1_exercise_print_bool}
+              { \prg_return_true: }
+              {
+                \xsim_if_boolean_property:nnnTF {#1} {#2} {print}
+                  { \prg_return_true: }
+                  { \prg_return_false: }
+              }
+          }
+      }
       { \prg_return_false: }
+  }
+\prg_generate_conditional_variant:Nnn \xsim_exercise_if_print:nn {nV} {T,TF}
+
+% #1: type
+% #2: ID
+\cs_new_protected:Npn \xsim_exercise_print_setup:nn #1#2
+  {
+    \show_setup:nn {print} {#1}
+    \xsim_set_properties:nnx {#1} {#2}
+      {
+        section-value = \arabic{section} ,
+        section = \thesection ,
+        page-value = \arabic{page} ,
+        sectioning =
+          { \cs_if_exist:NTF \thechapter { \arabic {chapter} } {0} }
+          { \arabic {section} }
+          { \arabic {subsection} }
+          { \arabic {subsubsection} }
+          { \arabic {paragraph} } ,
+        page = \thepage
+      }
+    \xsim_if_property_exist:nT {chapter}
+      {
+        \xsim_set_properties:nnx {#1} {#2}
+          {
+            chapter-value = \arabic{chapter} ,
+            chapter = \thechapter
+          }
+      }
+  }
+\cs_generate_variant:Nn \xsim_exercise_print_setup:nn {nV}
+
+\cs_new_protected:Npn \show_points:n #1
+  {
+    \int_incr:N \l_tmpa_int
+    \exp_args:Nx \tl_show:n
+      {
+        \int_use:N \l_tmpa_int :
+        #1: \g_xsim_exercise_id_tl \c_space_tl points=
+        \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {points}
+        \c_space_tl actualpoints=
+        \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {actualpoints}
+      }
+  }
+% \cs_set_protected:Npn \show_points:n #1 {}
+
+\int_new:N \g__xsim_debug_general_int
+\int_new:N \g__xsim_debug_use_int
+\int_new:N \g__xsim_debug_print_int
+
+\cs_new_protected:Npn \show_setup:nn #1#2
+  {
+    \int_gincr:c {g__xsim_debug_#1_int}
+    \exp_args:Nx \tl_show:n
+      {
+        \int_use:c {g__xsim_debug_#1_int}.~
+        #1~ setup: ~ #2: \g_xsim_exercise_id_tl
+      }
+  }
+\cs_set_protected:Npn \show_setup:nn #1#2 {}
+
+% #1: type
+% #2: options
+\cs_new_protected:Npn \xsim_start_exercise:nn #1#2
+  {
+    \xsim_if_insert_mode:F { \xsim_exercise_setup:nn {#1} {#2} }
+    \xsim_foreach_goal:n
+      { \xsim_temporary_goal_new:nVn {#1} \g_xsim_exercise_id_tl {##1} }
+    \show_points:n {#1}
+    \xsim_exercise_if_use:nVT {#1} \g_xsim_exercise_id_tl
+      { \xsim_exercise_use_setup:nV {#1} \g_xsim_exercise_id_tl }
+    \show_points:n {#1}
+    \xsim_exercise_if_print:nVT {#1} \g_xsim_exercise_id_tl
+      { \xsim_exercise_print_setup:nV {#1} \g_xsim_exercise_id_tl }
+    \show_points:n {#1}
+    \tl_set_eq:NN \ExerciseID \g_xsim_exercise_id_tl
+    \tl_set:Nn \ExerciseType {#1}
+    \xsim_verbose:x
+      { Starting~ exercise~ type~ `#1' with~ id~ ` \g_xsim_exercise_id_tl '. }
+    \xsim_if_insert_mode:F { \xsim_collect:nV {#1} \g_xsim_exercise_id_tl }
+  }
+
+% #1: type
+\cs_new_protected:Npn \xsim_stop_exercise:n #1
+  {
+    \tl_set_eq:NN \ExerciseID \g_xsim_exercise_id_tl
+    \tl_set:Nn \ExerciseType {#1}
+    \show_points:n {#1}
+    \xsim_exercise_if_use:nVT {#1} \g_xsim_exercise_id_tl
+      {
+        \xsim_exercise_if_print:nVT {#1} \g_xsim_exercise_id_tl
+          {
+            \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
+            \xsim_synchronize_goals:nV {#1} \g_xsim_exercise_id_tl
+          }
+      }
+    \xsim_exercise_if_print:nVT {#1} \g_xsim_exercise_id_tl
+      { \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {printed} {true} }
+    \xsim_exercise_if_use:nVT {#1} \g_xsim_exercise_id_tl
+      { \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {used} {true} }
+    \show_points:n {#1}
   }
 
 % ----------------------------------------------------------------------------
@@ -612,6 +699,7 @@
           { { \arabic { \xsim_get_parameter:nn {#1} {number} } } }
       }
     \xsim_update_list:n {types}
+    \xsim_update_list:n {idtypes}
   }
 
 \XSIMmoduleend

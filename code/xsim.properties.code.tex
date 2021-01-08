@@ -28,6 +28,7 @@
     \msg_line_context:
   }
 
+% ----------------------------------------------------------------------------
 \seq_new:N \l__xsim_properties_seq
 \seq_new:N \l__xsim_boolean_properties_seq
 \seq_new:N \l__xsim_unique_properties_seq
@@ -96,6 +97,7 @@
       }
   }
 
+% ----------------------------------------------------------------------------
 % check if property exists:
 \prg_new_conditional:Npnn \xsim_if_property_exist:n #1 {p,T,F,TF}
   {
@@ -149,6 +151,11 @@
       { \prg_return_false: }
   }
 
+% #1: code
+\cs_new_protected:Npn \xsim_foreach_property:n #1
+  { \seq_map_inline:Nn \l__xsim_properties_seq {#1} }
+
+% ----------------------------------------------------------------------------
 % #1: type
 % #2: id
 % #3: property
@@ -217,7 +224,8 @@
   {
     \xsim_verbose:n
       { Un-setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'. }
-    \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+    \xsim_if_property_noupdate:nF {#3}
+      { \__xsim_remove_property_from_list:nnn {#1} {#2} {#3} }
     \xsim_attribute_unset:nn {#1!#2} {#3}
   }
 
@@ -243,9 +251,11 @@
         Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
         value~ `#4'.
       }
-    \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
-    % now we can safely add the property to the list:
-    \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
+    \xsim_if_property_noupdate:nF {#3}
+      {
+        \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+        \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
+      }
     \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
   }
 \cs_generate_variant:Nn \__xsim_set_property:nnnn {VVnV}
@@ -316,6 +326,13 @@
           \l__xsim_tmpb_str
           {#1}
           \l__xsim_tmpc_tl
+        % \exp_args:Nx \tl_show:n
+        % {
+        %   \l__xsim_tmpa_str :
+        %   \l__xsim_tmpb_str :
+        %   #1 :
+        %   \l__xsim_tmpc_tl
+        % }
       }
   }
 
@@ -325,7 +342,6 @@
 % #3: csv list of properties
 \cs_new_protected:Npn \xsim_set_properties:nnn #1#2#3
   {
-    \seq_clear:N \l__xsim_given_properties_seq
     \clist_map_inline:nn {#3}
       {
         \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
@@ -336,8 +352,6 @@
           {#2}
           { \seq_item:Nn \l__xsim_tmpa_seq {1} }
           { \seq_item:Nn \l__xsim_tmpa_seq {2} }
-        \seq_put_right:Nx \l__xsim_given_properties_seq
-          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
       }
     \xsim_property_set_aliases:nn {#1} {#2}
   }
@@ -410,7 +424,6 @@
   }
 
 % ----------------------------------------------------------------------------
-
 % retrieve properties:
 % #1: type
 % #2: id
@@ -423,6 +436,22 @@
 % #2: value
 \cs_new:Npn \xsim_get_id_for_property:nn #1#2
   { \xsim_attribute_get:nn {id:#1} {#2} }
+
+% #1: ID
+% #2: variable
+\cs_new_protected:Npn \xsim_get_type_for_id:nN #1#2
+  {
+    \xsim_foreach_list_entry:nn {idtypes}
+      {
+        \__xsim_extract_property_list_entry:NNNwww
+          \l__xsim_tmpa_str \l__xsim_tmpb_str \l__xsim_tmpc_str -##1 \q_stop
+          \str_if_eq:VnT \l__xsim_tmpb_str {#1}
+            {
+              \str_set_eq:NN #2 \l__xsim_tmpc_str
+              \seq_map_break:
+            }
+      }
+  }
 
 % #1: property
 % #2: value
@@ -442,10 +471,13 @@
 
 \tl_new:N \l_xsim_property_value_tl
 
+\cs_new:Npn \__xsim_tmp:n #1 {#1}
+\cs_generate_variant:Nn \__xsim_tmp:n {V}
+
 % #1: type
 % #2: id
 % #3: property
-\prg_new_protected_conditional:Npnn \xsim_get_property_if_set:nnn #1#2#3 {T,F,TF}
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnTF #1#2#3#4#5
   {
     \xsim_if_property_exist:nTF {#3}
       {
@@ -454,13 +486,20 @@
             \tl_set:Nx \l_xsim_property_value_tl
               { \xsim_get_property:nnn {#1} {#2} {#3} }
             \tl_set_eq:NN \PropertyValue \l_xsim_property_value_tl
-            \prg_return_true:
+            \cs_set:Npn \__xsim_tmp:n ##1 {#4}
+            \__xsim_tmp:V \l_xsim_property_value_tl
           }
-          { \prg_return_false: }
+          {#5}
       }
       { \msg_error:nnn {xsim} {unknown-property} {#3} }
   }
 \cs_generate_variant:Nn \xsim_get_property_if_set:nnnTF {oo}
+
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnT #1#2#3#4
+  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {#4} {} }
+
+\cs_new_protected:Npn \xsim_get_property_if_set:nnnF #1#2#3#4
+  { \xsim_get_property_if_set:nnnTF {#1} {#2} {#3} {} {#4} }
 
 % #1: type
 % #2: id
@@ -484,9 +523,7 @@
       }
       { \msg_error:nnn {xsim} {unknown-property} {#3} }
   }
-\cs_generate_variant:Nn \xsim_if_boolean_property:nnnTF {oo}
-\cs_generate_variant:Nn \xsim_if_boolean_property:nnnF  {nV}
-
+\prg_generate_conditional_variant:Nnn \xsim_if_boolean_property:nnn {oo,nV} {T,F,TF}
 
 \cs_new_protected:Npn \xsim_save_property:nnnN #1#2#3#4
   { \tl_set:Nx #4 { \xsim_get_property:nnn {#1} {#2} {#3} } }

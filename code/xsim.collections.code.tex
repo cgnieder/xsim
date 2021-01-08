@@ -27,6 +27,12 @@
     Not~ deactivating~ it~ now.
   }
 
+\msg_new:nnn {xsim} {print-collection-choice}
+  {
+    The~ choice~ `#1'~ neither~ exists~ for~ `print-collection/print'~ nor~
+    for~ `random/print'.~ I'm~ using~ `exercises'~ instead~ \msg_line_context: .
+  }
+
 % ----------------------------------------------------------------------------
 \xsim_declare_property:nnnn
   { \c_false_bool }
