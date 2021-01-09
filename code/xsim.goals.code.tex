@@ -16,10 +16,13 @@
         \xsim_declare_property:nnnn
           { \c_false_bool } { \c_false_bool } { \c_false_bool } {#1}
         \xsim_declare_property:nnnn
-          { \c_false_bool } { \c_false_bool } { \c_false_bool } {actual#1}
-        % \xsim_make_property_alias:nn {actual#1} {#1}
+          { \c_false_bool } { \c_false_bool } { \c_false_bool } {user#1}
+        \xsim_declare_property:nnnn
+          { \c_false_bool } { \c_false_bool } { \c_false_bool } {body#1}
         \seq_put_right:Nn \l__xsim_goals_seq {#1}
         \fp_gzero_new:c {g__xsim_goal_#1_fp}
+        \fp_new:c {l__xsim_temporary_#1_fp}
+        \bool_new:c {l__xsim_temporary_#1_bool}
         \bool_new:c {l__xsim_goal_#1_given_bool}
         \fp_gzero_new:c {l__xsim_current_goal_#1_fp}
         \fp_if_exist:cF {g__xsim_total_goal_#1_fp}
@@ -81,28 +84,6 @@
 \cs_new_protected:Npn \xsim_foreach_goal:n #1
   { \seq_map_inline:Nn \l__xsim_goals_seq {#1} }
 
-% #1: type
-% #2: id
-\cs_new_protected:Npn \xsim_synchronize_goals:nn #1#2
-  {
-    \xsim_foreach_goal:n
-      {
-        \xsim_if_property_set:nnnTF {#1} {#2} {##1}
-          {
-            \xsim_set_property:nnnx {#1} {#2} {##1}
-              { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} }
-          }
-          {
-            \fp_compare:nNnT
-              { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} } > {0}
-              {
-                \xsim_set_property:nnnx {#1} {#2} {##1}
-                  { \xsim_temporary_goal_get:nnn {#1} {#2} {##1} }
-              }
-          }
-      }
-  }
-\cs_generate_variant:Nn \xsim_synchronize_goals:nn {nV}
 
 % #1: exercise type
 % #2: id
@@ -112,11 +93,11 @@
   {
     \xsim_if_goal_exist:nT {#3}
       {
-        % \xsim_if_boolean_property:nnnF {#1} {#2} {printed}
-        %   {
-            \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
-            \xsim_temporary_goal_add:nnnn {#1} {#2} {#3} {#4}
-        %   }
+        \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
+        \fp_set:Nn \l__xsim_tmpa_fp
+          { \xsim_get_property:nnn {#1} {#2} {body#3} + 0 + #4 }
+        \xsim_set_property:nnnx {#1} {#2} {body#3}
+          { \fp_to_decimal:N \l__xsim_tmpa_fp }
       }
   }
 \cs_generate_variant:Nn \xsim_addto_goal:nnnn {xx,nVnx}
@@ -133,49 +114,6 @@
       { \prg_return_false: }
   }
 \cs_generate_variant:Nn \xsim_if_goal_value:nnnnTF {xx}
-
-% ----------------------------------------------------------------------------
-% we need some kind of temporary variable to be able to set goals both as
-% option to exercises and within the exercise body
-
-% #1: type
-% #2: id
-% #3: goal
-\cs_new_protected:Npn \xsim_temporary_goal_new:nnn #1#2#3
-  {
-    \fp_if_exist:cF {g__xsim_goal_#3_#1_#2_fp}
-      { \fp_new:c {g__xsim_goal_#3_#1_#2_fp} }
-  }
-\cs_generate_variant:Nn \xsim_temporary_goal_new:nnn {nV}
-
-% #1: type
-% #2: id
-% #3: goal
-% #4: value
-\cs_new_protected:Npn \xsim_temporary_goal_set:nnnn #1#2#3#4
-  { \fp_gset:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
-\cs_generate_variant:Nn \xsim_temporary_goal_set:nnnn {nV}
-
-% #1: type
-% #2: id
-% #3: goal
-% #4: value
-\cs_new_protected:Npn \xsim_temporary_goal_add:nnnn #1#2#3#4
-  { \fp_gadd:cn {g__xsim_goal_#3_#1_#2_fp} {#4} }
-\cs_generate_variant:Nn \xsim_temporary_goal_add:nnnn {nV}
-
-% #1: type
-% #2: id
-% #3: goal
-\cs_new:Npn \xsim_temporary_goal_get:nnn #1#2#3
-  { \fp_to_decimal:c {g__xsim_goal_#3_#1_#2_fp} }
-\cs_generate_variant:Nn \xsim_temporary_goal_get:nnn {nV}
-
-% #1: type
-% #2: id
-% #3: goal
-\cs_new_protected:Npn \__xsim_temporary_goal_show:nnn #1#2#3
-  { \fp_show:c {g__xsim_goal_#3_#1_#2_fp} }
 
 % ----------------------------------------------------------------------------
 % a function which can be used to modify how the numbers of a goal are

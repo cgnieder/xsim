@@ -53,7 +53,7 @@
   }
 \prg_generate_conditional_variant:Nnn \xsim_if_property_set:nnn
   {nx,nnx,xx,nV}
-  {T,F,TF}
+  {p,T,F,TF}
 
 % new property:
 % #1: boolean if unique
@@ -326,13 +326,6 @@
           \l__xsim_tmpb_str
           {#1}
           \l__xsim_tmpc_tl
-        % \exp_args:Nx \tl_show:n
-        % {
-        %   \l__xsim_tmpa_str :
-        %   \l__xsim_tmpb_str :
-        %   #1 :
-        %   \l__xsim_tmpc_tl
-        % }
       }
   }
 
@@ -342,17 +335,14 @@
 % #3: csv list of properties
 \cs_new_protected:Npn \xsim_set_properties:nnn #1#2#3
   {
-    \clist_map_inline:nn {#3}
-      {
-        \seq_set_split:Nnx \l__xsim_tmpa_seq {=} { \tl_trim_spaces:n {##1} }
-        \int_compare:nNnT { \seq_count:N \l__xsim_tmpa_seq } > {2}
-          { \msg_error:nnn {xsim} {unbalanced-property-list} {##1} }
-        \xsim_set_property:nnxx
-          {#1}
-          {#2}
-          { \seq_item:Nn \l__xsim_tmpa_seq {1} }
-          { \seq_item:Nn \l__xsim_tmpa_seq {2} }
-      }
+    \cs_set_protected:Npn \__xsim_tmp:n ##1
+      { \xsim_set_property:nnnn {#1} {#2} {##1} {} }
+    \cs_set_protected:Npn \__xsim_tmp:nn ##1##2
+      { \xsim_set_property:nnnn {#1} {#2} {##1} {##2} }
+    \keyval_parse:NNn
+      \__xsim_tmp:n
+      \__xsim_tmp:nn
+      {#3}
     \xsim_property_set_aliases:nn {#1} {#2}
   }
 \cs_generate_variant:Nn \xsim_set_properties:nnn {nnx,nxx,nV,nVx}
