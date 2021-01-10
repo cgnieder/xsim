@@ -258,9 +258,9 @@ if [ "$build" == true ] ; then
     $pkgname.templates.$moduleext \
     $pkgname.tags.$moduleext \
     $pkgname.goals.$moduleext \
-    $pkgname.collections.$moduleext \
     $pkgname.exercises.$moduleext \
     $pkgname.solutions.$moduleext \
+    $pkgname.collections.$moduleext \
     $pkgname.blanks.$moduleext \
     $pkgname.grades.$moduleext \
     $pkgname.random.$moduleext \

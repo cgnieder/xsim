@@ -871,9 +871,10 @@ the environments' names are the module names for the options (here using the
   \keybool{use}\Module{exercise}\Default{true}
     Determines if exercises of type \enquote{exercise} are used.
   \keyval{within}{counter}\Module{exercise}\Default
-    Adds the exercise counter to the reset list of the counter
-    \meta{counter}.  \emph{Beware that if the counter is a shared counter
-      this will affect \emph{all objects} using this counter!}
+    \changedversion{0.20}Adds the exercise counter to the reset list of the
+    counter \meta{counter} using \cs*{counterwithin}.  \emph{Beware that if
+      the counter is a shared counter this will affect \emph{all objects}
+      using this counter!}
   \keyval{the-counter}{code}\Module{exercise}
     An interface for redefining the counter representation command
     \cs*{the\meta{counter}}.

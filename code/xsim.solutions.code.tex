@@ -41,7 +41,7 @@
     \bool_set_true:N \l____xsim_print_bool
     \xsim_if_tagged:nnF {#1} {#2}
       { \bool_set_false:N \l____xsim_print_bool }
-    \xsim_if_boolean_property:nnnF {#1} {#2} {print}
+    \xsim_if_boolean_property:nnnF {#1} {#2} {(used)}
       { \bool_set_false:N \l____xsim_print_bool }
     \bool_if:cF {l__xsim_#1_solution_print_bool}
       { \bool_set_false:N \l____xsim_print_bool }
@@ -217,15 +217,26 @@
     \xsim_if_solution_exist:nnT {#1} {#2}
       { \__xsim_printsolutions_check_conditions:nnnT {#1} {#2} {#3} {#4} }
   }
+\cs_generate_variant:Nn \xsim_if_this_solution_do:nnnn {nV}
 
 % #1: type
 % #2: boolean property
 % #3: code
 \cs_new_protected:Npn \xsim_if_solutions_do:nnn #1#2#3
   {
-    \xsim_foreach_exercise_type_id:nn {#2}
-      { \xsim_if_this_solution_do:nnnn {#1} {##2} {#2} {#3} }
+    \xsim_foreach_exercise:nn {#2}
+      {
+        \str_if_eq:nnT {#1} {##1}
+          {
+            \xsim_if_this_solution_do:nnnn
+              {#1}
+              {##2}
+              {#2}
+              {#3}
+          }
+      }
   }
+\cs_generate_variant:Nn \str_if_eq:nnT {nV}
 
 % ----------------------------------------------------------------------------
 % #1: boolean -- if true only the solutions of printed exercises will be
@@ -242,7 +253,7 @@
       \bool_set_false:N \l__xsim_tmpa_bool
       \bool_if:nTF {#1}
         {
-          \xsim_if_solutions_do:nnn {#4} {print}
+          \xsim_if_solutions_do:nnn {#4} {printed}
             { \bool_set_true:N \l__xsim_tmpa_bool }
         }
         {
@@ -261,7 +272,7 @@
         }
       \bool_if:nTF {#1}
         {
-          \xsim_if_solutions_do:nnn {#4} {print}
+          \xsim_if_solutions_do:nnn {#4} {printed}
             { \__xsim_print_entry:nn {#4} {##2} }
         }
         {

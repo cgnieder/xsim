@@ -6,6 +6,9 @@
 \msg_new:nnn {xsim} {tag-exists}
   { The~ tag~ type~ `#1'~ already~ exists.~ I~ am~ doing~ nothing. }
 
+\msg_new:nnn {xsim} {tag-unknown}
+  { The~ tag~ type~ `#1'~ is~ not~ defined.~ Check~ for~ a~ typo. }
+
 % #1: name
 \cs_new_protected:Npn \xsim_new_tag_type:n #1
   {
@@ -56,7 +59,8 @@
       { \prg_return_true: }
       { \prg_return_false: }
   }
-  
+\prg_generate_conditional_variant:Nnn \xsim_if_tag_type_exist:n {V} {TF}
+
 % #1: tag type
 % #2: exercise type
 % #3: id

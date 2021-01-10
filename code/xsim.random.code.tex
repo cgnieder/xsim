@@ -157,7 +157,7 @@
           }
         \bool_if:NT \l__xsim_sort_random_bool
           {
-            \seq_sort:Nn #4
+            \seq_gsort:Nn #4
               {
                 \int_compare:nNnTF {##1} > {##2}
                   { \sort_return_swapped: }

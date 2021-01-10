@@ -279,6 +279,22 @@
       }
   }
 
+\cs_new:Npn \__xsim_loop_item:nn #1#2 {}
+\cs_generate_variant:Nn \__xsim_loop_item:nn {VV}
+
+\xsim_define_loop_macro:Nnn \xsim_foreach_exercise:nn
+  {nn}
+  {
+    \cs_set:Npn \__xsim_tmpa:w ##1-##2 \q_stop {##1}
+    \cs_set:Npn \__xsim_tmpb:w ##1-##2 \q_stop {##2}
+    \seq_map_inline:cn {g_xsim_#1_order_seq}
+      {
+        \tl_set:Nx \l__xsim_tmpa_tl { \__xsim_tmpa:w ##1 \q_stop }
+        \tl_set:Nx \l__xsim_tmpb_tl { \__xsim_tmpb:w ##1 \q_stop }
+        \__xsim_loop_item:VV \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+      }
+  }
+
 % ----------------------------------------------------------------------------
 \cs_new_protected:Npn \xsim_define_exercise_type_variables:n #1
   {
@@ -361,8 +377,19 @@
               .bool_set:N = \exp_not:c {l__xsim_#1_exercise_use_bool} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / use
               .initial:n  = true ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / collect .choice: ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / collect / true .code:n =
+              \keys_set:nn
+                { xsim / \xsim_get_parameter:nn {#1} {exercise-env} }
+                { use = false , print = false } ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / collect / false .code:n =
+              \keys_set:nn
+                { xsim / \xsim_get_parameter:nn {#1} {exercise-env} }
+                { use = true , print = true } ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / collect .default:n = true ,
+            \xsim_get_parameter:nn {#1} {exercise-env} / collect .initial:n = false ,
             \xsim_get_parameter:nn {#1} {exercise-env} / within .code:n =
-              \exp_not:N \@addtoreset { \xsim_get_parameter:nn {#1} {counter} } {####1},
+              \exp_not:N \counterwithin { \xsim_get_parameter:nn {#1} {counter} } {####1},
             \xsim_get_parameter:nn {#1} {exercise-env} / the-counter .code:n =
               \cs_set:cpn {the \xsim_get_parameter:nn {#1} {counter} } {####1} ,
             \xsim_get_parameter:nn {#1} {exercise-env} / template
@@ -411,7 +438,10 @@
       { \c_false_bool } { \c_true_bool } { \c_false_bool } {#1}
     % boolean, noupdate:
     \xsim_declare_property:nnnn
-      { \c_false_bool } { \c_true_bool } { \c_true_bool } {#2}
+      { \c_false_bool } { \c_true_bool } { \c_true_bool } {(#2)}
+    % boolean:
+    \xsim_declare_property:nnnn
+      { \c_false_bool } { \c_true_bool } { \c_false_bool } {#2}
     % ##1: type
     % ##2: id
     % ##3: exercise|solution
@@ -472,27 +502,35 @@
 
 \prg_new_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
   {
-    \xsim_if_insert_mode:TF
+    \xsim_if_boolean_property:nnnTF {#1} {#2} {(used)}
+      { \prg_return_false: }
       {
-        \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-          { \prg_return_false: }
+        \xsim_if_insert_mode:TF
           {
-            \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
-              { \prg_return_false: }
+            \xsim_if_property_set:nnnTF {#1} {#2} {use}
               {
-                \xsim_if_boolean_property:nnnTF {#1} {#2} {used}
+                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
+                  { \prg_return_false: }
+                  { \prg_return_true: }
+              }
+              {
+                \bool_if:cTF {l__xsim_#1_exercise_use_bool}
                   { \prg_return_false: }
                   { \prg_return_true: }
               }
           }
-      }
-      {
-        \xsim_if_boolean_property:nnnTF {#1} {#2} {used}
-          { \prg_return_false: }
           {
-            \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-              { \prg_return_true: }
-              { \prg_return_false: }
+            \xsim_if_property_set:nnnTF {#1} {#2} {use}
+              {
+                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
+                  { \prg_return_true: }
+                  { \prg_return_false: }
+              }
+              {
+                \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+                  { \prg_return_true: }
+                  { \prg_return_false: }
+              }
           }
       }
   }
@@ -602,9 +640,13 @@
           }
       }
     \xsim_exercise_if_print:nVT {#1} \g_xsim_exercise_id_tl
-      { \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {printed} {true} }
+      {
+        \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {(printed)} {true}
+        \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {printed} {true}
+      }
     \xsim_exercise_if_use:nVT {#1} \g_xsim_exercise_id_tl
       {
+        \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {(used)} {true}
         \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {used} {true}
         \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
       }

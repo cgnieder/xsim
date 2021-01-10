@@ -314,13 +314,28 @@
       }
   }
 
+\seq_new:N \g_xsim_used_order_seq
+\seq_new:N \g_xsim_printed_order_seq
+
 \cs_new_protected:Npn \__xsim_set_property_from_list:n #1
   {
     \xsim_foreach_list_entry:nn {#1}
       {
         \__xsim_extract_property_list_entry:NNNwww
           \l__xsim_tmpa_str \l__xsim_tmpb_str \l__xsim_tmpc_str ##1 \q_stop
+        \tl_set_rescan:Nnx \l__xsim_tmpa_tl {} { \l__xsim_tmpa_str }
+        \tl_set_rescan:Nnx \l__xsim_tmpb_tl {} { \l__xsim_tmpb_str }
         \tl_set_rescan:Nnx \l__xsim_tmpc_tl {} { \l__xsim_tmpc_str }
+        \str_if_eq:nnT {#1} {used}
+          {
+            \seq_gput_right:Nx \g_xsim_used_order_seq
+              { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+          }
+        \str_if_eq:nnT {#1} {printed}
+          {
+            \seq_gput_right:Nx \g_xsim_printed_order_seq
+              { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+          }
         \__xsim_set_property:VVnV
           \l__xsim_tmpa_str
           \l__xsim_tmpb_str
@@ -460,6 +475,7 @@
 \cs_generate_variant:Nn \xsim_normalize_id:n {e}
 
 \tl_new:N \l_xsim_property_value_tl
+\tl_new:N \PropertyValue
 
 \cs_new:Npn \__xsim_tmp:n #1 {#1}
 \cs_generate_variant:Nn \__xsim_tmp:n {V}

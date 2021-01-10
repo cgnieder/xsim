@@ -17,27 +17,29 @@
 \group_end:
 
 % ----------------------------------------------------------------------------
-
+\bool_new:N \l__xsim_stream_open_bool
 % the `final' option will prevent writing to files:
 % #1: write stream
 % #2: file name
 \cs_new_protected:Npn \__xsim_open_stream:Nn #1#2
   {
     \file_if_exist:nTF {#2}
-      { \xsim_if_final:F { \iow_open:Nn #1 {#2} } }
       {
-        % \g__xsim_final_bool is a global variable; however, if it is true and
-        % the exercise file doesn't exist, yet, we need to set it locally to
-        % false in order to ensure that the file is correctly written and the
-        % stream closed afterwards
-        \bool_set_false:N \g__xsim_final_bool
+        \xsim_if_final:F
+          {
+            \bool_set_true:N \l__xsim_stream_open_bool
+            \iow_open:Nn #1 {#2}
+          }
+      }
+      {
+        \bool_set_true:N \l__xsim_stream_open_bool
         \iow_open:Nn #1 {#2}
       }
   }
 
 % #1: write stream
 \cs_new_protected:Npn \__xsim_close_stream:N #1
-  { \xsim_if_final:F { \iow_close:N #1 } }
+  { \bool_if:NT \l__xsim_stream_open_bool { \iow_close:N #1 } }
 
 % #1: write stream
 % #2: contents

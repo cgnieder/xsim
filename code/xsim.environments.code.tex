@@ -309,8 +309,6 @@
       { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
     \group_begin:
       \xsim_insert_mode:
-      % \keys_set:nn {xsim} {#1/print = true}
-      % \keys_set:nn {xsim} {#1/use = false}
       \tl_gset:Nx \g_xsim_exercise_id_tl {#2}
       \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
       \use:c {xsim_start_#4:nn} {#1} {#3}

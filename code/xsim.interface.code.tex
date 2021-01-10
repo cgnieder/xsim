@@ -538,14 +538,14 @@
 \NewDocumentCommand \deactivatecollection {m}
   { \xsim_deactivate_collection:n {#1} }
 
-\NewDocumentCommand \collectexercisestype {}
-  { \xsim_remove:nN {0.20} \collectexercisestype }
+\NewDocumentCommand \collectexercisestype {mm}
+  { \xsim_collect_type_start:nn {#1} {#2} }
 
-\NewDocumentCommand \collectexercises {}
-  { \xsim_remove:nN {0.20} \collectexercises}
+\NewDocumentCommand \collectexercises {m}
+  { \xsim_collect_start:n {#1} }
 
-\NewDocumentCommand \collectexercisesstop {}
-  { \xsim_remove:nN {0.20} \collectexercisesstop }
+\NewDocumentCommand \collectexercisesstop {m}
+  { \xsim_collect_stop:n {#1} }
 
 \NewDocumentCommand \printcollection {O{}m}
   { \xsim_print_collection:nn {#1} {#2} }

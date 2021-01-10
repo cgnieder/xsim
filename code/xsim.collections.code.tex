@@ -116,6 +116,45 @@
       { \msg_error:nnn {xsim} {collection-unknown} {#1} }
   }
 
+% #1: csv list of collections
+% #2: type
+\cs_new_protected:Npn \xsim_collect_type_start:nn #1#2
+  {
+    \keys_set:nn {xsim} { #2/use = false , #2/print = false }
+    \clist_map_inline:nn {#1}
+      {
+        \xsim_if_collection_active:nF {##1}
+          { \xsim_activate_collection:n {##1} }
+      }
+  }
+
+% #1: csv list of collections
+\cs_new_protected:Npn \xsim_collect_start:n #1
+  {
+    \xsim_foreach_exercise_type:n
+      { \keys_set:nn {xsim} { ##1/use = false , ##1/print = false } }
+    \clist_map_inline:nn {#1}
+      {
+        \xsim_if_collection_active:nF {##1}
+          { \xsim_activate_collection:n {##1} }
+      }
+  }
+
+% #1: csv list of collections
+\cs_new_protected:Npn \xsim_collect_stop:n #1
+  {
+    \clist_map_inline:nn {#1}
+      { \xsim_deactivate_collection:n {##1} }
+  }
+
+\keys_define:nn {xsim}
+  {
+    collect .code:n =
+      \xsim_foreach_exercise_type:n { \keys_set:nn {xsim/##1} { collect = #1 } } ,
+    collect .default:n = true ,
+    collect .initial:n = false
+  }
+
 % ----------------------------------------------------------------------------
 % #1: collection name
 % #2: type
@@ -152,11 +191,15 @@
               { \__xsim_get_condition_tag:w ##1 \q_stop }
             \tl_set:Nx \l__xsim_tmpb_tl
               { \__xsim_get_condition_values:w ##1 \q_stop }
-            \xsim_has_tags:nnVVT {#2} {#3} \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+            \xsim_if_tag_type_exist:VTF \l__xsim_tmpa_tl
               {
-                \bool_set_true:N \l____xsim_collection_condition_bool
-                \clist_map_break:
+                \xsim_has_tags:nnVVT {#2} {#3} \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+                  {
+                    \bool_set_true:N \l____xsim_collection_condition_bool
+                    \clist_map_break:
+                  }
               }
+              { \msg_warning:nnV {xsim} {tag-unknown} \l__xsim_tmpa_tl }
           }
       }
     \bool_if:NTF \l____xsim_collection_condition_bool
