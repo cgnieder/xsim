@@ -312,13 +312,19 @@
         \tl_set_rescan:Nnx \l__xsim_tmpc_tl {} { \l__xsim_tmpc_str }
         \str_if_eq:nnT {#1} {used}
           {
-            \seq_gput_right:Nx \g_xsim_used_order_seq
-              { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+            \str_if_eq:VnT \l__xsim_tmpc_str {true}
+              {
+                \seq_gput_right:Nx \g_xsim_used_order_seq
+                  { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+              }
           }
         \str_if_eq:nnT {#1} {printed}
           {
-            \seq_gput_right:Nx \g_xsim_printed_order_seq
-              { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+            \str_if_eq:VnT \l__xsim_tmpc_str {true}
+              {
+                \seq_gput_right:Nx \g_xsim_printed_order_seq
+                  { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+              }
           }
         \__xsim_set_property:VVnV
           \l__xsim_tmpa_str

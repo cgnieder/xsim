@@ -203,16 +203,15 @@
     \XSIMputright \ExerciseTableCode
       {
         \toprule
-        \XSIMifblankTF {\ExerciseType}
-          {}
+        \XSIMifblankF { \ExerciseType }
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
-            \XSIMifblankTF { \ExerciseType }
+            \XSIMifblankT { \ExerciseTableType {} }
               {
                 \XSIMputright \ExerciseTableCode
                   {
@@ -220,10 +219,8 @@
                       { \ExerciseParameterGet {#1} {exercise-name} ~ }
                   }
               }
-              {}
             \XSIMputright \ExerciseTableCode { #3 & }
           }
-          {}
       }
     \XSIMputright \ExerciseTableCode
       {
@@ -232,38 +229,37 @@
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
             \XSIMputright \ExerciseTableCode
               { \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & }
           }
-          {}
       }
     \XSIMputright \ExerciseTableCode
       {
-        \XSIMifblankTF {\ExerciseType}
+        \XSIMifblankTF { \ExerciseType }
           { \TotalExerciseGoal {points} {} {} }
-          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} }
+          { \TotalExerciseTypeGoal { \ExerciseType } {points} {} {} }
         \\ \midrule
         \XSIMtranslate {reached} &
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           { \XSIMputright \ExerciseTableCode {&} }
-          {}
       }
     \XSIMputright \ExerciseTableCode { \\ \bottomrule }
-    \def\numberofcolumns{
-      \XSIMifblankTF {\ExerciseType}
-        {\numberofusedexercises}
-        {\csname numberof \ExerciseType s\endcsname}
-      }
-    \XSIMifeqF{\numberofcolumns}{0}
+    \edef \numberofcolumns
       {
-        % \begin {tabular} {l*{\numberofcolumns}{c}c}
-        \show   \ExerciseTableCode
-        % \end {tabular}
+        \XSIMifblankTF { \ExerciseType }
+          {\numberofusedexercises}
+          {\csname numberof \ExerciseType s\endcsname}
+      }
+    \XSIMifeqF {\numberofcolumns} {0}
+      {
+        \begin {tabular} {l*{\numberofcolumns}{c}c}
+        \ExerciseTableCode
+        \end {tabular}
       }
   }
 
@@ -272,8 +268,7 @@
     \XSIMputright \ExerciseTableCode
       {
         \toprule
-        \XSIMifblankTF {\ExerciseType}
-          {}
+        \XSIMifblankF { \ExerciseType }
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
         \XSIMmixedcase { \XSIMtranslate {points} } &
@@ -282,9 +277,9 @@
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
-            \XSIMifblankTF { \ExerciseType }
+            \XSIMifblankT { \ExerciseTableType {} }
               {
                 \XSIMputright \ExerciseTableCode
                   {
@@ -292,19 +287,17 @@
                       { \ExerciseParameterGet {#1} {exercise-name} ~ }
                   }
               }
-              {}
             \XSIMputright \ExerciseTableCode
               { #3 & \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & \\ }
           }
-          {}
       }
     \XSIMputright \ExerciseTableCode
       {
         \midrule
         \XSIMtranslate {total} &
-        \XSIMifblankTF {\ExerciseType}
+        \XSIMifblankTF { \ExerciseType }
           { \TotalExerciseGoal {points} {} {} }
-          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} } &
+          { \TotalExerciseTypeGoal { \ExerciseType } {points} {} {} } &
         \\ \bottomrule
       }
     \XSIMexpandcode

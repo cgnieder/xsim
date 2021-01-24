@@ -381,9 +381,9 @@
 \cs_generate_variant:Nn \keys_define:nn     {nx}
 \cs_generate_variant:Nn \keys_set:nn        {xn}
 \cs_generate_variant:Nn \text_titlecase:n   {x,f}
-\cs_generate_variant:Nn \tl_if_eq:nnTF      {ff,V}
+\cs_generate_variant:Nn \tl_if_eq:nnTF      {ee,ff,V}
 \cs_generate_variant:Nn \tl_if_eq:nnT       {x}
-\cs_generate_variant:Nn \tl_if_blank:nTF    {f}
+\cs_generate_variant:Nn \tl_if_blank:nTF    {f,e}
 \cs_generate_variant:Nn \tl_set_rescan:Nnn  {Nnx}
 \cs_generate_variant:Nn \iow_now:Nn         {NV}
 \cs_generate_variant:Nn \str_if_eq:nnT      {x}
@@ -1104,13 +1104,19 @@
         \tl_set_rescan:Nnx \l__xsim_tmpc_tl {} { \l__xsim_tmpc_str }
         \str_if_eq:nnT {#1} {used}
           {
-            \seq_gput_right:Nx \g_xsim_used_order_seq
-              { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+            \str_if_eq:VnT \l__xsim_tmpc_str {true}
+              {
+                \seq_gput_right:Nx \g_xsim_used_order_seq
+                  { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+              }
           }
         \str_if_eq:nnT {#1} {printed}
           {
-            \seq_gput_right:Nx \g_xsim_printed_order_seq
-              { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+            \str_if_eq:VnT \l__xsim_tmpc_str {true}
+              {
+                \seq_gput_right:Nx \g_xsim_printed_order_seq
+                  { \l__xsim_tmpa_tl - \l__xsim_tmpb_tl }
+              }
           }
         \__xsim_set_property:VVnV
           \l__xsim_tmpa_str
@@ -2895,7 +2901,9 @@
         % properties set by the user:
         \exp_not:n {#2} ,
         % properties which need to have certain values:
-        id = \g_xsim_exercise_id_tl
+        id = \g_xsim_exercise_id_tl ,
+        printed = false ,
+        used = false
       }
     \xsim_foreach_goal:n
       {
@@ -4754,7 +4762,7 @@
   { \tl_put_right:Nn #1 {#2} }
 
 \NewExpandableDocumentCommand \XSIMifeqTF {+m+m+m+m}
-  { \tl_if_eq:ffTF {#1} {#2} {#3} {#4} }
+  { \tl_if_eq:eeTF {#1} {#2} {#3} {#4} }
 
 \NewExpandableDocumentCommand \XSIMifeqT {+m+m+m}
   { \XSIMifeqTF {#1} {#2} {#3} {} }
@@ -4763,7 +4771,7 @@
   { \XSIMifeqTF {#1} {#2} {} {#3} }
 
 \NewExpandableDocumentCommand \XSIMifblankTF {+m+m+m}
-  { \tl_if_blank:fTF {#1} {#2} {#3} }
+  { \tl_if_blank:eTF {#1} {#2} {#3} }
 
 \NewExpandableDocumentCommand \XSIMifblankT {+m+m}
   { \XSIMifblankTF {#1} {#2} {} }
@@ -4921,14 +4929,31 @@
 \NewDocumentCommand \ForEachPrintedExerciseByType {+m}
   { \xsim_foreach_exercise_type_id:nn {print} {#1} }
 
+\tl_new:N \XSIMtmp
+
 \NewDocumentCommand \ForEachPrintedExerciseByID {+m}
-  { \xsim_foreach_exercise_id_type:nn {print} {#1} }
+  {
+    \tl_set_eq:NN \XSIMtmp \ExerciseType
+    \xsim_foreach_exercise_id_type:nn {print} {#1}
+    \tl_set_eq:NN \ExerciseType \XSIMtmp
+    \tl_clear:N \XSIMtmp
+  }
 
 \NewDocumentCommand \ForEachUsedExerciseByType {+m}
-  { \xsim_foreach_exercise_type_id:nn {used} {#1} }
+  {
+    \tl_set_eq:NN \XSIMtmp \ExerciseType
+    \xsim_foreach_exercise_type_id:nn {used} {#1}
+    \tl_set_eq:NN \ExerciseType \XSIMtmp
+    \tl_clear:N \XSIMtmp
+  }
 
 \NewDocumentCommand \ForEachUsedExerciseByID {+m}
-  { \xsim_foreach_exercise_id_type:nn {used} {#1} }
+  {
+    \tl_set_eq:NN \XSIMtmp \ExerciseType
+    \xsim_foreach_exercise_id_type:nn {used} {#1}
+    \tl_set_eq:NN \ExerciseType \XSIMtmp
+    \tl_clear:N \XSIMtmp
+  }
 
 % ----------------------------------------------------------------------------
 
@@ -5022,7 +5047,11 @@
           \tl_set_eq:NN \ExerciseType \l_xism_grading_table_exercise_type_tl
           \renewcommand* \ExerciseTableCode {}
           \renewcommand* \ExerciseTableType [1]
-            { \XSIMifblankTF { \ExerciseType } {##1} { \ExerciseType } }
+            {
+              \XSIMifblankTF { \l_xism_grading_table_exercise_type_tl }
+                {##1}
+                { \l_xism_grading_table_exercise_type_tl }
+            }
         }
       \xsim_use_template:nV {table} \l_xism_grading_table_template_tl
     \group_end:
@@ -5319,16 +5348,15 @@
     \XSIMputright \ExerciseTableCode
       {
         \toprule
-        \XSIMifblankTF {\ExerciseType}
-          {}
+        \XSIMifblankF { \ExerciseType }
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
-            \XSIMifblankTF { \ExerciseType }
+            \XSIMifblankT { \ExerciseTableType {} }
               {
                 \XSIMputright \ExerciseTableCode
                   {
@@ -5336,10 +5364,8 @@
                       { \ExerciseParameterGet {#1} {exercise-name} ~ }
                   }
               }
-              {}
             \XSIMputright \ExerciseTableCode { #3 & }
           }
-          {}
       }
     \XSIMputright \ExerciseTableCode
       {
@@ -5348,38 +5374,37 @@
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
             \XSIMputright \ExerciseTableCode
               { \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & }
           }
-          {}
       }
     \XSIMputright \ExerciseTableCode
       {
-        \XSIMifblankTF {\ExerciseType}
+        \XSIMifblankTF { \ExerciseType }
           { \TotalExerciseGoal {points} {} {} }
-          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} }
+          { \TotalExerciseTypeGoal { \ExerciseType } {points} {} {} }
         \\ \midrule
         \XSIMtranslate {reached} &
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           { \XSIMputright \ExerciseTableCode {&} }
-          {}
       }
     \XSIMputright \ExerciseTableCode { \\ \bottomrule }
-    \def\numberofcolumns{
-      \XSIMifblankTF {\ExerciseType}
-        {\numberofusedexercises}
-        {\csname numberof \ExerciseType s\endcsname}
-      }
-    \XSIMifeqF{\numberofcolumns}{0}
+    \edef \numberofcolumns
       {
-        % \begin {tabular} {l*{\numberofcolumns}{c}c}
-        \show   \ExerciseTableCode
-        % \end {tabular}
+        \XSIMifblankTF { \ExerciseType }
+          {\numberofusedexercises}
+          {\csname numberof \ExerciseType s\endcsname}
+      }
+    \XSIMifeqF {\numberofcolumns} {0}
+      {
+        \begin {tabular} {l*{\numberofcolumns}{c}c}
+        \ExerciseTableCode
+        \end {tabular}
       }
   }
 
@@ -5388,8 +5413,7 @@
     \XSIMputright \ExerciseTableCode
       {
         \toprule
-        \XSIMifblankTF {\ExerciseType}
-          {}
+        \XSIMifblankF { \ExerciseType }
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
         \XSIMmixedcase { \XSIMtranslate {points} } &
@@ -5398,9 +5422,9 @@
       }
     \ForEachUsedExerciseByType
       {
-        \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+        \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
-            \XSIMifblankTF { \ExerciseType }
+            \XSIMifblankT { \ExerciseTableType {} }
               {
                 \XSIMputright \ExerciseTableCode
                   {
@@ -5408,19 +5432,17 @@
                       { \ExerciseParameterGet {#1} {exercise-name} ~ }
                   }
               }
-              {}
             \XSIMputright \ExerciseTableCode
               { #3 & \XSIMifblankTF {#5} {\printgoal{0}} {\printgoal{#5}} & \\ }
           }
-          {}
       }
     \XSIMputright \ExerciseTableCode
       {
         \midrule
         \XSIMtranslate {total} &
-        \XSIMifblankTF {\ExerciseType}
+        \XSIMifblankTF { \ExerciseType }
           { \TotalExerciseGoal {points} {} {} }
-          { \TotalExerciseTypeGoal {\ExerciseType} {points} {} {} } &
+          { \TotalExerciseTypeGoal { \ExerciseType } {points} {} {} } &
         \\ \bottomrule
       }
     \XSIMexpandcode

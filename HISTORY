@@ -165,3 +165,4 @@ HISTORY:
                      files several times for multiple collections
                    - new options `collect' and `<type>/collect'
                    - small improvements in performance
+                   - new parameters `within' and `the-counter'
