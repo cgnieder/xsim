@@ -1922,8 +1922,7 @@ vertical layout.
   \DeclareExerciseTableTemplate{default}{%
     \XSIMputright\ExerciseTableCode{%
       \toprule
-      \XSIMifblankTF{\ExerciseType}
-        {}
+      \XSIMifblankF{\ExerciseType}
         {\XSIMmixedcase{\GetExerciseParameter{exercise-name}}}
       &
       \XSIMmixedcase{\XSIMtranslate{points}} &
@@ -1931,19 +1930,17 @@ vertical layout.
       \midrule
     }%
     \ForEachUsedExerciseByType{%
-      \XSIMifeqTF{#1}{\ExerciseTableType{#1}}
+      \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {%
-          \XSIMifblankTF{\ExerciseType}
+          \XSIMifblankT{\ExerciseTableType{}}
             {%
               \XSIMputright\ExerciseTableCode{%
                 \XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name} }%
               }%
-            }
-            {}%
+            }%
           \XSIMputright\ExerciseTableCode
             {#3 & \XSIMifblankTF{#5}{\printgoal{0}}{\printgoal{#5}} & \\ }%
-        }
-        {}%
+        }%
     }
     \XSIMputright\ExerciseTableCode{%
       \midrule
@@ -1983,24 +1980,21 @@ layout.
   \DeclareExerciseTableTemplate{default*}{%
     \XSIMputright\ExerciseTableCode{%
       \toprule
-      \XSIMifblankTF{\ExerciseType}
-        {}
+      \XSIMifblankF{\ExerciseType}
         {\XSIMmixedcase{\GetExerciseParameter{exercise-name}}}
         &%
     }%
     \ForEachUsedExerciseByType{%
-      \XSIMifeqTF {#1} { \ExerciseTableType {#1} }
+      \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {
-          \XSIMifblankTF{\ExerciseType}
+          \XSIMifblankT{\ExerciseTableType{}}
             {%
               \XSIMputright\ExerciseTableCode{%
                 \XSIMmixedcase{\ExerciseParameterGet{#1}{exercise-name} }%
               }%
-            }
-            {}%
+            }%
           \XSIMputright\ExerciseTableCode{#3 &}
-        }
-        {}%
+        }%
     }%
     \XSIMputright\ExerciseTableCode{%
       \XSIMtranslate{total} \\
@@ -2008,12 +2002,11 @@ layout.
       \XSIMmixedcase{\XSIMtranslate{points}} &
     }%
     \ForEachUsedExerciseByType{%
-      \XSIMifeqTF{#1}{\ExerciseTableType{#1}}
+      \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {%
           \XSIMputright\ExerciseTableCode{%
             \XSIMifblankTF{#5}{\printgoal{0}}{\printgoal{#5}} &}%
-        }
-        {}%
+        }%
     }%
     \XSIMputright\ExerciseTableCode{%
       \XSIMifblankTF{\ExerciseType}
@@ -2023,12 +2016,11 @@ layout.
       \XSIMtranslate{reached} &%
     }%
     \ForEachUsedExerciseByType{%
-      \XSIMifeqTF{#1}{\ExerciseTableType{#1}}
-        {\XSIMputright\ExerciseTableCode{&}}
-        {}%
+      \XSIMifeqT{#1}{\ExerciseTableType{#1}}
+        {\XSIMputright\ExerciseTableCode{&}}%
     }%
     \XSIMputright\ExerciseTableCode{ \\ \bottomrule }%
-    \def\numberofcolumns{%
+    \edef\numberofcolumns{%
       \XSIMifblankTF{\ExerciseType}
         {\numberofusedexercises}
         {\csname numberof \ExerciseType s\endcsname}%

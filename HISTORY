@@ -156,7 +156,7 @@ HISTORY:
  v0.19a 2020/03/19 - fix missing-variant-bug introduced with the last update
  v0.19b 2020/04/04 - fix bug in new attribute mechanism which was a problem
                      when `no-files` has been used
- v0.20  2021/01/?? - switch to one sty file per package
+ v0.20  2021/01/24 - switch to one sty file per package
                    - use LaTeX's new hooks
                    - declare undeclared variables
                    - re-write collection mechanism; this changes the behaviour

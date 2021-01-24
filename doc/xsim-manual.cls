@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2021/01/04]
+\ProvidesClass{xsim-manual}[2021/01/24]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -992,7 +992,7 @@
 \xsim@add@version{0.19}  {2020-03-16}
 \xsim@add@version{0.19a} {2020-03-19}
 \xsim@add@version{0.19b} {2020-04-04}
-\xsim@add@version{0.20}  {2021-01-01}
+\xsim@add@version{0.20}  {2021-01-24}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

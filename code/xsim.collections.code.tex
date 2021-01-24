@@ -247,10 +247,10 @@
 
 \keys_define:nn {xsim/print-collection}
   {
-    % headings          .bool_set:N = \l__xsim_printcollection_headings_bool ,
-    % headings          .initial:n  = false ,
-    % headings-template .tl_set:N   = \l__xsim_printcollection_headings_template_tl ,
-    % headings-template .initial:n  = collection ,
+    headings          .bool_set:N = \l__xsim_printcollection_headings_bool ,
+    headings          .initial:n  = false ,
+    headings-template .tl_set:N   = \l__xsim_printcollection_headings_template_tl ,
+    headings-template .initial:n  = collection ,
     print             .tl_set:N   = \l__xsim_print_collection_choice_tl ,
     print             .initial:n  = exercises
   }
@@ -261,26 +261,46 @@
   {
     \group_begin:
       \keys_set:nn {xsim/print-collection} {#1}
+      \clist_clear:N \l__xsim_tmpa_clist
+      \clist_clear:N \l__xsim_tmpb_clist
       \xsim_foreach_exercise_type_id:nn {}
         {
           \xsim_get_property_if_set:nnnT {##1} {##2} {collections}
             {
               \clist_if_in:NnT \l_xsim_property_value_tl {#2}
                 {
-                  \str_case:VnF \l__xsim_print_collection_choice_tl
-                    {
-                      {exercises} { \xsim_insert:nnnn {##1} {##2} {} {exercise} }
-                      {solutions} { \xsim_insert:nnnn {##1} {##2} {} {solution} }
-                      {both} {
-                        \xsim_insert:nnnn {##1} {##2} {} {exercise}
-                        \xsim_insert:nnnn {##1} {##2} {} {solution}
-                      }
-                    }
-                    {
-                      \msg_warning:nnV {xsim} {print-collection-choice}
-                        \l__xsim_print_collection_choice_tl
-                      \xsim_insert:nnnn {##1} {##2} {} {exercise}
-                    }
+                  \str_set:Nn \l__xsim_tmpa_str {##1}
+                  \clist_put_right:NV \l__xsim_tmpa_clist \l__xsim_tmpa_str
+                  \clist_put_right:Nn \l__xsim_tmpb_clist {##2}
+                }
+            }
+        }
+      \xsim_foreach_exercise_type:n
+        {
+          \bool_if:NT \l__xsim_printcollection_headings_bool
+            {
+              \clist_if_in:NnT \l__xsim_tmpa_clist {##1}
+                {
+                  \xsim_use_template:nV
+                    {heading}
+                    \l__xsim_printcollection_headings_template_tl
+                }
+            }
+          \clist_map_inline:Nn \l__xsim_tmpa_clist
+            {
+              \str_if_eq:nnT {##1} {####1}
+                {
+                  \clist_pop:NN \l__xsim_tmpa_clist \l__xsim_tmpa_tl
+                  \clist_pop:NN \l__xsim_tmpb_clist \l__xsim_tmpb_tl
+                 \str_case:Vn \l__xsim_print_collection_choice_tl
+                   {
+                     {exercises} { \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {exercise} }
+                     {solutions} { \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {solution} }
+                     {both} {
+                       \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {exercise}
+                       \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {solution}
+                     }
+                   }
                 }
             }
         }
