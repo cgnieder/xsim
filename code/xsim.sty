@@ -689,17 +689,20 @@
               { \xsim_attribute_set:nnn {#1} {####1} {} }
           }
       }
-    \xsim_at_begin_document:n
+    \xsim_at_begin_document:n { \xsim_set_list:n {#1} }
+  }
+
+% #1: name
+\cs_new_protected:Npn \xsim_set_list:n #1
+  {
+    \seq_gclear:c {g__xsim_list_recorded_#1_seq}
+    \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
+    \seq_map_inline:Nn \l__xsim_tmpa_seq
       {
-        \seq_gclear:c {g__xsim_list_recorded_#1_seq}
-        \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
-        \seq_map_inline:Nn \l__xsim_tmpa_seq
-          {
-            \str_set:Nn \l__xsim_tmpa_str {##1}
-            \seq_gput_right:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str
-          }
-        \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
+        \str_set:Nn \l__xsim_tmpa_str {##1}
+        \seq_gput_right:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str
       }
+    \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
   }
 
 % add to or remove from list:
@@ -800,7 +803,7 @@
   {
     You~ tried~ to~ set~ the~ property~ `#1'~ \msg_line_context: . \\
     This~ property~ has~ to~ have~ a~ unique~ value~ and~ thus~ \\
-    cannot~ be~ set~ to~ `#2'~ since~ this~ value~ is~ already~ talen.
+    cannot~ be~ set~ to~ `#2'~ since~ this~ value~ is~ already~ taken.
   }
 
 \msg_new:nnn {xsim} {no-boolean-property}
@@ -841,7 +844,7 @@
       { \prg_return_false: }
   }
 \prg_generate_conditional_variant:Nnn \xsim_if_property_set:nnn
-  {nx,nnx,xx,nV}
+  {ne,nne,ee,nV}
   {p,T,F,TF}
 
 % new property:
@@ -951,35 +954,19 @@
 % #4: value
 \cs_new_protected:Npn \xsim_set_property:nnnn #1#2#3#4
   {
-    \xsim_if_property_exist:nTF {#3} % _p
+    \xsim_if_property_unique:nTF {#3}
       {
-        \xsim_if_property_set:nnnTF {#1} {#2} {#3} % _p
-          {
-            \xsim_if_property_unique_value:nnTF {#3} {#4} %_p
-              { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
-              {
-                \xsim_if_property_boolean:nTF {#3} % _p
-                  { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
-                  {
-                    \xsim_if_property_unique:nTF {#3} % _p
-                      { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
-                      { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
-                  }
-              }
-          }
-          {
-            \xsim_if_property_boolean:nTF {#3} % _p
-              { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
-              {
-                \xsim_if_property_unique:nTF {#3} % _p
-                  { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
-                  { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
-              }
-          }
+        \xsim_if_property_unique_value:nnTF {#3} {#4}
+          { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
+          { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
       }
-      { \msg_error:nnn {xsim} {unknown-property} {#3} }  
+      {
+        \xsim_if_property_boolean:nTF {#3}
+          { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
+          { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
+      }
   }
-\cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx,xx,xxnx,nxnx}
+\cs_generate_variant:Nn \xsim_set_property:nnnn {nnee,nnnV,nV,nVne,nnne,ee,eene,nene}
 
 % #1: type
 % #2: id
@@ -1149,7 +1136,7 @@
       {#3}
     \xsim_property_set_aliases:nn {#1} {#2}
   }
-\cs_generate_variant:Nn \xsim_set_properties:nnn {nnx,nxx,nV,nVx}
+\cs_generate_variant:Nn \xsim_set_properties:nnn {nne,nee,nV,nVe}
 
 % ----------------------------------------------------------------------------
 
@@ -1185,25 +1172,21 @@
 % #3: property
 \cs_new_protected:Npn \xsim_property_set_alias:nnn #1#2#3
   {
-    \xsim_if_property_set:nnnF {#1} {#2} {#3}
-      {
-        \xsim_if_property_set:nnxT {#1} {#2}
-          { \xsim_property_alias:n {#3} }
-          { 
-            \xsim_set_property:nnnx {#1} {#2} {#3}
-              {
-                \xsim_get_property:nnf {#1} {#2}
-                  { \xsim_property_alias:n {#3} }
-              }
-          }
-      }
-    \xsim_if_property_set:nnxT {#1} {#2}
+    \xsim_if_property_set:nneT {#1} {#2}
       { \xsim_property_alias:n {#3} }
       {
         \xsim_attribute_set:nnx {alias:#1!#2} {#3}
           {
             \xsim_get_property:nnf {#1} {#2}
               { \xsim_property_alias:n {#3} }
+          }
+        \xsim_if_property_set:nnnF {#1} {#2} {#3}
+          { 
+            \xsim_set_property:nnne {#1} {#2} {#3}
+              {
+                \xsim_get_property:nnf {#1} {#2}
+                  { \xsim_property_alias:n {#3} }
+              }
           }
       }
   }
@@ -1639,16 +1622,19 @@
 % #4: exercise|solution
 \cs_new_protected:Npn \xsim_insert:nnnn #1#2#3#4
   {
-    \xsim_verbose:n
-      { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
-    \group_begin:
-      \xsim_insert_mode:
-      \tl_gset:Nx \g_xsim_exercise_id_tl {#2}
-      \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
-      \use:c {xsim_start_#4:nn} {#1} {#3}
-      \xsim_typeset_environment:nnn {#1} {#2} {#4}
-      \use:c {xsim_stop_#4:n} {#1} {}
-    \group_end:
+    \xsim_if_exist:nnnT {#1} {#2} {#4}
+      {
+        \xsim_verbose:n
+          { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
+        \group_begin:
+          \xsim_insert_mode:
+          \tl_gset:Nx \g_xsim_exercise_id_tl {#2}
+          \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
+          \use:c {xsim_start_#4:nn} {#1} {#3}
+          \xsim_typeset_environment:nnn {#1} {#2} {#4}
+          \use:c {xsim_stop_#4:n} {#1} {}
+        \group_end:
+      }
   }
 \cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV,nnnV,xx,ne}
 
@@ -2031,9 +2017,10 @@
           { \xsim_get_property:nnn {#1} {#2} {#3} }
         \seq_if_empty:NTF \l__xsim_tmpb_seq
           {% exercise has no tag values given
-            \bool_set_eq:cc
-              {l____xsim_tagged_#3_bool}
-              {l__xsim_ignore_untagged_#3_bool}
+            % \bool_set_eq:cc
+            %   {l____xsim_tagged_#3_bool}
+            %   {l__xsim_ignore_untagged_#3_bool}
+            \bool_set_false:c {l____xsim_tagged_#3_bool}
           }
           {
             \seq_map_inline:Nn \l__xsim_tmpb_seq
@@ -2145,13 +2132,18 @@
         \xsim_before_begin_document:n
           {
             \xsim_foreach_exercise_type:n
-              {
-                \fp_gzero_new:c {g__xsim_##1_goal_#1_fp}
-                \fp_if_exist:cF {g__xsim_total_##1_goal_#1_fp}
-                  { \fp_new:c {g__xsim_total_##1_goal_#1_fp} }
-              }
+              { \xsim_goal_init:nn {##1} {#1} }
           }
       }
+  }
+
+% #1: type
+% #2: goal
+\cs_new_protected:Npn \xsim_goal_init:nn #1#2
+  {
+    \fp_gzero_new:c {g__xsim_#1_goal_#2_fp}
+    \fp_if_exist:cF {g__xsim_total_#1_goal_#2_fp}
+      { \fp_new:c {g__xsim_total_#1_goal_#2_fp} }
   }
 
 \prg_new_conditional:Npnn \xsim_if_goal_exist:n #1 {p,T,F,TF}
@@ -2209,7 +2201,7 @@
         \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
         \fp_set:Nn \l__xsim_tmpa_fp
           { \xsim_get_property:nnn {#1} {#2} {body#3} + 0 + #4 }
-        \xsim_set_property:nnnx {#1} {#2} {body#3}
+        \xsim_set_property:nnne {#1} {#2} {body#3}
           { \fp_to_decimal:N \l__xsim_tmpa_fp }
       }
   }
@@ -2363,31 +2355,34 @@
   { \fp_gset:cn {g__xsim_total_goal_#1_fp} {#2} }
 
 \xsim_at_begin_document:n
+  { \xsim_foreach_goal:n { \xsim_get_total_goal:n {#1} } }
+
+% #1: goal
+\cs_new_protected:Npn \xsim_get_total_goal:n #1
   {
-    \seq_map_inline:Nn \l__xsim_goals_seq
-      {
-        \fp_gset_eq:cc
-          {g__xsim_total_goal_recorded_#1_fp}
-          {g__xsim_total_goal_#1_fp}
-      }
+    \fp_gset_eq:cc
+      {g__xsim_total_goal_recorded_#1_fp}
+      {g__xsim_total_goal_#1_fp}
   }
-  
-\xsim_at_end_document:n
+
+\xsim_at_end_document:n { \xsim_save_goals: }
+
+\cs_new_protected:Npn \xsim_save_goals:
   {
-    \seq_map_inline:Nn \l__xsim_goals_seq
+    \xsim_foreach_goal:n
       {
         \xsim_foreach_exercise_type:n
           {
             \xsim_add_property_to_aux:nn {goal}
-              { {##1} {#1} { \fp_to_decimal:c {g__xsim_##1_goal_#1_fp} } }
+              { {####1} {##1} { \fp_to_decimal:c {g__xsim_####1_goal_##1_fp} } }
           }
         \tl_set:Nx \l__xsim_tmpa_tl
-          { \fp_to_decimal:c {g__xsim_total_goal_#1_fp} }
+          { \fp_to_decimal:c {g__xsim_total_goal_##1_fp} }
         \tl_set:Nx \l__xsim_tmpb_tl
-          { \fp_to_decimal:c {g__xsim_total_goal_recorded_#1_fp} }
+          { \fp_to_decimal:c {g__xsim_total_goal_recorded_##1_fp} }
         \tl_if_eq:NNF \l__xsim_tmpa_tl \l__xsim_tmpb_tl { \xsim_rerun: }
         \xsim_add_property_to_aux:nn {totalgoal}
-          { {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
+          { {##1} { \fp_to_decimal:c {g__xsim_goal_##1_fp} } }
       }
   }
 
@@ -2719,6 +2714,17 @@
       { \newcounter { \xsim_get_parameter:nn {#1} {solution-counter} } }
     \cs_if_exist:cF { c@ number of \xsim_get_parameter:nn {#1} {exercise-env} s }
       { \newcounter { number of \xsim_get_parameter:nn {#1} {exercise-env} s } }
+    \xsim_if_parameter_set:nnT {#1} {within}
+      {
+        \counterwithin
+          { \xsim_get_parameter:nn {#1} {counter} }
+          { \xsim_get_parameter:nn {#1} {within} }
+      }
+    \xsim_if_parameter_set:nnT {#1} {the-counter}
+      {
+        \cs_set:cpx { the \xsim_get_parameter:nn {#1} {counter} }
+          { \xsim_get_parameter:nn {#1} {the-counter} }
+      }
   }
 
 % #1: type
@@ -2726,7 +2732,7 @@
 \cs_new_protected:Npn \xsim_step_exercise_counter:nn #1#2
   {
     \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
-    \xsim_set_properties:nnx {#1} {#2}
+    \xsim_set_properties:nne {#1} {#2}
       {
         counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
         counter-value = \arabic { \xsim_get_parameter:nn {#1} {counter} }
@@ -2884,7 +2890,7 @@
             \xsim_unset_property:nVn {#1} \g_xsim_exercise_id_tl {##1}
           }
       }
-    \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
+    \xsim_set_properties:nVe {#1} \g_xsim_exercise_id_tl
       {
         % properties set by the user:
         \exp_not:n {#2} ,
@@ -2895,12 +2901,12 @@
       {
         \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
           {
-            \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {user##1}
+            \xsim_set_property:nVne {#1} \g_xsim_exercise_id_tl {user##1}
               { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
           }
         \bool_if:cT {l__xsim_temporary_##1_bool}
           {
-            \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
+            \xsim_set_property:nVne {#1} \g_xsim_exercise_id_tl {##1}
               { \fp_to_decimal:c {l__xsim_temporary_##1_fp} }
           }
       }
@@ -2948,7 +2954,7 @@
   {
     \stepcounter { \xsim_get_parameter:nn {#1} {number} }
     \xsim_step_exercise_counter:nn {#1} {#2}
-    \xsim_set_properties:nnx {#1} {#2}
+    \xsim_set_properties:nne {#1} {#2}
       {
         section-value = \arabic{section} ,
         section = \thesection ,
@@ -2963,7 +2969,7 @@
       }
     \xsim_if_property_exist:nT {chapter}
       {
-        \xsim_set_properties:nnx {#1} {#2}
+        \xsim_set_properties:nne {#1} {#2}
           {
             chapter-value = \arabic{chapter} ,
             chapter = \thechapter
@@ -3036,7 +3042,7 @@
                 \fp_set:Nn \l__xsim_tmpb_fp
                   { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {user##1} + 0 }
                 \fp_set:Nn \l__xsim_tmpa_fp { \l__xsim_tmpa_fp + \l__xsim_tmpb_fp }
-                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
+                \xsim_set_property:nVne {#1} \g_xsim_exercise_id_tl {##1}
                   { \fp_to_decimal:N \l__xsim_tmpa_fp }
               }
               {
@@ -3771,7 +3777,7 @@
                       {solutions} { \xsim_insert:nnnn {##1} {##2} {} {solution} }
                       {both} {
                         \xsim_insert:nnnn {##1} {##2} {} {exercise}
-                        \xsim_insert:nnnn {##1} {##2} {} {soltion}
+                        \xsim_insert:nnnn {##1} {##2} {} {solution}
                       }
                     }
                     {
@@ -4553,16 +4559,16 @@
 \@onlypreamble \DeclareExercisePropertyAlias
 
 \NewDocumentCommand \SetExerciseProperty {m+m}
-  { \xsim_set_property:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2} }
+  { \xsim_set_property:eenn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \SetExpandedExerciseProperty {m+m}
-  { \xsim_set_property:xxnx {\ExerciseType} {\ExerciseID} {#1} {#2} }
+  { \xsim_set_property:eene {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \ExerciseSetProperty {mmm+m}
   { \xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
 
 \NewDocumentCommand \ExerciseSetExpandedProperty {mmm+m}
-  { \xsim_set_property:nnnx {#1} {#2} {#3} {#4} }
+  { \xsim_set_property:nnne {#1} {#2} {#3} {#4} }
 
 \NewExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
@@ -4574,7 +4580,7 @@
   { \IfExercisePropertyExistTF {#1} {} {#2} }
 
 \NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
-  { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
+  { \xsim_if_property_set:eenTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
 \NewDocumentCommand \IfExercisePropertySetT {m+m}
   { \IfExercisePropertySetTF {#1} {#2} {} }
@@ -5122,6 +5128,8 @@
 \DeclareExerciseParameter* {counter}
 \DeclareExerciseParameter* {solution-counter}
 \DeclareExerciseParameter* {number}
+\DeclareExerciseParameter {within}
+\DeclareExerciseParameter {the-counter}
 
 % these are additional - but are used in the `default' environment
 % template:
@@ -5369,9 +5377,9 @@
       }
     \XSIMifeqF{\numberofcolumns}{0}
       {
-        \begin {tabular} {l*{\numberofcolumns}{c}c}
-          \ExerciseTableCode
-        \end {tabular}
+        % \begin {tabular} {l*{\numberofcolumns}{c}c}
+        \show   \ExerciseTableCode
+        % \end {tabular}
       }
   }
 

@@ -12,6 +12,8 @@
 \DeclareExerciseParameter* {counter}
 \DeclareExerciseParameter* {solution-counter}
 \DeclareExerciseParameter* {number}
+\DeclareExerciseParameter {within}
+\DeclareExerciseParameter {the-counter}
 
 % these are additional - but are used in the `default' environment
 % template:
@@ -259,9 +261,9 @@
       }
     \XSIMifeqF{\numberofcolumns}{0}
       {
-        \begin {tabular} {l*{\numberofcolumns}{c}c}
-          \ExerciseTableCode
-        \end {tabular}
+        % \begin {tabular} {l*{\numberofcolumns}{c}c}
+        \show   \ExerciseTableCode
+        % \end {tabular}
       }
   }
 

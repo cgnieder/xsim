@@ -134,9 +134,10 @@
           { \xsim_get_property:nnn {#1} {#2} {#3} }
         \seq_if_empty:NTF \l__xsim_tmpb_seq
           {% exercise has no tag values given
-            \bool_set_eq:cc
-              {l____xsim_tagged_#3_bool}
-              {l__xsim_ignore_untagged_#3_bool}
+            % \bool_set_eq:cc
+            %   {l____xsim_tagged_#3_bool}
+            %   {l__xsim_ignore_untagged_#3_bool}
+            \bool_set_false:c {l____xsim_tagged_#3_bool}
           }
           {
             \seq_map_inline:Nn \l__xsim_tmpb_seq

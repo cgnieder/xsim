@@ -1,10 +1,10 @@
 \documentclass{article}
 \usepackage{xsim}
 
-\DeclareExerciseCollection{foo}
+\xsimsetup{collect}
 
-\usepackage{filecontents}
-\begin{filecontents*}{random.tex}
+\begin{document}
+
 \begin{exercise}[ID=A]
   exercise A
 \end{exercise}
@@ -41,18 +41,10 @@
 \begin{solution}
   solution F
 \end{solution}
-\end{filecontents*}
-
-\begin{document}
-
-\collectexercises{foo}
-\input{random.tex}
-\collectexercisesstop{foo}
 
 \section*{Exercises}
-\printrandomexercises[collection=foo,exclude=D]{3}
+\printrandomexercises[collection=all exercises,exclude=D]{3}
 
-\section*{Solutions}
-\printsolutions*
+\printsolutions
 
 \end{document}

@@ -305,16 +305,19 @@
 % #4: exercise|solution
 \cs_new_protected:Npn \xsim_insert:nnnn #1#2#3#4
   {
-    \xsim_verbose:n
-      { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
-    \group_begin:
-      \xsim_insert_mode:
-      \tl_gset:Nx \g_xsim_exercise_id_tl {#2}
-      \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
-      \use:c {xsim_start_#4:nn} {#1} {#3}
-      \xsim_typeset_environment:nnn {#1} {#2} {#4}
-      \use:c {xsim_stop_#4:n} {#1} {}
-    \group_end:
+    \xsim_if_exist:nnnT {#1} {#2} {#4}
+      {
+        \xsim_verbose:n
+          { Inserting~ #4~ type~ `#1'~ id~ `#2'. }
+        \group_begin:
+          \xsim_insert_mode:
+          \tl_gset:Nx \g_xsim_exercise_id_tl {#2}
+          \tl_gset:Nn \g_xsim_exercise_type_tl {#1}
+          \use:c {xsim_start_#4:nn} {#1} {#3}
+          \xsim_typeset_environment:nnn {#1} {#2} {#4}
+          \use:c {xsim_stop_#4:n} {#1} {}
+        \group_end:
+      }
   }
 \cs_generate_variant:Nn \xsim_insert:nnnn {nV,VV,nnnV,xx,ne}
 

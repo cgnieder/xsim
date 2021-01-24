@@ -1,12 +1,19 @@
 \documentclass{article}
 \usepackage{xsim}
 
-\DeclareExerciseCollection{foo-easy}
-\DeclareExerciseCollection{foo-medium}
+\DeclareExerciseCollection[difficulty=easy]{easy}
+\DeclareExerciseCollection[difficulty=medium]{medium}
 \DeclareExerciseTagging{difficulty}
 
 \usepackage{lipsum}
-\begin{filecontents*}{foo.tex}
+
+\begin{document}
+
+\begin{exercise}
+  outside before
+\end{exercise}
+
+\collectexercises{easy,medium}
 \begin{exercise}[difficulty=easy,points=1]
   foo one \lipsum[4]
 \end{exercise}
@@ -25,38 +32,14 @@
 \begin{solution}
   foo three \lipsum[4]
 \end{solution}
-\end{filecontents*}
-
-\begin{document}
-
-\begin{exercise}
-  outside before
-\end{exercise}
-
-\collectexercises{foo-easy}
-\xsimsetup{difficulty=easy}
-\input{foo.tex}
-\collectexercisesstop{foo-easy}
-% collection `foo-easy' now contains all exercises of file `foo.tex' tagged
-% with `difficulty=easy'
-
-\collectexercises{foo-medium}
-\xsimsetup{difficulty=medium}
-\input{foo.tex}
-\collectexercisesstop{foo-medium}
-% collection `foo-medium' now contains all exercises of file `foo.tex'
-% tagged with `difficulty=medium'
+\collectexercisesstop{easy,medium}
 
 \section{Easy}
-\printcollection{foo-easy}
+\printcollection{easy}
 
 \section{Medium}
-\printcollection{foo-medium}
+\printcollection{medium}
 
 \printsolutions[difficulty=medium]
-
-\section{All Exercises and Their Solutions Again, in Order of Appearance}
-
-\printcollection[print=both]{all exercises}
 
 \end{document}

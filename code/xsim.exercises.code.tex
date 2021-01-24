@@ -313,6 +313,17 @@
       { \newcounter { \xsim_get_parameter:nn {#1} {solution-counter} } }
     \cs_if_exist:cF { c@ number of \xsim_get_parameter:nn {#1} {exercise-env} s }
       { \newcounter { number of \xsim_get_parameter:nn {#1} {exercise-env} s } }
+    \xsim_if_parameter_set:nnT {#1} {within}
+      {
+        \counterwithin
+          { \xsim_get_parameter:nn {#1} {counter} }
+          { \xsim_get_parameter:nn {#1} {within} }
+      }
+    \xsim_if_parameter_set:nnT {#1} {the-counter}
+      {
+        \cs_set:cpx { the \xsim_get_parameter:nn {#1} {counter} }
+          { \xsim_get_parameter:nn {#1} {the-counter} }
+      }
   }
 
 % #1: type
@@ -320,7 +331,7 @@
 \cs_new_protected:Npn \xsim_step_exercise_counter:nn #1#2
   {
     \refstepcounter { \xsim_get_parameter:nn {#1} {counter} }
-    \xsim_set_properties:nnx {#1} {#2}
+    \xsim_set_properties:nne {#1} {#2}
       {
         counter = \use:c { the \xsim_get_parameter:nn {#1} {counter} } ,
         counter-value = \arabic { \xsim_get_parameter:nn {#1} {counter} }
@@ -478,7 +489,7 @@
             \xsim_unset_property:nVn {#1} \g_xsim_exercise_id_tl {##1}
           }
       }
-    \xsim_set_properties:nVx {#1} \g_xsim_exercise_id_tl
+    \xsim_set_properties:nVe {#1} \g_xsim_exercise_id_tl
       {
         % properties set by the user:
         \exp_not:n {#2} ,
@@ -489,12 +500,12 @@
       {
         \xsim_if_property_set:nVnT {#1} \g_xsim_exercise_id_tl {##1}
           {
-            \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {user##1}
+            \xsim_set_property:nVne {#1} \g_xsim_exercise_id_tl {user##1}
               { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {##1} }
           }
         \bool_if:cT {l__xsim_temporary_##1_bool}
           {
-            \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
+            \xsim_set_property:nVne {#1} \g_xsim_exercise_id_tl {##1}
               { \fp_to_decimal:c {l__xsim_temporary_##1_fp} }
           }
       }
@@ -542,7 +553,7 @@
   {
     \stepcounter { \xsim_get_parameter:nn {#1} {number} }
     \xsim_step_exercise_counter:nn {#1} {#2}
-    \xsim_set_properties:nnx {#1} {#2}
+    \xsim_set_properties:nne {#1} {#2}
       {
         section-value = \arabic{section} ,
         section = \thesection ,
@@ -557,7 +568,7 @@
       }
     \xsim_if_property_exist:nT {chapter}
       {
-        \xsim_set_properties:nnx {#1} {#2}
+        \xsim_set_properties:nne {#1} {#2}
           {
             chapter-value = \arabic{chapter} ,
             chapter = \thechapter
@@ -630,7 +641,7 @@
                 \fp_set:Nn \l__xsim_tmpb_fp
                   { \xsim_get_property:nVn {#1} \g_xsim_exercise_id_tl {user##1} + 0 }
                 \fp_set:Nn \l__xsim_tmpa_fp { \l__xsim_tmpa_fp + \l__xsim_tmpb_fp }
-                \xsim_set_property:nVnx {#1} \g_xsim_exercise_id_tl {##1}
+                \xsim_set_property:nVne {#1} \g_xsim_exercise_id_tl {##1}
                   { \fp_to_decimal:N \l__xsim_tmpa_fp }
               }
               {

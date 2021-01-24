@@ -11,7 +11,7 @@
   {
     You~ tried~ to~ set~ the~ property~ `#1'~ \msg_line_context: . \\
     This~ property~ has~ to~ have~ a~ unique~ value~ and~ thus~ \\
-    cannot~ be~ set~ to~ `#2'~ since~ this~ value~ is~ already~ talen.
+    cannot~ be~ set~ to~ `#2'~ since~ this~ value~ is~ already~ taken.
   }
 
 \msg_new:nnn {xsim} {no-boolean-property}
@@ -52,7 +52,7 @@
       { \prg_return_false: }
   }
 \prg_generate_conditional_variant:Nnn \xsim_if_property_set:nnn
-  {nx,nnx,xx,nV}
+  {ne,nne,ee,nV}
   {p,T,F,TF}
 
 % new property:
@@ -162,35 +162,19 @@
 % #4: value
 \cs_new_protected:Npn \xsim_set_property:nnnn #1#2#3#4
   {
-    \xsim_if_property_exist:nTF {#3} % _p
+    \xsim_if_property_unique:nTF {#3}
       {
-        \xsim_if_property_set:nnnTF {#1} {#2} {#3} % _p
-          {
-            \xsim_if_property_unique_value:nnTF {#3} {#4} %_p
-              { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
-              {
-                \xsim_if_property_boolean:nTF {#3} % _p
-                  { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
-                  {
-                    \xsim_if_property_unique:nTF {#3} % _p
-                      { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
-                      { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
-                  }
-              }
-          }
-          {
-            \xsim_if_property_boolean:nTF {#3} % _p
-              { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
-              {
-                \xsim_if_property_unique:nTF {#3} % _p
-                  { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
-                  { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
-              }
-          }
+        \xsim_if_property_unique_value:nnTF {#3} {#4}
+          { \msg_warning:nnnn {xsim} {property-unique} {#3} {#4} }
+          { \__xsim_set_unique_property:nnnn {#1} {#2} {#3} {#4} }
       }
-      { \msg_error:nnn {xsim} {unknown-property} {#3} }  
+      {
+        \xsim_if_property_boolean:nTF {#3}
+          { \__xsim_set_boolean_property:nnnn {#1} {#2} {#3} {#4} }
+          { \__xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
+      }
   }
-\cs_generate_variant:Nn \xsim_set_property:nnnn {nnxx,nnnV,nV,nVnx,nnnx,xx,xxnx,nxnx}
+\cs_generate_variant:Nn \xsim_set_property:nnnn {nnee,nnnV,nV,nVne,nnne,ee,eene,nene}
 
 % #1: type
 % #2: id
@@ -360,7 +344,7 @@
       {#3}
     \xsim_property_set_aliases:nn {#1} {#2}
   }
-\cs_generate_variant:Nn \xsim_set_properties:nnn {nnx,nxx,nV,nVx}
+\cs_generate_variant:Nn \xsim_set_properties:nnn {nne,nee,nV,nVe}
 
 % ----------------------------------------------------------------------------
 
@@ -396,25 +380,21 @@
 % #3: property
 \cs_new_protected:Npn \xsim_property_set_alias:nnn #1#2#3
   {
-    \xsim_if_property_set:nnnF {#1} {#2} {#3}
-      {
-        \xsim_if_property_set:nnxT {#1} {#2}
-          { \xsim_property_alias:n {#3} }
-          { 
-            \xsim_set_property:nnnx {#1} {#2} {#3}
-              {
-                \xsim_get_property:nnf {#1} {#2}
-                  { \xsim_property_alias:n {#3} }
-              }
-          }
-      }
-    \xsim_if_property_set:nnxT {#1} {#2}
+    \xsim_if_property_set:nneT {#1} {#2}
       { \xsim_property_alias:n {#3} }
       {
         \xsim_attribute_set:nnx {alias:#1!#2} {#3}
           {
             \xsim_get_property:nnf {#1} {#2}
               { \xsim_property_alias:n {#3} }
+          }
+        \xsim_if_property_set:nnnF {#1} {#2} {#3}
+          { 
+            \xsim_set_property:nnne {#1} {#2} {#3}
+              {
+                \xsim_get_property:nnf {#1} {#2}
+                  { \xsim_property_alias:n {#3} }
+              }
           }
       }
   }

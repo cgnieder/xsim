@@ -139,16 +139,16 @@
 \@onlypreamble \DeclareExercisePropertyAlias
 
 \NewDocumentCommand \SetExerciseProperty {m+m}
-  { \xsim_set_property:xxnn {\ExerciseType} {\ExerciseID} {#1} {#2} }
+  { \xsim_set_property:eenn {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \SetExpandedExerciseProperty {m+m}
-  { \xsim_set_property:xxnx {\ExerciseType} {\ExerciseID} {#1} {#2} }
+  { \xsim_set_property:eene {\ExerciseType} {\ExerciseID} {#1} {#2} }
 
 \NewDocumentCommand \ExerciseSetProperty {mmm+m}
   { \xsim_set_property:nnnn {#1} {#2} {#3} {#4} }
 
 \NewDocumentCommand \ExerciseSetExpandedProperty {mmm+m}
-  { \xsim_set_property:nnnx {#1} {#2} {#3} {#4} }
+  { \xsim_set_property:nnne {#1} {#2} {#3} {#4} }
 
 \NewExpandableDocumentCommand \IfExercisePropertyExistTF {+m+m+m}
   { \xsim_if_property_exist:nTF {#1} {#2} {#3} }
@@ -160,7 +160,7 @@
   { \IfExercisePropertyExistTF {#1} {} {#2} }
 
 \NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
-  { \xsim_if_property_set:xxnTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
+  { \xsim_if_property_set:eenTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
 \NewDocumentCommand \IfExercisePropertySetT {m+m}
   { \IfExercisePropertySetTF {#1} {#2} {} }

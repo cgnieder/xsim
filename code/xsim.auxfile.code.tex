@@ -91,17 +91,20 @@
               { \xsim_attribute_set:nnn {#1} {####1} {} }
           }
       }
-    \xsim_at_begin_document:n
+    \xsim_at_begin_document:n { \xsim_set_list:n {#1} }
+  }
+
+% #1: name
+\cs_new_protected:Npn \xsim_set_list:n #1
+  {
+    \seq_gclear:c {g__xsim_list_recorded_#1_seq}
+    \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
+    \seq_map_inline:Nn \l__xsim_tmpa_seq
       {
-        \seq_gclear:c {g__xsim_list_recorded_#1_seq}
-        \seq_set_eq:Nc \l__xsim_tmpa_seq {g__xsim_list_#1_seq}
-        \seq_map_inline:Nn \l__xsim_tmpa_seq
-          {
-            \str_set:Nn \l__xsim_tmpa_str {##1}
-            \seq_gput_right:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str
-          }
-        \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
+        \str_set:Nn \l__xsim_tmpa_str {##1}
+        \seq_gput_right:cV {g__xsim_list_recorded_#1_seq} \l__xsim_tmpa_str
       }
+    \seq_gremove_duplicates:c {g__xsim_list_recorded_#1_seq}
   }
 
 % add to or remove from list:

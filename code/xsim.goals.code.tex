@@ -32,13 +32,18 @@
         \xsim_before_begin_document:n
           {
             \xsim_foreach_exercise_type:n
-              {
-                \fp_gzero_new:c {g__xsim_##1_goal_#1_fp}
-                \fp_if_exist:cF {g__xsim_total_##1_goal_#1_fp}
-                  { \fp_new:c {g__xsim_total_##1_goal_#1_fp} }
-              }
+              { \xsim_goal_init:nn {##1} {#1} }
           }
       }
+  }
+
+% #1: type
+% #2: goal
+\cs_new_protected:Npn \xsim_goal_init:nn #1#2
+  {
+    \fp_gzero_new:c {g__xsim_#1_goal_#2_fp}
+    \fp_if_exist:cF {g__xsim_total_#1_goal_#2_fp}
+      { \fp_new:c {g__xsim_total_#1_goal_#2_fp} }
   }
 
 \prg_new_conditional:Npnn \xsim_if_goal_exist:n #1 {p,T,F,TF}
@@ -96,7 +101,7 @@
         \xsim_verbose:n { Adding~ `#4'~ to~ `#3'~ goal~ of~ #1~ #2 }
         \fp_set:Nn \l__xsim_tmpa_fp
           { \xsim_get_property:nnn {#1} {#2} {body#3} + 0 + #4 }
-        \xsim_set_property:nnnx {#1} {#2} {body#3}
+        \xsim_set_property:nnne {#1} {#2} {body#3}
           { \fp_to_decimal:N \l__xsim_tmpa_fp }
       }
   }
@@ -250,31 +255,34 @@
   { \fp_gset:cn {g__xsim_total_goal_#1_fp} {#2} }
 
 \xsim_at_begin_document:n
+  { \xsim_foreach_goal:n { \xsim_get_total_goal:n {#1} } }
+
+% #1: goal
+\cs_new_protected:Npn \xsim_get_total_goal:n #1
   {
-    \seq_map_inline:Nn \l__xsim_goals_seq
-      {
-        \fp_gset_eq:cc
-          {g__xsim_total_goal_recorded_#1_fp}
-          {g__xsim_total_goal_#1_fp}
-      }
+    \fp_gset_eq:cc
+      {g__xsim_total_goal_recorded_#1_fp}
+      {g__xsim_total_goal_#1_fp}
   }
-  
-\xsim_at_end_document:n
+
+\xsim_at_end_document:n { \xsim_save_goals: }
+
+\cs_new_protected:Npn \xsim_save_goals:
   {
-    \seq_map_inline:Nn \l__xsim_goals_seq
+    \xsim_foreach_goal:n
       {
         \xsim_foreach_exercise_type:n
           {
             \xsim_add_property_to_aux:nn {goal}
-              { {##1} {#1} { \fp_to_decimal:c {g__xsim_##1_goal_#1_fp} } }
+              { {####1} {##1} { \fp_to_decimal:c {g__xsim_####1_goal_##1_fp} } }
           }
         \tl_set:Nx \l__xsim_tmpa_tl
-          { \fp_to_decimal:c {g__xsim_total_goal_#1_fp} }
+          { \fp_to_decimal:c {g__xsim_total_goal_##1_fp} }
         \tl_set:Nx \l__xsim_tmpb_tl
-          { \fp_to_decimal:c {g__xsim_total_goal_recorded_#1_fp} }
+          { \fp_to_decimal:c {g__xsim_total_goal_recorded_##1_fp} }
         \tl_if_eq:NNF \l__xsim_tmpa_tl \l__xsim_tmpb_tl { \xsim_rerun: }
         \xsim_add_property_to_aux:nn {totalgoal}
-          { {#1} { \fp_to_decimal:c {g__xsim_goal_#1_fp} } }
+          { {##1} { \fp_to_decimal:c {g__xsim_goal_##1_fp} } }
       }
   }
 
