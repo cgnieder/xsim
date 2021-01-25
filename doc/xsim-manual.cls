@@ -696,13 +696,12 @@
 \RequirePackage{varioref}
 \RequirePackage{bookmark}
 
+\DeclareExerciseCollection{foo}
+\DeclareExerciseCollection{layouts}
 \xsimsetup{
   % clear-aux ,
   path = exercises
 }
-
-\DeclareExerciseCollection{foo}
-\DeclareExerciseCollection{layouts}
 
 \newrobustcmd*\TF{%
   \colorlet{outside}{.}%

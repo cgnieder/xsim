@@ -120,7 +120,8 @@
 % #2: type
 \cs_new_protected:Npn \xsim_collect_type_start:nn #1#2
   {
-    \keys_set:nn {xsim} { #2/use = false , #2/print = false }
+    \group_begin:
+    \keys_set:nn {xsim} { #2/collect = true }
     \clist_map_inline:nn {#1}
       {
         \xsim_if_collection_active:nF {##1}
@@ -131,20 +132,20 @@
 % #1: csv list of collections
 \cs_new_protected:Npn \xsim_collect_start:n #1
   {
-    \xsim_foreach_exercise_type:n
-      { \keys_set:nn {xsim} { ##1/use = false , ##1/print = false } }
-    \clist_map_inline:nn {#1}
-      {
-        \xsim_if_collection_active:nF {##1}
-          { \xsim_activate_collection:n {##1} }
-      }
+    \group_begin:
+      \xsim_foreach_exercise_type:n { \keys_set:nn {xsim} { collect = true } }
+      \clist_map_inline:nn {#1}
+        {
+          \xsim_if_collection_active:nF {##1}
+            { \xsim_activate_collection:n {##1} }
+        }
   }
 
 % #1: csv list of collections
 \cs_new_protected:Npn \xsim_collect_stop:n #1
   {
-    \clist_map_inline:nn {#1}
-      { \xsim_deactivate_collection:n {##1} }
+      \clist_map_inline:nn {#1} { \xsim_deactivate_collection:n {##1} }
+    \group_end:
   }
 
 \keys_define:nn {xsim}
@@ -281,6 +282,7 @@
             {
               \clist_if_in:NnT \l__xsim_tmpa_clist {##1}
                 {
+                  \tl_set:Nn \ExerciseType {##1}
                   \xsim_use_template:nV
                     {heading}
                     \l__xsim_printcollection_headings_template_tl

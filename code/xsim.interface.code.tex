@@ -542,10 +542,14 @@
 
 % ----------------------------------------------------------------------------
 
-\NewDocumentCommand \DeclareExerciseCollection {O{}m}
+\NewDocumentCommand \DeclareExerciseCollection {om}
   {
-    \xsim_new_collection:nn {#2} {#1}
-    \xsim_activate_collection:n {#2}
+    \IfNoValueTF {#1}
+      { \xsim_new_collection:nn {#2} {} }
+      {
+        \xsim_new_collection:nn {#2} {#1}
+        \xsim_activate_collection:n {#2}
+      }
   }
 \@onlypreamble \DeclareExerciseCollection
 
@@ -555,8 +559,8 @@
 \NewDocumentCommand \deactivatecollection {m}
   { \xsim_deactivate_collection:n {#1} }
 
-\NewDocumentCommand \collectexercisestype {mm}
-  { \xsim_collect_type_start:nn {#1} {#2} }
+% \NewDocumentCommand \collectexercisestype {mm}
+%   { \xsim_collect_type_start:nn {#1} {#2} }
 
 \NewDocumentCommand \collectexercises {m}
   { \xsim_collect_start:n {#1} }

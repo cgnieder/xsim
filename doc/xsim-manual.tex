@@ -1,6 +1,6 @@
 % !arara: pdflatex: { interaction: nonstopmode }
 % !arara: biber
-% !arara: pdflatex: { interaction: nonstopmode }
+% arara: pdflatex: { interaction: nonstopmode }
 % arara: pdflatex: { interaction: nonstopmode }
 % arara: pdflatex: { interaction: nonstopmode }
 % ----------------------------------------------------------------------------
@@ -815,22 +815,27 @@ When an exercise is started with \environ{exercise} (or other environments
 defined through \cs{DeclareExerciseType}) then different things happen
 depending on different settings:
 \begin{itemize}
-  \item If the \emph{insert mode} is active nothing happens, see
-    section~\vref{sec:collecting-exercises} for details on this.
-  \item Else the id integer is incremented.
-  \item If the exercise is \emph{used} the corresponding counter is stepped
-    and the exercise is added to the \enquote{use list}.  The properties
-    \property{counter} and \property{use} are updated accordingly.
-  \item If an exercise is \emph{printed} then it is also \emph{used}. An
-    exercise that isn't used cannot be printed.  Being printed means two
-    things: being added to the \enquote{print list} and being typeset at the
-    position where the exercise is placed in the source file.  If an exercise
-    is \emph{not printed but used} it means that the counter will be stepped.
-    This can be useful for creating an exercise sheet only containing the
-    solutions for some exercises.
-  \item If an exercise is printed certain hooks and template code is inserted
-    around the environment body.
+  \item where the environment is placed in the document the \emph{base setup}
+    happens: this sets the \property{id} of the exercise and sets the
+    properties chosen in the optional argument.
+  \item in the default setup also the \emph{usage setup} happens: this
+    increments the counter and sets the counter related properties like
+    \property{counter}. Also the properties related to section numbers and the
+    \property{page} are set.
+  \item in the default setup also the \emph{print setup} happens: this mostly
+    does nothing except printing the exercise.
 \end{itemize}
+
+Depending on wether the option \module{exercise}\code{/}\option{use} has been
+set to \code{false} or wether the property \property{use} has been set to
+\code{false} the \emph{usage setup} can be delayed.  The usage the happens
+when the exercise is \emph{inserted} the first time elsewhere in the document,
+for example as part of a collection, see~\vref{sec:collecting-exercises}.
+
+Depending on wether the option \module{exercise}\code{/}\option{print} has
+been set to \code{false} or if the property \property{print} has been set to
+\code{false} the \emph{print setup} can be suppressed.  It happens each time
+an exercise is inserted.
 
 \begin{example}
   \begin{exercise}[print=false,ID=invisible]
@@ -870,6 +875,9 @@ the environments' names are the module names for the options (here using the
     Determines if exercises of type \enquote{exercise} are printed.
   \keybool{use}\Module{exercise}\Default{true}
     Determines if exercises of type \enquote{exercise} are used.
+  \keybool{collect}\Module{exercise}\Default{false}
+    \sinceversion{0.20}Sets both \option{print} and \option{use} to
+    \code{false} when \keyis{collect}{true} is set and vice versa.
   \keyval{within}{counter}\Module{exercise}\Default
     \changedversion{0.20}Adds the exercise counter to the reset list of the
     counter \meta{counter} using \cs*{counterwithin}.  \emph{Beware that if
@@ -944,55 +952,81 @@ existing exercise, \ie, every exercise whose external file exists.
 \section{Collecting Exercises}\label{sec:collecting-exercises}
 
 \begin{bewareofthedog}
-  The whole collection mechanism is likely to change completely in the
-  not-so-far future (let's say sometime in the six months from April~2020 or
-  so).
+  The whole collection mechanism has been changed completely with
+  version~0.20.  Please check this section carefully and update and adapt your
+  collections.
 \end{bewareofthedog}
 
 \subsection{Background}
-\xsim\ knows the concept of \enquote{exercise collections}.  A collection of
-exercises can be useful when you want to print a certain group of exercises
-several times.  Each collection must have a unique name with which you can
-refer to the corresponding collection.  A collection is realized by declaring
-the collection and by surrounding the exercises belonging to the collection
-with a certain pair of commands (this is explained in the next section).
-
-Let's say you have several files of math exercises where one only contains
-geometry exercises and another only calculus exercises and so on.  Surrounding
-the \cs*{input} of each file with said pair of commands for a certain
-collection all exercises of the corresponding file now are a collection which
-then can be printed at once whereever you want the collection of exercises to
-be printed.  By choosing certain tags (see section~\vref{sec:tags}) inside
-each collection you could even cherry-pick exercises from the external file.
+\xsim\ knows the concept of \emph{exercise collections}.  A collection of
+exercises can be used in two cases, basically:
+\begin{enumerate}
+  \item When you want to print a certain group of exercises several times. In
+    this case you add the exercise to a collection while also using it in the
+    running text. Somewhere later (or earlier actually) in the document you
+    can the reprint the collection\footnote{There is another way to do that,
+      but\dots}.
+  \item If you only want to print exercises which have certain tags.  Maybe
+    you have some kind of exercise library in an external which you include
+    into you document and want to print only those exercises which fit
+    certain conditions.
+\end{enumerate}
+Each collection must have a unique name with which you can refer to the
+corresponding collection.  A collection is realized by declaring the
+collection in the preamble and by activating the collection.
 
 \subsection{Usage}
+\subsubsection{Declaring collections}
 \emph{A collection must be declared in the preamble.}  Using a pair of
 commands explained below exercises between those commands are added to the
 corresponding collection but not printed.  After a collection is completed the
 collection can be printed as often as needed.
 \begin{commands}
-  \command{DeclareExerciseCollection}[\marg{collection name}]
+  \command{DeclareExerciseCollection}[\oarg{tag values}\marg{collection name}]
     Define a new collection \meta{collection name} in the document preamble.
-  \command{collectexercisestype}[\marg{collection name}\marg{exercise type}]
-    Opens the collection \meta{collection name} which now collects all
-    exercises of type \meta{exercise type} until the collection is closed with
-    \cs{collectexercisesstop}.  Collections of other types are not
-    collected\footnote{This command starts a group with
-      \cs*{begingroup}!}.
+    An example could look like this:
+    \cs{DeclareExerciseCollection}\Oarg{topics=algebra,level=1}\Marg{easy-algebra}.
+    Choosing tags automatically activates the collection which means that all
+    exercises which fit the tags are automatically added to the new
+    collection.
+\end{commands}
+
+\subsubsection{Activating collections}
+If a collection is not activated per default in can be activated (or
+deactivated in the opposite case) with these commands:
+\begin{commands}
+  \command{activatecollection}[\marg{collection name}]
+    Activates the collection \meta{collection name} which now collects all
+    exercises until the collection is deactivated. \meta{collection name} can
+    be a csv list of collection names.
+  \command{deactivatecollection}[\marg{collection name}]
+    Deactivates the collection \meta{collection name}.  \meta{collection name}
+    can be a csv list of collection names.
+\end{commands}
+These commands do not influence exercises in other ways other than adding them
+to collections.
+\begin{commands}
   \command{collectexercises}[\marg{collection name}]
-    Opens the collection \meta{collection name} which now collects all
-    exercises until the collection is closed with
-    \cs{collectexercisesstop}\footnote{This command starts a group with
-      \cs*{begingroup}!}.
+    Activates the collection \meta{collection name} which now collects all
+    exercises until the collection is deactivated, starts a group with
+    \cs*{begingroup} and sets the option \option{collect}, see below.
   \command{collectexercisesstop}[\marg{collection name}]
-    Closes the collection \meta{collection name}\footnote{This command ends
-      a group with \cs*{endgroup}!}.
+    Deactivates the collection \meta{collection name} and ends a group with
+    \cs*{endgroup}.
+\end{commands}
+\begin{options}
+  \keybool{collect}\Default{false}
+    A shortcut option which sets the options
+    \module{\meta{type}}\code{/}\module{collect} for each exercise type.
+\end{options}
+
+\subsubsection{Printing collections}
+\begin{commands}
   \command{printcollection}[\oarg{options}\marg{collection name}]
     Prints the collection \meta{collection name}, \ie, all exercises collected
     earlier.  This command cannot be used before the corresponding collection
     has been closed correctly.
 \end{commands}
-
 Valid options are the following:
 \begin{options}
   \keybool{headings}\Module{print-collection}\Default{false}
@@ -1046,11 +1080,11 @@ You can open several collections at the same time:
 \begin{sourcecode}
   \collectexercises{foo}
     ...
-  \collectexercisestype{bar}{exercises}
+  \activatecollection{bar}
+    ...
+  \deactivatecollection{foo}
     ...
   \collectexercisesstop{bar}
-    ...
-  \collectexercisesstop{foo}
 \end{sourcecode}
 Exercises will be added to each open collection.
 

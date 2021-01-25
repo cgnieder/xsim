@@ -523,13 +523,13 @@
             \xsim_if_property_set:nnnTF {#1} {#2} {use}
               {
                 \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
-                  { \prg_return_false: }
                   { \prg_return_true: }
+                  { \prg_return_false: }
               }
               {
                 \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-                  { \prg_return_false: }
                   { \prg_return_true: }
+                  { \prg_return_false: }
               }
           }
           {
@@ -587,10 +587,18 @@
           { \prg_return_true: }
           {
             \bool_if:cTF {l__xsim_#1_exercise_print_bool}
-              { \prg_return_true: }
+              {
+                \xsim_if_property_set:nnnTF {#1} {#2} {print}
+                  {
+                    \xsim_if_boolean_property:nnnTF {#1} {#2} {print}
+                      { \prg_return_true: }
+                      { \prg_return_false: }
+                  }
+                  { \prg_return_true: }
+              }
               {
                 \xsim_if_boolean_property:nnnTF {#1} {#2} {print}
-                  { \prg_return_true: }
+                  { xxx\prg_return_true: }
                   { \prg_return_false: }
               }
           }
