@@ -1,0 +1,84 @@
+% https://tex.stackexchange.com/q/580636/
+\documentclass{article}
+\usepackage[use-files]{xsim}
+
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+
+\DeclareExerciseProperty-{hint}
+\DeclareExerciseProperty{hints}
+\newcounter{hint}
+\renewcommand\theHhint{\ExerciseID.\arabic{hint}}
+\newcounter{hints}
+\newcounter{step}
+
+\NewDocumentCommand\AddExerciseHint{+m}{%
+  \stepcounter{hints}%
+  \SaveExerciseProperty{hint}\tmphint
+  \SetExpandedExerciseProperty{hint}{%
+    \unexpanded\expandafter{\tmphint}%
+    \unexpanded{%
+      \par
+      \refstepcounter{hint}\label{hint:\ExerciseID:\arabic{hint}}%
+      \noindent\textbf{Hint~\thehint\ to exercise \GetExerciseProperty{counter}}%
+      \hfill Back to exercise \ref{ex:\ExerciseID}\par
+      \noindent#1\par\addvspace{\bigskipamount}
+    }%
+  }%
+  \SetExpandedExerciseProperty{hints}{\arabic{hints}}%
+}
+\NewDocumentEnvironment{hint}{+b}{\AddExerciseHint{#1}}{}
+
+\DeclareExerciseEnvironmentTemplate{hints}{%
+  \setcounter{hints}{0}
+  \par\noindent
+  \textbf{\XSIMmixedcase{\GetExerciseName}\GetExerciseProperty{counter}:}\hfill
+  \IfExercisePropertySetT{hints}{%
+    \setcounter{step}{0}%
+    \def\hintcomma{\def\hintcomma{, }}%
+    Hint\ifnum\GetExerciseProperty{hints}=1\else s\fi:
+    \loop\unless\ifnum\value{step}=\GetExerciseProperty{hints}
+      \stepcounter{step}%
+      \hintcomma\ref{hint:\ExerciseID:\arabic{step}}%
+    \repeat
+    \par\noindent
+  }%
+}{\par\addvspace{\bigskipamount}}
+
+\xsimsetup{
+  exercise/within = section ,
+  exercise/begin-hook = \label{ex:\ExerciseID} ,
+  exercise/template = hints
+}
+
+\newcommand\printhints{%
+  \ForEachUsedExerciseByType{\setcounter{hint}{0}\GetExerciseProperty{hint}}%
+}
+
+\begin{document}
+
+\section{Exercises}
+\begin{exercise}
+  Description of the exercise. Run the following command
+\begin{verbatim}
+print("Hello world")
+Verbatim &^%$&\content
+\end{verbatim}
+\begin{hint}
+  Run the example from the command line with the python command
+\end{hint}
+\begin{hint}
+  The solution is 42.
+\end{hint}
+\end{exercise}
+
+\begin{exercise}
+  Another exercise
+  \begin{hint}
+    The first ten million years were the worst.
+  \end{hint}
+\end{exercise}
+
+\section{Hints}
+\printhints
+
+\end{document}
