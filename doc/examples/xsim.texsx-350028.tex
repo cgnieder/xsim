@@ -5,48 +5,44 @@
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{skins,breakable}
 
-\DeclareExerciseEnvironmentTemplate{tcolorbox}
-  {%
-    \tcolorbox[
-      enhanced,
-      colframe=green!20!black,
-      colback=yellow!10!white,
-      coltitle=green!40!black,
-      fonttitle=\bfseries,
-      underlay={%
-        \begin{tcbclipinterior}
-          \shade[
-            inner color=\IfInsideSolutionTF{red!50!yellow}{green!80!yellow},
-            outer color=yellow!10!white]
-            (interior.north west) circle (2cm);
-          \draw[help lines,step=5mm,yellow!80!black,shift={(interior.north west)}]
-            (interior.south west) grid (interior.north east);
-          \end{tcbclipinterior}%
-        },
-      attach title to upper=\quad,
-      title = \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}
-      \IfExercisePropertySetT{points}{%
-        (\GetExerciseProperty{points}
-        \IfExerciseGoalSingularTF{points}
-          {\XSIMtranslate{point}}
-          {\XSIMtranslate{points}})%
-      }]%
-    \IfInsideSolutionT{\label{solution:\ExerciseID}}%
-  }
-  {%
-    \endtcolorbox
-    \vspace*{\baselineskip}
-    \IfInsideSolutionTF
-      {%
-        \noindent Exercise~\GetExerciseProperty{counter} is on
-        page~\GetExerciseProperty{page}.%
-      }
-      {%
-        \noindent The solution of this exercise is on
-        page~\pageref{solution:\ExerciseID}.%
-      }%
-    \vspace{\baselineskip}
-  }
+\DeclareExerciseEnvironmentTemplate{tcolorbox}{%
+  \tcolorbox[
+    enhanced,
+    colframe=green!20!black,
+    colback=yellow!10!white,
+    coltitle=green!40!black,
+    fonttitle=\bfseries,
+    underlay={%
+      \begin{tcbclipinterior}
+        \shade[
+          inner color=\IfInsideSolutionTF{red!50!yellow}{green!80!yellow},
+          outer color=yellow!10!white]
+          (interior.north west) circle (2cm);
+        \draw[help lines,step=5mm,yellow!80!black,shift={(interior.north west)}]
+          (interior.south west) grid (interior.north east);
+        \end{tcbclipinterior}%
+      },
+    attach title to upper=\quad,
+    title = \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}
+    \IfExercisePropertySetT{points}{%
+      (\GetExerciseProperty{points}
+      \IfExerciseGoalSingularTF{points}
+        {\XSIMtranslate{point}}
+        {\XSIMtranslate{points}})%
+    }]%
+  \IfInsideSolutionT{\label{solution:\ExerciseID}}%
+}{%
+  \endtcolorbox
+  \vspace*{\baselineskip}
+  \IfInsideSolutionTF{%
+    \noindent Exercise~\GetExerciseProperty{counter} is on
+    page~\GetExerciseProperty{page}.%
+  }{%
+    \noindent The solution of this exercise is on
+    page~\pageref{solution:\ExerciseID}.%
+  }%
+  \vspace{\baselineskip}
+}
 
 \xsimsetup{
   exercise/template = tcolorbox ,

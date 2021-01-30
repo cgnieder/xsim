@@ -5,7 +5,6 @@
 \usepackage[T1]{fontenc}
 \usepackage{fourier}
 \usepackage{tgpagella}
-\usepackage[utf8]{inputenc}
 
 \usepackage{xsim,needspace,adjustbox,scrextend}
 
@@ -14,20 +13,18 @@
   exercise/template    = square
 }
 
-\DeclareExerciseEnvironmentTemplate{square}
-  {%
-    \Needspace*{2\baselineskip}%
-    \addmargin[0pt]{.15\textwidth}%
-    \par\noindent
-    \adjustbox{
-      fbox = 1pt 0pt,
-      lap = {\textwidth},
-      valign = t,
-      set vsize = {0pt}{0pt}
-    }{\rule{0pt}{20pt}\hspace{20pt}}%
-    \textbf{\GetExerciseProperty{counter}} %
-  }
-  {\endaddmargin\vspace{\baselineskip}}
+\DeclareExerciseEnvironmentTemplate{square}{%
+  \Needspace*{2\baselineskip}%
+  \addmargin[0pt]{.15\textwidth}%
+  \par\noindent
+  \adjustbox{
+    fbox = 1pt 0pt,
+    lap = {\textwidth},
+    valign = t,
+    set vsize = {0pt}{0pt}
+  }{\rule{0pt}{20pt}\hspace{20pt}}%
+  \textbf{\GetExerciseProperty{counter}} %
+}{\endaddmargin\vspace{\baselineskip}}
 
 \usepackage{lipsum}
 

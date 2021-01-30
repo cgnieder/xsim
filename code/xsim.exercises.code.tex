@@ -528,8 +528,8 @@
               }
               {
                 \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-                  { \prg_return_true: }
                   { \prg_return_false: }
+                  { \prg_return_true: }
               }
           }
           {
@@ -598,7 +598,7 @@
               }
               {
                 \xsim_if_boolean_property:nnnTF {#1} {#2} {print}
-                  { xxx\prg_return_true: }
+                  { \prg_return_true: }
                   { \prg_return_false: }
               }
           }
@@ -677,8 +677,6 @@
 
 \xsim_new_aux_property:cpn {total-number} #1
   { \int_gset:Nn \g_xsim_max_id_int {#1} }
-
-\RequirePackage {etoolbox}
 
 \hook_gput_code:nnn {begindocument/before} {xsim}
   {

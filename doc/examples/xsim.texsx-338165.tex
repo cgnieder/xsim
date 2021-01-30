@@ -10,26 +10,24 @@
 \tcbuselibrary{breakable, skins}
 \settasks{ label = \arabic*. }
 
-\DeclareExerciseEnvironmentTemplate{boxed}
-  {%
-    \tcolorbox[
-      enhanced ,
-      attach boxed title to top center = {yshift=-7.5pt} ,
-      colback = white , colbacktitle = white ,
-      coltitle = black , colframe = black ,
-      boxed title style = { colframe = white } ,
-      fonttitle=\bfseries,
-      sharp corners=all,
-      breakable,
-      title=
-        \XSIMmixedcase{\GetExerciseName}%
-        \IfInsideSolutionF{%
-          ~\GetExerciseProperty{counter}%
-          \IfExercisePropertySetT{subtitle}{: \GetExerciseProperty{subtitle}}%
-        }%
-    ]
-  }
-  {\endtcolorbox}
+\DeclareExerciseEnvironmentTemplate{boxed}{%
+  \tcolorbox[
+    enhanced ,
+    attach boxed title to top center = {yshift=-7.5pt} ,
+    colback = white , colbacktitle = white ,
+    coltitle = black , colframe = black ,
+    boxed title style = { colframe = white } ,
+    fonttitle=\bfseries,
+    sharp corners=all,
+    breakable,
+    title=
+      \XSIMmixedcase{\GetExerciseName}%
+      \IfInsideSolutionF{%
+        ~\GetExerciseProperty{counter}%
+        \IfExercisePropertySetT{subtitle}{: \GetExerciseProperty{subtitle}}%
+      }%
+  ]
+}{\endtcolorbox}
 
 \xsimsetup{
   exercise/template = boxed ,

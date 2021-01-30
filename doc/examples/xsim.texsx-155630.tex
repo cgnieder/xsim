@@ -3,10 +3,10 @@
 \usepackage{xsim}
 
 \DeclareExerciseCollection{foo}
+\xsimsetup{collect}
 
 \begin{document}
 
-\collectexercises{foo}
 \begin{exercise}
   foo
 \end{exercise}
@@ -16,7 +16,6 @@
 \begin{exercise}
   baz
 \end{exercise}
-\collectexercisesstop{foo}
 
 % shuffle around for a different version:
 \printexercise{exercise}{1}

@@ -6,7 +6,14 @@
   {
     You~ chose~ the~ language~ `#1'~ which~ is~ not~ defined~ by~ xsim.~
     `english'~ is~ used~ instead.~ If~ you~ just~ mistyped~ try~ again!~
-    Otherwise~ contact~ the~ author~ and~ he'll~ probably~ add~ your~ language.
+    Otherwise~ contact~ the~ author~ and~ he'll~ probably~ add~ your~
+    language.
+  }
+
+\msg_new:nnn {xsim} {empty-translation}
+  {
+    No~ translation~ provided~ for~ key~ `#1'~ in~ language~ `#2'~
+    \msg_line_context: .
   }
 
 % --------------------------------------------------------------------------
@@ -53,19 +60,6 @@
   }
 
 % ----------------------------------------------------------------------------
-% #1: keyword
-% #2: language
-% #3: translation
-\cs_new_protected:Npn \__xsim_declare_translation:nw #1#2=#3\q_stop
-  {
-    \tl_set:Nx \l__xsim_tmpa_tl { \tl_trim_spaces:n {#2} }
-    \tl_set:Nx \l__xsim_tmpb_tl { \tl_trim_spaces:n {#3} }
-    \xsim_declare_translation:VnV
-      \l__xsim_tmpa_tl
-      {#1}
-      \l__xsim_tmpb_tl
-  }
-
 % #1: language
 % #2: keyword
 % #3: translation
@@ -85,8 +79,14 @@
 % #2: csv list: { <lang1> = <translation1> , <lang2> = <translation2> }
 \cs_new_protected:Npn \xsim_declare_translations:nn #1#2
   {
-    \clist_map_inline:nn {#2}
-      { \__xsim_declare_translation:nw {#1} ##1 \q_stop }
+    \cs_set_protected:Npn \__xsim_declare_translation:n ##1
+      { \msg_warning:nnnn {xsim} {empty-translation} {#1} {##1} }
+    \cs_set_protected:Npn \__xsim_declare_translation:nn ##1##2
+      { \xsim_declare_translation:nnn {##1} {#1} {##2} }
+    \keyval_parse:NNn
+      \__xsim_declare_translation:n
+      \__xsim_declare_translation:nn
+      {#2}
   }
 
 \cs_new:Npn \__xsim_parse_translate_list_entry:nnn #1#2#3 {}

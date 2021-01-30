@@ -173,6 +173,8 @@
   {
     \xsim_verbose:n { Saving~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \xsim_set_property:nnnn {#1} {#2} {#3-body} {#4}
+    \xsim_if_exchange:nnnF {#1} {#2} {#3}
+      { \xsim_set_property:nnnn {#1} {#2} {solution-body} {#3} }
   }
 
 \cs_new:Npn \__xsim_save_environment_body_end: { }

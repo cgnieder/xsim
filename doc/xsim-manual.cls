@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2021/01/24]
+\ProvidesClass{xsim-manual}[2021/01/25]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -55,6 +55,7 @@
   quote-format = \small\biolinumLF ,
   add-cmds = {
     blank ,
+    activatecollection ,
     addbonus ,
     addpoints ,
     AddtoExerciseGoal ,
@@ -65,6 +66,7 @@
     collectexercises ,
     collectexercisestype ,
     collectexercisesstop ,
+    deactivatecollection ,
     DeclareExerciseCollection ,
     DeclareExerciseEnvironmentTemplate ,
     DeclareExerciseGoal ,
@@ -991,13 +993,13 @@
 \xsim@add@version{0.19}  {2020-03-16}
 \xsim@add@version{0.19a} {2020-03-19}
 \xsim@add@version{0.19b} {2020-04-04}
-\xsim@add@version{0.20}  {2021-01-24}
+\xsim@add@version{0.20}  {2021-01-25}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%
   \xsim\ writes a lot of stuff to an auxiliary file called
-  \cs*{jobname}\code{.xsim} (or the common \cs*{jobname}\code{.aux} if you use
-  option \option{use-aux}) for re-using information on subsequent
+  \meta{file name}\code{.xsim} (or the common \meta{file name}\code{.aux} if
+  you use option \option{use-aux}) for re-using information on subsequent
   compilations.  If you add exercises, change properties \etc\ it might happen
   that wrong information is staying in the auxiliary file and is wrongly used
   by \xsim.  In such cases deleting the auxiliary file and doing a few fresh

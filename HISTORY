@@ -159,10 +159,18 @@ HISTORY:
  v0.20  2021/01/24 - switch to one sty file per package
                    - use LaTeX's new hooks
                    - declare undeclared variables
-                   - re-write collection mechanism; this changes the behaviour
-                     of \collectexercises but doesn't require external files
-                     any more and more importantly doesn't require inputting
-                     files several times for multiple collections
-                   - new options `collect' and `<type>/collect'
+                   - new exercise setup mechanism which clearly determines the
+                     difference between definition, usage, and printing of an
+                     exercise; this also solves the problem with added goals
+                     in the exercise body in a collection
+                   - re-write collection mechanism:
+                     * changes the behaviour of \collectexercises but doesn't
+                       require external files any more and more importantly
+                       doesn't require inputting files several times for
+                       multiple collections
+                     * drop \collectexercisestype
+                     * new \(de)activatecollection
+                     * new options `collect' and `<type>/collect'
                    - small improvements in performance
                    - new parameters `within' and `the-counter'
+                   - make `no-files' the default

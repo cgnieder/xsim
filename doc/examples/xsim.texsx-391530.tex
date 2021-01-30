@@ -14,28 +14,23 @@
 \DeclareExerciseProperty{title}
 
 \makeatletter
-\DeclareExerciseEnvironmentTemplate{named}
-  {%
-    \subsection*{%
-      \GetExercisePropertyTF{title}
-        {#1}
-        {??\@latex@warning{Please give an exercise title}}%
-    }%
-  }
-  {}
+\DeclareExerciseEnvironmentTemplate{named}{%
+  \subsection*{%
+    \GetExercisePropertyTF{title}
+      {#1}
+      {??\@latex@warning{Please give an exercise title}}%
+  }%
+}{}
 \makeatother
 
-\DeclareExerciseEnvironmentTemplate{item}
-  {\item}
-  {}
-
+\DeclareExerciseEnvironmentTemplate{item}{\item}{}
 \DeclareExerciseCollection{exercise-pool}
 
-\xsimsetup{
-  exercise/template = named
-}
+\xsimsetup{ exercise/template = named }
 
-\begin{filecontents*}{\jobname-exercises.tex}
+\begin{document}
+
+\collectexercises{exercise-pool}
 \begin{question}
   Who is the Defence Minister?
 \end{question}
@@ -48,12 +43,6 @@
 \begin{question}
   Who is the External Affairs Minister?
 \end{question}
-\end{filecontents*}
-
-\begin{document}
-
-\collectexercises{exercise-pool}
-\input{\jobname-exercises.tex}
 \collectexercisesstop{exercise-pool}
 
 \begin{exercise}[title=Answer the following in one sentence:]

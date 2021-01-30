@@ -11,28 +11,24 @@
   solution/print=true
 }
 
-\DeclareExerciseEnvironmentTemplate{cyan-box}
-  {%
-    \begin{tcolorbox}[arc=0mm,boxrule=1pt,colback=white,colframe=cyan,leftrule=3mm]
-      \textsf{%
-        \MakeUppercase{%
-          \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}%
-        }%
+\DeclareExerciseEnvironmentTemplate{cyan-box}{%
+  \begin{tcolorbox}[arc=0mm,boxrule=1pt,colback=white,colframe=cyan,leftrule=3mm]
+    \textsf{%
+      \MakeUppercase{%
+        \XSIMmixedcase{\GetExerciseName}~\GetExerciseProperty{counter}%
       }%
-      \GetExercisePropertyT{subtitle}{ \textit{#1}}%
-      \quad
-  }
-  {\end{tcolorbox}}
-
-\DeclareExerciseEnvironmentTemplate{red}
-  {%
-    \par
-    \Needspace*{2\baselineskip}
-    \noindent
-    \textsf{\textcolor{red}{\MakeUppercase{\XSIMmixedcase{\GetExerciseName}}}}%
+    }%
+    \GetExercisePropertyT{subtitle}{ \textit{#1}}%
     \quad
-  }
-  {\par\bigskip}
+}{\end{tcolorbox}}
+
+\DeclareExerciseEnvironmentTemplate{red}{%
+  \par
+  \Needspace*{2\baselineskip}
+  \noindent
+  \textsf{\textcolor{red}{\MakeUppercase{\XSIMmixedcase{\GetExerciseName}}}}%
+  \quad
+}{\par\bigskip}
 
 \begin{document}
 

@@ -10,13 +10,8 @@
 \newcommand\printhints{%
   \begin{description}
     \ForEachUsedExerciseByType{%
-      \def\ExerciseType{##1}%
-      \def\ExerciseID{##2}%
       \GetExercisePropertyT{hint}
-        {%
-          \item[\XSIMmixedcase{\GetExerciseName}~##3]
-           ####1%
-        }%
+        {\item[\XSIMmixedcase{\GetExerciseName}~##3]####1}%
     }%
   \end{description}
 }

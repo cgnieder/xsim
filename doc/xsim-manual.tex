@@ -54,8 +54,8 @@
 \license
 
 \xsim\ loads the packages \pkg{expl3}~\cite{bnd:l3kernel},
-\pkg{xparse}~\cite{bnd:l3packages}, \pkg{etoolbox}~\cite{pkg:etoolbox},
-\pkg{array}~\cite{pkg:array} \pkg{booktabs}~\cite{pkg:booktabs} and
+\pkg{xparse}~\cite{bnd:l3packages}, \pkg{array}~\cite{pkg:array}
+\pkg{booktabs}~\cite{pkg:booktabs} and
 \pkg{translations}~\cite{pkg:translations}.  All of these packages are present
 on a modern and up to date \TeX\ distribution such as \TeX~Live or MiK\TeX\ so
 no further action should be needed.  When you are using \xsim\ you should be
@@ -73,16 +73,6 @@ using an up to date \TeX\ distribution, anyway.
   package.  Be careful: if you're in the middle of an important project it
   might be better to wait with the update until you've finished the project.
   Every update might be breaking some things.
-\end{bewareofthedog}
-
-I'm currently thinking to make the option \option{no-files} the default
-behavior of \xsim.  There is a poll and discussion regarding this question on
-\xsim's github page if you like to give your opinion on this.
-
-\begin{bewareofthedog}
-  The whole collection mechanism is likely to change completely in the
-  not-so-far future (let's say sometime in the six months from April~2020 or
-  so).
 \end{bewareofthedog}
 
 \section{Motivation, Background}
@@ -147,7 +137,7 @@ meaning in this manual.
     and solutions to external files.  This will keep your working folder
     ``clean'' but will also prevent using verbatim material in exercises and
     solutions.
-  \opt{use-files}
+  \opt{use-files}\Default{false}
     \sinceversion{0.20}This is the opposite of the option \option{no-files}.
   \opt{use-aux}
     \sinceversion{0.15}With this option enabled \xsim\ will use the regular
@@ -161,7 +151,7 @@ meaning in this manual.
 Those options are load-time options and are used the usual way as package
 options:
 \begin{sourcecode}
-  \usepackage[verbose]{xsim}
+  \usepackage[use-files]{xsim}
 \end{sourcecode}
 \begin{bewareofthedog}
   Although those options technically belong to the \module{package} module
@@ -274,11 +264,23 @@ More details on those two environments can be found in
 section~\vref{sec:using-printing}.
 
 \section{How the Exercise Environments Work}\label{sec:how-exerc-envir}
-Both the exercise and the solution environments write the contents of their
-bodies verbatim to external files following a certain naming structure:
+\sinceversion{0.13}Depending on the options
+\option{no-files}/\option{use-files} the bodies of exercises and solutions is
+either just another property (see section~\vref{sec:exercise-properties}) --
+this is the default behavior -- or is written to an external file.
+
+If the option \keyis{no-files}{true} is set the exercise and solution bodies
+are saved as properties \property{exercise-body} and
+\property{solution-body}. This is the default behavior of \xsim\ since
+version~0.20 and should work fine in most cases.  One obvious downsise is that
+verbatim material cannot be used in exercises and solutions.
+
+If the option \keyis{use-files}{true} is set both the exercise and the
+solution environments write the contents of their bodies verbatim to external
+files following a certain naming structure:
 \begin{itemize}
   \item
-  \code{\meta{jobname}-\meta{type}-\meta{id}-exercise|solution-body.tex} 
+    \code{\meta{jobname}-\meta{type}-\meta{id}-exercise|solution-body.tex} 
 \end{itemize}
 The name starts with the name of the job (which is the name of the document
 itself) followed by type and id of the corresponding exercise and then
@@ -328,19 +330,6 @@ order to deal with this somehow \xsim\ offers the following option:
     Lorem ipsum
   \end{exercise}
 \end{sourcecode}
-
-If\sinceversion{0.13} you don't like all the external files and the problems
-which come with them \emph{and} if you don't need any verbatim or similar
-material inside the exercises and solutions then you can use the following
-package option:
-\begin{options}
-  \opt{no-files}
-    This package option prevents \xsim\ from writing the exercises and
-    solutions to external files.  This will keep your working folder ``clean''
-    but will also prevent using verbatim material in exercises and solutions
-    and will possibly slow processing further down.  \emph{This option is
-      considered experimental.  Feedback is very welcome.}
-\end{options}
 
 \begin{bewareofthedog}
   \xsimauxfileinfo
@@ -439,6 +428,12 @@ must) be set.  Here is the complete list:
     types of exercises sharing a common counter.  \emph{This parameter can't
       be changed afterwards.}  If the explicit or implicit counter does not
     exist, yet, it will be defined.
+  \paraval{within}{counter name}
+    \sinceversion{0.20}Adds \parameter{counter} to the reset list of
+    \meta{counter name} by applying \cs*{counterwithin}.
+  \paraval{the-counter}{code}
+    \sinceversion{0.20}Redefines the corresponding representation command
+    \cs*{the...} of \parameter{counter} to \meta{code}.
   \paraval{solution-counter}{counter name}
     The counter used for the solutions of type \meta{type}.  If not explicitly
     set the counter with the same name as \parameter{solution-env} is used.
@@ -812,25 +807,27 @@ an exercise:\label{property:print!}
 \subsection{What the Environments do}
 
 When an exercise is started with \environ{exercise} (or other environments
-defined through \cs{DeclareExerciseType}) then different things happen
-depending on different settings:
-\begin{itemize}
-  \item where the environment is placed in the document the \emph{base setup}
-    happens: this sets the \property{id} of the exercise and sets the
+defined through \cs{DeclareExerciseType}) then three things happen depending
+on the setup:
+\begin{enumerate}
+  \item where the environment is placed in the document the \textbf{base
+      setup} happens: this sets the \property{id} of the exercise and sets the
     properties chosen in the optional argument.
-  \item in the default setup also the \emph{usage setup} happens: this
+  \item in the default setting also the \textbf{usage setup} happens: this
     increments the counter and sets the counter related properties like
     \property{counter}. Also the properties related to section numbers and the
     \property{page} are set.
-  \item in the default setup also the \emph{print setup} happens: this mostly
-    does nothing except printing the exercise.
-\end{itemize}
+  \item in the default setting also the \textbf{print setup} happens: this
+    mostly does nothing.  It initiates recording goals that are set inside of
+    the exercise body.
+\end{enumerate}
 
 Depending on wether the option \module{exercise}\code{/}\option{use} has been
 set to \code{false} or wether the property \property{use} has been set to
 \code{false} the \emph{usage setup} can be delayed.  The usage the happens
 when the exercise is \emph{inserted} the first time elsewhere in the document,
-for example as part of a collection, see~\vref{sec:collecting-exercises}.
+for example as part of a collection, see
+section~\vref{sec:collecting-exercises}.
 
 Depending on wether the option \module{exercise}\code{/}\option{print} has
 been set to \code{false} or if the property \property{print} has been set to
@@ -996,12 +993,13 @@ If a collection is not activated per default in can be activated (or
 deactivated in the opposite case) with these commands:
 \begin{commands}
   \command{activatecollection}[\marg{collection name}]
-    Activates the collection \meta{collection name} which now collects all
-    exercises until the collection is deactivated. \meta{collection name} can
-    be a csv list of collection names.
+    \sinceversion{0.20}Activates the collection \meta{collection name} which
+    now collects all exercises until the collection is
+    deactivated. \meta{collection name} can be a csv list of collection
+    names.
   \command{deactivatecollection}[\marg{collection name}]
-    Deactivates the collection \meta{collection name}.  \meta{collection name}
-    can be a csv list of collection names.
+    \sinceversion{0.20}Deactivates the collection \meta{collection name}.
+    \meta{collection name} can be a csv list of collection names.
 \end{commands}
 These commands do not influence exercises in other ways other than adding them
 to collections.
@@ -2222,14 +2220,11 @@ especially regarding other layouts are also shown in example files added to
 this package.
 
 \subsection{\dots Know if \xsim\ Needs Another Compilation?}
-If \xsim\ wants you to recompile your document it writes the following to the
-logfile:
+If \xsim\ wants you to recompile your document it issues a warning and writes
+the following to the logfile:
 \begin{sourcecode}
-  *************************************************
-  * xsim warning: "rerun"
-  * 
-  * Exercise properties may have changed. Rerun to get them synchronized.
-  *************************************************
+  Package xsim Warning: Exercise properties may have changed. Rerun to get them
+  (xsim)                synchronized.
 \end{sourcecode}
 So just check the logfile regularly (which you should be doing anyway) and
 keep your eyes open.
@@ -2246,14 +2241,15 @@ compilations may resolve your problems.
 \subsection{\code{! TeX capacity exceeded, sorry [text input levels=15].}
   Why?}
 Did you try to use an exercise or solution in a macro of some sort?  This
-generally will fail\footnote{The reasons are similar to the ones given here:
+generally will fail if you also use the option \option{use-files}\footnote{The
+  reasons are similar to the ones given here:
   \url{https://tex.stackexchange.com/a/295422/}.}.  But there should never be
 the need to hide the environments inside of a macro, anyway.
 
 \subsection{\code{Runaway argument? !File ended while scanning use of \^{}\^{}M.} Why?}
 Did you try to use an exercise or solution in a macro of some sort?  This
-generally will fail.  But there should never be the need to hide the
-environments inside of a macro, anyway.
+generally will fail if you also use the option \option{use-files}.  But there
+should never be the need to hide the environments inside of a macro, anyway.
 
 \subsection{\dots Put a Star (or Another Symbol) in Headings of Exercises That
   Are Special?}

@@ -18,13 +18,8 @@
 \newcommand\printshortsolutions{%
   \begin{description}
     \ForEachUsedExerciseByType{%
-      \def\ExerciseType{##1}%
-      \def\ExerciseID{##2}%
       \GetExercisePropertyT{shortsolution}
-        {%
-          \item[Short Solution ##3]
-           ####1%
-        }%
+        {\item[Short Solution ##3]####1}%
     }%
   \end{description}
 }

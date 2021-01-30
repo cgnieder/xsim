@@ -1,6 +1,5 @@
 % https://tex.stackexchange.com/q/369803
 \documentclass[a4paper,parskip=half]{scrartcl}
-\usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
 
 \usepackage{amsmath}
@@ -12,19 +11,16 @@
 
 \usepackage{xsim,siunitx}
 \DeclareExerciseTagging{difficulty}
-\DeclareExerciseEnvironmentTemplate{custom}
-  {%
-    \subsection*
-      {%
-        \XSIMmixedcase{\GetExerciseName}\nobreakspace
-        \GetExerciseProperty{counter}%
-        \IfInsideSolutionF
-          {%
-            \IfExercisePropertySetT{subtitle}
-              { {\normalfont(\GetExerciseProperty{subtitle})}}%
-          }%
-      }%
-  }{}
+\DeclareExerciseEnvironmentTemplate{custom}{%
+  \subsection*{%
+    \XSIMmixedcase{\GetExerciseName}\nobreakspace
+    \GetExerciseProperty{counter}%
+    \IfInsideSolutionF{%
+      \IfExercisePropertySetT{subtitle}
+        { {\normalfont(\GetExerciseProperty{subtitle})}}%
+    }%
+  }%
+}{}
 
 \xsimsetup{
   exercise/name = \XSIMtranslate{question} ,

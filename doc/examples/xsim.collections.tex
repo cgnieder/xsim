@@ -1,19 +1,19 @@
 \documentclass{article}
 \usepackage{xsim}
+\usepackage{lipsum}
 
 \DeclareExerciseCollection[difficulty=easy]{easy}
 \DeclareExerciseCollection[difficulty=medium]{medium}
 \DeclareExerciseTagging{difficulty}
 
-\usepackage{lipsum}
+\xsimsetup{collect}
 
 \begin{document}
 
-\begin{exercise}
+\begin{exercise}[use,print]
   outside before
 \end{exercise}
 
-\collectexercises{easy,medium}
 \begin{exercise}[difficulty=easy,points=1]
   foo one \lipsum[4]
 \end{exercise}
@@ -32,7 +32,6 @@
 \begin{solution}
   foo three \lipsum[4]
 \end{solution}
-\collectexercisesstop{easy,medium}
 
 \section{Easy}
 \printcollection{easy}

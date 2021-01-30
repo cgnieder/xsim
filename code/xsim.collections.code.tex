@@ -133,7 +133,11 @@
 \cs_new_protected:Npn \xsim_collect_start:n #1
   {
     \group_begin:
-      \xsim_foreach_exercise_type:n { \keys_set:nn {xsim} { collect = true } }
+      \xsim_foreach_exercise_type:n
+        {
+          \keys_set:nx {xsim}
+            { \xsim_get_parameter:nn {##1} {exercise-env} / collect = true }
+        }
       \clist_map_inline:nn {#1}
         {
           \xsim_if_collection_active:nF {##1}
@@ -151,7 +155,11 @@
 \keys_define:nn {xsim}
   {
     collect .code:n =
-      \xsim_foreach_exercise_type:n { \keys_set:nn {xsim/##1} { collect = #1 } } ,
+      \xsim_foreach_exercise_type:n
+        {
+          \keys_set:nx {xsim}
+            { \xsim_get_parameter:nn {##1} {exercise-env} / collect = #1 }
+        } ,
     collect .default:n = true ,
     collect .initial:n = false
   }
