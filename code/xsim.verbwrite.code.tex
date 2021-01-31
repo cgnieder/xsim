@@ -113,7 +113,7 @@
         \xsim_if_final:F %
           { %
             \iow_now:Nx \l__xsim_file_contents_iow  %
-              { \l_xsim_file_begin_tl } %
+              { \exp_not:V \l_xsim_file_begin_tl } %
           } %
       } %
     \__xsim_set_verb_catcodes: %
@@ -163,7 +163,7 @@
         \xsim_if_final:F
           {
             \iow_now:Nx \l__xsim_file_contents_iow
-              { \l_xsim_file_end_tl }
+              { \exp_not:V \l_xsim_file_end_tl }
           }
       }
     \__xsim_close_stream:N \l__xsim_file_contents_iow

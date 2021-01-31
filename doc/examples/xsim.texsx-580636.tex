@@ -4,32 +4,32 @@
 
 \usepackage[colorlinks,allcolors=blue]{hyperref}
 
-\DeclareExerciseProperty-{hint}
 \DeclareExerciseProperty{hints}
 \newcounter{hint}
 \renewcommand\theHhint{\ExerciseID.\arabic{hint}}
 \newcounter{hints}
 \newcounter{step}
 
-\NewDocumentCommand\AddExerciseHint{+m}{%
-  \stepcounter{hints}%
-  \SaveExerciseProperty{hint}\tmphint
-  \SetExpandedExerciseProperty{hint}{%
-    \unexpanded\expandafter{\tmphint}%
-    \unexpanded{%
-      \par
-      \refstepcounter{hint}\label{hint:\ExerciseID:\arabic{hint}}%
-      \noindent\textbf{Hint~\thehint\ to exercise \GetExerciseProperty{counter}}%
-      \hfill Back to exercise \ref{ex:\ExerciseID}\par
-      \noindent#1\par\addvspace{\bigskipamount}
-    }%
+\NewDocumentEnvironment{hint}{}{%
+  \stepcounter{hint}%
+  \XSIMsetfilebegin{%
+    \par
+    \refstepcounter{hint}\label{hint:\ExerciseID:\arabic{hint}}%
+    \noindent\textbf{Hint~\thehint\ to exercise \GetExerciseProperty{counter}}%
+    \hfill Back to exercise \ref{ex:\ExerciseID}\par
+    \noindent
   }%
+  \XSIMsetfileend{\par\addvspace{\bigskipamount}}%
+  \XSIMfilewritestart{\jobname-hint-\ExerciseID-\arabic{hint}.tex}%
+}{%
+  \XSIMfilewritestop
+  \stepcounter{hints}%
   \SetExpandedExerciseProperty{hints}{\arabic{hints}}%
 }
-\NewDocumentEnvironment{hint}{+b}{\AddExerciseHint{#1}}{}
 
 \DeclareExerciseEnvironmentTemplate{hints}{%
-  \setcounter{hints}{0}
+  \setcounter{hint}{0}%
+  \setcounter{hints}{0}%
   \par\noindent
   \textbf{\XSIMmixedcase{\GetExerciseName}\GetExerciseProperty{counter}:}\hfill
   \IfExercisePropertySetT{hints}{%
@@ -51,7 +51,14 @@
 }
 
 \newcommand\printhints{%
-  \ForEachUsedExerciseByType{\setcounter{hint}{0}\GetExerciseProperty{hint}}%
+  \ForEachUsedExerciseByType{%
+    \setcounter{step}{0}%
+    \setcounter{hint}{0}%
+    \loop\unless\ifnum\value{step}=\GetExerciseProperty{hints}
+      \stepcounter{step}%
+      \input{\jobname-hint-\ExerciseID-\arabic{step}.tex}%
+    \repeat
+  }%
 }
 
 \begin{document}
@@ -64,7 +71,7 @@ print("Hello world")
 Verbatim &^%$&\content
 \end{verbatim}
 \begin{hint}
-  Run the example from the command line with the python command
+  Run the example from the command line with the python command.
 \end{hint}
 \begin{hint}
   The solution is 42.
@@ -73,10 +80,11 @@ Verbatim &^%$&\content
 
 \begin{exercise}
   Another exercise
-  \begin{hint}
-    The first ten million years were the worst.
-  \end{hint}
+\begin{hint}
+  The first ten million years were the worst. Some \verb+&$+.
+\end{hint}
 \end{exercise}
+
 
 \section{Hints}
 \printhints

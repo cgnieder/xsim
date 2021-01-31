@@ -1409,7 +1409,7 @@
 % #5: path
 \cs_new_protected:Npn \__xsim_file_info:nnnnn #1#2#3#4#5
   {
-    \tl_set:Nn \l_xsim_file_begin_tl
+    \tl_set:Nx \l_xsim_file_begin_tl
       {
         \__xsim_comment_line_and_feed:n { \c__xsim_comment_line_fill_tl }
         \__xsim_comment_line_and_feed:n {file~ `#4'}

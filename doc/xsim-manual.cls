@@ -943,6 +943,7 @@
 \xsim@add@example{texsx-466584}{Flushright Solutions}
 \xsim@add@example{texsx-498299}{Multiple choice questions with automated solutions}
 \xsim@add@example{texsx-576998}{Exercises at the end of section and sectionwise solutions}
+\xsim@add@example{texsx-580636}{Multiple hints per exercise with backlinks}
 \xsim@add@example{texwelt-6698}{Custom list of exercises}
 \xsim@add@example{texwelt-15093}{Indicate difficulty level}
 \xsim@add@example{texwelt-23968}{Long and short solutions}
