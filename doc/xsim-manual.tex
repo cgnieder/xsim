@@ -1,8 +1,8 @@
+% arara: pdflatex: { interaction: nonstopmode }
+% arara: biber
+% arara: pdflatex: { interaction: nonstopmode }
+% arara: pdflatex: { interaction: nonstopmode }
 % !arara: pdflatex: { interaction: nonstopmode }
-% !arara: biber
-% arara: pdflatex: { interaction: nonstopmode }
-% arara: pdflatex: { interaction: nonstopmode }
-% arara: pdflatex: { interaction: nonstopmode }
 % ----------------------------------------------------------------------------
 % the XSIM package
 % 
@@ -33,12 +33,6 @@
 \documentclass{xsim-manual}
 
 \begin{filecontents*}[overwrite]{\jobname.bib}
-@online{texsx:romannumeral,
-  author = {Bruno Le Floch} ,
-  title = {Cunning (La)TeX tricks} ,
-  urldate = {2017-03-02} ,
-  url = {http://tex.stackexchange.com/a/19769/}
-}
 @online{texsx:tagged/exsheets,
   title = {Questions tagged `exsheets'} ,
   author = {various} ,
@@ -80,7 +74,7 @@ using an up to date \TeX\ distribution, anyway.
 It has been quite a while since I first published
 \pkg{exsheets}~\cite{pkg:exsheets} in June 2012.  Since then it has gained a
 user base and a little bit of popularity as the number of questions on tex.sx
-shows (143~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
+shows (151~at the time of writing)~\cite{texsx:tagged/exsheets}.  User
 questions, bug reports and feature requests improved it over the time.  It
 still has a version number starting with a zero, though, which in my
 versioning system means I still consider it experimental.
@@ -1625,9 +1619,7 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Returns \meta{true} if both a macro \cs*{chapter} and a counter
     \code{chapter} are defined and \meta{false} otherwise.
   \command{XSIMmixedcase}[\marg{code}]
-    Converts the full expansion\footnote{This is a \cs*{romannumeral}
-      expansion~\cite{texsx:romannumeral}.\label{fn:romannumeral}} of
-    \meta{code} to mixed case: \\
+    Converts the full expansion of \meta{code} to mixed case: \\
     \verbcode+\XSIMmixedcase{this is some text}+ \XSIMmixedcase{this is some
       text} \\
     \emph{This command expands \meta{code} before converting it}.
@@ -1637,16 +1629,16 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     macro \cs*{g@addto@macro}.
   \expandable\command{XSIMifeq\TF}[\marg{code 1}\marg{code
     2}\marg{true}\marg{false}]
-    Checks if the full expansion\footref{fn:romannumeral} of \meta{code 1} and
-    \meta{code 2} is the same tokenlist.
+    Checks if the full expansion of \meta{code 1} and \meta{code 2} is the
+    same tokenlist.
   \expandable\command{XSIMifblank\TF}[\marg{code}\marg{true}\marg{false}]
-    Checks if the full expansion\footref{fn:romannumeral} of \meta{code} is
-    blank (\ie, if it is empty or only consists of spaces).
+    Checks if the full expansion of \meta{code} is blank (\ie, if it is empty
+    or only consists of spaces).
   \command{XSIMatbegindocument}[\marg{code}]
-    \sinceversion{0.15a}Adds \meta{code} to \xsim's begin document hook.
+    \sinceversion{0.16}Adds \meta{code} to \xsim's begin document hook.
     Should be used inside style files instead of \cs*{AtBeginDocument}.
   \command{XSIMatenddocument}[\marg{code}]
-    \sinceversion{0.15a}Adds \meta{code} to \xsim's end document hook.
+    \sinceversion{0.16}Adds \meta{code} to \xsim's end document hook.
     Should be used inside style files instead of \cs*{AtEndDocument}.
 \end{commands}
 

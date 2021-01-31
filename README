@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------
-XSIM     2021/01/26 v0.20
-XSIMVERB 2021/01/26 v0.3
+XSIM     2021/01/31 v0.20
+XSIMVERB 2021/01/31 v0.3
 
   eXercise Sheets IMproved
 
@@ -67,11 +67,14 @@ The xsim package consists of the example files:
    xsim.texsx-395273.tex, xsim.texsx-395273.pdf
    xsim.texsx-466584.tex, xsim.texsx-466584.pdf
    xsim.texsx-498299.tex, xsim.texsx-498299.pdf
+   xsim.texsx-576998.tex, xsim.texsx-576998.pdf
+   xsim.texsx-580636.tex, xsim.texsx-580636.pdf
    xsim.texwelt-6698.tex, xsim.texwelt-6698.pdf
    xsim.texwelt-15093.tex, xsim.texwelt-15093.pdf
    xsim.texwelt-23968.tex, xsim.texwelt-23968.pdf
-   xsim.golatex-16824.tex, xsim.golatex-16824.pdf
-   xsim.golatex-18844.tex, xsim.golatex-18844.pdf
+   xsim.golatex-80640.tex, xsim.golatex-80640.pdf
+   xsim.golatex-91339.tex, xsim.golatex-91339.pdf
+   xsim.issues-49.tex, xsim.issues-49.pdf
 --------------------------------------------------------------------------
 If you have any ideas, questions, suggestions or bugs to report, please
 feel free to contact me.
