@@ -347,8 +347,8 @@ if [ "$createzip" == true ] ; then
     cp ${DOC_DIR}/$manualfile.tex $pkgname/
     cp ${DOC_DIR}/$manualfile.pdf $pkgname/
     cp ${DOC_DIR}/$manualfile.cls $pkgname/
-    cp ${DOC_DIR}/examples/$pkgname.example.*.tex $pkgname/examples/
-    cp ${DOC_DIR}/examples/$pkgname.example.*.pdf $pkgname/examples/
+    cp ${DOC_DIR}/examples/$pkgname.*.tex $pkgname/examples/
+    cp ${DOC_DIR}/examples/$pkgname.*.pdf $pkgname/examples/
     cp README $pkgname/
     zip -r $zipname.zip $pkgname/
     rm -r $pkgname/
