@@ -28,9 +28,8 @@ The xsim package consists of the code files:
    xsimverb.sty
 --------------------------------------------------------------------------
 The xsim package consists of the documentation files:
-   README
-   xsim.history, xsim.ideas
-   xsim_manual.tex, xsim_manual.pdf
+   README HISTORY
+   xsim-manual.tex, xsim-manual.pdf
    xsim-manual.cls
 --------------------------------------------------------------------------
 The xsim package consists of the example files:

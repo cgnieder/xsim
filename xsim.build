@@ -350,6 +350,7 @@ if [ "$createzip" == true ] ; then
     cp ${DOC_DIR}/examples/$pkgname.*.tex $pkgname/examples/
     cp ${DOC_DIR}/examples/$pkgname.*.pdf $pkgname/examples/
     cp README $pkgname/
+    cp HISTORY $pkgname/
     zip -r $zipname.zip $pkgname/
     rm -r $pkgname/
     mv $zipname.zip ${SNAPSHOT_DIR}/$pkgname
