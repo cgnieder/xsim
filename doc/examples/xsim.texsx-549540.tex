@@ -1,0 +1,153 @@
+% https://tex.stackexchange.com/q/549540/
+\documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
+
+\usepackage{parskip}
+\usepackage{geometry}
+\geometry{ a4paper, left=5mm, right=5mm, top=15mm }
+
+\usepackage{amsmath,amssymb}
+
+\usepackage{multicol}
+\setlength{\columnsep}{1mm}
+\setlength{\columnseprule}{0.2pt}
+
+\usepackage[most]{tcolorbox}
+
+\usepackage{siunitx}
+\usepackage{xsim}
+\usepackage{tasks}
+
+\makeatletter
+\newtcolorbox{examtitle}[2][]{
+  halign=flush center,
+  colframe=gray!70!black,
+  fonttitle=\Large,
+  enhanced, 
+  breakable,
+  colback=white,
+  attach boxed title to top right={yshift=-2pt}, title={#2},
+  boxed title size=standard,
+  boxrule=0pt,
+  boxed title style={
+    sharp corners, 
+    rounded corners=northeast, 
+    colback=tcbcolframe, 
+    boxrule=0pt},
+  sharp corners=north,
+  overlay unbroken={
+    \path[fill=tcbcolback] 
+      ([xshift=2pt]title.south west) 
+      to[out=180, in=0] ([xshift=-1.5cm]title.west)--
+      (title.west-|frame.west) |- 
+      ([xshift=2pt]title.south west)--cycle;
+    \path[fill=tcbcolframe] (title.south west) 
+      to[out=180, in=0] ([xshift=-1.5cm]title.west)--
+      (title.west-|frame.west)
+      [rounded corners=\kvtcb@arc] |- 
+      (title.north-|frame.north) 
+      [sharp corners] -| (title.south west);
+    \draw[line width=.5mm, rounded corners=\kvtcb@arc, 
+      tcbcolframe] 
+      (title.north east) rectangle 
+      (frame.south west);
+  }, 
+  overlay first={
+    \path[fill=tcbcolback] 
+      ([xshift=2pt]title.south west) 
+      to[out=180, in=0] ([xshift=-1.5cm]title.west)--
+     (title.west-|frame.west) |- 
+      ([xshift=2pt]title.south west)--cycle;
+    \path[fill=tcbcolframe] (title.south west) 
+      to[out=180, in=0] ([xshift=-1.5cm]title.west)--
+      (title.west-|frame.west)
+      [rounded corners=\kvtcb@arc] |- 
+      (title.north-|frame.north) 
+      [sharp corners] -| (title.south west);
+    \draw[line width=.5mm, rounded corners=\kvtcb@arc, 
+      tcbcolframe] 
+      (frame.south west) |- (title.north) -| 
+      (frame.south east);
+  }, 
+  overlay middle={
+    \draw[line width=.5mm, tcbcolframe] 
+    (frame.north west)--(frame.south west) 
+    (frame.north east)--(frame.south east);
+  },
+  overlay last={
+    \draw[line width=.5mm, rounded corners=\kvtcb@arc, 
+      tcbcolframe] 
+      (frame.north west) |- (frame.south) -|
+      (frame.north east);
+  }, 
+  #1
+}
+\makeatother
+
+\xsimsetup{
+  load-style = layouts ,
+  exercise/template = minimal ,
+  exercise/the-counter = \arabic{exercise}. ,
+  exercise/end-hook = \vspace{\baselineskip}
+}
+
+\NewTasksEnvironment[
+  label = (\Alph*) ,
+  label-format = \bfseries ,
+  label-width = 21pt
+]{choices}[\choice]
+
+\DeclareExerciseProperty{answer}    
+\newcommand*\answer[1]{%
+  \SetExpandedExerciseProperty{answer}{ \thetask\ \unexpanded{#1}}%
+ #1%
+}
+
+\newcommand*\getanswers{%
+  \def\betweenanswers{\def\betweenanswers{\hspace{2em}}}%
+  \ForEachUsedExerciseByID{%
+    \betweenanswers##3\ExercisePropertyGet{##1}{##2}{answer}%
+  }%
+}
+
+\begin{document}
+
+\begin{examtitle}{Test 1}
+  Angles in parallel lines
+\end{examtitle}
+
+\begin{multicols*}{2}
+\begin{exercise}
+  If the ratio of two supplementary angles is $\frac{4}{11}$, what is the
+  measure of the small angle?
+    \begin{choices}(5)
+      \choice \ang{36}
+      \choice \ang{44}
+      \choice \answer{\ang{48}}
+      \choice \ang{52}
+      \choice \ang{60}
+    \end{choices}
+  \end{exercise}
+  \begin{exercise}
+    Is this really a question?
+    \begin{choices}(4)
+      \choice \answer{yes}
+      \choice no
+      \choice maybe
+      \choice no idea
+    \end{choices}
+  \end{exercise}
+    \begin{exercise}
+    This really is a question!
+    \begin{choices}(4)
+      \choice yes
+      \choice \answer{no}
+      \choice maybe
+      \choice no idea
+    \end{choices}
+  \end{exercise}
+  \subsection*{Answers}
+  \getanswers
+\end{multicols*}
+
+\end{document}

@@ -941,7 +941,8 @@
 \xsim@add@example{texsx-391530}{Exercises and sub-exercises}
 \xsim@add@example{texsx-395273}{Different aspects of exercises, highlighted solutions}
 \xsim@add@example{texsx-466584}{Flushright Solutions}
-\xsim@add@example{texsx-498299}{Multiple choice questions with automated solutions}
+\xsim@add@example{texsx-498299}{Multiple choice questions with automated solutions (1)}
+\xsim@add@example{texsx-549540}{Multiple choice questions with automated solutions (2)}
 \xsim@add@example{texsx-576998}{Exercises at the end of section and sectionwise solutions}
 \xsim@add@example{texsx-580636}{Multiple hints per exercise with backlinks}
 \xsim@add@example{texwelt-6698}{Custom list of exercises}
