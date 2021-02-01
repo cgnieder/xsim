@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------
-XSIM     2021/01/31 v0.20
+XSIM     2021/02/01 v0.20a
 XSIMVERB 2021/01/31 v0.3
 
   eXercise Sheets IMproved
@@ -26,6 +26,7 @@ The Current Maintainer of this work is Clemens Niederberger.
 The xsim package consists of the code files:
    xsim.sty
    xsimverb.sty
+   xsim.style.layouts.code.tex
 --------------------------------------------------------------------------
 The xsim package consists of the documentation files:
    README HISTORY

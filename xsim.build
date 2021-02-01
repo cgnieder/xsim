@@ -344,6 +344,7 @@ if [ "$createzip" == true ] ; then
     mkdir $pkgname/examples
     cp ${CODE_DIR}/$styname $pkgname/
     cp ${CODE_DIR}/$verbname $pkgname/
+    cp ${CODE_DIR}/$pkgname.style.layouts.code.tex $pkgname/
     cp ${DOC_DIR}/$manualfile.tex $pkgname/
     cp ${DOC_DIR}/$manualfile.pdf $pkgname/
     cp ${DOC_DIR}/$manualfile.cls $pkgname/
