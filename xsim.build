@@ -23,6 +23,7 @@ pkgname="xsim"
 moduleext="code.tex"
 styname="${pkgname}.sty"
 verbname="${pkgname}verb.sty"
+layoutsname="${pkgname}.style.layouts.code.tex"
 program="arara --verbose"
 manualfile="${pkgname}-manual"
 zipname="$pkgname"
@@ -324,6 +325,7 @@ if [ "$update" == true ] ; then
     cd ${CODE_DIR}
     cp $styname ${LATEXLOCAL_DIR}/$pkgname
     cp $verbname ${LATEXLOCAL_DIR}/$pkgname
+    cp $layoutsname ${LATEXLOCAL_DIR}/$pkgname
     if [ "$runmktexlsr" == true ] ; then
         if [ "$verbose" == true ] ; then
             echo "running mktexlsr ..."
@@ -344,7 +346,7 @@ if [ "$createzip" == true ] ; then
     mkdir $pkgname/examples
     cp ${CODE_DIR}/$styname $pkgname/
     cp ${CODE_DIR}/$verbname $pkgname/
-    cp ${CODE_DIR}/$pkgname.style.layouts.code.tex $pkgname/
+    cp ${CODE_DIR}/$layoutsname $pkgname/
     cp ${DOC_DIR}/$manualfile.tex $pkgname/
     cp ${DOC_DIR}/$manualfile.pdf $pkgname/
     cp ${DOC_DIR}/$manualfile.cls $pkgname/

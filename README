@@ -29,7 +29,7 @@ The xsim package consists of the code files:
    xsim.style.layouts.code.tex
 --------------------------------------------------------------------------
 The xsim package consists of the documentation files:
-   README HISTORY
+   README, HISTORY
    xsim-manual.tex, xsim-manual.pdf
    xsim-manual.cls
 --------------------------------------------------------------------------
@@ -67,6 +67,7 @@ The xsim package consists of the example files:
    xsim.texsx-395273.tex, xsim.texsx-395273.pdf
    xsim.texsx-466584.tex, xsim.texsx-466584.pdf
    xsim.texsx-498299.tex, xsim.texsx-498299.pdf
+   xsim.texsx-549540.tex, xsim.texsx-549540.pdf
    xsim.texsx-576998.tex, xsim.texsx-576998.pdf
    xsim.texsx-580636.tex, xsim.texsx-580636.pdf
    xsim.texwelt-6698.tex, xsim.texwelt-6698.pdf
