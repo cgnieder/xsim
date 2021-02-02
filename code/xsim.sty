@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2021/02/01}
+\tl_const:Nn \c_xsim_date_tl                 {2021/02/02}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
 \tl_const:Nn \c_xsim_version_minor_number_tl {20}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {a}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {b}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -2485,6 +2485,7 @@
       { \prg_return_true: }
       { \prg_return_false: }
   }
+\prg_generate_conditional_variant:Nnn \xsim_if_parameter_set:nn {o} {T,F,TF}
 
 % ----------------------------------------------------------------------------
 
@@ -4625,13 +4626,13 @@
 \NewExpandableDocumentCommand \IfExercisePropertyExistF {+m+m}
   { \IfExercisePropertyExistTF {#1} {} {#2} }
 
-\NewDocumentCommand \IfExercisePropertySetTF {m+m+m}
+\NewExpandableDocumentCommand \IfExercisePropertySetTF {m+m+m}
   { \xsim_if_property_set:eenTF {\ExerciseType} {\ExerciseID} {#1} {#2} {#3} }
 
-\NewDocumentCommand \IfExercisePropertySetT {m+m}
+\NewExpandableDocumentCommand \IfExercisePropertySetT {m+m}
   { \IfExercisePropertySetTF {#1} {#2} {} }
 
-\NewDocumentCommand \IfExercisePropertySetF {m+m}
+\NewExpandableDocumentCommand \IfExercisePropertySetF {m+m}
   { \IfExercisePropertySetTF {#1} {} {#2} }
 
 \NewExpandableDocumentCommand \GetExerciseProperty {m}
@@ -4733,22 +4734,22 @@
   { \xsim_input:oon { \ExerciseType } { \ExerciseID } {#1} }
   
 \NewExpandableDocumentCommand \IfExerciseParameterSetTF {+m+m+m}
-  { \xsim_if_parameter_set:nnTF {\ExerciseType} {#1} {#2} {#3} }
+  { \xsim_if_parameter_set:onTF {\ExerciseType} {#1} {#2} {#3} }
 
 \NewExpandableDocumentCommand \IfExerciseParameterSetT {+m+m}
-  { \IfExerciseParameterSetTF {#1} {#2} {} }
+  { \xsim_if_parameter_set:onT {\ExerciseType} {#1} {#2} }
 
 \NewExpandableDocumentCommand \IfExerciseParameterSetF {+m+m}
-  { \IfExerciseParameterSetTF {#1} {} {#2} }
+  { \xsim_if_parameter_set:onF {\ExerciseType} {#1} {#2} }
 
 \NewExpandableDocumentCommand \ExerciseParameterIfSetTF {+m+m+m+m}
   { \xsim_if_parameter_set:nnTF {#1} {#2} {#3} {#4} }
 
 \NewExpandableDocumentCommand \ExerciseParameterIfSetT {+m+m+m}
-  { \ExerciseParameterIfSetTF {#1} {#2} {#3} {} }
+  { \xsim_if_parameter_set:nnT {#1} {#2} {#3} }
 
 \NewExpandableDocumentCommand \ExerciseParameterIfSetF {+m+m+m}
-  { \ExerciseParameterIfSetTF {#1} {#2} {} {#3} }
+  { \xsim_if_parameter_set:nnF {#1} {#2} {#3} }
 
 \NewDocumentCommand \GetExerciseParameterTF {m+m+m}
   { \xsim_get_parameter_if_set:onTF {\ExerciseType} {#1} {#2} {#3} }

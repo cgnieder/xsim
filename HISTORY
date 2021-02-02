@@ -178,3 +178,4 @@ HISTORY:
                    - various small fixes
  v0.20a 2021/02/01 - re-add missing `layouts' style
                    - add example texsx-549540
+ v0.20b 2021/02/02 - fix issue #78

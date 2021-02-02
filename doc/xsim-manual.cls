@@ -997,6 +997,7 @@
 \xsim@add@version{0.19b} {2020-04-04}
 \xsim@add@version{0.20}  {2021-01-31}
 \xsim@add@version{0.20a} {2021-02-01}
+\xsim@add@version{0.20b} {2021-02-02}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%
