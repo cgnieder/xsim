@@ -285,7 +285,9 @@
   {
     \xsim_if_write_to_files:TF
       {
-        \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+        \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+          { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+          { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
         \file_if_exist:VTF \l__xsim_file_path_and_name_tl
           { \prg_return_true: }
           { \prg_return_false: }

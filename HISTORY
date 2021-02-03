@@ -179,3 +179,5 @@ HISTORY:
  v0.20a 2021/02/01 - re-add missing `layouts' style
                    - add example texsx-549540
  v0.20b 2021/02/02 - fix issue #78
+ v0.20c 2021/02/03 - fix issue #80
+                   - add missing test in \xsim_if_exist:nnnTF

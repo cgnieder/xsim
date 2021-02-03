@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2021/02/02}
+\tl_const:Nn \c_xsim_date_tl                 {2021/02/03}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
 \tl_const:Nn \c_xsim_version_minor_number_tl {20}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {b}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {3}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -1608,7 +1608,9 @@
   {
     \xsim_if_write_to_files:TF
       {
-        \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+        \xsim_if_exchange:nnnTF {#1} {#2} {#3}
+          { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+          { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
         \file_if_exist:VTF \l__xsim_file_path_and_name_tl
           { \prg_return_true: }
           { \prg_return_false: }
