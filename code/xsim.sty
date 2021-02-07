@@ -1338,11 +1338,10 @@
   }
 
 \tl_new:N   \l__xsim_file_name_signature_tl
-\tl_new:N   \l__xsim_file_path_tl
-\tl_new:N   \l__xsim_file_path_and_name_tl
-\tl_new:N   \l__xsim_file_name_tl
+\tl_new:N   \l_xsim_file_path_tl
+\tl_new:N   \l_xsim_file_path_and_name_tl
+\tl_new:N   \l_xsim_file_name_tl
 \tl_new:N   \l__xsim_file_extension_tl
-\tl_new:N   \l__xsim_solution_tl
 \bool_new:N \l__xsim_options_given_bool
 \bool_new:N \l__xsim_insert_mode_bool
 
@@ -1361,7 +1360,7 @@
 
 \keys_define:nn {xsim}
   {
-    path           .tl_set:N  = \l__xsim_file_path_tl ,
+    path           .tl_set:N  = \l_xsim_file_path_tl ,
     file-extension .tl_set:N  = \l__xsim_file_extension_tl ,
     file-extension .initial:n = tex
   }
@@ -1369,7 +1368,7 @@
 % ----------------------------------------------------------------------------
 
 \tl_const:Nn \c__xsim_comment_line_tl { \c__xsim_percent_char_tl }
-\tl_const:Nn \c__xsim_comment_line_fill_tl { \prg_replicate:nn {72} {-} }
+\tl_const:Nn \c__xsim_comment_line_fill_tl { \prg_replicate:nn {48} {-} }
 \tl_const:Nn \c__xsim_comment_line_indent_tl { \c_space_tl \c_space_tl }
 
 \cs_new:Npn \__xsim_comment_line_and_feed:n #1
@@ -1388,18 +1387,17 @@
 % #1: type
 % #2: id
 % #3: exercise|solution
-\cs_new_protected:Npn \__xsim_set_file_signature:nnn #1#2#3
+\cs_new_protected:Npn \xsim_set_file_signature:nnn #1#2#3
   { \tl_set:Nn \l__xsim_file_name_signature_tl {#1-#2-#3} }
-\cs_generate_variant:Nn \__xsim_set_file_signature:nnn {nx,nV}
+\cs_generate_variant:Nn \xsim_set_file_signature:nnn {nx,nV}
 
-\tl_set:Nn \l__xsim_file_name_tl
+\tl_set:Nn \l_xsim_file_name_tl
   { \c_sys_jobname_str - \l__xsim_file_name_signature_tl -body . \l__xsim_file_extension_tl }
 
-\tl_set:Nn \l__xsim_file_path_and_name_tl
+\tl_set:Nn \l_xsim_file_path_and_name_tl
   {
-    \tl_if_blank:VF \l__xsim_file_path_tl
-      { \l__xsim_file_path_tl / }
-    \l__xsim_file_name_tl
+    \tl_if_blank:VF \l_xsim_file_path_tl { \l_xsim_file_path_tl / }
+    \l_xsim_file_name_tl
   }
 
 % #1: type
@@ -1474,14 +1472,14 @@
   {
     \xsim_verbose:n
       { Starting~ to~ write~ #3~ environment~ type~ `#1'~ id~ `#2' }
-    \__xsim_set_file_signature:nnn {#1} {#2} {#3}
+    \xsim_set_file_signature:nnn {#1} {#2} {#3}
     \__xsim_file_info:nnnVV {#1} {#2} {#3}
-      \l__xsim_file_name_tl
-      \l__xsim_file_path_tl
+      \l_xsim_file_name_tl
+      \l_xsim_file_path_tl
     \int_zero:N \l_xsim_line_gobble_int
     \xsim_file_write_start:nV
       { \l__xsim_options_given_bool }
-      \l__xsim_file_path_and_name_tl
+      \l_xsim_file_path_and_name_tl
   }
 
 \cs_new_protected:Npn \__xsim_write_environment_body_end:
@@ -1609,9 +1607,9 @@
     \xsim_if_write_to_files:TF
       {
         \xsim_if_exchange:nnnTF {#1} {#2} {#3}
-          { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
-          { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
-        \file_if_exist:VTF \l__xsim_file_path_and_name_tl
+          { \xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+          { \xsim_set_file_signature:nnn {#1} {#2} {#3} }
+        \file_if_exist:VTF \l_xsim_file_path_and_name_tl
           { \prg_return_true: }
           { \prg_return_false: }
       }
@@ -1654,15 +1652,20 @@
 \cs_new_protected:Npn \xsim_input:nnn #1#2#3
   {
     \xsim_if_exchange:nnnTF {#1} {#2} {#3}
-      { \__xsim_set_file_signature:nnn {#1} {#2} {exercise} }
-      { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
+      { \xsim_set_file_signature:nnn {#1} {#2} {exercise} }
+      { \xsim_set_file_signature:nnn {#1} {#2} {#3} }
     \xsim_if_write_to_files:TF
       {
+<<<<<<< HEAD
         \file_if_exist:VTF \l__xsim_file_path_and_name_tl
           { \file_input:V \l__xsim_file_path_and_name_tl }
+=======
+        \file_if_exist:nTF { \exp_not:V \l_xsim_file_path_and_name_tl }
+          { \file_input:n { \exp_not:V \l_xsim_file_path_and_name_tl } }
+>>>>>>> a41293bef42c57c1ae45453505f595a02b4b8fc7
           {
             \xsim_verbose:n
-              { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
+              { File~ `\l_xsim_file_path_and_name_tl'~ doesn't~ exist. }
           }
       }
       {
