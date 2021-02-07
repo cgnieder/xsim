@@ -335,8 +335,8 @@
       { \__xsim_set_file_signature:nnn {#1} {#2} {#3} }
     \xsim_if_write_to_files:TF
       {
-        \file_if_exist:nTF { \exp_not:V \l__xsim_file_path_and_name_tl }
-          { \file_input:n { \exp_not:V \l__xsim_file_path_and_name_tl } }
+        \file_if_exist:VTF \l__xsim_file_path_and_name_tl
+          { \file_input:V \l__xsim_file_path_and_name_tl }
           {
             \xsim_verbose:n
               { File~ `\l__xsim_file_path_and_name_tl'~ doesn't~ exist. }
