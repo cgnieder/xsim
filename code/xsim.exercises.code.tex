@@ -516,37 +516,41 @@
 
 \prg_new_conditional:Npnn \xsim_exercise_if_use:nn #1#2 {T,F,TF}
   {
-    \xsim_if_boolean_property:nnnTF {#1} {#2} {(used)}
-      { \prg_return_false: }
+    \xsim_if_tagged_use:nnTF {#1} {#2}
       {
-        \xsim_if_insert_mode:TF
+        \xsim_if_boolean_property:nnnTF {#1} {#2} {(used)}
+          { \prg_return_false: }
           {
-            \xsim_if_property_set:nnnTF {#1} {#2} {use}
+            \xsim_if_insert_mode:TF
               {
-                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
-                  { \prg_return_true: }
-                  { \prg_return_false: }
+                \xsim_if_property_set:nnnTF {#1} {#2} {use}
+                  {
+                    \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
+                      { \prg_return_true: }
+                      { \prg_return_false: }
+                  }
+                  {
+                    \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+                      { \prg_return_false: }
+                      { \prg_return_true: }
+                  }
               }
               {
-                \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-                  { \prg_return_false: }
-                  { \prg_return_true: }
-              }
-          }
-          {
-            \xsim_if_property_set:nnnTF {#1} {#2} {use}
-              {
-                \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
-                  { \prg_return_true: }
-                  { \prg_return_false: }
-              }
-              {
-                \bool_if:cTF {l__xsim_#1_exercise_use_bool}
-                  { \prg_return_true: }
-                  { \prg_return_false: }
+                \xsim_if_property_set:nnnTF {#1} {#2} {use}
+                  {
+                    \xsim_if_boolean_property:nnnTF {#1} {#2} {use}
+                      { \prg_return_true: }
+                      { \prg_return_false: }
+                  }
+                  {
+                    \bool_if:cTF {l__xsim_#1_exercise_use_bool}
+                      { \prg_return_true: }
+                      { \prg_return_false: }
+                  }
               }
           }
       }
+      { \prg_return_false: }
   }
 \prg_generate_conditional_variant:Nnn \xsim_exercise_if_use:nn {nV} {T,TF}
 

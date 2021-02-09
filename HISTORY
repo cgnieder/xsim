@@ -186,3 +186,4 @@ HISTORY:
                      and \l__xsim_file_path_tl public
                    - reduce comment line in automated comments in exercise and
                      solution files
+                   - add option <tag>/use-unmatched
