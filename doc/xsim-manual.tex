@@ -2138,6 +2138,10 @@ Similar to \pkg{exsheets} \xsim\ provides a command \cs{blank}:
 
 Those are the options for customization:
 \begin{options}
+  \keyval{fill}{bool}\Module{blank}\Default{false}
+    If set to true, this will show the correct answers in the blanks within
+    the exercise if solutions are printed, without the need to repeat the
+    whole exercise content in the solution.
   \keyval{blank-style}{code}\Module{blank}\Default{\cs*{underline}\Marg{\#1}}
     Instructions for typesetting the blank cloze.  Refer to the filled in
     space with \code{\#1}.
