@@ -2138,10 +2138,6 @@ Similar to \pkg{exsheets} \xsim\ provides a command \cs{blank}:
 
 Those are the options for customization:
 \begin{options}
-  \keyval{fill}{bool}\Module{blank}\Default{false}
-    If set to true, this will show the correct answers in the blanks within
-    the exercise if solutions are printed, without the need to repeat the
-    whole exercise content in the solution.
   \keyval{blank-style}{code}\Module{blank}\Default{\cs*{underline}\Marg{\#1}}
     Instructions for typesetting the blank cloze.  Refer to the filled in
     space with \code{\#1}.
@@ -2152,7 +2148,7 @@ Those are the options for customization:
     Shortcut for setting both \option{blank-style} and \option{filled-style}
     at once.
   \keyval{scale}{decimal number}\Module{blank}\Default{\code{1}}
-\textsc{}    Scales the blank to \meta{decimal number} times its natural width.
+    Scales the blank to \meta{decimal number} times its natural width.
   \keyval{width}{dim}\Module{blank}\Default
     Sets the blank to a width of \meta{dim}.  This takes precendence over
     \option{scale}.
@@ -2165,7 +2161,10 @@ Those are the options for customization:
     end up with a non-ending compilation.  Experiment with values to find the
     suiting one for your use case.
   \keyval{line-minimum-length}{dim}\Module{blank}\Default{\code{2em}}
-     The minimal length a line must have before it is built step by step.
+    The minimal length a line must have before it is built step by step.
+  \keybool{fill}\Module{blank}\Default{false}
+    If set to true, this will show the correct answers in the blanks within
+    an exercise as well.
 \end{options}
 
 \begin{example}

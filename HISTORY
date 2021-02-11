@@ -187,3 +187,4 @@ HISTORY:
                    - reduce comment line in automated comments in exercise and
                      solution files
                    - add option <tag>/use-unmatched
+                   - document option `blank/fill'
