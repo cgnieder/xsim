@@ -288,6 +288,7 @@
   }
 
 % ----------------------------------------------------------------------------
+\cs_generate_variant:Nn \tl_set:Nn {Ne}
 
 \NewDocumentCommand \XSIMfilewritestart {sm}
   {
@@ -302,8 +303,14 @@
 \NewDocumentCommand \XSIMsetfilebegin {+m}
   { \tl_set:Nn \l_xsim_file_begin_tl {#1} }
 
+\NewDocumentCommand \XSIMsetfilebeginX {+m}
+  { \tl_set:Ne \l_xsim_file_begin_tl {#1} }
+
 \NewDocumentCommand \XSIMsetfileend {+m}
   { \tl_set:Nn \l_xsim_file_end_tl {#1} }
+
+\NewDocumentCommand \XSIMsetfileendX {+m}
+  { \tl_set:Ne \l_xsim_file_end_tl {#1} }
 
 \NewDocumentCommand \XSIMgobblechars {m}
   { \int_set:Nn \l_xsim_line_gobble_int {#1} }

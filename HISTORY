@@ -181,9 +181,10 @@ HISTORY:
  v0.20b 2021/02/02 - fix issue #78
  v0.20c 2021/02/03 - fix issue #80
                    - add missing test in \xsim_if_exist:nnnTF
- v0.??  2021/??/?? - make \__xsim_set_file_signature:nnn public
+ v0.21  2021/??/?? - make \__xsim_set_file_signature:nnn public
                    - make \l__xsim_file_path_and_name_tl, \l__xsim_file_name_tl
                      and \l__xsim_file_path_tl public
+                   - introduce XSIMsetfilebeginX and XSIMsetfileendX
                    - reduce comment line in automated comments in exercise and
                      solution files
                    - add option <tag>/use-unmatched

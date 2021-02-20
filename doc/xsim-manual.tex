@@ -2353,10 +2353,16 @@ also available in \xsim, too):
     This command can be used to write something to the external file
     \emph{before} the environment contents.  Must be set before
     \cs{XSIMfilewritestart} in the \emph{begin} definition.
+  \command{XSIMsetfilebeginX}[\marg{code}]
+    \sinceversion{0.21}The same as \cs{XSIMsetfilebegin} but expands its
+    argument first.
   \command{XSIMsetfileend}[\marg{code}]
     This command can be used to write something to the external file
     \emph{after} the environment contents.  Must be set before
     \cs{XSIMfilewritestart} in the \emph{begin} definition.
+  \command{XSIMsetfileendX}[\marg{code}]
+    \sinceversion{0.21}The same as \cs{XSIMsetfileend} but expands its
+    argument first.
   \command{XSIMgobblechars}[\marg{integer}]
     Determines how many characters are cut off of the beginning of each line
     of the environment body before it is written to the file.  The default
@@ -2371,8 +2377,8 @@ The following code shows an example of how to use those commands:
   \makeatletter
   \NewDocumentEnvironment{example}{o}
     {%
-      \XSIMsetfilebegin{\@percentchar\space file `\jobname.tmp'}%
-      \XSIMsetfileend{\@percentchar\space bye bye}%
+      \XSIMsetfilebeginX{\@percentchar\space file `\jobname.tmp'}%
+      \XSIMsetfileendX{\@percentchar\space bye bye}%
       \IfNoValueTF{#1}
         {\XSIMfilewritestart*{\jobname.tmp}}
         {\XSIMfilewritestart{\jobname.tmp}}%

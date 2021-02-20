@@ -179,10 +179,12 @@
     XSIMatenddocument ,
     XSIMexpandcode ,
     XSIMsetfilebegin ,
+    XSIMsetfilebeginX ,
     XSIMfilewritestart ,
     XSIMfilewritestop ,
     XSIMgobblechars ,
     XSIMsetfileend ,
+    XSIMsetfileendX ,
     XSIMifblankT ,
     XSIMifblankF ,
     XSIMifblankTF ,
@@ -999,6 +1001,7 @@
 \xsim@add@version{0.20a} {2021-02-01}
 \xsim@add@version{0.20b} {2021-02-02}
 \xsim@add@version{0.20c} {2021-02-03}
+\xsim@add@version{0.21}  {2021-XX-XX}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%
