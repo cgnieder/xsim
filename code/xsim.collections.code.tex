@@ -54,8 +54,26 @@
         \xsim_attribute_set:nnn {collection:conditions} {#1} {#2}
         \seq_gput_right:Nn \g__xsim_collections_seq {#1}
         \xsim_new_list:n {collection:#1}
+        \xsim_before_begin_document:n
+          {
+            \xsim_foreach_exercise_type:n
+              {
+                \int_new:c {g_xsim_collection_##1_in_#1_int}
+                \newcounter {total##1in#1}
+              }
+          }
         \xsim_at_end_document:n
-          { \xsim_update_list:n {collection:#1} }
+          {
+            \xsim_update_list:n {collection:#1}
+            \xsim_foreach_exercise_type:n
+              {
+                \xsim_write_to_aux:x
+                  {
+                    \token_to_str:N \setcounter {total##1in#1}
+                      { \int_use:c {g_xsim_collection_##1_in_#1_int} }
+                  }
+              }
+          }
       }
   }
 
@@ -247,6 +265,7 @@
       { \clist_put_right:Nn \l__xsim_tmpa_clist {#1} }
     \xsim_set_property:nnnV {#2} {#3} {collections} \l__xsim_tmpa_clist
     \xsim_add_to_list:nn {collection:#1} {#2-#3}
+    \int_gincr:c {g_xsim_collection_#2_in_#1_int}
   }
 
 % ----------------------------------------------------------------------------

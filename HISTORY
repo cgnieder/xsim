@@ -189,3 +189,5 @@ HISTORY:
                      solution files
                    - add option <tag>/use-unmatched
                    - document option `blank/fill'
+                   - add counter foreach type and collection that holds the
+                     number of exercises of a type in a collection
