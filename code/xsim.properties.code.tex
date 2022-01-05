@@ -423,6 +423,12 @@
   { \xsim_attribute_get:nn {#1!#2} {#3} }
 \cs_generate_variant:Nn \xsim_get_property:nnn {nx,ne,xx,oo,no,nnf,nf,oof,nV}
 
+% #1: type
+% #2: id
+% #3: property
+\cs_new:Npn \xsim_show_property:nnn #1#2#3
+  { \xsim_attribute_show:nn {#1!#2} {#3} }
+
 % #1: property
 % #2: value
 \cs_new:Npn \xsim_get_id_for_property:nn #1#2

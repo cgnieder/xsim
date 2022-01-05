@@ -7,7 +7,7 @@ Clemens Niederberger
 Web:    https://github.com/cgnieder/xsim
 E-Mail: contact@mychemistry.eu
 --------------------------------------------------------------------------
-Copyright 2017--2021 Clemens Niederberger
+Copyright 2017--2022 Clemens Niederberger
 
 This work may be distributed and/or modified under the
 conditions of the LaTeX Project Public License, either version 1.3c
@@ -181,7 +181,7 @@ HISTORY:
  v0.20b 2021/02/02 - fix issue #78
  v0.20c 2021/02/03 - fix issue #80
                    - add missing test in \xsim_if_exist:nnnTF
- v0.21  2021/??/?? - make \__xsim_set_file_signature:nnn public
+ v0.21  2022/01/05 - make \__xsim_set_file_signature:nnn public
                    - make \l__xsim_file_path_and_name_tl, \l__xsim_file_name_tl
                      and \l__xsim_file_path_tl public
                    - introduce XSIMsetfilebeginX and XSIMsetfileendX
@@ -191,3 +191,5 @@ HISTORY:
                    - document option `blank/fill'
                    - add counter foreach type and collection that holds the
                      number of exercises of a type in a collection
+                   - fix issue #90
+                   - correct file hooks

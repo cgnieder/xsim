@@ -8,7 +8,7 @@
 % Web:    https://github.com/cgnieder/xsim
 % E-Mail: contact@mychemistry.eu
 % ----------------------------------------------------------------------------
-% Copyright 2017--2021 Clemens Niederberger
+% Copyright 2017--2022 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3c
@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2021/02/03}
+\tl_const:Nn \c_xsim_date_tl                 {2022/01/05}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
-\tl_const:Nn \c_xsim_version_minor_number_tl {20}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {c}
+\tl_const:Nn \c_xsim_version_minor_number_tl {21}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -248,7 +248,7 @@
 \tl_if_exist:NF \c_xsim_version_tl
   { \tl_set:Nx \l__xsim_module_version_tl {\c_xsimverb_version_tl} }
 
-\hook_gput_code:nnn {package/after/xsim} {xsim}
+\hook_gput_code:nnn {package/xsim/after} {xsim}
   {
     \tl_set:NV \l__xsim_module_date_tl    \c_xsim_date_tl
     \tl_set:NV \l__xsim_module_version_tl \c_xsim_version_tl
@@ -554,7 +554,7 @@
           { \msg_expandable_error:nnn {xsim} {attribute-not-set} {#1::#2} }
       }
   }
-
+  
 % #1: attribute
 % #2: item
 \prg_new_conditional:Npnn \xsim_attribute_if_set:nn #1#2 {p,T,F,TF}
@@ -1215,6 +1215,12 @@
   { \xsim_attribute_get:nn {#1!#2} {#3} }
 \cs_generate_variant:Nn \xsim_get_property:nnn {nx,ne,xx,oo,no,nnf,nf,oof,nV}
 
+% #1: type
+% #2: id
+% #3: property
+\cs_new:Npn \xsim_show_property:nnn #1#2#3
+  { \xsim_attribute_show:nn {#1!#2} {#3} }
+
 % #1: property
 % #2: value
 \cs_new:Npn \xsim_get_id_for_property:nn #1#2
@@ -1495,8 +1501,11 @@
   {
     \xsim_verbose:n { Saving~ #3~ environment~ type~ `#1'~ id~ `#2' }
     \xsim_set_property:nnnn {#1} {#2} {#3-body} {#4}
-    \xsim_if_exchange:nnnF {#1} {#2} {#3}
-      { \xsim_set_property:nnnn {#1} {#2} {solution-body} {#4} }
+    \xsim_if_exchange:nnnT {#1} {#2} {#3}
+      {
+        \tl_if_eq:nnT {#3} {exercise}
+          { \xsim_set_property:nnnn {#1} {#2} {solution-body} {#4} }
+      }
   }
 
 \cs_new:Npn \__xsim_save_environment_body_end: { }
