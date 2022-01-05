@@ -42,8 +42,15 @@
 \xsim_if_use_aux:F
   {
     \iow_new:N \l__xsim_aux_file_iow
+    \tl_new:N \l__xsim_mdfive_hash_tl
+    \tl_const:Nx \c_xsim_auxfile_tl { \c_sys_jobname_str .xsim }
     \hook_gput_code:nnn {begindocument} {xsim}
-      { \iow_open:Nn \l__xsim_aux_file_iow { \c_sys_jobname_str .xsim } }
+      {
+        \file_get_mdfive_hash:VN
+          \c_xsim_auxfile_tl
+          \l__xsim_mdfive_hash_tl
+        \iow_open:NV \l__xsim_aux_file_iow \c_xsim_auxfile_tl
+      }
   }
 
 \cs_new_protected:Npn \xsim_close_aux:
@@ -51,6 +58,10 @@
     \xsim_if_use_aux:F
       {
         \iow_close:N \l__xsim_aux_file_iow
+        \file_get_mdfive_hash:VN
+          \c_xsim_auxfile_tl
+          \l__xsim_tmpa_tl
+        \tl_if_eq:NNF \l__xsim_mdfive_hash_tl \l__xsim_tmpa_tl { \xsim_rerun: }
         \legacy_if:nT {@filesw}
           { \iow_now:Nx \@auxout { \token_to_str:N \XSIM {readaux} } }
       }
@@ -58,8 +69,8 @@
 
 \xsim_new_aux_property:cpn {readaux}
   {
-    \file_if_exist:nT { \c_sys_jobname_str .xsim }
-      { \file_input:n { \c_sys_jobname_str .xsim } }
+    \file_if_exist:VT \c_xsim_auxfile_tl
+      { \file_input:V \c_xsim_auxfile_tl }
   }
 
 % ----------------------------------------------------------------------------

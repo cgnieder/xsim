@@ -193,3 +193,4 @@ HISTORY:
                      number of exercises of a type in a collection
                    - fix issue #90
                    - correct file hooks
+                   - implement issue #88
