@@ -9,7 +9,7 @@
 
 \usepackage{tasks,fontawesome,fmtcount,multicol}
 \NewTasksEnvironment[label=\Alph*),label-width=12pt]{choices}[\choice]
-\newcommand*\correct{\thetask\expanded{\SetExerciseProperty{choice}{\thetask}}}
+\newcommand*\correct{\refstepcounter{task}\thetask\expanded{\SetExerciseProperty{choice}{\thetask}}}
 
 \NewTasksEnvironment[label=\Roman*,label-width=12pt]{options}[\option]
 
