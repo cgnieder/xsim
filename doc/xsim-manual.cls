@@ -6,9 +6,9 @@
 % ----------------------------------------------------------------------------
 % Clemens Niederberger
 % Web:    https://github.com/cgnieder/xsim
-% E-Mail: contact@mychemistry.eu
+% E-Mail: clemens@cnltx.de
 % ----------------------------------------------------------------------------
-% Copyright 2017--2021 Clemens Niederberger
+% Copyright 2017--2022 Clemens Niederberger
 % 
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3c
@@ -51,7 +51,7 @@
     the official successor of the \cnltxpackagenameformat{exsheets} package ,
   url      = https://github.com/cgnieder/xsim ,
   authors  = Clemens Niederberger ,
-  email    = contact@mychemistry.eu ,
+  email    = clemens@cnltx.de ,
   quote-format = \small\biolinumLF ,
   add-cmds = {
     blank ,
@@ -1001,7 +1001,7 @@
 \xsim@add@version{0.20a} {2021-02-01}
 \xsim@add@version{0.20b} {2021-02-02}
 \xsim@add@version{0.20c} {2021-02-03}
-\xsim@add@version{0.21}  {2021-XX-XX}
+\xsim@add@version{0.21}  {2022-02-12}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

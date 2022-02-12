@@ -54,6 +54,12 @@
         \xsim_attribute_set:nnn {collection:conditions} {#1} {#2}
         \seq_gput_right:Nn \g__xsim_collections_seq {#1}
         \xsim_new_list:n {collection:#1}
+        \bool_new:c {l__xsim_collection_#1_condition_all_bool}
+        \keys_define:nn {xsim/collection/#1}
+          {
+            match-all .bool_set:c = {l__xsim_collection_#1_condition_all_bool} ,
+            match-any .bool_set_inverse:c = {l__xsim_collection_#1_condition_all_bool}
+          }
         \xsim_before_begin_document:n
           {
             \xsim_foreach_exercise_type:n
@@ -205,7 +211,9 @@
 % #3: ID
 \prg_new_protected_conditional:Npnn \xsim_collection_conditions_if:nnn #1#2#3 {T,F,TF}
   {
-    \bool_set_false:N \l____xsim_collection_condition_bool
+    \bool_if:cTF {l__xsim_collection_#1_condition_all_bool}
+      { \bool_set_true:N \l____xsim_collection_condition_bool }
+      { \bool_set_false:N \l____xsim_collection_condition_bool }
     \clist_set:Nx \l__xsim_tmpa_clist
       { \xsim_attribute_get:nn {collection:conditions} {#1} }
     \clist_if_empty:NTF \l__xsim_tmpa_clist
@@ -220,10 +228,20 @@
               { \__xsim_get_condition_values:w ##1 \q_stop }
             \xsim_if_tag_type_exist:VTF \l__xsim_tmpa_tl
               {
-                \xsim_has_tags:nnVVT {#2} {#3} \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+                \bool_if:cTF {l__xsim_collection_#1_condition_all_bool}
                   {
-                    \bool_set_true:N \l____xsim_collection_condition_bool
-                    \clist_map_break:
+                    \xsim_has_tags:nnVVF {#2} {#3} \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+                      {
+                        \bool_set_false:N \l____xsim_collection_condition_bool
+                        \clist_map_break:
+                      }
+                  }
+                  {
+                    \xsim_has_tags:nnVVT {#2} {#3} \l__xsim_tmpa_tl \l__xsim_tmpb_tl
+                      {
+                        \bool_set_true:N \l____xsim_collection_condition_bool
+                        \clist_map_break:
+                      }
                   }
               }
               { \msg_warning:nnV {xsim} {tag-unknown} \l__xsim_tmpa_tl }
@@ -321,15 +339,17 @@
                 {
                   \clist_pop:NN \l__xsim_tmpa_clist \l__xsim_tmpa_tl
                   \clist_pop:NN \l__xsim_tmpb_clist \l__xsim_tmpb_tl
-                 \str_case:Vn \l__xsim_print_collection_choice_tl
-                   {
-                     {exercises} { \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {exercise} }
-                     {solutions} { \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {solution} }
-                     {both} {
-                       \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {exercise}
-                       \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {solution}
-                     }
-                   }
+                  \str_case:Vn \l__xsim_print_collection_choice_tl
+                    {
+                      {exercises}
+                        { \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {exercise} }
+                      {solutions}
+                        { \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {solution} }
+                      {both} {
+                        \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {exercise}
+                        \xsim_insert:nVnn {##1} \l__xsim_tmpb_tl {} {solution}
+                      }
+                    }
                 }
             }
         }
