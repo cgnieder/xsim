@@ -1,5 +1,5 @@
-% !arara: pdflatex: { interaction: nonstopmode }
-% !arara: biber
+% arara: pdflatex: { interaction: nonstopmode }
+% arara: biber
 % arara: pdflatex: { interaction: nonstopmode }
 % arara: pdflatex: { interaction: nonstopmode }
 % !arara: pdflatex: { interaction: nonstopmode }
@@ -1586,6 +1586,19 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Loops over each \emph{used} exercise ordered by the exercise types and
     within each type by id.  Inside \meta{code} you can refer to several
     properties of the corresponding exercise:
+    \begin{itemize}
+      \item \code{\#1}: the type of the exercise
+      \item \code{\#2}: the id of the exercise
+      \item \code{\#3}: the \property{counter} property of the exercise
+      \item \code{\#4}: the \property{subtitle} property of the exercise
+      \item \code{\#5}: the \property{points} property of the exercise
+      \item \code{\#6}: the \property{bonus-points} property of the exercise
+    \end{itemize}
+  \command{ForEachUsedExerciseByOrder}[\marg{code}]
+    Loops\sinceversion{0.21} over each \emph{used} exercise ordered by the
+    exercise types and within each type by the order they have been used in
+    the document.  Inside \meta{code} you can refer to several properties of
+    the corresponding exercise:
     \begin{itemize}
       \item \code{\#1}: the type of the exercise
       \item \code{\#2}: the id of the exercise

@@ -856,7 +856,7 @@
     \begin{cnltxcode}[
       step and label={examplefile}{example:##1} ,
       sidebyside align=top seam,sidebyside,
-      righthand width=.3\linewidth,
+      righthand width=5.2cm,
       sidebyside gap=1em,
       lower separated=false,
       bottom=1mm,
@@ -874,9 +874,11 @@
             type=pdf,
             ext=.##1.pdf,
             read=.##1.pdf,
-            pagebox=cropbox,
-            viewport=4.5cm 18.6cm 8.7cm 23cm,
-            clip]{\xsim@example@pdffile@path}%
+            % pagebox=cropbox,
+            % viewport=4.5cm 18.6cm 8.7cm 23cm,
+            % clip
+            width=5cm
+            ]{\xsim@example@pdffile@path}%
         }%
     }%
     \end{cnltxcode}
