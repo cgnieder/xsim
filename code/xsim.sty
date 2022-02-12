@@ -730,7 +730,7 @@
       { \seq_gremove_all:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str }
     \seq_gput_right:cV {g__xsim_list_#1_seq} \l__xsim_tmpa_str
   }
-\cs_generate_variant:Nn \xsim_add_to_list:nn {nx}
+\cs_generate_variant:Nn \xsim_add_to_list:nn {nx,nV}
 
 % #1: name
 % #2: entry
@@ -2568,6 +2568,8 @@
 % ----------------------------------------------------------------------------
 
 \xsim_new_list:n {types}
+\xsim_new_list:n {order}
+\xsim_at_end_document:n { \xsim_update_list:n {order} }
 \xsim_new_list:n {idtypes}
 
 % #1: true|false (fixed parameter)
@@ -2711,6 +2713,9 @@
 \cs_new_protected:Npn \xsim_foreach_exercise_id:n #1
   { \int_step_inline:nnnn {1} {1} { \g_xsim_max_id_int } {#1} }
 
+\cs_new_protected:Npn \xsim_foreach_exercise_order:n #1
+  { \xsim_foreach_new_list_entry:nn {order} {#1} }
+  
 % #1: macro name
 % #2: 0 to 9 times `n' (= number of arguments of internal item)
 % #3: code; may contain a suiting \__xsim_loop_item:<nnn>
@@ -2753,6 +2758,16 @@
     \xsim_foreach_exercise_type:n
       {
         \xsim_foreach_exercise_id:n
+          { \__xsim_deliver_exercise_details:nnn {##1} {####1} {#1} }
+      }
+  }
+
+\xsim_define_loop_macro:Nnn \xsim_foreach_exercise_type_order:nn
+  {nnnnnn}
+  {
+    \xsim_foreach_exercise_type:n
+      {
+        \xsim_foreach_exercise_order:n
           { \__xsim_deliver_exercise_details:nnn {##1} {####1} {#1} }
       }
   }
@@ -3168,8 +3183,10 @@
         \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {(printed)} {true}
         \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {printed} {true}
       }
+    % TODO: add to some type of order list, cf. issue #85
     \xsim_exercise_if_use:nVT {#1} \g_xsim_exercise_id_tl
       {
+        \xsim_add_to_list:nV {order} \g_xsim_exercise_id_tl
         \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {(used)} {true}
         \xsim_set_property:nVnn {#1} \g_xsim_exercise_id_tl {used} {true}
         \xsim_update_goals:nV {#1} \g_xsim_exercise_id_tl
@@ -3672,6 +3689,7 @@
         \keys_define:nn {xsim/collection/#1}
           {
             match-all .bool_set:c = {l__xsim_collection_#1_condition_all_bool} ,
+            match-all .initial:n  = true ,
             match-any .bool_set_inverse:c = {l__xsim_collection_#1_condition_all_bool}
           }
         \xsim_before_begin_document:n
@@ -5123,6 +5141,14 @@
     \tl_clear:N \XSIMtmp
   }
 
+\NewDocumentCommand \ForEachUsedExerciseByOrder {+m}
+  {
+    \tl_set_eq:NN \XSIMtmp \ExerciseType
+    \xsim_foreach_exercise_type_order:nn {used} {#1}
+    \tl_set_eq:NN \ExerciseType \XSIMtmp
+    \tl_clear:N \XSIMtmp
+  }
+
 % ----------------------------------------------------------------------------
 
 \NewDocumentCommand \DeclareExerciseTranslations {mm}
@@ -5524,7 +5550,7 @@
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
@@ -5544,7 +5570,7 @@
         \XSIMtranslate {total} \\
         \midrule \XSIMmixedcase { \XSIMtranslate {points} } &
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
@@ -5560,7 +5586,7 @@
         \\ \midrule
         \XSIMtranslate {reached} &
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           { \XSIMputright \ExerciseTableCode {&} }
@@ -5592,7 +5618,7 @@
         \XSIMtranslate {reached} \\
         \midrule
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {

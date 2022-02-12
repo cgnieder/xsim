@@ -196,3 +196,7 @@ HISTORY:
                    - implement issue #88
                    - fix issue #96
                    - `use!' and `print!' had gone lost. Add them back in.
+                   - add new options `match-all'/`match-any' for the collection
+                     conditions.  Resolves issue #94.
+                   - new \ForEachUsedExerciseByOrder, used in the table
+                     templates which resolves issue #85

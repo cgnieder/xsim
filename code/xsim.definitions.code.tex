@@ -207,7 +207,7 @@
           { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
         &
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
@@ -227,7 +227,7 @@
         \XSIMtranslate {total} \\
         \midrule \XSIMmixedcase { \XSIMtranslate {points} } &
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {
@@ -243,7 +243,7 @@
         \\ \midrule
         \XSIMtranslate {reached} &
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           { \XSIMputright \ExerciseTableCode {&} }
@@ -275,7 +275,7 @@
         \XSIMtranslate {reached} \\
         \midrule
       }
-    \ForEachUsedExerciseByType
+    \ForEachUsedExerciseByOrder
       {
         \XSIMifeqT {#1} { \ExerciseTableType {#1} }
           {

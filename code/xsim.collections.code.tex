@@ -58,6 +58,7 @@
         \keys_define:nn {xsim/collection/#1}
           {
             match-all .bool_set:c = {l__xsim_collection_#1_condition_all_bool} ,
+            match-all .initial:n  = true ,
             match-any .bool_set_inverse:c = {l__xsim_collection_#1_condition_all_bool}
           }
         \xsim_before_begin_document:n

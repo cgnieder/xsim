@@ -771,7 +771,8 @@ following code:
   \DeclareExerciseTagging{topics}
   \xsimsetup{tags/ignore-untagged=false}
 \end{sourcecode}
-This means that these options are available:
+For each new tag new options are defined and available.  They are described
+for the two predefined tags:
 \begin{options}
   \keyval{tags}{csv list of tags}
     Choose the set of tags whose associated exercises should be printed.
@@ -987,6 +988,17 @@ collection can be printed as often as needed.
     exercises which fit the tags are automatically added to the new
     collection.
 \end{commands}
+You\sinceversion{0.21} have a choice whether \emph{any} or \emph{all} of the
+tags sould match. So \Oarg{topics=algebra,level=1} should probably match
+\emph{all} conditions but the choice is up to you. For each defined collection
+an option exists:
+\begin{options}
+  \keybool{match-all}\Module{collection/\meta{name}}\Default{true}
+    If set to \code{true} \emph{all} conditions must be met.
+  \keybool{match-any}\Module{collection/\meta{name}}\Default{false}
+    The inverse option to \option{match-all}. If set to \code{true} \emph{any} of
+    the conditions must be met.
+\end{options}
 
 \subsubsection{Activating collections}
 If a collection is not activated per default in can be activated (or
