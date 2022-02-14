@@ -29,10 +29,10 @@
 
 \ExplSyntaxOn
 
-\tl_const:Nn \c_xsim_date_tl                 {2022/02/12}
+\tl_const:Nn \c_xsim_date_tl                 {2022/02/13}
 \tl_const:Nn \c_xsim_version_major_number_tl {0}
 \tl_const:Nn \c_xsim_version_minor_number_tl {21}
-\tl_const:Nn \c_xsim_version_subrelease_tl   {}
+\tl_const:Nn \c_xsim_version_subrelease_tl   {a}
 \tl_const:Nx \c_xsim_version_number_tl
   {
     \c_xsim_version_major_number_tl .
@@ -1035,17 +1035,21 @@
 % #4: value
 \cs_new_protected:Npn \__xsim_set_property:nnnn #1#2#3#4
   {
-    \xsim_verbose:n
+    \xsim_if_property_exist:nTF {#3}
       {
-        Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
-        value~ `#4'.
+        \xsim_verbose:n
+          {
+            Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
+            value~ `#4'.
+          }
+        \xsim_if_property_noupdate:nF {#3}
+          {
+            \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+            \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
+          }
+        \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
       }
-    \xsim_if_property_noupdate:nF {#3}
-      {
-        \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
-        \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
-      }
-    \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }
   }
 \cs_generate_variant:Nn \__xsim_set_property:nnnn {VVnV}
 
@@ -1613,7 +1617,7 @@
 % #3: exercise|solution
 \prg_new_conditional:Npnn \xsim_if_exchange:nnn #1#2#3 {T,F,TF}
   {
-    \str_if_eq:nnTF {#3} {solution}
+    \str_if_eq:nnTF {#3} {exercise}
       {
         \xsim_if_boolean_property:nnnTF {#1} {#2} {solution}
           { \prg_return_true: }
@@ -5119,7 +5123,15 @@
 \NewDocumentCommand \ForEachPrintedExerciseByID {+m}
   {
     \tl_set_eq:NN \XSIMtmp \ExerciseType
-    \xsim_foreach_exercise_id_type:nn {print} {#1}
+    \xsim_foreach_exercise_id_type:nn {printed} {#1}
+    \tl_set_eq:NN \ExerciseType \XSIMtmp
+    \tl_clear:N \XSIMtmp
+  }
+
+\NewDocumentCommand \ForEachPrintedExerciseByOrder {+m}
+  {
+    \tl_set_eq:NN \XSIMtmp \ExerciseType
+    \xsim_foreach_exercise_type_order:nn {printed} {#1}
     \tl_set_eq:NN \ExerciseType \XSIMtmp
     \tl_clear:N \XSIMtmp
   }

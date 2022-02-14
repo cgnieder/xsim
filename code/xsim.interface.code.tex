@@ -506,7 +506,15 @@
 \NewDocumentCommand \ForEachPrintedExerciseByID {+m}
   {
     \tl_set_eq:NN \XSIMtmp \ExerciseType
-    \xsim_foreach_exercise_id_type:nn {print} {#1}
+    \xsim_foreach_exercise_id_type:nn {printed} {#1}
+    \tl_set_eq:NN \ExerciseType \XSIMtmp
+    \tl_clear:N \XSIMtmp
+  }
+
+\NewDocumentCommand \ForEachPrintedExerciseByOrder {+m}
+  {
+    \tl_set_eq:NN \XSIMtmp \ExerciseType
+    \xsim_foreach_exercise_type_order:nn {printed} {#1}
     \tl_set_eq:NN \ExerciseType \XSIMtmp
     \tl_clear:N \XSIMtmp
   }

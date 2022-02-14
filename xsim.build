@@ -24,7 +24,7 @@ moduleext="code.tex"
 styname="${pkgname}.sty"
 verbname="${pkgname}verb.sty"
 layoutsname="${pkgname}.style.layouts.code.tex"
-program="arara --verbose"
+program="arara"
 manualfile="${pkgname}-manual"
 zipname="$pkgname"
 

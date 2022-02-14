@@ -29,7 +29,7 @@
 % please ignore the contents of this file -- it is not a good example for
 % coding...
 %
-\ProvidesClass{xsim-manual}[2021/01/31]
+\ProvidesClass{xsim-manual}[2022/02/13]
 
 \LoadClass[load-preamble,add-index]{cnltx-doc}
 \RequirePackage{imakeidx}
@@ -100,10 +100,12 @@
     ExerciseType ,
     ForeachExerciseTag ,
     ForEachExerciseTranslation ,
-    ForEachPrintedExerciseByType ,
     ForEachPrintedExerciseByID ,
-    ForEachUsedExerciseByType ,
+    ForEachPrintedExerciseByOrder ,
+    ForEachPrintedExerciseByType ,
     ForEachUsedExerciseByID ,
+    ForEachUsedExerciseByOrder ,
+    ForEachUsedExerciseByType ,
     GetExerciseAliasProperty ,
     GetExerciseHeadingF ,
     GetExerciseIdForProperty ,
@@ -250,11 +252,9 @@
     xsim
   } ,
   pre-output = { \let\marginpar\marginnote } ,
-  add-listings-options = {
-    numberstyle = \tiny\noncopy
-  } ,
-  index-setup = { level = \section } ,
-  makeindex-setup = { columns = 2 , columnsep = 1em } ,
+  add-listings-options = { numberstyle = \tiny\noncopy } ,
+  index-setup = { level = \section , othercode = \footnotesize } ,
+  makeindex-setup = { columns = 3 , columnsep = 1em } ,
   module-sep = {\texttt{/}}%
 }
 
@@ -1004,6 +1004,7 @@
 \xsim@add@version{0.20b} {2021-02-02}
 \xsim@add@version{0.20c} {2021-02-03}
 \xsim@add@version{0.21}  {2022-02-12}
+\xsim@add@version{0.21a} {2022-02-13}
 
 % ----------------------------------------------------------------------------
 \newrobustcmd*\xsimauxfileinfo{%

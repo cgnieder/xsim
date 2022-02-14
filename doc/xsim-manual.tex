@@ -1,5 +1,5 @@
 % arara: pdflatex: { interaction: nonstopmode }
-% arara: biber
+% !arara: biber
 % arara: pdflatex: { interaction: nonstopmode }
 % arara: pdflatex: { interaction: nonstopmode }
 % !arara: pdflatex: { interaction: nonstopmode }
@@ -1342,13 +1342,12 @@ definitions\footnote{The last sentence is wrong: those commands can be used
 Those commands are explained in the next section.  Their usage will hopefully
 become clear in the examples in section~\vref{sec:template-examples}. Having
 full control over the layout comes at a price: you need to be able to program
-yourself in order to achieve certain layouts\footnote{I plan to incorporate
-  the most common layouts -- and maybe some fancy ones, too -- in the examples
-  section~\vref{sec:template-examples} but at the time of writing this is still
-  up in the air.}.
+yourself in order to achieve certain layouts.
 
 \subsection{Templates Provided by the Package}
-\xsim\ comes with a few predefined layouts:
+\xsim\ comes with a few predefined layouts.  Most of them are available
+through the style file \code{layouts} which is loaded by
+\cs{loadxsimstyle}\Marg{layouts}.
 \begin{description}
   \item[\code{default}] The template activated per default and the only one
     available without further action.
@@ -1368,7 +1367,8 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
   \item[\code{centered}] A\sinceversion{0.18} layout with a centered heading.
     Available through the style file \code{layouts}.
 \end{description}
-  
+
+\xsimsetup{collect}
 \collectexercises{layouts}
 \begin{exercise}[subtitle=The Subtitle,points=2.5,ID=showlayout]
   Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit,
@@ -1574,6 +1574,19 @@ yourself in order to achieve certain layouts\footnote{I plan to incorporate
     Loops over each \emph{printed} exercise ordered by the exercise types and
     within each type by id.  Inside \meta{code} you can refer to several
     properties of the corresponding exercise:
+    \begin{itemize}
+      \item \code{\#1}: the type of the exercise
+      \item \code{\#2}: the id of the exercise
+      \item \code{\#3}: the \property{counter} property of the exercise
+      \item \code{\#4}: the \property{subtitle} property of the exercise
+      \item \code{\#5}: the \property{points} property of the exercise
+      \item \code{\#6}: the \property{bonus-points} property of the exercise
+    \end{itemize}
+  \command{ForEachPrintedExerciseByOrder}[\marg{code}]
+    Loops\sinceversion{0.21a} over each \emph{printed} exercise ordered by the
+    exercise types and within each type by order of appearance.  Inside
+    \meta{code} you can refer to several properties of the corresponding
+    exercise:
     \begin{itemize}
       \item \code{\#1}: the type of the exercise
       \item \code{\#2}: the id of the exercise
@@ -1984,7 +1997,7 @@ vertical layout.
       \XSIMtranslate{reached} \\
       \midrule
     }%
-    \ForEachUsedExerciseByType{%
+    \ForEachUsedExerciseByOrder{%
       \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {%
           \XSIMifblankT{\ExerciseTableType{}}
@@ -2039,7 +2052,7 @@ layout.
         {\XSIMmixedcase{\GetExerciseParameter{exercise-name}}}
         &%
     }%
-    \ForEachUsedExerciseByType{%
+    \ForEachUsedExerciseByOrder{%
       \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {
           \XSIMifblankT{\ExerciseTableType{}}
@@ -2056,7 +2069,7 @@ layout.
       \midrule
       \XSIMmixedcase{\XSIMtranslate{points}} &
     }%
-    \ForEachUsedExerciseByType{%
+    \ForEachUsedExerciseByOrder{%
       \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {%
           \XSIMputright\ExerciseTableCode{%
@@ -2070,7 +2083,7 @@ layout.
       \\ \midrule
       \XSIMtranslate{reached} &%
     }%
-    \ForEachUsedExerciseByType{%
+    \ForEachUsedExerciseByOrder{%
       \XSIMifeqT{#1}{\ExerciseTableType{#1}}
         {\XSIMputright\ExerciseTableCode{&}}%
     }%

@@ -230,17 +230,21 @@
 % #4: value
 \cs_new_protected:Npn \__xsim_set_property:nnnn #1#2#3#4
   {
-    \xsim_verbose:n
+    \xsim_if_property_exist:nTF {#3}
       {
-        Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
-        value~ `#4'.
+        \xsim_verbose:n
+          {
+            Setting~ property~ `#3'~ of~ exercise~ type~ `#1'~ id~ `#2'~ to~
+            value~ `#4'.
+          }
+        \xsim_if_property_noupdate:nF {#3}
+          {
+            \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
+            \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
+          }
+        \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
       }
-    \xsim_if_property_noupdate:nF {#3}
-      {
-        \__xsim_remove_property_from_list:nnn {#1} {#2} {#3}
-        \xsim_add_to_list:nn {#3} {#1-#2=={#4}}
-      }
-    \xsim_attribute_set:nnn {#1!#2} {#3} {#4}
+      { \msg_error:nnn {xsim} {unknown-property} {#3} }
   }
 \cs_generate_variant:Nn \__xsim_set_property:nnnn {VVnV}
 

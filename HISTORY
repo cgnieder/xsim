@@ -200,3 +200,7 @@ HISTORY:
                      conditions.  Resolves issue #94.
                    - new \ForEachUsedExerciseByOrder, used in the table
                      templates which resolves issue #85
+ v0.??  2022/??/?? - add warning if an exercise tries to set a non-existing
+                     property
+                   - new \ForEachPrintedExerciseByOrder
+                   - fix bug in \ForEachPrintedExerciseByID
