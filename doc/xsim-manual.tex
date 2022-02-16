@@ -1545,7 +1545,11 @@ through the style file \code{layouts} which is loaded by
   \command{UseExerciseTemplate}[\marg{type}\marg{name}]
     Retrieve template \meta{name} of type \meta{type}.  This can be useful if
     you want to define a template which just adds some code to an existing
-    template (an automated \cs*{label}, say).
+    template (an automated \cs*{label}, say). \meta{type} refers to one of
+    \code{begin} or \code{end} (in the case of exercise templates) or
+    \code{table} or \code{heading}.  Have a look at the definition of the
+    \code{minimal} template (in the \code{layouts} style file) for an
+    example.
   \expandable\command{ExerciseType}
     Can be used to refer to the current exercise type.
   \expandable\command{ExerciseID}
