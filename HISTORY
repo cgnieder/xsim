@@ -184,7 +184,7 @@ HISTORY:
  v0.21  2022/02/12 - make \__xsim_set_file_signature:nnn public
                    - make \l__xsim_file_path_and_name_tl, \l__xsim_file_name_tl
                      and \l__xsim_file_path_tl public
-                   - introduce XSIMsetfilebeginX and XSIMsetfileendX (xsimverb)
+                   - introduce \XSIMsetfilebeginX and \XSIMsetfileendX (xsimverb)
                    - reduce comment line in automated comments in exercise and
                      solution files
                    - add option <tag>/use-unmatched

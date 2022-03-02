@@ -631,21 +631,21 @@
   {
     \group_begin:
       \keys_set:nn {xsim/grading-table} {#1}
-      \xsim_setup_template:nVn {table} \l_xism_grading_table_template_tl
+      \xsim_setup_template:nVn {table} \l_xsim_grading_table_template_tl
         {
           \providecommand* \ExerciseTableCode {}
           \providecommand* \ExerciseTableType [1] {}
           \providecommand* \ExerciseType {}
-          \tl_set_eq:NN \ExerciseType \l_xism_grading_table_exercise_type_tl
+          \tl_set_eq:NN \ExerciseType \l_xsim_grading_table_exercise_type_tl
           \renewcommand* \ExerciseTableCode {}
           \renewcommand* \ExerciseTableType [1]
             {
-              \XSIMifblankTF { \l_xism_grading_table_exercise_type_tl }
+              \XSIMifblankTF { \l_xsim_grading_table_exercise_type_tl }
                 {##1}
-                { \l_xism_grading_table_exercise_type_tl }
+                { \l_xsim_grading_table_exercise_type_tl }
             }
         }
-      \xsim_use_template:nV {table} \l_xism_grading_table_template_tl
+      \xsim_use_template:nV {table} \l_xsim_grading_table_template_tl
     \group_end:
   }
 
