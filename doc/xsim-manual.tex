@@ -358,7 +358,7 @@ solution environment using the following command:
 Declaring a new exercise type will also define a new command:
 \begin{commands}
   \command{numberof\meta{exercise-env}s}
-    These commands hold the absolut number of used exercises of type
+    These commands hold the absolute number of used exercises of type
     \meta{type}.  The meaning of \meta{exercise-env} will become clear below
     when the exercise parameters are explained.  It is always the same as the
     exercise environment name.
@@ -470,7 +470,7 @@ been defined.  Those include \parameter{exercise-name},
 \end{commands}
 If you try to set an already set but fixed parameter like
 \parameter{exercise-env} a warning will be written to the log file.  For all
-parameters that can be changed also options exist wich can be set via
+parameters that can be changed also options exist which can be set via
 \cs{xsimsetup}.  They are explained in
 section~\vref{sec:environment-options-hooks}.
 
@@ -962,7 +962,7 @@ exercises can be used in two cases, basically:
   \item When you want to print a certain group of exercises several times. In
     this case you add the exercise to a collection while also using it in the
     running text. Somewhere later (or earlier actually) in the document you
-    can the reprint the collection\footnote{There is another way to do that,
+    can reprint the collection\footnote{There is another way to do that,
       but\dots}.
   \item If you only want to print exercises which have certain tags.  Maybe
     you have some kind of exercise library in an external which you include
@@ -989,7 +989,7 @@ collection can be printed as often as needed.
     collection.
 \end{commands}
 You\sinceversion{0.21} have a choice whether \emph{any} or \emph{all} of the
-tags sould match. So \Oarg{topics=algebra,level=1} should probably match
+tags should match. So \Oarg{topics=algebra,level=1} should probably match
 \emph{all} conditions but the choice is up to you. For each defined collection
 an option exists:
 \begin{options}
@@ -1001,7 +1001,7 @@ an option exists:
 \end{options}
 
 \subsubsection{Activating collections}
-If a collection is not activated per default in can be activated (or
+If a collection is not activated per default it can be activated (or
 deactivated in the opposite case) with these commands:
 \begin{commands}
   \command{activatecollection}[\marg{collection name}]
@@ -1017,7 +1017,7 @@ These commands do not influence exercises in other ways other than adding them
 to collections.
 \begin{commands}
   \command{collectexercises}[\marg{collection name}]
-    Activates the collectiocollectexercisesn \meta{collection name} which now collects all
+    Activates the collection \meta{collection name} which now collects all
     exercises until the collection is deactivated, starts a group with
     \cs*{begingroup} and sets the option \option{collect}, see below.
   \command{collectexercisesstop}[\marg{collection name}]
@@ -1394,11 +1394,11 @@ through the style file \code{layouts} which is loaded by
     \cs{IfExerciseGoalTF}\marg{goal}\Marg{=1}\marg{true}\marg{false}.
   \command{IfExerciseTypeGoalsSum\TF}[\marg{type}\marg{list of
     goals}\marg{relation and value}\marg{true}\marg{false}]
-    Ckecks the sum of all goals in \meta{list of goals} for the exercises of
+    Checks the sum of all goals in \meta{list of goals} for the exercises of
     type \meta{type} against \meta{relation and value}.
   \command{IfExerciseGoalsSum\TF}[\marg{type}\marg{list of
     goals}\marg{relation and value}\marg{true}\marg{false}]
-    Ckecks the sum of all goals in \meta{list of goals} for all exercises of
+    Checks the sum of all goals in \meta{list of goals} for all exercises of
     all types against \meta{relation and value}.
   \command{TotalExerciseTypeGoal}[\marg{goal}\marg{type}\marg{singular}\marg{plural}]
     Print the sum of goal \meta{goal} for the exercises of type \meta{type}
@@ -1625,7 +1625,7 @@ through the style file \code{layouts} which is loaded by
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{ForEachPrintedExerciseByID}[\marg{code}]
-    Loops over each \emph{printed} exercise order by the exercise id.  Inside
+    Loops over each \emph{printed} exercise ordered by the exercise id.  Inside
     \meta{code} you can refer to several properties of the corresponding
     exercise:
     \begin{itemize}
@@ -1637,7 +1637,7 @@ through the style file \code{layouts} which is loaded by
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{ForEachUsedExerciseByID}[\marg{code}]
-    Loops over each \emph{used} exercise order by the exercise id.  Inside
+    Loops over each \emph{used} exercise ordered by the exercise id.  Inside
     \meta{code} you can refer to several properties of the corresponding
     exercise:
     \begin{itemize}
@@ -1649,7 +1649,7 @@ through the style file \code{layouts} which is loaded by
       \item \code{\#6}: the \property{bonus-points} property of the exercise
     \end{itemize}
   \command{XSIMprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
-    \sincechanged{0.16}{0.17}Inserts the either the exercise or the solution
+    \sincechanged{0.16}{0.17}Inserts either the exercise or the solution
     of type \meta{type} with the \property{id} or \property{ID} \meta{id}.
   \command{XSIMxprint}[\Marg{exercise|solution}\marg{type}\marg{id}]
     The same as \cs{XSIMprint} but expands \meta{type} and \meta{id} before it
