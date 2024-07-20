@@ -156,7 +156,7 @@
   {
     \GetExerciseHeadingF { \subsection* }
     {
-      \XSIMmixedcase { \GetExerciseName } \nobreakspace
+      \XSIMmixedcase {\GetExerciseName } \nobreakspace
       \GetExerciseProperty {counter}
       \IfInsideSolutionF
         {
@@ -204,7 +204,7 @@
       {
         \toprule
         \XSIMifblankF { \ExerciseType }
-          { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
+          { \XSIMmixedcase {\GetExerciseParameter {exercise-name} } }
         &
       }
     \ForEachUsedExerciseByOrder
@@ -225,7 +225,7 @@
     \XSIMputright \ExerciseTableCode
       {
         \XSIMtranslate {total} \\
-        \midrule \XSIMmixedcase { \XSIMtranslate {points} } &
+        \midrule \XSIMmixedcase {\XSIMtranslate {points} } &
       }
     \ForEachUsedExerciseByOrder
       {
@@ -269,9 +269,9 @@
       {
         \toprule
         \XSIMifblankF { \ExerciseType }
-          { \XSIMmixedcase { \GetExerciseParameter {exercise-name} } }
+          { \XSIMmixedcase {\GetExerciseParameter {exercise-name} } }
         &
-        \XSIMmixedcase { \XSIMtranslate {points} } &
+        \XSIMmixedcase {\XSIMtranslate {points} } &
         \XSIMtranslate {reached} \\
         \midrule
       }
@@ -388,50 +388,50 @@
 }
 
 \DeclareExerciseTranslations {default-heading} {
-  Fallback = \XSIMmixedcase { \GetExerciseParameter {solutions-name} }~
-             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
-  English  = \XSIMmixedcase { \GetExerciseParameter {solutions-name} }~
-             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
-  French   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} ~
+  Fallback = \XSIMmixedcase {\GetExerciseParameter {solutions-name} }~
+             to~ the~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ,
+  English  = \XSIMmixedcase {\GetExerciseParameter {solutions-name} }~
+             to~ the~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ,
+  French   = \XSIMmixedcase {\GetExerciseParameter {solutions-name} ~
              des~ \GetExerciseParameter {exercises-name} } ,
-  German   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} }~
-             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} }
+  German   = \XSIMmixedcase {\GetExerciseParameter {solutions-name} }~
+             zu~ den~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} }
 }
 
 \DeclareExerciseTranslations {collection-heading} {
-  Fallback = \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
-  English  = \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
-  French   = \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ,
-  German   = \XSIMmixedcase { \GetExerciseParameter {exercises-name} }
+  Fallback = \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ,
+  English  = \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ,
+  French   = \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ,
+  German   = \XSIMmixedcase {\GetExerciseParameter {exercises-name} }
 }
 
 \DeclareExerciseTranslations {per-section-heading} {
-  Fallback = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
-             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+  Fallback = \XSIMmixedcase {\GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ~
              of~ Section \nobreakspace \ExerciseSection ,
-  English  = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
-             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+  English  = \XSIMmixedcase {\GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ~
              of~ Section \nobreakspace \ExerciseSection ,
-  French   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} ~
+  French   = \XSIMmixedcase {\GetExerciseParameter {solutions-name} ~
              des~ \GetExerciseParameter {exercises-name} ~ de~ la~
              section \nobreakspace \ExerciseSection } ,
-  German   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
-             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} }~
+  German   = \XSIMmixedcase {\GetExerciseParameter {solutions-name} } ~
+             zu~ den~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} }~
              in~ Abschnitt \nobreakspace \ExerciseSection
 }
 
 \DeclareExerciseTranslations {per-chapter-heading} {
-  Fallback = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
-             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+  Fallback = \XSIMmixedcase {\GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ~
              of~ Chapter \nobreakspace \ExerciseChapter ,
-  English  = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
-             to~ the~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+  English  = \XSIMmixedcase {\GetExerciseParameter {solutions-name} } ~
+             to~ the~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ~
              of~ Chapter \nobreakspace \ExerciseChapter ,
-  French   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} ~
+  French   = \XSIMmixedcase {\GetExerciseParameter {solutions-name} ~
              des~ \GetExerciseParameter {exercises-name} ~
              du~ chapitre \nobreakspace \ExerciseChapter } ,
-  German   = \XSIMmixedcase { \GetExerciseParameter {solutions-name} } ~
-             zu~ den~ \XSIMmixedcase { \GetExerciseParameter {exercises-name} } ~
+  German   = \XSIMmixedcase {\GetExerciseParameter {solutions-name} } ~
+             zu~ den~ \XSIMmixedcase {\GetExerciseParameter {exercises-name} } ~
              in~ Kapitel \nobreakspace \ExerciseChapter
 }
 
